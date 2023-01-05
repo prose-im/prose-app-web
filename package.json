@@ -18,6 +18,9 @@
     "url": "https://prose.org/"
   },
   "scripts": {
-    "lint": "npm run test"
+    "dev": "echo 'No dev rules, yet'",
+    "build": "echo 'No build rules, yet'",
+    "lint": "echo 'No lint rules, yet'",
+    "test": "npm run lint"
   }
 }
