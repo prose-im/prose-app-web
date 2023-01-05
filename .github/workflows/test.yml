@@ -1,3 +1,5 @@
+on: [push, pull_request]
+
 name: Test and Lint
 
 jobs:
