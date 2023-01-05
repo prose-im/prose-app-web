@@ -3,6 +3,9 @@ npm-debug.log
 node_modules/
 .npm
 
+# Builds
+dist
+
 # Editor
 .nova
 
