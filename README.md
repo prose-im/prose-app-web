@@ -1,5 +1,7 @@
 # prose-app-web
 
+[![Test and Lint](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml)
+
 **Prose Web application. Built in TypeScript / VueJS.**
 
 Copyright 2023, Prose Foundation - Released under the [Mozilla Public License 2.0](./LICENSE.md).
