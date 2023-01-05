@@ -12,7 +12,7 @@
 import { createApp } from "vue";
 
 // PROJECT: STYLES
-import "./style.css";
+import "./assets/stylesheets/all.scss";
 
 // PROJECT: MAIN
 import App from "./App.vue";

@@ -1,0 +1,39 @@
+/*
+ * This file is part of prose-app-web
+ *
+ * Copyright 2023, Prose Foundation
+ */
+
+/* *************************************************************************
+ * UTILITIES > INLINE
+ * **************************************************************************/
+
+.u-bold {
+  font-weight: $font-weight-bolder !important;
+}
+
+.u-medium {
+  font-weight: $font-weight-medium !important;
+}
+
+.u-regular {
+  font-weight: $font-weight-regular !important;
+}
+
+.u-italic {
+  font-style: italic !important;
+}
+
+.u-underline {
+  text-decoration: underline !important;
+}
+
+.u-capitalize {
+  text-transform: capitalize !important;
+}
+
+.u-ellipsis {
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}

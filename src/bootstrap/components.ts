@@ -24,7 +24,7 @@ class Components {
    */
   init(app) {
     this.registerGlobally(
-      app, import.meta.globEager("../components/base/*.vue")
+      app, import.meta.globEager("/src/components/base/*.vue")
     );
   }
 

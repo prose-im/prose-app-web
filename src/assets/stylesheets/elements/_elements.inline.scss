@@ -1,0 +1,17 @@
+/*
+ * This file is part of prose-app-web
+ *
+ * Copyright 2023, Prose Foundation
+ */
+
+/* *************************************************************************
+ * ELEMENTS > INLINE
+ * **************************************************************************/
+
+a {
+  outline: 0;
+  color: $color-base-blue-link;
+  text-decoration: none;
+  transition: color linear 100ms;
+  cursor: pointer;
+}

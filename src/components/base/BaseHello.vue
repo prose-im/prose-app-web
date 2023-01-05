@@ -8,8 +8,9 @@
      TEMPLATE
      ********************************************************************** -->
 
-<template>
-  <h1>{{ message }}</h1>
+<template lang="pug">
+h1.c-base-hello.u-bold
+  | {{ message }}
 </template>
 
 <!-- **********************************************************************
@@ -28,3 +29,18 @@ export default {
   }
 };
 </script>
+
+<!-- **********************************************************************
+     STYLE
+     ********************************************************************** -->
+
+<style lang="scss" scoped>
+$c: ".c-base-hello";
+
+.c-base-hello {
+  font-size: 3.2em;
+  line-height: 1.1;
+  text-align: center;
+  margin-top: 2em;
+}
+</style>

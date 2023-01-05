@@ -8,22 +8,24 @@
      TEMPLATE
      ********************************************************************** -->
 
-<template>
-  <base-hello message="Prose" />
+<template lang="pug">
+base-hello(
+  message="Prose"
+)
 </template>
 
 <!-- **********************************************************************
      SCRIPT
      ********************************************************************** -->
 
-<script setup lang="ts">
-// Nothing done here (for now)
+<script lang="ts">
+// TODO: Nothing done here (for now)
 </script>
 
 <!-- **********************************************************************
      STYLE
      ********************************************************************** -->
 
-<style scoped>
-/* Nothing done here (for now) */
+<style lang="scss">
+/* TODO: Nothing done here (for now) */
 </style>

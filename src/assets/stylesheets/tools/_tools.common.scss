@@ -1,0 +1,46 @@
+/*
+ * This file is part of prose-app-web
+ *
+ * Copyright 2023, Prose Foundation
+ */
+
+/* *************************************************************************
+ * TOOLS > COMMON
+ * **************************************************************************/
+
+@mixin font-smoothing($smoothing) {
+  @if $smoothing == antialiased {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  } @else {
+    -webkit-font-smoothing: subpixel-antialiased;
+    -moz-osx-font-smoothing: auto;
+  }
+}
+
+@mixin text-fill-color($value) {
+  -webkit-text-fill-color: ($value);
+  text-fill-color: ($value);
+}
+
+@mixin mask-image($value) {
+  --mask-image: url(#{$value});
+
+  -webkit-mask-image: var(--mask-image);
+  mask-image: var(--mask-image);
+}
+
+@mixin mask-repeat($value) {
+  -webkit-mask-repeat: $value;
+  mask-repeat: $value;
+}
+
+@mixin mask-size($value) {
+  -webkit-mask-size: $value;
+  mask-size: $value;
+}
+
+@mixin mask-position($value) {
+  -webkit-mask-position: $value;
+  mask-position: $value;
+}
