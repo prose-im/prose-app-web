@@ -24,7 +24,8 @@ class Components {
    */
   init(app) {
     this.registerGlobally(
-      app, import.meta.globEager("/src/components/base/*.vue")
+      app,
+      import.meta.globEager("/src/components/base/*.vue")
     );
   }
 
@@ -40,7 +41,10 @@ class Components {
         // Get PascalCase name of component
         const componentName = upperFirst(
           camelCase(
-            componentPath.split("/").pop().replace(/^(.+)\.vue$/, "$1")
+            componentPath
+              .split("/")
+              .pop()
+              .replace(/^(.+)\.vue$/, "$1")
           )
         );
 

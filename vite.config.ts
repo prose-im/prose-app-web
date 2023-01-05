@@ -8,18 +8,15 @@
  * IMPORTS
  * ************************************************************************* */
 
-import { defineConfig } from 'vite';
+import { defineConfig } from "vite";
 
-import vue from '@vitejs/plugin-vue';
-import vitePugPlugin from 'vite-plugin-pug-transformer';
+import vue from "@vitejs/plugin-vue";
+import vitePugPlugin from "vite-plugin-pug-transformer";
 
 /**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
 export default defineConfig({
-  plugins: [
-    vue(),
-    vitePugPlugin()
-  ]
+  plugins: [vue(), vitePugPlugin()]
 });
