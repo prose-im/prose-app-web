@@ -8,7 +8,7 @@ node_modules/
 .eslintcache
 
 # Builds
-dist
+build
 
 # Editor
 .nova
