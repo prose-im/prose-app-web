@@ -39,6 +39,7 @@
     "sass": "1.57.x",
     "vite": "4.0.x",
     "vite-plugin-pug-transformer": "1.0.x",
+    "vite-plugin-eslint": "1.8.x",
     "vue-tsc": "1.0.x",
     "prettier": "2.8.x",
     "eslint": "8.31.x",
