@@ -1,0 +1,23 @@
+{
+  "name": "prose-app-web",
+  "description": "Prose Web application",
+  "version": "0.0.1",
+  "homepage": "https://github.com/prose-im/prose-app-web",
+  "license": "MPL-2.0",
+  "engineStrict": true,
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/prose-im/prose-app-web.git"
+  },
+  "author": {
+    "name": "Prose Foundation",
+    "email": "dev@prose.org",
+    "url": "https://prose.org/"
+  },
+  "scripts": {
+    "lint": "npm run test"
+  }
+}

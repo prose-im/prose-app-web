@@ -1,0 +1,10 @@
+# NPM
+npm-debug.log
+node_modules/
+.npm
+
+# Editor
+.nova
+
+# macOS
+.DS_Store
