@@ -36,6 +36,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "4.0.x",
+    "@typescript-eslint/parser": "5.48.x",
+    "@typescript-eslint/eslint-plugin": "5.48.x",
     "typescript": "4.9.x",
     "sass": "1.57.x",
     "vite": "4.0.x",
