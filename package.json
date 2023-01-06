@@ -30,10 +30,11 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "vue": "3.2.x",
-    "lodash.upperfirst": "4.3.x",
+    "@prose-im/prose-core-views": "0.17.x",
     "lodash.camelcase": "4.3.x",
-    "strophe.js": "1.6.x"
+    "lodash.upperfirst": "4.3.x",
+    "strophe.js": "1.6.x",
+    "vue": "3.2.x"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "4.0.x",
