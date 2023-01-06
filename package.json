@@ -1,5 +1,5 @@
 {
-  "name": "prose-app-web",
+  "name": "@prose-im/prose-app-web",
   "description": "Prose Web application",
   "version": "0.0.1",
   "type": "module",
