@@ -17,6 +17,17 @@ import vitePugPlugin from "vite-plugin-pug-transformer";
  * EXPORTS
  * ************************************************************************* */
 
-export default defineConfig({
-  plugins: [vue(), vitePugPlugin()]
-});
+export default {
+  plugins: [vue(), vitePugPlugin({})],
+
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `
+          @import "/src/assets/stylesheets/variables/all.scss";
+          @import "/src/assets/stylesheets/tools/all.scss";
+        `
+      }
+    }
+  }
+};
