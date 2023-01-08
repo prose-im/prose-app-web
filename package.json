@@ -34,7 +34,8 @@
     "lodash.camelcase": "4.3.x",
     "lodash.upperfirst": "4.3.x",
     "strophe.js": "1.6.x",
-    "vue": "3.2.x"
+    "vue": "3.2.x",
+    "vue-router": "4.1.x"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "4.0.x",

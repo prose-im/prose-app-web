@@ -16,6 +16,7 @@ import "./assets/stylesheets/all.scss";
 
 // PROJECT: MAIN
 import App from "./App.vue";
+import router from "./router";
 
 // PROJECT: BOOTSTRAP
 import Components from "./bootstrap/components";
@@ -26,14 +27,16 @@ import Components from "./bootstrap/components";
 
 const app = createApp(App);
 
+app.use(router);
+
 /**************************************************************************
  * BOOTSTRAP
- ***************************************************************************/
+ * ************************************************************************* */
 
 Components.init(app);
 
 /**************************************************************************
  * INITIALIZE
- ***************************************************************************/
+ * ************************************************************************* */
 
 app.mount("#app");
