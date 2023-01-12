@@ -16,9 +16,39 @@ import vitePugPlugin from "vite-plugin-pug-transformer";
  * ************************************************************************* */
 
 export default {
+  base: "/",
+  publicDir: "public",
+  logLevel: "info",
+
+  server: {
+    host: "localhost",
+    port: 3010,
+    strictPort: true
+  },
+
+  preview: {
+    host: "localhost",
+    port: 3020,
+    strictPort: true
+  },
+
+  build: {
+    target: "modules",
+    outDir: "dist",
+    assetsDir: "assets",
+    cssCodeSplit: true,
+    sourcemap: false,
+    manifest: false,
+    copyPublicDir: true,
+    reportCompressedSize: true,
+    chunkSizeWarningLimit: 1024
+  },
+
   plugins: [vue(), vitePugPlugin({})],
 
   css: {
+    devSourcemap: false,
+
     preprocessorOptions: {
       scss: {
         additionalData: `
