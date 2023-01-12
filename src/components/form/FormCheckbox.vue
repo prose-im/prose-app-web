@@ -125,7 +125,7 @@ $checkbox-size: 24px;
 
       &:not(:checked) {
         &:before {
-          border-color: $color-base-purple-normal;
+          border-color: rgba($color-base-purple-normal, 0.75);
           border-width: 2px;
         }
       }
@@ -161,6 +161,8 @@ $checkbox-size: 24px;
   }
 
   #{$c}__label {
+    color: $color-black;
+    font-size: 15px;
     margin-left: 10px;
     flex: 1;
   }

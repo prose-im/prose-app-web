@@ -85,19 +85,28 @@ $size-ultra-large-padding-sides: 24px;
   #{$c}__input {
     background-color: $color-white;
     border: 1px solid rgba($color-black, 0.1);
+    outline: 2px solid transparent;
     text-align: center;
+    width: 100%;
+    transition: all 150ms linear;
+    transition-property: box-shadow, border-color, outline-color;
     border-radius: 10px;
-    transition: all 100ms linear;
-    transition-property: box-shadow, border-color;
+    box-sizing: border-box;
     box-shadow: 0 3px 4px 0 rgba($color-black, 0.01),
       inset 0 1px 2px 0 rgba($color-black, 0.04);
 
+    &::placeholder {
+      color: $color-text-secondary;
+      opacity: 1;
+    }
+
     &:hover {
-      border-color: rgba($color-black, 0.15);
+      border-color: rgba($color-base-purple-normal, 0.5);
     }
 
     &:focus {
-      border-color: rgba($color-black, 0.2);
+      border-color: $color-base-purple-normal;
+      outline-color: rgba($color-base-purple-normal, 0.2);
       box-shadow: 0 3px 4px 0 rgba($color-black, 0.1),
         inset 0 1px 2px 0 rgba($color-black, 0.04);
     }
@@ -109,7 +118,6 @@ $size-ultra-large-padding-sides: 24px;
     #{$c}__input {
       font-size: 10px;
       line-height: 25px;
-      width: calc(100% - #{(2 * $size-medium-padding-sides)});
       padding-left: $size-medium-padding-sides;
       padding-right: $size-medium-padding-sides;
     }
@@ -119,7 +127,6 @@ $size-ultra-large-padding-sides: 24px;
     #{$c}__input {
       font-size: 12px;
       line-height: 32px;
-      width: calc(100% - #{(2 * $size-mid-medium-padding-sides)});
       padding-left: $size-mid-medium-padding-sides;
       padding-right: $size-mid-medium-padding-sides;
     }
@@ -129,7 +136,6 @@ $size-ultra-large-padding-sides: 24px;
     #{$c}__input {
       font-size: 14px;
       line-height: 42px;
-      width: calc(100% - #{(2 * $size-large-padding-sides)});
       padding-left: $size-large-padding-sides;
       padding-right: $size-large-padding-sides;
     }
@@ -139,7 +145,6 @@ $size-ultra-large-padding-sides: 24px;
     #{$c}__input {
       font-size: 15px;
       line-height: 48px;
-      width: calc(100% - #{(2 * $size-mid-large-padding-sides)});
       padding-left: $size-mid-large-padding-sides;
       padding-right: $size-mid-large-padding-sides;
     }
@@ -149,7 +154,6 @@ $size-ultra-large-padding-sides: 24px;
     #{$c}__input {
       font-size: 16px;
       line-height: 58px;
-      width: calc(100% - #{(2 * $size-ultra-large-padding-sides)});
       padding-left: $size-ultra-large-padding-sides;
       padding-right: $size-ultra-large-padding-sides;
     }
