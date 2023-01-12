@@ -39,7 +39,7 @@
       size="ultra-large"
       type="submit"
     )
-      | Access Prose server dashboard
+      | Login to your Prose account
 
     .c-initiate-login-form__options
       .c-initiate-login-form__options-left

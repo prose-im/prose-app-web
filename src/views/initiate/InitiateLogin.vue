@@ -10,7 +10,9 @@
 
 <template lang="pug">
 .c-initiate-login
-  .c-initiate-login__identity
+  initiate-server-identity(
+    class="c-initiate-login__identity"
+  )
 
   .c-initiate-login__box
     initiate-login-form(
@@ -25,13 +27,16 @@
      ********************************************************************** -->
 
 <script lang="ts">
-// PROJECT: COMPONENTS
+// PROJECT: ASSEMBLIES
 import InitiateLoginForm from "/src/assemblies/initiate/InitiateLoginForm.vue";
+
+// PROJECT: COMPONENTS
+import InitiateServerIdentity from "/src/components/initiate/InitiateServerIdentity.vue";
 
 export default {
   name: "InitiateLogin",
 
-  components: { InitiateLoginForm }
+  components: { InitiateLoginForm, InitiateServerIdentity }
 };
 </script>
 
