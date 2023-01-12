@@ -9,7 +9,7 @@
      ********************************************************************** -->
 
 <template lang="pug">
-div(
+button(
   @click="onClick"
   :class=`[
     "c-base-button",
@@ -19,6 +19,7 @@ div(
       "c-base-button--reverse": reverse
     }
   ]`
+  :type="type"
 )
   .c-base-button__inner
     div(
@@ -42,6 +43,15 @@ export default {
   name: "BaseButton",
 
   props: {
+    type: {
+      type: String,
+      default: "button",
+
+      validator(x) {
+        return ["button", "submit"].includes(x);
+      }
+    },
+
     tint: {
       type: String,
       default: "dark",
@@ -116,6 +126,8 @@ $size-mid-large-padding-sides: 34px;
 $size-ultra-large-padding-sides: 44px;
 
 .c-base-button {
+  background: transparent;
+  border: 0 none;
   display: inline-block;
 
   &:active {
@@ -229,8 +241,8 @@ $size-ultra-large-padding-sides: 44px;
 
   &--ultra-large {
     #{$c}__inner {
-      font-size: 17px;
-      line-height: 60px;
+      font-size: 16px;
+      line-height: 58px;
       padding-left: $size-ultra-large-padding-sides;
       padding-right: $size-ultra-large-padding-sides;
     }

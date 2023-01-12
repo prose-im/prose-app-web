@@ -19,8 +19,6 @@ h2
 
 <script lang="ts">
 export default {
-  name: "AppBase",
-
-  components: {}
+  name: "AppBase"
 };
 </script>

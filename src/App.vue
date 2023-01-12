@@ -9,23 +9,22 @@
      ********************************************************************** -->
 
 <template lang="pug">
-base-hello(
-  message="Prose"
-)
+.c-app
+  router-view
 </template>
-
-<!-- **********************************************************************
-     SCRIPT
-     ********************************************************************** -->
-
-<script lang="ts">
-// TODO: Nothing done here (for now)
-</script>
 
 <!-- **********************************************************************
      STYLE
      ********************************************************************** -->
 
 <style lang="scss">
-/* TODO: Nothing done here (for now) */
+$c: ".c-app";
+
+.c-app {
+  background-color: $color-background-primary;
+  user-select: none;
+  overflow: hidden;
+  margin: 0;
+  padding: 0;
+}
 </style>
