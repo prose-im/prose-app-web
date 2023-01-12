@@ -43,8 +43,17 @@ export default {
 $c: ".c-initiate-login";
 
 .c-initiate-login {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+
   #{$c}__identity {
-    /* TODO: as component please */
+    position: absolute;
+    top: 30px;
+    left: 46px;
+    z-index: 2;
   }
 
   #{$c}__box {
@@ -54,12 +63,10 @@ $c: ".c-initiate-login";
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
     padding: 76px 14px;
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+    overflow: auto;
+    position: relative;
     z-index: 1;
 
     #{$c}__form {

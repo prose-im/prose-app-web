@@ -23,8 +23,14 @@ $c: ".c-app";
 .c-app {
   background-color: $color-background-primary;
   user-select: none;
-  overflow: hidden;
   margin: 0;
   padding: 0;
+  overflow: hidden;
+  display: flex;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 </style>
