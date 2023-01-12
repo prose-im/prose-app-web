@@ -150,6 +150,9 @@ $size-ultra-large-padding-sides: 44px;
     transition-property: transform, box-shadow, background-color;
 
     #{$c}__label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       flex: 1;
     }
   }

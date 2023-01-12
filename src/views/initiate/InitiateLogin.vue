@@ -92,4 +92,23 @@ $c: ".c-initiate-login";
     z-index: 0;
   }
 }
+
+// --> MEDIA-QUERIES <--
+
+@media (max-width: 640px) {
+  .c-initiate-login {
+    #{$c}__identity {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+  }
+}
+
+@media (max-height: 640px) {
+  .c-initiate-login {
+    #{$c}__identity {
+      display: none;
+    }
+  }
+}
 </style>
