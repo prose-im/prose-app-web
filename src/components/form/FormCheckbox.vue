@@ -14,13 +14,13 @@
     @change="onInputChange"
     :name="name"
     :checked="modelValue"
-    :disabled="disabled"
     class="c-form-checkbox__input"
     type="checkbox"
   )
 
   label.c-form-checkbox__label.u-medium(
     v-if="$slots.default"
+    @click="onLabelClick"
   )
     slot
 </template>
@@ -37,6 +37,11 @@ export default {
     name: {
       type: String,
       default: null
+    },
+
+    modelValue: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -54,6 +59,16 @@ export default {
     onInputChange(event) {
       // Update model value
       this.$emit("update:modelValue", event.target.checked);
+    },
+
+    /**
+     * Triggers on label click
+     * @public
+     * @return {undefined}
+     */
+    onLabelClick() {
+      // Toggle model value
+      this.$emit("update:modelValue", !this.modelValue);
     }
   }
 };
@@ -164,8 +179,12 @@ $checkbox-size: 24px;
   #{$c}__label {
     color: $color-black;
     font-size: 15px;
-    margin-left: 10px;
+    padding-left: 10px;
     flex: 1;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 }
 </style>
