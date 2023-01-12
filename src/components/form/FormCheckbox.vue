@@ -115,7 +115,8 @@ $checkbox-size: 24px;
       position: relative;
     }
 
-    &:hover {
+    &:hover,
+    &:focus-visible {
       &:checked {
         &:before {
           border-color: darken($color-base-purple-normal, 5%);

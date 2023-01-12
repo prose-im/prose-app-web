@@ -50,7 +50,9 @@
           | Remember me
 
       .c-initiate-login-form__options-right
-        a.c-initiate-login-form__options-recover
+        a.c-initiate-login-form__options-recover(
+          href="#"
+        )
           | Forgot password?
 </template>
 
@@ -128,7 +130,7 @@ $c: ".c-initiate-login-form";
         font-size: 15px;
 
         &:hover,
-        &:focus {
+        &:focus-visible {
           text-decoration: underline;
         }
       }
