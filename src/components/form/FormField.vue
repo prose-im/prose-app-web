@@ -11,11 +11,11 @@
 <template lang="pug">
 div(
   :class=`[
-    "c-base-field",
-    "c-base-field--" + size
+    "c-form-field",
+    "c-form-field--" + size
   ]`
 )
-  input.c-base-field__input(
+  input.c-form-field__input(
     :type="type"
     :name="name"
     :placeholder="placeholder"
@@ -28,7 +28,7 @@ div(
 
 <script lang="ts">
 export default {
-  name: "BaseField",
+  name: "FormField",
 
   props: {
     type: {
@@ -70,7 +70,7 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss" scoped>
-$c: ".c-base-field";
+$c: ".c-form-field";
 
 // VARIABLES
 $size-medium-padding-sides: 10px;
@@ -79,7 +79,7 @@ $size-large-padding-sides: 18px;
 $size-mid-large-padding-sides: 22px;
 $size-ultra-large-padding-sides: 24px;
 
-.c-base-field {
+.c-form-field {
   display: inline-block;
 
   #{$c}__input {

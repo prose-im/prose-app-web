@@ -26,7 +26,7 @@
 
 <script lang="ts">
 // PROJECT: COMPONENTS
-import InitiateLoginForm from "/src/components/initiate/InitiateLoginForm.vue";
+import InitiateLoginForm from "/src/assemblies/initiate/InitiateLoginForm.vue";
 
 export default {
   name: "InitiateLogin",
