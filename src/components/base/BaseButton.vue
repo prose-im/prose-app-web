@@ -128,6 +128,8 @@ $size-ultra-large-padding-sides: 44px;
 .c-base-button {
   background: transparent;
   border: 0 none;
+  margin: 0;
+  padding: 0;
   display: inline-block;
 
   &:active {
