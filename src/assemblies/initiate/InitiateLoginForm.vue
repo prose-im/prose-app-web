@@ -105,7 +105,7 @@ $c: ".c-initiate-login-form";
     }
 
     #{$c}__button {
-      margin-top: 28px;
+      margin-top: 26px;
     }
 
     #{$c}__options {
@@ -116,6 +116,7 @@ $c: ".c-initiate-login-form";
 
       #{$c}__options-left {
         flex: 1;
+        padding-right: 6px;
       }
 
       #{$c}__options-right {

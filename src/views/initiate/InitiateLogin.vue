@@ -54,7 +54,7 @@ $c: ".c-initiate-login";
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 80px 14px;
+    padding: 76px 14px;
     position: absolute;
     left: 0;
     right: 0;
