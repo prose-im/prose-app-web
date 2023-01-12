@@ -85,6 +85,7 @@ $size-ultra-large-padding-sides: 24px;
   #{$c}__input {
     background-color: $color-white;
     border: 1px solid rgba($color-black, 0.1);
+    color: $color-text-primary;
     outline: 2px solid transparent;
     text-align: center;
     width: 100%;
