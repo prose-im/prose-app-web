@@ -9,16 +9,16 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-initiate-login-form
+.c-start-login-form
   base-logo(
-    class="c-initiate-login-form__logo"
+    class="c-start-login-form__logo"
     size="large"
   )
 
-  form.c-initiate-login-form__inner
+  form.c-start-login-form__inner
     form-field(
       v-model="form.jid"
-      class="c-initiate-login-form__field"
+      class="c-start-login-form__field"
       type="email"
       name="jid"
       placeholder="Enter your @crisp.chat address…"
@@ -27,7 +27,7 @@
 
     form-field(
       v-model="form.password"
-      class="c-initiate-login-form__field"
+      class="c-start-login-form__field"
       type="password"
       name="password"
       placeholder="Enter your password…"
@@ -35,22 +35,22 @@
     )
 
     base-button(
-      class="c-initiate-login-form__button"
+      class="c-start-login-form__button"
       size="ultra-large"
       type="submit"
     )
       | Login to your Prose account
 
-    .c-initiate-login-form__options
-      .c-initiate-login-form__options-left
+    .c-start-login-form__options
+      .c-start-login-form__options-left
         form-checkbox(
           v-model="form.remember"
           name="remember"
         )
           | Remember me
 
-      .c-initiate-login-form__options-right
-        a.c-initiate-login-form__options-recover(
+      .c-start-login-form__options-right
+        a.c-start-login-form__options-recover(
           href="#"
         )
           | Forgot password?
@@ -62,7 +62,7 @@
 
 <script lang="ts">
 export default {
-  name: "InitiateLoginForm",
+  name: "StartLoginForm",
 
   data() {
     return {
@@ -83,9 +83,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-initiate-login-form";
+$c: ".c-start-login-form";
 
-.c-initiate-login-form {
+.c-start-login-form {
   width: 100%;
   max-width: 420px;
 

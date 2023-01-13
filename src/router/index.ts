@@ -12,7 +12,7 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 // PROJECT: VIEWS
-import InitiateLogin from "../views/initiate/InitiateLogin.vue";
+import StartLogin from "../views/start/StartLogin.vue";
 import AppBase from "../views/app/AppBase.vue";
 
 /**************************************************************************
@@ -23,9 +23,9 @@ const router = createRouter({
   history: createWebHistory(),
 
   routes: [
-    // --> INITIATE <--
+    // --> START <--
 
-    { path: "/initiate/login/", component: InitiateLogin },
+    { path: "/start/login/", component: StartLogin },
 
     // --> APP <--
 

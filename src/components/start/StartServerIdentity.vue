@@ -9,18 +9,18 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-initiate-server-identity
-  .c-initiate-server-identity__logo
+.c-start-server-identity
+  .c-start-server-identity__logo
 
-  .c-initiate-server-identity__text
-    .c-initiate-server-identity__server
-      span.c-initiate-server-identity__server-name.u-bold
+  .c-start-server-identity__text
+    .c-start-server-identity__server
+      span.c-start-server-identity__server-name.u-bold
         | Crisp
 
-      span.c-initiate-server-identity__server-domain
+      span.c-start-server-identity__server-domain
         | crisp.chat
 
-    .c-initiate-server-identity__versions
+    .c-start-server-identity__versions
       span.u-medium
         | Server
 
@@ -48,7 +48,7 @@
 
 <script lang="ts">
 export default {
-  name: "InitiateServerIdentity"
+  name: "StartServerIdentity"
 };
 </script>
 
@@ -57,12 +57,12 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-initiate-server-identity";
+$c: ".c-start-server-identity";
 
 // VARIABLES
 $logo-size: 44px;
 
-.c-initiate-server-identity {
+.c-start-server-identity {
   background: $color-white;
   border: 1px solid rgba($color-black, 0.06);
   padding: 5px;
@@ -75,7 +75,7 @@ $logo-size: 44px;
 
   #{$c}__logo {
     background-color: $color-base-grey-light;
-    background-image: url("/src/assets/images/components/initiate/InitiateServerIdentity/logo.png");
+    background-image: url("/src/assets/images/components/start/StartServerIdentity/logo.png");
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

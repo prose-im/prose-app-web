@@ -9,17 +9,17 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-initiate-login
-  initiate-server-identity(
-    class="c-initiate-login__identity"
+.c-start-login
+  start-server-identity(
+    class="c-start-login__identity"
   )
 
-  .c-initiate-login__box
-    initiate-login-form(
-      class="c-initiate-login__form"
+  .c-start-login__box
+    start-login-form(
+      class="c-start-login__form"
     )
 
-  .c-initiate-login__background
+  .c-start-login__background
 </template>
 
 <!-- **********************************************************************
@@ -28,15 +28,15 @@
 
 <script lang="ts">
 // PROJECT: ASSEMBLIES
-import InitiateLoginForm from "/src/assemblies/initiate/InitiateLoginForm.vue";
+import StartLoginForm from "/src/assemblies/start/StartLoginForm.vue";
 
 // PROJECT: COMPONENTS
-import InitiateServerIdentity from "/src/components/initiate/InitiateServerIdentity.vue";
+import StartServerIdentity from "/src/components/start/StartServerIdentity.vue";
 
 export default {
-  name: "InitiateLogin",
+  name: "StartLogin",
 
-  components: { InitiateLoginForm, InitiateServerIdentity }
+  components: { StartLoginForm, StartServerIdentity }
 };
 </script>
 
@@ -45,9 +45,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-initiate-login";
+$c: ".c-start-login";
 
-.c-initiate-login {
+.c-start-login {
   height: 100%;
   width: 100%;
   overflow: hidden;
@@ -80,7 +80,7 @@ $c: ".c-initiate-login";
   }
 
   #{$c}__background {
-    background-image: url("/src/assets/images/views/initiate/InitiateLogin/background-wave.svg");
+    background-image: url("/src/assets/images/views/start/StartLogin/background-wave.svg");
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -96,7 +96,7 @@ $c: ".c-initiate-login";
 // --> MEDIA-QUERIES <--
 
 @media (max-width: 640px) {
-  .c-initiate-login {
+  .c-start-login {
     #{$c}__identity {
       left: 50%;
       transform: translateX(-50%);
@@ -105,7 +105,7 @@ $c: ".c-initiate-login";
 }
 
 @media (max-height: 640px) {
-  .c-initiate-login {
+  .c-start-login {
     #{$c}__identity {
       display: none;
     }
