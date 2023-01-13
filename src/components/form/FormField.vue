@@ -12,7 +12,11 @@
 div(
   :class=`[
     "c-form-field",
-    "c-form-field--" + size
+    "c-form-field--" + size,
+    {
+      "c-form-field--disabled": disabled,
+      "c-form-field--loading": loading
+    }
   ]`
 )
   input.c-form-field__input(
@@ -60,6 +64,16 @@ export default {
     placeholder: {
       type: String,
       default: null
+    },
+
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+
+    loading: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -157,6 +171,26 @@ $size-ultra-large-padding-sides: 24px;
       line-height: 58px;
       padding-left: $size-ultra-large-padding-sides;
       padding-right: $size-ultra-large-padding-sides;
+    }
+  }
+
+  // --> BOOLEANS <--
+
+  &--disabled {
+    cursor: not-allowed;
+
+    &#{$c}--loading {
+      cursor: wait;
+    }
+
+    #{$c}__input {
+      background-color: rgba($color-base-grey-light, 0.6);
+      color: $color-text-secondary;
+      pointer-events: none;
+
+      &::placeholder {
+        color: $color-text-tertiary;
+      }
     }
   }
 }

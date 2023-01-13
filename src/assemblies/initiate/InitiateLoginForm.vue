@@ -71,7 +71,7 @@ export default {
       form: {
         jid: "",
         password: "",
-        remember: false
+        remember: true
       }
     };
   }

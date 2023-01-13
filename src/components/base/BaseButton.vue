@@ -9,19 +9,22 @@
      ********************************************************************** -->
 
 <template lang="pug">
-button(
-  @click="onClick"
+div(
   :class=`[
     "c-base-button",
     "c-base-button--" + size,
     "c-base-button--" + tint,
     {
-      "c-base-button--reverse": reverse
+      "c-base-button--reverse": reverse,
+      "c-base-button--disabled": disabled,
+      "c-base-button--loading": loading
     }
   ]`
-  :type="type"
 )
-  .c-base-button__inner
+  button.c-base-button__inner(
+    @click="onInnerClick"
+    :type="type"
+  )
     div(
       :class=`[
         "c-base-button__label",
@@ -84,6 +87,16 @@ export default {
     reverse: {
       type: Boolean,
       default: false
+    },
+
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -93,12 +106,12 @@ export default {
     // --> EVENT LISTENERS <--
 
     /**
-     * Triggers button is clicked
+     * Triggers when inner button is clicked
      * @public
      * @param  {object} event
      * @return {undefined}
      */
-    onClick(event) {
+    onInnerClick(event) {
       // Re-emit click event
       this.$emit("click", event);
     }
@@ -126,28 +139,25 @@ $size-mid-large-padding-sides: 34px;
 $size-ultra-large-padding-sides: 44px;
 
 .c-base-button {
-  background: transparent;
-  border: 0 none;
-  margin: 0;
-  padding: 0;
   display: inline-block;
-
-  &:active {
-    #{$c}__inner {
-      transform: translateY(1px);
-    }
-  }
 
   #{$c}__inner {
     border: 1px solid rgba($color-black, 0.5);
     text-align: center;
     user-select: none;
+    width: 100%;
+    margin: 0;
+    padding: 0;
     display: flex;
     align-items: center;
     cursor: pointer;
     border-radius: 10px;
     transition: all 100ms linear;
     transition-property: transform, box-shadow, background-color;
+
+    &:active {
+      transform: translateY(1px);
+    }
 
     #{$c}__label {
       overflow: hidden;
@@ -168,16 +178,12 @@ $size-ultra-large-padding-sides: 44px;
       #{$c}__label {
         color: $color-white;
       }
-    }
 
-    &:hover {
-      #{$c}__inner {
+      &:hover {
         background-color: lighten($color-button-dark-normal, 6%);
       }
-    }
 
-    &:active {
-      #{$c}__inner {
+      &:active {
         background-color: lighten($color-button-dark-normal, 2%);
         box-shadow: 0 1px 1px 0 rgba($color-button-dark-normal, 0.12);
       }
@@ -191,16 +197,12 @@ $size-ultra-large-padding-sides: 44px;
       #{$c}__label {
         color: $color-black;
       }
-    }
 
-    &:hover {
-      #{$c}__inner {
+      &:hover {
         background-color: darken($color-button-light-normal, 100%);
       }
-    }
 
-    &:active {
-      #{$c}__inner {
+      &:active {
         background-color: darken($color-button-light-normal, 50%);
       }
     }
@@ -274,19 +276,28 @@ $size-ultra-large-padding-sides: 44px;
         #{$c}__label {
           color: $color-black;
         }
-      }
 
-      &:hover {
-        #{$c}__inner {
+        &:hover {
           background-color: rgba($color-black, 0.14);
         }
-      }
 
-      &:active {
-        #{$c}__inner {
+        &:active {
           background-color: rgba($color-black, 0.15);
         }
       }
+    }
+  }
+
+  &--disabled {
+    cursor: not-allowed;
+
+    &#{$c}--loading {
+      cursor: wait;
+    }
+
+    #{$c}__inner {
+      pointer-events: none;
+      opacity: 0.6;
     }
   }
 }

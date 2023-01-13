@@ -9,7 +9,15 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-form-checkbox
+div(
+  :class=`[
+    "c-form-checkbox",
+    {
+      "c-form-checkbox--disabled": disabled,
+      "c-form-checkbox--loading": loading
+    }
+  ]`
+)
   input(
     @change="onInputChange"
     :name="name"
@@ -34,12 +42,22 @@ export default {
   name: "FormCheckbox",
 
   props: {
+    modelValue: {
+      type: Boolean,
+      default: false
+    },
+
     name: {
       type: String,
       default: null
     },
 
-    modelValue: {
+    disabled: {
+      type: Boolean,
+      default: false
+    },
+
+    loading: {
       type: Boolean,
       default: false
     }
@@ -177,13 +195,38 @@ $checkbox-size: 24px;
   }
 
   #{$c}__label {
-    color: $color-black;
+    color: $color-text-primary;
     font-size: 15px;
     padding-left: 10px;
     flex: 1;
 
     &:hover {
       cursor: pointer;
+    }
+  }
+
+  // --> BOOLEANS <--
+
+  &--disabled {
+    cursor: not-allowed;
+
+    &#{$c}--loading {
+      cursor: wait;
+    }
+
+    #{$c}__input,
+    #{$c}__label {
+      pointer-events: none;
+    }
+
+    #{$c}__input {
+      &:before {
+        opacity: 0.6;
+      }
+    }
+
+    #{$c}__label {
+      color: $color-text-secondary;
     }
   }
 }
