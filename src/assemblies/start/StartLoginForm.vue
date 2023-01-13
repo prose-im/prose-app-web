@@ -15,9 +15,13 @@
     size="large"
   )
 
-  form.c-start-login-form__inner
+  form.c-start-login-form__inner(
+    @submit.prevent="onSubmit"
+  )
     form-field(
       v-model="form.jid"
+      :disabled="loading"
+      :loading="loading"
       class="c-start-login-form__field"
       type="email"
       name="jid"
@@ -27,6 +31,8 @@
 
     form-field(
       v-model="form.password"
+      :disabled="loading"
+      :loading="loading"
       class="c-start-login-form__field"
       type="password"
       name="password"
@@ -35,6 +41,8 @@
     )
 
     base-button(
+      :disabled="loading"
+      :loading="loading"
       class="c-start-login-form__button"
       size="ultra-large"
       type="submit"
@@ -45,6 +53,8 @@
       .c-start-login-form__options-left
         form-checkbox(
           v-model="form.remember"
+          :disabled="loading"
+          :loading="loading"
           name="remember"
         )
           | Remember me
@@ -64,6 +74,15 @@
 export default {
   name: "StartLoginForm",
 
+  props: {
+    loading: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  emits: ["submit"],
+
   data() {
     return {
       // --> STATES <--
@@ -74,6 +93,21 @@ export default {
         remember: true
       }
     };
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    /**
+     * Triggers on form submit
+     * @public
+     * @return {undefined}
+     */
+    onSubmit() {
+      this.$emit("submit", {
+        ...this.form
+      });
+    }
   }
 };
 </script>

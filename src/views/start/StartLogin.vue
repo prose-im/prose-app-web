@@ -16,6 +16,8 @@
 
   .c-start-login__box
     start-login-form(
+      @submit="onFormSubmit"
+      :loading="isFormLoading"
       class="c-start-login__form"
     )
 
@@ -36,7 +38,40 @@ import StartServerIdentity from "/src/components/start/StartServerIdentity.vue";
 export default {
   name: "StartLogin",
 
-  components: { StartLoginForm, StartServerIdentity }
+  components: { StartLoginForm, StartServerIdentity },
+
+  data() {
+    return {
+      // --> STATES <--
+
+      isFormLoading: false
+    };
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    /**
+     * Triggers on form submit
+     * @public
+     * @param  {object} form
+     * @return {undefined}
+     */
+    onFormSubmit(form) {
+      if (this.isFormLoading !== true) {
+        // Mark as loading
+        this.isFormLoading = true;
+
+        // TODO: handle form
+
+        // Mark as not loading anymore
+        // TODO: mocked
+        setTimeout(() => {
+          this.isFormLoading = false;
+        }, 500);
+      }
+    }
+  }
 };
 </script>
 
