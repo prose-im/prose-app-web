@@ -143,6 +143,7 @@ $size-ultra-large-padding-sides: 44px;
 
   #{$c}__inner {
     border: 1px solid rgba($color-black, 0.5);
+    outline: 2px solid transparent;
     text-align: center;
     user-select: none;
     width: 100%;
@@ -157,6 +158,11 @@ $size-ultra-large-padding-sides: 44px;
 
     &:active {
       transform: translateY(1px);
+    }
+
+    &:focus-visible {
+      outline-color: rgba($color-base-purple-normal, 0.3);
+      outline-offset: 1px;
     }
 
     #{$c}__label {

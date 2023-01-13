@@ -129,8 +129,7 @@ $c: ".c-initiate-login-form";
         color: $color-text-primary;
         font-size: 15px;
 
-        &:hover,
-        &:focus-visible {
+        &:hover {
           text-decoration: underline;
         }
       }

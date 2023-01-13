@@ -126,6 +126,7 @@ $checkbox-size: 24px;
       content: "";
       background-color: $color-white;
       border: 1px solid $color-border-primary;
+      outline: 2px solid transparent;
       position: absolute;
       top: 0;
       bottom: 0;
@@ -148,8 +149,7 @@ $checkbox-size: 24px;
       position: relative;
     }
 
-    &:hover,
-    &:focus-visible {
+    &:hover {
       &:checked {
         &:before {
           border-color: darken($color-base-purple-normal, 5%);
@@ -177,6 +177,13 @@ $checkbox-size: 24px;
         &:before {
           border-color: darken($color-base-purple-normal, 8%);
         }
+      }
+    }
+
+    &:focus-visible {
+      &:before {
+        outline-color: rgba($color-base-purple-normal, 0.3);
+        outline-offset: 1px;
       }
     }
 
