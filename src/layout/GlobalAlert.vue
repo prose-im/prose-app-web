@@ -18,7 +18,7 @@ div(
   span.c-global-alert__badge
 
   .c-global-alert__text
-    p.c-global-alert__text-title
+    p.c-global-alert__text-title.u-bold
       | Account credentials are invalid
 
     p.c-global-alert__text-description
@@ -58,11 +58,15 @@ $c: ".c-global-alert";
 $badge-size: 54px;
 $badge-icon-size: 24px;
 
+$close-size: 24px;
+$close-icon-size: 12px;
+
 .c-global-alert {
   background: rgba($color-white, 0.95);
   border: 1px solid rgba($color-black, 0.06);
   padding: 10px;
   padding-inline-end: 80px;
+  backdrop-filter: blur(9px);
   display: flex;
   align-items: center;
   position: absolute;
@@ -86,7 +90,10 @@ $badge-icon-size: 24px;
 
     &:after {
       content: "";
-      background-color: $color-base-red-normal;
+      background-image: url("/src/assets/images/layout/GlobalAlert/badge-icon-error.svg");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
       width: $badge-icon-size;
       height: $badge-icon-size;
       flex: 0 0 auto;
@@ -97,16 +104,53 @@ $badge-icon-size: 24px;
     flex: 1;
 
     #{$c}__text-title {
-      /* TODO */
+      color: $color-base-red-normal;
+      font-size: 17px;
     }
 
     #{$c}__text-description {
-      /* TODO */
+      color: $color-text-primary;
+      font-size: 15px;
+      margin-top: 10px;
     }
   }
 
   #{$c}__close {
+    background-color: transparent;
+    width: $close-size;
+    height: $close-size;
     flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    inset-inline-end: 15px;
+    border-radius: 5px;
+
+    &:hover {
+      background-color: $color-base-grey-light;
+
+      &:after {
+        opacity: 0.75;
+      }
+    }
+
+    &:active {
+      background-color: darken($color-base-grey-light, 2%);
+      transition: background-color 100ms linear;
+    }
+
+    &:after {
+      content: "";
+      background-image: url("/src/assets/images/layout/GlobalAlert/close-icon.svg");
+      background-position: center;
+      background-size: cover;
+      background-repeat: no-repeat;
+      width: $close-icon-size;
+      height: $close-icon-size;
+      opacity: 0.4;
+      flex: 0 0 auto;
+    }
   }
 
   // --> LEVELS <--
