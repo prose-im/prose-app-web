@@ -78,7 +78,7 @@ $close-icon-size: 12px;
   border-radius: 16px;
 
   #{$c}__badge {
-    background-color: rgba($color-base-red-normal, 0.15);
+    background-color: rgba($color-base-grey-dark, 0.15);
     width: $badge-size;
     height: $badge-size;
     margin-inline-end: 24px;
@@ -90,10 +90,11 @@ $close-icon-size: 12px;
 
     &:after {
       content: "";
-      background-image: url("/src/assets/images/layout/GlobalAlert/badge-icon-error.svg");
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
+      background-color: $color-base-grey-dark;
+      mask-image: url("/src/assets/images/layout/GlobalAlert/badge-icon.svg");
+      mask-position: center;
+      mask-size: cover;
+      mask-repeat: no-repeat;
       width: $badge-icon-size;
       height: $badge-icon-size;
       flex: 0 0 auto;
@@ -104,7 +105,7 @@ $close-icon-size: 12px;
     flex: 1;
 
     #{$c}__text-title {
-      color: $color-base-red-normal;
+      color: $color-text-primary;
       font-size: 17px;
     }
 
@@ -156,19 +157,67 @@ $close-icon-size: 12px;
   // --> LEVELS <--
 
   &--error {
-    /* TODO */
+    #{$c}__badge {
+      background-color: rgba($color-base-red-normal, 0.15);
+
+      &:after {
+        background-color: $color-base-red-normal;
+      }
+    }
+
+    #{$c}__text {
+      #{$c}__text-title {
+        color: $color-base-red-normal;
+      }
+    }
   }
 
   &--warning {
-    /* TODO */
+    #{$c}__badge {
+      background-color: rgba($color-base-orange-normal, 0.15);
+
+      &:after {
+        background-color: $color-base-orange-normal;
+      }
+    }
+
+    #{$c}__text {
+      #{$c}__text-title {
+        color: $color-base-orange-normal;
+      }
+    }
   }
 
   &--info {
-    /* TODO */
+    #{$c}__badge {
+      background-color: rgba($color-base-blue-normal, 0.15);
+
+      &:after {
+        background-color: $color-base-blue-normal;
+      }
+    }
+
+    #{$c}__text {
+      #{$c}__text-title {
+        color: $color-base-blue-normal;
+      }
+    }
   }
 
   &--success {
-    /* TODO */
+    #{$c}__badge {
+      background-color: rgba($color-base-green-normal, 0.15);
+
+      &:after {
+        background-color: $color-base-green-normal;
+      }
+    }
+
+    #{$c}__text {
+      #{$c}__text-title {
+        color: $color-base-green-normal;
+      }
+    }
   }
 }
 </style>
