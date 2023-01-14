@@ -98,12 +98,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    /**
-     * Triggers on form submit
-     * @public
-     * @return {undefined}
-     */
-    onSubmit() {
+    onSubmit(): void {
       this.$emit("submit", {
         ...this.form
       });
@@ -124,11 +119,12 @@ $c: ".c-start-login-form";
   max-width: 420px;
 
   #{$c}__logo {
-    margin: 0 auto;
+    margin-block: 0;
+    margin-inline: auto;
   }
 
   #{$c}__inner {
-    margin-top: 48px;
+    margin-block-start: 48px;
 
     #{$c}__field,
     #{$c}__button {
@@ -137,22 +133,23 @@ $c: ".c-start-login-form";
     }
 
     #{$c}__field {
-      margin-bottom: 10px;
+      margin-block-end: 10px;
     }
 
     #{$c}__button {
-      margin-top: 26px;
+      margin-block-start: 26px;
     }
 
     #{$c}__options {
-      margin-top: 34px;
-      padding: 0 12px;
+      margin-block-start: 34px;
+      padding-block: 0;
+      padding-inline: 12px;
       display: flex;
       align-items: center;
 
       #{$c}__options-left {
         flex: 1;
-        padding-right: 6px;
+        padding-inline-end: 6px;
       }
 
       #{$c}__options-right {

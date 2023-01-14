@@ -10,6 +10,7 @@
 
 import vue from "@vitejs/plugin-vue";
 import vitePugPlugin from "vite-plugin-pug-transformer";
+import viteStylelintPlugin from "vite-plugin-stylelint";
 
 /**************************************************************************
  * EXPORTS
@@ -44,7 +45,7 @@ export default {
     chunkSizeWarningLimit: 1024
   },
 
-  plugins: [vue(), vitePugPlugin({})],
+  plugins: [vue(), vitePugPlugin({}), viteStylelintPlugin({})],
 
   css: {
     devSourcemap: false,

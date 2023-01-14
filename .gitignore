@@ -6,6 +6,7 @@ node_modules/
 # Caches
 .cache
 .eslintcache
+.stylelintcache
 
 # Builds
 dist

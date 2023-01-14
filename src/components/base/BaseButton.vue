@@ -105,13 +105,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    /**
-     * Triggers when inner button is clicked
-     * @public
-     * @param  {object} event
-     * @return {undefined}
-     */
-    onInnerClick(event) {
+    onInnerClick(event: object): void {
       // Re-emit click event
       this.$emit("click", event);
     }
@@ -220,8 +214,8 @@ $size-ultra-large-padding-sides: 44px;
     #{$c}__inner {
       font-size: 10px;
       line-height: 25px;
-      padding-left: $size-medium-padding-sides;
-      padding-right: $size-medium-padding-sides;
+      padding-inline-start: $size-medium-padding-sides;
+      padding-inline-end: $size-medium-padding-sides;
     }
   }
 
@@ -229,8 +223,8 @@ $size-ultra-large-padding-sides: 44px;
     #{$c}__inner {
       font-size: 12px;
       line-height: 32px;
-      padding-left: $size-mid-medium-padding-sides;
-      padding-right: $size-mid-medium-padding-sides;
+      padding-inline-start: $size-mid-medium-padding-sides;
+      padding-inline-end: $size-mid-medium-padding-sides;
     }
   }
 
@@ -238,8 +232,8 @@ $size-ultra-large-padding-sides: 44px;
     #{$c}__inner {
       font-size: 14px;
       line-height: 42px;
-      padding-left: $size-large-padding-sides;
-      padding-right: $size-large-padding-sides;
+      padding-inline-start: $size-large-padding-sides;
+      padding-inline-end: $size-large-padding-sides;
     }
   }
 
@@ -247,8 +241,8 @@ $size-ultra-large-padding-sides: 44px;
     #{$c}__inner {
       font-size: 15px;
       line-height: 48px;
-      padding-left: $size-mid-large-padding-sides;
-      padding-right: $size-mid-large-padding-sides;
+      padding-inline-start: $size-mid-large-padding-sides;
+      padding-inline-end: $size-mid-large-padding-sides;
     }
   }
 
@@ -256,8 +250,8 @@ $size-ultra-large-padding-sides: 44px;
     #{$c}__inner {
       font-size: 16px;
       line-height: 58px;
-      padding-left: $size-ultra-large-padding-sides;
-      padding-right: $size-ultra-large-padding-sides;
+      padding-inline-start: $size-ultra-large-padding-sides;
+      padding-inline-end: $size-ultra-large-padding-sides;
     }
   }
 

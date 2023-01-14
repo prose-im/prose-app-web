@@ -19,7 +19,8 @@ import App from "./App.vue";
 import router from "./router";
 
 // PROJECT: BOOTSTRAP
-import Components from "./bootstrap/components";
+import BootstrapComponents from "./bootstrap/components";
+import BootstrapPlugins from "./bootstrap/plugins";
 
 /**************************************************************************
  * INSTANCES
@@ -33,7 +34,8 @@ app.use(router);
  * BOOTSTRAP
  * ************************************************************************* */
 
-Components.init(app);
+BootstrapComponents.init(app);
+BootstrapPlugins.init(app);
 
 /**************************************************************************
  * INITIALIZE

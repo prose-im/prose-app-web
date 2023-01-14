@@ -35,20 +35,27 @@
     "lodash.upperfirst": "4.3.x",
     "strophe.js": "1.6.x",
     "vue": "3.2.x",
-    "vue-router": "4.1.x"
+    "vue-router": "4.1.x",
+    "vue-logger-plugin": "2.2.x"
   },
   "devDependencies": {
+    "@types/node": "18.11.x",
+    "@types/strophe.js": "1.4.x",
+    "@types/lodash.camelcase": "4.3.x",
+    "@types/lodash.upperfirst": "4.3.x",
     "@vitejs/plugin-vue": "4.0.x",
     "@typescript-eslint/parser": "5.48.x",
     "@typescript-eslint/eslint-plugin": "5.48.x",
     "typescript": "4.9.x",
     "sass": "1.57.x",
     "vite": "4.0.x",
+    "vite-plugin-stylelint": "4.1.x",
     "vite-plugin-pug-transformer": "1.0.x",
     "vue-tsc": "1.0.x",
     "prettier": "2.8.x",
     "eslint": "8.31.x",
     "eslint-plugin-vue": "9.8.x",
-    "eslint-config-prettier": "8.6.x"
+    "eslint-config-prettier": "8.6.x",
+    "stylelint": "14.16.x"
   }
 }

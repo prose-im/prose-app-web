@@ -22,24 +22,11 @@
 
     .c-start-server-identity__versions
       span.u-medium
-        | Server
+        | App
 
       base-space
 
-      | v0.12.1
-
-      base-space
-
-      | +
-
-      base-space.u-medium
-
-      span.u-medium
-        | Pod
-
-      base-space
-
-      | v0.1.3
+      | v{{ version }}
 </template>
 
 <!-- **********************************************************************
@@ -47,8 +34,19 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PACKAGE
+import * as projectPackage from "/package.json";
+
 export default {
-  name: "StartServerIdentity"
+  name: "StartServerIdentity",
+
+  data() {
+    return {
+      // --> STATE <--
+
+      version: projectPackage.version || "0.0.0"
+    };
+  }
 };
 </script>
 
@@ -66,7 +64,7 @@ $logo-size: 44px;
   background: $color-white;
   border: 1px solid rgba($color-black, 0.06);
   padding: 5px;
-  padding-right: 30px;
+  padding-inline-end: 30px;
   display: flex;
   align-items: center;
   border-radius: 30px;
@@ -81,7 +79,7 @@ $logo-size: 44px;
     background-repeat: no-repeat;
     width: $logo-size;
     height: $logo-size;
-    margin-right: 12px;
+    margin-inline-end: 12px;
     flex: 0 0 auto;
     border-radius: 100%;
   }
@@ -91,7 +89,7 @@ $logo-size: 44px;
     flex: 1;
 
     #{$c}__server {
-      margin-top: -2px;
+      margin-block-start: -2px;
 
       #{$c}__server-name {
         font-size: 15px;
@@ -107,7 +105,8 @@ $logo-size: 44px;
           vertical-align: middle;
           width: 1px;
           height: 11px;
-          margin: -1px 8px 0;
+          margin-block: -1px 0;
+          margin-inline: 8px;
           display: inline-block;
         }
       }
@@ -115,7 +114,7 @@ $logo-size: 44px;
 
     #{$c}__versions {
       font-size: 12.5px;
-      margin-top: 7px;
+      margin-block-start: 7px;
     }
   }
 }

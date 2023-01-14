@@ -10,8 +10,25 @@
 
 <template lang="pug">
 .c-app
+  global-alert
+
   router-view
 </template>
+
+<!-- **********************************************************************
+     SCRIPT
+     ********************************************************************** -->
+
+<script lang="ts">
+// PROJECT: LAYOUT
+import GlobalAlert from "/src/layout/GlobalAlert.vue";
+
+export default {
+  name: "App",
+
+  components: { GlobalAlert }
+};
+</script>
 
 <!-- **********************************************************************
      STYLE
@@ -28,9 +45,6 @@ $c: ".c-app";
   overflow: hidden;
   display: flex;
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  inset: 0;
 }
 </style>

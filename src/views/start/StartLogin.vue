@@ -35,6 +35,9 @@ import StartLoginForm from "/src/assemblies/start/StartLoginForm.vue";
 // PROJECT: COMPONENTS
 import StartServerIdentity from "/src/components/start/StartServerIdentity.vue";
 
+// PROJECT: BROKER
+import BrokerClient from "/src/broker/client";
+
 export default {
   name: "StartLogin",
 
@@ -51,24 +54,30 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    /**
-     * Triggers on form submit
-     * @public
-     * @param  {object} form
-     * @return {undefined}
-     */
-    onFormSubmit(form) {
+    async onFormSubmit(form: object): void {
       if (this.isFormLoading !== true) {
         // Mark as loading
         this.isFormLoading = true;
 
-        // TODO: handle form
+        // Attempt to authenticate
+        try {
+          await BrokerClient.authenticate(
+            form.jid,
+            form.password,
+            form.remember
+          );
 
-        // Mark as not loading anymore
-        // TODO: mocked
-        setTimeout(() => {
+          // Mark as not loading anymore
           this.isFormLoading = false;
-        }, 500);
+
+          // TODO: success banner
+        } catch (error) {
+          // TODO: error banner
+          alert("cannot authenticate! " + error);
+
+          // Mark as not loading anymore
+          this.isFormLoading = false;
+        }
       }
     }
   }
@@ -91,8 +100,8 @@ $c: ".c-start-login";
 
   #{$c}__identity {
     position: absolute;
-    top: 30px;
-    left: 46px;
+    inset-block-start: 30px;
+    inset-inline-start: 46px;
     z-index: 2;
   }
 
@@ -104,7 +113,8 @@ $c: ".c-start-login";
     align-items: center;
     justify-content: center;
     width: 100%;
-    padding: 76px 14px;
+    padding-block: 76px;
+    padding-inline: 14px;
     overflow: auto;
     position: relative;
     z-index: 1;
@@ -120,10 +130,7 @@ $c: ".c-start-login";
     background-size: cover;
     background-repeat: no-repeat;
     position: absolute;
-    top: 0;
-    bottom: 0;
-    right: 0;
-    left: 0;
+    inset: 0;
     z-index: 0;
   }
 }

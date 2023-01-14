@@ -20,9 +20,12 @@ div(
   ]`
 )
   input.c-form-field__input(
+    @input="onFieldInput"
     :type="type"
     :name="name"
+    :value="value"
     :placeholder="placeholder"
+    ref="field"
   )
 </template>
 
@@ -35,6 +38,11 @@ export default {
   name: "FormField",
 
   props: {
+    modelValue: {
+      type: [String, Number],
+      default: null
+    },
+
     type: {
       type: String,
       default: "text",
@@ -74,6 +82,42 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    }
+  },
+
+  emits: ["update:modelValue"],
+
+  data() {
+    return {
+      // --> STATE <--
+
+      value: ""
+    };
+  },
+
+  watch: {
+    modelValue: {
+      immediate: true,
+
+      handler(value) {
+        this.value = value;
+      }
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onFieldInput(): void {
+      let inputValue = this.$refs.field.value || "";
+
+      // Convert raw input value to number?
+      if (inputValue && this.type === "number") {
+        inputValue = Number(inputValue);
+      }
+
+      // Update model value
+      this.$emit("update:modelValue", inputValue);
     }
   }
 };
@@ -133,8 +177,8 @@ $size-ultra-large-padding-sides: 24px;
     #{$c}__input {
       font-size: 10px;
       line-height: 25px;
-      padding-left: $size-medium-padding-sides;
-      padding-right: $size-medium-padding-sides;
+      padding-inline-start: $size-medium-padding-sides;
+      padding-inline-end: $size-medium-padding-sides;
     }
   }
 
@@ -142,8 +186,8 @@ $size-ultra-large-padding-sides: 24px;
     #{$c}__input {
       font-size: 12px;
       line-height: 32px;
-      padding-left: $size-mid-medium-padding-sides;
-      padding-right: $size-mid-medium-padding-sides;
+      padding-inline-start: $size-mid-medium-padding-sides;
+      padding-inline-end: $size-mid-medium-padding-sides;
     }
   }
 
@@ -151,8 +195,8 @@ $size-ultra-large-padding-sides: 24px;
     #{$c}__input {
       font-size: 14px;
       line-height: 42px;
-      padding-left: $size-large-padding-sides;
-      padding-right: $size-large-padding-sides;
+      padding-inline-start: $size-large-padding-sides;
+      padding-inline-end: $size-large-padding-sides;
     }
   }
 
@@ -160,8 +204,8 @@ $size-ultra-large-padding-sides: 24px;
     #{$c}__input {
       font-size: 15px;
       line-height: 48px;
-      padding-left: $size-mid-large-padding-sides;
-      padding-right: $size-mid-large-padding-sides;
+      padding-inline-start: $size-mid-large-padding-sides;
+      padding-inline-end: $size-mid-large-padding-sides;
     }
   }
 
@@ -169,8 +213,8 @@ $size-ultra-large-padding-sides: 24px;
     #{$c}__input {
       font-size: 16px;
       line-height: 58px;
-      padding-left: $size-ultra-large-padding-sides;
-      padding-right: $size-ultra-large-padding-sides;
+      padding-inline-start: $size-ultra-large-padding-sides;
+      padding-inline-end: $size-ultra-large-padding-sides;
     }
   }
 

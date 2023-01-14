@@ -16,26 +16,15 @@ import camelCase from "lodash.camelcase";
  * COMPONENTS
  * ************************************************************************* */
 
-class Components {
-  /**
-   * Initializer
-   * @param  {object} app
-   * @return {undefined}
-   */
-  init(app) {
+class BootstrapComponents {
+  init(app: object): void {
     this.registerGlobally(
       app,
       import.meta.globEager("/src/components/(base|form)/*.vue")
     );
   }
 
-  /**
-   * Registers component globally
-   * @param  {object}   app
-   * @param  {function} componentFiles
-   * @return {undefined}
-   */
-  registerGlobally(app, componentFiles) {
+  registerGlobally(app: object, componentFiles: object): void {
     Object.entries(componentFiles).forEach(
       ([componentPath, componentModule]) => {
         // Get PascalCase name of component
@@ -59,4 +48,4 @@ class Components {
  * EXPORTS
  * ************************************************************************* */
 
-export default new Components();
+export default new BootstrapComponents();

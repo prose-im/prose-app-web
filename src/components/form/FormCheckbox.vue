@@ -68,23 +68,12 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    /**
-     * Triggers on input change
-     * @public
-     * @param  {object} event
-     * @return {undefined}
-     */
-    onInputChange(event) {
+    onInputChange(event: object): void {
       // Update model value
       this.$emit("update:modelValue", event.target.checked);
     },
 
-    /**
-     * Triggers on label click
-     * @public
-     * @return {undefined}
-     */
-    onLabelClick() {
+    onLabelClick(): void {
       // Toggle model value
       this.$emit("update:modelValue", !this.modelValue);
     }
@@ -128,10 +117,7 @@ $checkbox-size: 24px;
       border: 1px solid $color-border-primary;
       outline: 2px solid transparent;
       position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
+      inset: 0;
       box-sizing: border-box;
       border-radius: 6px;
       transition: border linear 150ms;
@@ -204,7 +190,7 @@ $checkbox-size: 24px;
   #{$c}__label {
     color: $color-text-primary;
     font-size: 15px;
-    padding-left: 10px;
+    padding-inline-start: 10px;
     flex: 1;
 
     &:hover {
