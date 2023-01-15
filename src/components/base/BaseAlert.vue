@@ -252,9 +252,6 @@ $close-icon-size: 12px;
     border-radius: 12px;
 
     &:after {
-      @include mask-image(
-        "/src/assets/images/components/base/BaseAlert/badge-icon.svg"
-      );
       @include mask-position(center);
       @include mask-size(cover);
       @include mask-repeat(no-repeat);
@@ -322,6 +319,17 @@ $close-icon-size: 12px;
 
   // --> LEVELS <--
 
+  &--error,
+  &--warning {
+    #{$c}__badge {
+      &:after {
+        @include mask-image(
+          "/src/assets/images/components/base/BaseAlert/badge-icon-exclamation.svg"
+        );
+      }
+    }
+  }
+
   &--error {
     #{$c}__badge {
       background-color: rgba($color-base-red-normal, 0.15);
@@ -359,6 +367,10 @@ $close-icon-size: 12px;
       background-color: rgba($color-base-blue-normal, 0.15);
 
       &:after {
+        @include mask-image(
+          "/src/assets/images/components/base/BaseAlert/badge-icon-information.svg"
+        );
+
         background-color: $color-base-blue-normal;
       }
     }
@@ -375,6 +387,10 @@ $close-icon-size: 12px;
       background-color: rgba($color-base-green-normal, 0.15);
 
       &:after {
+        @include mask-image(
+          "/src/assets/images/components/base/BaseAlert/badge-icon-checkmark.svg"
+        );
+
         background-color: $color-base-green-normal;
       }
     }
