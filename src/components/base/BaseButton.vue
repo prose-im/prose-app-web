@@ -50,7 +50,7 @@ export default {
       type: String,
       default: "button",
 
-      validator(x) {
+      validator(x: string) {
         return ["button", "submit"].includes(x);
       }
     },
@@ -59,7 +59,7 @@ export default {
       type: String,
       default: "dark",
 
-      validator(x) {
+      validator(x: string) {
         return ["light", "dark"].includes(x);
       }
     },
@@ -68,7 +68,7 @@ export default {
       type: String,
       default: "large",
 
-      validator(x) {
+      validator(x: string) {
         return [
           "medium",
           "mid-medium",

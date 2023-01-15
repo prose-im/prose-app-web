@@ -31,7 +31,7 @@ export default {
       type: String,
       default: "medium",
 
-      validator(x) {
+      validator(x: string) {
         return ["small", "medium", "large"].includes(x);
       }
     },
@@ -40,7 +40,7 @@ export default {
       type: String,
       default: "normal",
 
-      validator(x) {
+      validator(x: string) {
         return ["normal", "black", "white"].includes(x);
       }
     }

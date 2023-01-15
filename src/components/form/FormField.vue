@@ -53,7 +53,7 @@ export default {
       type: String,
       default: "large",
 
-      validator(x) {
+      validator(x: string) {
         return [
           "medium",
           "mid-medium",
