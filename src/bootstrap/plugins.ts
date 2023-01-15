@@ -12,7 +12,7 @@
 import { App } from "vue";
 
 // PROJECT: UTILITIES
-import logger from "../utilities/logger";
+import logger from "@/utilities/logger";
 
 /**************************************************************************
  * COMPONENTS

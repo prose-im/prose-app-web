@@ -59,6 +59,10 @@ export default {
     chunkSizeWarningLimit: 1024
   },
 
+  resolve: {
+    alias: [{ find: "@/", replacement: path.join(__dirname, "src/") }]
+  },
+
   plugins: [
     vue(),
     vitePugPlugin({}),
@@ -67,7 +71,7 @@ export default {
       targets: [
         {
           src: path.join(PROSE_CORE_VIEWS_PATH, "dist", "*"),
-          dest: "/includes/views"
+          dest: "includes/views"
         }
       ]
     })
@@ -79,8 +83,8 @@ export default {
     preprocessorOptions: {
       scss: {
         additionalData: `
-          @import "/src/assets/stylesheets/variables/all.scss";
-          @import "/src/assets/stylesheets/tools/all.scss";
+          @import "@/assets/stylesheets/variables/all.scss";
+          @import "@/assets/stylesheets/tools/all.scss";
         `
       }
     }

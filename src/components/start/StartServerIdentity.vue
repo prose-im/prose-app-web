@@ -73,7 +73,7 @@ $logo-size: 44px;
 
   #{$c}__logo {
     background-color: $color-base-grey-light;
-    background-image: url("/src/assets/images/components/start/StartServerIdentity/logo.png");
+    background-image: url("@/assets/images/components/start/StartServerIdentity/logo.png");
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

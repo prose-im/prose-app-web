@@ -30,14 +30,14 @@
 
 <script lang="ts">
 // PROJECT: ASSEMBLIES
-import StartLoginForm from "/src/assemblies/start/StartLoginForm.vue";
+import StartLoginForm from "@/assemblies/start/StartLoginForm.vue";
 
 // PROJECT: COMPONENTS
-import BaseAlert from "/src/components/base/BaseAlert.vue";
-import StartServerIdentity from "/src/components/start/StartServerIdentity.vue";
+import BaseAlert from "@/components/base/BaseAlert.vue";
+import StartServerIdentity from "@/components/start/StartServerIdentity.vue";
 
 // PROJECT: BROKER
-import BrokerClient from "/src/broker/client";
+import BrokerClient from "@/broker/client";
 
 // CONSTANTS
 const REDIRECT_APP_HOLD_TIME = 2000; // 2 second
@@ -137,7 +137,7 @@ $c: ".v-start-login";
   }
 
   #{$c}__background {
-    background-image: url("/src/assets/images/views/start/StartLogin/background-wave.svg");
+    background-image: url("@/assets/images/views/start/StartLogin/background-wave.svg");
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

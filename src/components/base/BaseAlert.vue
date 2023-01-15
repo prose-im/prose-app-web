@@ -306,7 +306,7 @@ $close-icon-size: 12px;
 
     &:after {
       content: "";
-      background-image: url("/src/assets/images/components/base/BaseAlert/close-icon.svg");
+      background-image: url("@/assets/images/components/base/BaseAlert/close-icon.svg");
       background-position: center;
       background-size: cover;
       background-repeat: no-repeat;
@@ -324,7 +324,7 @@ $close-icon-size: 12px;
     #{$c}__badge {
       &:after {
         @include mask-image(
-          "/src/assets/images/components/base/BaseAlert/badge-icon-exclamation.svg"
+          "@/assets/images/components/base/BaseAlert/badge-icon-exclamation.svg"
         );
       }
     }
@@ -368,7 +368,7 @@ $close-icon-size: 12px;
 
       &:after {
         @include mask-image(
-          "/src/assets/images/components/base/BaseAlert/badge-icon-information.svg"
+          "@/assets/images/components/base/BaseAlert/badge-icon-information.svg"
         );
 
         background-color: $color-base-blue-normal;
@@ -388,7 +388,7 @@ $close-icon-size: 12px;
 
       &:after {
         @include mask-image(
-          "/src/assets/images/components/base/BaseAlert/badge-icon-checkmark.svg"
+          "@/assets/images/components/base/BaseAlert/badge-icon-checkmark.svg"
         );
 
         background-color: $color-base-green-normal;

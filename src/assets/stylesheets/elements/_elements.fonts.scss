@@ -14,19 +14,19 @@
   font-weight: $font-weight-regular;
   font-style: normal;
   font-family: $font-family-default;
-  src: url("/src/assets/fonts/outfit/outfit_regular.woff2") format("woff2");
+  src: url("@/assets/fonts/outfit/outfit_regular.woff2") format("woff2");
 }
 
 @font-face {
   font-weight: $font-weight-medium;
   font-style: normal;
   font-family: $font-family-default;
-  src: url("/src/assets/fonts/outfit/outfit_medium.woff2") format("woff2");
+  src: url("@/assets/fonts/outfit/outfit_medium.woff2") format("woff2");
 }
 
 @font-face {
   font-weight: $font-weight-bolder;
   font-style: normal;
   font-family: $font-family-default;
-  src: url("/src/assets/fonts/outfit/outfit_semibold.woff2") format("woff2");
+  src: url("@/assets/fonts/outfit/outfit_semibold.woff2") format("woff2");
 }

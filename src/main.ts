@@ -15,12 +15,12 @@ import { createApp } from "vue";
 import "./assets/stylesheets/all.scss";
 
 // PROJECT: MAIN
-import App from "./App.vue";
-import router from "./router";
+import App from "@/App.vue";
+import router from "@/router";
 
 // PROJECT: BOOTSTRAP
-import BootstrapComponents from "./bootstrap/components";
-import BootstrapPlugins from "./bootstrap/plugins";
+import BootstrapComponents from "@/bootstrap/components";
+import BootstrapPlugins from "@/bootstrap/plugins";
 
 /**************************************************************************
  * INSTANCES

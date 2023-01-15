@@ -21,8 +21,9 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "npm run clean && vite build",
     "preview": "vite preview",
+    "clean": "rm -rf dist/",
     "fix": "prettier --write .",
     "lint:js": "eslint --ext \".js,.ts,.vue\" --ignore-path .gitignore .",
     "lint:prettier": "prettier --check .",
@@ -52,7 +53,6 @@
     "vite": "4.0.x",
     "vite-plugin-pug-transformer": "1.0.x",
     "vite-plugin-static-copy": "0.13.x",
-    "vue-tsc": "1.0.x",
     "prettier": "2.8.x",
     "eslint": "8.31.x",
     "eslint-plugin-vue": "9.8.x",

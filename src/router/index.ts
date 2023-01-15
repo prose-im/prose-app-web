@@ -12,9 +12,9 @@
 import { createWebHistory, createRouter } from "vue-router";
 
 // PROJECT: VIEWS
-import StartLogin from "../views/start/StartLogin.vue";
-import AppBase from "../views/app/AppBase.vue";
-import AppInboxBase from "../views/app/inbox/AppInboxBase.vue";
+import StartLogin from "@/views/start/StartLogin.vue";
+import AppBase from "@/views/app/AppBase.vue";
+import AppInboxBase from "@/views/app/inbox/AppInboxBase.vue";
 
 /**************************************************************************
  * ROUTER

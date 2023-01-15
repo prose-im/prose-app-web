@@ -12,7 +12,7 @@
 import { Strophe } from "strophe.js";
 
 // PROJECT: UTILITIES
-import logger from "../utilities/logger";
+import logger from "@/utilities/logger";
 
 /**************************************************************************
  * CONSTANTS
