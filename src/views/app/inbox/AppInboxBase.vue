@@ -9,11 +9,15 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.v-app-base
-  .v-app-base__sidebar
+.v-app-inbox-base
+  .v-app-inbox-base__content
+    .v-app-inbox-base__topbar
 
-  .v-app-base__content
-    router-view
+    .v-app-inbox-base__timeline
+
+    .v-app-inbox-base__form
+
+  .v-app-inbox-base__userinfo
 </template>
 
 <!-- **********************************************************************
@@ -22,7 +26,7 @@
 
 <script lang="ts">
 export default {
-  name: "AppBase"
+  name: "AppInboxBase"
 };
 </script>
 
@@ -31,21 +35,39 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".v-app-base";
+$c: ".v-app-inbox-base";
 
-.v-app-base {
+.v-app-inbox-base {
   height: 100%;
   width: 100%;
   display: flex;
 
-  #{$c}__sidebar {
-    border-right: 1px solid $color-base-grey-normal;
-    width: 360px;
+  #{$c}__content {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+  }
+
+  #{$c}__userinfo {
+    border-left: 1px solid $color-base-grey-normal;
+    width: 280px;
     flex: 0 0 auto;
   }
 
-  #{$c}__content {
+  #{$c}__topbar {
+    border-bottom: 1px solid $color-base-grey-normal;
+    height: 60px;
+    flex: 0 0 auto;
+  }
+
+  #{$c}__timeline {
     flex: 1;
+  }
+
+  #{$c}__form {
+    border-top: 1px solid $color-base-grey-normal;
+    height: 90px;
+    flex: 0 0 auto;
   }
 }
 </style>

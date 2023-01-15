@@ -9,20 +9,20 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-start-login-form
+.a-start-login-form
   base-logo(
-    class="c-start-login-form__logo"
+    class="a-start-login-form__logo"
     size="large"
   )
 
-  form.c-start-login-form__inner(
+  form.a-start-login-form__inner(
     @submit.prevent="onSubmit"
   )
     form-field(
       v-model="form.jid"
       :disabled="loading"
       :loading="loading"
-      class="c-start-login-form__field"
+      class="a-start-login-form__field"
       type="email"
       name="jid"
       placeholder="Enter your @crisp.chat address…"
@@ -33,7 +33,7 @@
       v-model="form.password"
       :disabled="loading"
       :loading="loading"
-      class="c-start-login-form__field"
+      class="a-start-login-form__field"
       type="password"
       name="password"
       placeholder="Enter your password…"
@@ -43,14 +43,14 @@
     base-button(
       :disabled="loading"
       :loading="loading"
-      class="c-start-login-form__button"
+      class="a-start-login-form__button"
       size="ultra-large"
       type="submit"
     )
       | Login to your Prose account
 
-    .c-start-login-form__options
-      .c-start-login-form__options-left
+    .a-start-login-form__options
+      .a-start-login-form__options-left
         form-checkbox(
           v-model="form.remember"
           :disabled="loading"
@@ -59,8 +59,8 @@
         )
           | Remember me
 
-      .c-start-login-form__options-right
-        a.c-start-login-form__options-recover(
+      .a-start-login-form__options-right
+        a.a-start-login-form__options-recover(
           href="#"
         )
           | Forgot password?
@@ -112,9 +112,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-start-login-form";
+$c: ".a-start-login-form";
 
-.c-start-login-form {
+.a-start-login-form {
   width: 100%;
   max-width: 420px;
 

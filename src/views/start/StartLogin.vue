@@ -9,19 +9,19 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-start-login
+.v-start-login
   start-server-identity(
-    class="c-start-login__identity"
+    class="v-start-login__identity"
   )
 
-  .c-start-login__box
+  .v-start-login__box
     start-login-form(
       @submit="onFormSubmit"
       :loading="isFormLoading"
-      class="c-start-login__form"
+      class="v-start-login__form"
     )
 
-  .c-start-login__background
+  .v-start-login__background
 </template>
 
 <!-- **********************************************************************
@@ -38,6 +38,9 @@ import StartServerIdentity from "/src/components/start/StartServerIdentity.vue";
 
 // PROJECT: BROKER
 import BrokerClient from "/src/broker/client";
+
+// CONSTANTS
+const REDIRECT_APP_HOLD_TIME = 2000; // 2 second
 
 export default {
   name: "StartLogin",
@@ -70,6 +73,13 @@ export default {
 
           // Show success alert
           BaseAlert.success("Authenticated", "Accessing your dashboard...");
+
+          // Redirect to dashboard (after some hold time)
+          setTimeout(() => {
+            this.$router.push({
+              name: "app.inbox"
+            });
+          }, REDIRECT_APP_HOLD_TIME);
         } catch (error) {
           // Show error alert
           BaseAlert.error(
@@ -91,9 +101,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-start-login";
+$c: ".v-start-login";
 
-.c-start-login {
+.v-start-login {
   height: 100%;
   width: 100%;
   overflow: hidden;
@@ -140,7 +150,7 @@ $c: ".c-start-login";
 // --> MEDIA-QUERIES <--
 
 @media (max-width: 640px) {
-  .c-start-login {
+  .v-start-login {
     #{$c}__identity {
       left: 50%;
       transform: translateX(-50%);
@@ -149,7 +159,7 @@ $c: ".c-start-login";
 }
 
 @media (max-height: 640px) {
-  .c-start-login {
+  .v-start-login {
     #{$c}__identity {
       display: none;
     }

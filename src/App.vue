@@ -9,7 +9,7 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-app
+.s-app
   base-alert
 
   router-view
@@ -30,9 +30,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-app";
+$c: ".s-app";
 
-.c-app {
+.s-app {
   background-color: $color-background-primary;
   user-select: none;
   margin: 0;

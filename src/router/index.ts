@@ -14,6 +14,7 @@ import { createWebHistory, createRouter } from "vue-router";
 // PROJECT: VIEWS
 import StartLogin from "../views/start/StartLogin.vue";
 import AppBase from "../views/app/AppBase.vue";
+import AppInboxBase from "../views/app/inbox/AppInboxBase.vue";
 
 /**************************************************************************
  * ROUTER
@@ -25,11 +26,24 @@ const router = createRouter({
   routes: [
     // --> START <--
 
-    { path: "/start/login/", component: StartLogin },
+    { path: "/start/", redirect: { name: "start.login" } },
+    { path: "/start/login/", name: "start.login", component: StartLogin },
 
     // --> APP <--
 
-    { path: "/", component: AppBase },
+    {
+      path: "/",
+      name: "app",
+      component: AppBase,
+
+      children: [
+        {
+          path: "inbox/",
+          name: "app.inbox",
+          component: AppInboxBase
+        }
+      ]
+    },
 
     // --> REDIRECT <--
 
