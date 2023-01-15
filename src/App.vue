@@ -10,7 +10,7 @@
 
 <template lang="pug">
 .c-app
-  global-alert
+  base-alert
 
   router-view
 </template>
@@ -20,13 +20,8 @@
      ********************************************************************** -->
 
 <script lang="ts">
-// PROJECT: LAYOUT
-import GlobalAlert from "/src/layout/GlobalAlert.vue";
-
 export default {
-  name: "App",
-
-  components: { GlobalAlert }
+  name: "App"
 };
 </script>
 

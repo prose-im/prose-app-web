@@ -33,6 +33,7 @@
 import StartLoginForm from "/src/assemblies/start/StartLoginForm.vue";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "/src/components/base/BaseAlert.vue";
 import StartServerIdentity from "/src/components/start/StartServerIdentity.vue";
 
 // PROJECT: BROKER
@@ -70,10 +71,14 @@ export default {
           // Mark as not loading anymore
           this.isFormLoading = false;
 
-          // TODO: success banner
+          // Show success alert
+          BaseAlert.success("Authenticated", "Accessing your dashboard...");
         } catch (error) {
-          // TODO: error banner
-          alert("cannot authenticate! " + error);
+          // Show error alert
+          BaseAlert.error(
+            "Cannot authenticate",
+            error ? error.message || error.toString() : undefined
+          );
 
           // Mark as not loading anymore
           this.isFormLoading = false;

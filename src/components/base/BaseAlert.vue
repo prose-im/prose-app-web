@@ -10,22 +10,27 @@
 
 <template lang="pug">
 div(
+  v-if="title"
+  @mouseover="onMouseOver"
+  @mouseleave="onMouseLeave"
   :class=`[
-    "c-global-alert",
-    "c-global-alert--" + level
+    "c-base-alert",
+    "c-base-alert--" + level
   ]`
 )
-  span.c-global-alert__badge
+  span.c-base-alert__badge
 
-  .c-global-alert__text
-    p.c-global-alert__text-title.u-bold
-      | Account credentials are invalid
+  .c-base-alert__text
+    p.c-base-alert__text-title.u-bold
+      | {{ title }}
 
-    p.c-global-alert__text-description
-      | Can you check your password and try again?
+    p.c-base-alert__text-description(
+      v-if="description"
+    )
+      | {{ description }}
 
-  a.c-global-alert__close(
-    href="#"
+  a.c-base-alert__close(
+    @click="onCloseClick"
   )
 </template>
 
@@ -34,15 +39,169 @@ div(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import mitt from "mitt";
+
+// CONSTANTS
+const ALERT_SHOW_AFTER_DELAY = 250; // 250 milliseconds
+
+const ALERT_EXPIRE_HIDE_DELAY_DEFAULT = 6000; // 6 seconds
+const ALERT_EXPIRE_HIDE_DELAY_SHORT = 3000; // 3 seconds
+
+// INSTANCES
+const EventBus = mitt();
+
 export default {
-  name: "GlobalAlert",
+  name: "BaseAlert",
 
   data() {
     return {
       // --> STATE <--
 
-      level: "error"
+      level: "error",
+      title: "",
+      description: "",
+
+      timers: {
+        show: null,
+        hide: null
+      }
     };
+  },
+
+  error(title: string, description?: string) {
+    EventBus.emit("show", {
+      level: "error",
+      title,
+      description
+    });
+  },
+
+  warning(title: string, description?: string) {
+    EventBus.emit("show", {
+      level: "warning",
+      title,
+      description
+    });
+  },
+
+  info(title: string, description?: string) {
+    EventBus.emit("show", {
+      level: "info",
+      title,
+      description
+    });
+  },
+
+  success(title: string, description?: string) {
+    EventBus.emit("show", {
+      level: "success",
+      title,
+      description
+    });
+  },
+
+  created() {
+    // Bind show event
+    EventBus.on("show", this.show);
+  },
+
+  beforeUnmount() {
+    // Unbind show event
+    EventBus.off("show", this.show);
+  },
+
+  methods: {
+    show({ level, title, description = null }) {
+      if (!level || !title) {
+        throw new Error("No alert level or title provided");
+      }
+
+      // Cancel any pending alert show
+      this.unscheduleShow();
+
+      // Hide previous alert?
+      this.hide();
+
+      // Open alert
+      this.timers.show = setTimeout(() => {
+        this.timers.show = null;
+
+        // Assign alert data
+        this.level = level;
+        this.title = title;
+        this.description = description;
+
+        // Schedule later alert hide
+        this.scheduleHide();
+      }, ALERT_SHOW_AFTER_DELAY);
+    },
+
+    hide() {
+      if (this.title) {
+        // Unschedule hide
+        this.unscheduleHide();
+
+        // Hide alert
+        this.level = "";
+        this.title = "";
+        this.description = "";
+      }
+    },
+
+    scheduleHide(shortLived = false) {
+      // Unschedule any previously-scheduled hide
+      this.unscheduleHide();
+
+      // Schedule later hide
+      this.timers.hide = setTimeout(
+        () => {
+          this.timers.hide = null;
+
+          // Hide alert
+          this.hide();
+        },
+
+        shortLived === true
+          ? ALERT_EXPIRE_HIDE_DELAY_SHORT
+          : ALERT_EXPIRE_HIDE_DELAY_DEFAULT
+      );
+    },
+
+    unscheduleHide() {
+      // Clear existing hide timer?
+      if (this.timers.hide !== null) {
+        clearTimeout(this.timers.hide);
+
+        this.timers.hide = null;
+      }
+    },
+
+    unscheduleShow() {
+      // Clear existing show timer?
+      if (this.timers.show !== null) {
+        clearTimeout(this.timers.show);
+
+        this.timers.show = null;
+      }
+    },
+
+    // --> EVENT LISTENERS <--
+
+    onMouseOver() {
+      // Unschedules close
+      this.unscheduleHide();
+    },
+
+    onMouseLeave() {
+      // Re-schedule closure (as it was previously unscheduled)
+      this.scheduleHide(true);
+    },
+
+    onCloseClick() {
+      // Hide alert
+      this.hide();
+    }
   }
 };
 </script>
@@ -52,7 +211,7 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss" scoped>
-$c: ".c-global-alert";
+$c: ".c-base-alert";
 
 // VARIABLES
 $badge-size: 54px;
@@ -61,7 +220,7 @@ $badge-icon-size: 24px;
 $close-size: 24px;
 $close-icon-size: 12px;
 
-.c-global-alert {
+.c-base-alert {
   background: rgba($color-white, 0.95);
   border: 1px solid rgba($color-black, 0.06);
   padding: 10px;
@@ -91,7 +250,7 @@ $close-icon-size: 12px;
     &:after {
       content: "";
       background-color: $color-base-grey-dark;
-      mask-image: url("/src/assets/images/layout/GlobalAlert/badge-icon.svg");
+      mask-image: url("/src/assets/images/components/base/BaseAlert/badge-icon.svg");
       mask-position: center;
       mask-size: cover;
       mask-repeat: no-repeat;
@@ -143,7 +302,7 @@ $close-icon-size: 12px;
 
     &:after {
       content: "";
-      background-image: url("/src/assets/images/layout/GlobalAlert/close-icon.svg");
+      background-image: url("/src/assets/images/components/base/BaseAlert/close-icon.svg");
       background-position: center;
       background-size: cover;
       background-repeat: no-repeat;

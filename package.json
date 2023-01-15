@@ -34,6 +34,7 @@
     "lodash.camelcase": "4.3.x",
     "lodash.upperfirst": "4.3.x",
     "strophe.js": "1.6.x",
+    "mitt": "3.0.x",
     "vue": "3.2.x",
     "vue-router": "4.1.x",
     "vue-logger-plugin": "2.2.x"
