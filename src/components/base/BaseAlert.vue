@@ -275,7 +275,7 @@ $close-icon-size: 12px;
     #{$c}__text-description {
       color: $color-text-primary;
       font-size: 15px;
-      margin-top: 10px;
+      margin-block-start: 10px;
     }
   }
 

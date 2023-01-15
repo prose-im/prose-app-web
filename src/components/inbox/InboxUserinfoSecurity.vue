@@ -9,14 +9,7 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.v-app-base
-  .v-app-base__sidebar
-    .v-app-base__sidebar-main
-
-    .v-app-base__sidebar-context
-
-  .v-app-base__content
-    router-view
+.c-inbox-userinfo-security
 </template>
 
 <!-- **********************************************************************
@@ -25,7 +18,7 @@
 
 <script lang="ts">
 export default {
-  name: "AppBase"
+  name: "InboxUserinfoSecurity"
 };
 </script>
 
@@ -34,34 +27,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".v-app-base";
+$c: ".c-inbox-userinfo-security";
 
-.v-app-base {
-  height: 100%;
-  width: 100%;
-  display: flex;
-
-  #{$c}__sidebar {
-    background-color: $color-base-purple-ultra-light;
-    border-right: 1px solid $color-border-secondary;
-    width: 300px;
-    flex: 0 0 auto;
-    display: flex;
-    flex-direction: column;
-
-    #{$c}__sidebar-main {
-      flex: 1;
-    }
-
-    #{$c}__sidebar-context {
-      border-top: 1px solid $color-border-secondary;
-      height: $size-inbox-form-height;
-      flex: 0 0 auto;
-    }
-  }
-
-  #{$c}__content {
-    flex: 1;
-  }
+.c-inbox-userinfo-security {
+  /* TODO */
 }
 </style>

@@ -65,9 +65,7 @@ $size-widths: (
 );
 
 .c-base-logo {
-  @include mask-image(
-    "@/assets/images/components/base/BaseLogo/logo-path.svg?data"
-  );
+  @include mask-image("@/assets/images/components/base/BaseLogo/logo-path.svg");
   @include mask-repeat(no-repeat);
   @include mask-size(contain);
   @include mask-position(left);

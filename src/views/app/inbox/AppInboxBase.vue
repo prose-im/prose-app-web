@@ -20,7 +20,9 @@
 
       .v-app-inbox-base__form
 
-    .v-app-inbox-base__userinfo
+    inbox-userinfo(
+      class="v-app-inbox-base__userinfo"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -31,10 +33,13 @@
 // PROJECT: COMPONENTS
 import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
 
+// PROJECT: ASSEMBLIES
+import InboxUserinfo from "@/assemblies/inbox/InboxUserinfo.vue";
+
 export default {
   name: "AppInboxBase",
 
-  components: { InboxMessaging }
+  components: { InboxMessaging, InboxUserinfo }
 };
 </script>
 
@@ -75,14 +80,14 @@ $c: ".v-app-inbox-base";
 
       #{$c}__form {
         border-top: 1px solid $color-border-secondary;
-        height: 65px;
+        height: $size-inbox-form-height;
         flex: 0 0 auto;
       }
     }
 
     #{$c}__userinfo {
       border-left: 1px solid $color-border-secondary;
-      width: 280px;
+      width: 240px;
       flex: 0 0 auto;
     }
   }
