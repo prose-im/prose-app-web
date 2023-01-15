@@ -9,29 +9,33 @@
      ********************************************************************** -->
 
 <template lang="pug">
-div(
-  v-if="title"
-  @mouseover="onMouseOver"
-  @mouseleave="onMouseLeave"
-  :class=`[
-    "c-base-alert",
-    "c-base-alert--" + level
-  ]`
+transition(
+  enter-active-class="animate animate--fade-in-up-small animate--fast"
+  leave-active-class="animate animate--fade-out-down-small animate--superfast"
 )
-  span.c-base-alert__badge
-
-  .c-base-alert__text
-    p.c-base-alert__text-title.u-bold
-      | {{ title }}
-
-    p.c-base-alert__text-description(
-      v-if="description"
-    )
-      | {{ description }}
-
-  a.c-base-alert__close(
-    @click="onCloseClick"
+  div(
+    v-if="title"
+    @mouseover="onMouseOver"
+    @mouseleave="onMouseLeave"
+    :class=`[
+      "c-base-alert",
+      "c-base-alert--" + level
+    ]`
   )
+    span.c-base-alert__badge
+
+    .c-base-alert__text
+      p.c-base-alert__text-title.u-bold
+        | {{ title }}
+
+      p.c-base-alert__text-description(
+        v-if="description"
+      )
+        | {{ description }}
+
+    a.c-base-alert__close(
+      @click="onCloseClick"
+    )
 </template>
 
 <!-- **********************************************************************

@@ -1,0 +1,75 @@
+/*
+ * This file is part of prose-app-web
+ *
+ * Copyright 2023, Prose Foundation
+ */
+
+/* *************************************************************************
+ * UTILITIES > ANIMATIONS
+ * **************************************************************************/
+
+// VARIABLES
+$animate-toast-margin-bottom: -3px;
+
+.animate {
+  animation-duration: 0.5s;
+  animation-fill-mode: both;
+
+  // --> SPEEDS <--
+
+  &--infinite {
+    animation-iteration-count: infinite;
+  }
+
+  &--superfast {
+    animation-duration: 0.1s;
+  }
+
+  &--fast {
+    animation-duration: 0.2s;
+  }
+
+  &--slow {
+    animation-duration: 1s;
+  }
+
+  &--superslow {
+    animation-duration: 2s;
+  }
+
+  // --> ANIMATIONS <--
+
+  &--fade-in-up-small {
+    animation-name: fadeInUpSmall;
+  }
+
+  &--fade-out-down-small {
+    animation-name: fadeOutDownSmall;
+  }
+}
+
+// --> KEYFRAMES <--
+
+@keyframes fadeInUpSmall {
+  from {
+    opacity: 0;
+    margin-bottom: $animate-toast-margin-bottom;
+  }
+
+  to {
+    opacity: 1;
+    margin-bottom: 0;
+  }
+}
+
+@keyframes fadeOutDownSmall {
+  from {
+    opacity: 1;
+    margin-bottom: 0;
+  }
+
+  to {
+    opacity: 0;
+    margin-bottom: $animate-toast-margin-bottom;
+  }
+}
