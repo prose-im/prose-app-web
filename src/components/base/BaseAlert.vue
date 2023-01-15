@@ -252,12 +252,15 @@ $close-icon-size: 12px;
     border-radius: 12px;
 
     &:after {
+      @include mask-image(
+        "/src/assets/images/components/base/BaseAlert/badge-icon.svg"
+      );
+      @include mask-position(center);
+      @include mask-size(cover);
+      @include mask-repeat(no-repeat);
+
       content: "";
       background-color: $color-base-grey-dark;
-      mask-image: url("/src/assets/images/components/base/BaseAlert/badge-icon.svg");
-      mask-position: center;
-      mask-size: cover;
-      mask-repeat: no-repeat;
       width: $badge-icon-size;
       height: $badge-icon-size;
       flex: 0 0 auto;

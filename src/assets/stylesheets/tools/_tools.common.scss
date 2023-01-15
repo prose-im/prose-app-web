@@ -18,11 +18,6 @@
   }
 }
 
-@mixin text-fill-color($value) {
-  -webkit-text-fill-color: ($value);
-  text-fill-color: ($value);
-}
-
 @mixin mask-image($value) {
   --mask-image: url(#{$value});
 
