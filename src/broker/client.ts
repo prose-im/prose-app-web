@@ -44,8 +44,14 @@ class BrokerClient {
     remember = true
   ): Promise<void> {
     // Incomplete parameters?
-    if (!jid || !password || jid.includes("@") === false) {
-      throw new Error("Empty or invalid credentials");
+    if (!jid) {
+      throw new Error("Please provide a Jabber ID");
+    }
+    if (!password) {
+      throw new Error("Please provide a password");
+    }
+    if (jid.includes("@") === false) {
+      throw new Error("Invalid Jabber ID");
     }
 
     // Another connection pending?
@@ -98,7 +104,7 @@ class BrokerClient {
       case Strophe.Status.DISCONNECTED: {
         logger.warn("Disconnected");
 
-        this.__raiseConnectLifecycle(new Error("Disconnected"));
+        this.__raiseConnectLifecycle(new Error("Disconnected from server"));
 
         break;
       }
@@ -114,7 +120,7 @@ class BrokerClient {
       case Strophe.Status.CONNFAIL: {
         logger.error("Connection failure");
 
-        this.__raiseConnectLifecycle(new Error("Failed to connect"));
+        this.__raiseConnectLifecycle(new Error("Failed to authenticate"));
 
         break;
       }

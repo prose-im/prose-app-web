@@ -68,9 +68,6 @@ export default {
             form.remember
           );
 
-          // Mark as not loading anymore
-          this.isFormLoading = false;
-
           // Show success alert
           BaseAlert.success("Authenticated", "Accessing your dashboard...");
         } catch (error) {
