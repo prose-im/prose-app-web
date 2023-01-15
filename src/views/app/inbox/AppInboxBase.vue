@@ -13,8 +13,8 @@
   .v-app-inbox-base__content
     .v-app-inbox-base__topbar
 
-    iframe.v-app-inbox-base__timeline(
-      src="/includes/views/messaging.html"
+    inbox-messaging(
+      class="v-app-inbox-base__timeline"
     )
 
     .v-app-inbox-base__form
@@ -27,8 +27,13 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
+
 export default {
-  name: "AppInboxBase"
+  name: "AppInboxBase",
+
+  components: { InboxMessaging }
 };
 </script>
 
