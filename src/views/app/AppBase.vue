@@ -39,7 +39,8 @@ $c: ".v-app-base";
   display: flex;
 
   #{$c}__sidebar {
-    border-right: 1px solid $color-base-grey-normal;
+    background-color: $color-base-purple-ultra-light;
+    border-right: 1px solid $color-border-secondary;
     width: 360px;
     flex: 0 0 auto;
   }

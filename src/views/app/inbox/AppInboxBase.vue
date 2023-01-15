@@ -52,7 +52,8 @@ $c: ".v-app-inbox-base";
   flex-direction: column;
 
   #{$c}__topbar {
-    border-bottom: 1px solid $color-base-grey-normal;
+    background-color: $color-base-grey-light;
+    border-bottom: 1px solid $color-border-secondary;
     height: 60px;
     flex: 0 0 auto;
   }
@@ -73,14 +74,14 @@ $c: ".v-app-inbox-base";
       }
 
       #{$c}__form {
-        border-top: 1px solid $color-base-grey-normal;
-        height: 90px;
+        border-top: 1px solid $color-border-secondary;
+        height: 65px;
         flex: 0 0 auto;
       }
     }
 
     #{$c}__userinfo {
-      border-left: 1px solid $color-base-grey-normal;
+      border-left: 1px solid $color-border-secondary;
       width: 280px;
       flex: 0 0 auto;
     }
