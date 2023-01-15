@@ -8,8 +8,23 @@
  * IMPORTS
  * ************************************************************************* */
 
+import path from "path";
 import vue from "@vitejs/plugin-vue";
 import vitePugPlugin from "vite-plugin-pug-transformer";
+import { viteStaticCopy as viteStaticCopyPlugin } from "vite-plugin-static-copy";
+import { getInstalledPathSync } from "get-installed-path";
+
+/**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const PROSE_CORE_VIEWS_PATH = getInstalledPathSync(
+  "@prose-im/prose-core-views",
+
+  {
+    local: true
+  }
+);
 
 /**************************************************************************
  * EXPORTS
@@ -44,7 +59,19 @@ export default {
     chunkSizeWarningLimit: 1024
   },
 
-  plugins: [vue(), vitePugPlugin({})],
+  plugins: [
+    vue(),
+    vitePugPlugin({}),
+
+    viteStaticCopyPlugin({
+      targets: [
+        {
+          src: path.join(PROSE_CORE_VIEWS_PATH, "dist", "*"),
+          dest: "/includes/views"
+        }
+      ]
+    })
+  ],
 
   css: {
     devSourcemap: false,

@@ -13,7 +13,9 @@
   .v-app-inbox-base__content
     .v-app-inbox-base__topbar
 
-    .v-app-inbox-base__timeline
+    iframe.v-app-inbox-base__timeline(
+      src="/includes/views/messaging.html"
+    )
 
     .v-app-inbox-base__form
 
@@ -61,6 +63,8 @@ $c: ".v-app-inbox-base";
   }
 
   #{$c}__timeline {
+    width: 100%;
+    height: 100%;
     flex: 1;
   }
 

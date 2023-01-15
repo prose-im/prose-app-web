@@ -51,10 +51,12 @@
     "sass": "1.57.x",
     "vite": "4.0.x",
     "vite-plugin-pug-transformer": "1.0.x",
+    "vite-plugin-static-copy": "0.13.x",
     "vue-tsc": "1.0.x",
     "prettier": "2.8.x",
     "eslint": "8.31.x",
     "eslint-plugin-vue": "9.8.x",
-    "eslint-config-prettier": "8.6.x"
+    "eslint-config-prettier": "8.6.x",
+    "get-installed-path": "4.0.x"
   }
 }
