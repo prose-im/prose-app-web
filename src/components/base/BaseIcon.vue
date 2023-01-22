@@ -9,7 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-svg.c-base-icon
+svg(
+  :style=`{
+    height: size
+  }`
+  class="c-base-icon"
+)
   use(
     :xlink:href="href"
   )
@@ -37,6 +42,11 @@ export default {
       validator(x: string) {
         return icons.has(`${ICON_PREFIX}-${x}`);
       }
+    },
+
+    size: {
+      type: String,
+      default: "18px"
     }
   },
 
@@ -57,12 +67,10 @@ $c: ".c-base-icon";
 
 // VARIABLES
 $icon-fill-default: $color-black;
-$icon-size-default: 16px;
 
 .c-base-icon {
   fill: $icon-fill-default;
-  width: $icon-size-default;
-  height: $icon-size-default;
+  aspect-ratio: 1;
   display: inline-block;
 }
 </style>

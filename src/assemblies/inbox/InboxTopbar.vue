@@ -14,17 +14,21 @@
     .a-inbox-topbar__actions
       base-action(
         class="a-inbox-topbar__action"
-        icon="arrow-previous"
+        icon="chevron.left"
+        size="14px"
       )
 
       base-action(
         class="a-inbox-topbar__action"
-        icon="arrow-next"
+        icon="chevron.right"
+        size="14px"
+        disabled
       )
 
       base-action(
         class="a-inbox-topbar__action"
-        icon="history"
+        icon="clock"
+        size="18px"
         dropdown
       )
 
@@ -41,12 +45,15 @@
     .a-inbox-topbar__actions
       base-action(
         class="a-inbox-topbar__action"
-        icon="camera"
+        icon="video"
+        size="20px"
       )
 
       base-action(
         class="a-inbox-topbar__action"
-        icon="info"
+        icon="info.circle"
+        size="18px"
+        active
       )
 
     span.a-inbox-topbar__separator
@@ -54,7 +61,8 @@
     .a-inbox-topbar__actions
       base-action(
         class="a-inbox-topbar__action"
-        icon="search"
+        icon="magnifyingglass"
+        size="17px"
       )
 </template>
 
@@ -124,8 +132,11 @@ $c: ".a-inbox-topbar";
   }
 
   #{$c}__actions {
+    display: flex;
+
     #{$c}__action {
       margin-inline: 3px;
+      flex: 0 0 auto;
 
       &:first-child {
         margin-inline-start: 0;

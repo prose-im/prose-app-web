@@ -13,6 +13,7 @@ div(
   :class=`[
     "c-base-action",
     {
+      "c-base-action--active": active,
       "c-base-action--disabled": disabled
     }
   ]`
@@ -22,7 +23,15 @@ div(
   )
     base-icon(
       :name="icon"
+      :size="size"
       class="c-base-action__icon"
+    )
+
+    base-icon(
+      v-if="dropdown"
+      name="chevron.down"
+      size="8px"
+      class="c-base-action__dropdown"
     )
 </template>
 
@@ -40,7 +49,17 @@ export default {
       required: true
     },
 
+    size: {
+      type: String,
+      default: "20px"
+    },
+
     dropdown: {
+      type: Boolean,
+      default: false
+    },
+
+    active: {
       type: Boolean,
       default: false
     },
@@ -71,9 +90,6 @@ export default {
 <style lang="scss">
 $c: ".c-base-action";
 
-// VARIABLES
-$icon-size: 18px;
-
 .c-base-action {
   display: inline-block;
 
@@ -84,13 +100,14 @@ $icon-size: 18px;
     user-select: none;
     width: 100%;
     margin: 0;
-    padding: 0;
-    width: 36px;
+    padding: 0 8px;
+    min-width: 36px;
     height: 30px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
+    box-sizing: border-box;
     border-radius: 5px;
     transition: background-color 100ms linear;
 
@@ -107,17 +124,27 @@ $icon-size: 18px;
       outline-offset: 1px;
     }
 
-    #{$c}__icon {
+    #{$c}__icon,
+    #{$c}__dropdown {
       fill: $color-base-grey-dark;
-      width: $icon-size;
-      height: $icon-size;
+      flex: 0 0 auto;
+    }
+
+    #{$c}__dropdown {
+      margin-left: 7px;
     }
   }
 
   // --> BOOLEANS <--
 
-  &--dropdown {
-    /* TODO */
+  &--active {
+    #{$c}__inner {
+      background-color: darken($color-base-grey-light, 3%);
+
+      #{$c}__icon {
+        fill: darken($color-base-blue-normal, 6%);
+      }
+    }
   }
 
   &--disabled {
@@ -125,7 +152,7 @@ $icon-size: 18px;
 
     #{$c}__inner {
       pointer-events: none;
-      opacity: 0.6;
+      opacity: 0.35;
     }
   }
 }
