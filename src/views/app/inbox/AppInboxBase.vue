@@ -86,6 +86,34 @@ $content-padding-sides: 14px;
         width: 100%;
         height: 100%;
         flex: 1;
+        position: relative;
+
+        &:before,
+        &:after {
+          content: "";
+          height: 6px;
+          position: absolute;
+          inset-inline: 0;
+          pointer-events: none;
+        }
+
+        &:before {
+          background-image: linear-gradient(
+            0deg,
+            rgba($color-black, 0) 0%,
+            rgba($color-black, 0.015) 100%
+          );
+          inset-block-start: 0;
+        }
+
+        &:after {
+          background-image: linear-gradient(
+            180deg,
+            rgba($color-black, 0) 0%,
+            rgba($color-black, 0.01) 100%
+          );
+          inset-block-end: 0;
+        }
       }
 
       #{$c}__form {
