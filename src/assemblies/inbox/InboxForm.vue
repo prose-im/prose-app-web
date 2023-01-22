@@ -107,7 +107,7 @@ $form-compose-field-height-minimum: (
       /* TODO: remove base height please */
       height: $form-compose-field-height-minimum;
       min-height: $form-compose-field-height-minimum;
-      max-height: 200px;
+      max-height: 220px;
       padding-block: $form-compose-padding-block;
     }
   }
