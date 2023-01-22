@@ -110,6 +110,7 @@ $form-compose-padding-block: 10px;
 $form-compose-field-height-minimum: (
   $size-inbox-form-height - (2 * $form-compose-padding-block)
 );
+
 $form-compose-send-position-edges: 6px;
 $form-compose-send-button-size: (
   $form-compose-field-height-minimum -
@@ -118,7 +119,7 @@ $form-compose-send-button-size: (
 
 .a-inbox-form {
   #{$c}__compose {
-    margin-inline: 10px;
+    margin-inline: 12px;
     padding-block: $form-compose-padding-block;
 
     #{$c}__compose-inner {
@@ -138,7 +139,10 @@ $form-compose-send-button-size: (
 
       textarea {
         border-radius: ceil($form-compose-field-height-minimum / 2);
-        padding-inline-end: 60px; /* TODO: from variable */
+        padding-inline-end: (
+          $form-compose-send-button-size + $form-compose-send-position-edges +
+            2px
+        );
       }
     }
 
