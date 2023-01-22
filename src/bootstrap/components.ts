@@ -20,7 +20,7 @@ class BootstrapComponents {
   init(app: object): void {
     this.registerGlobally(
       app,
-      import.meta.globEager("@/components/(base|form)/*.vue")
+      import.meta.globEager("@/components/(base|form|layout)/*.vue")
     );
   }
 

@@ -9,9 +9,13 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.a-inbox-topbar
-  .a-inbox-topbar__left
-    .a-inbox-topbar__actions
+layout-toolbar(
+  class="a-inbox-topbar"
+)
+  template(
+    v-slot:left
+  )
+    layout-actions
       base-action(
         class="a-inbox-topbar__action"
         icon="chevron.left"
@@ -32,7 +36,9 @@
         dropdown
       )
 
-  .a-inbox-topbar__middle
+  template(
+    v-slot:middle
+  )
     span.a-inbox-topbar__identity.a-inbox-topbar__identity--name
       base-presence(
         class="a-inbox-topbar__identity-badge"
@@ -44,7 +50,9 @@
       span.u-bold
         | Valerian Saliou
 
-  .a-inbox-topbar__right
+  template(
+    v-slot:right
+  )
     span.a-inbox-topbar__identity.a-inbox-topbar__identity--jid
       base-icon(
         class="a-inbox-topbar__identity-badge"
@@ -55,9 +63,11 @@
       span.u-regular
         | valerian@crisp.chat
 
-    span.a-inbox-topbar__separator
+    base-separator(
+      class="a-inbox-topbar__separator"
+    )
 
-    .a-inbox-topbar__actions
+    layout-actions
       base-action(
         class="a-inbox-topbar__action"
         icon="video"
@@ -71,9 +81,11 @@
         active
       )
 
-    span.a-inbox-topbar__separator
+    base-separator(
+      class="a-inbox-topbar__separator"
+    )
 
-    .a-inbox-topbar__actions
+    layout-actions
       base-action(
         class="a-inbox-topbar__action"
         icon="magnifyingglass"
@@ -99,38 +111,7 @@ export default {
 $c: ".a-inbox-topbar";
 
 .a-inbox-topbar {
-  &,
-  #{$c}__left,
-  #{$c}__right,
-  #{$c}__middle {
-    display: flex;
-    align-items: center;
-  }
-
-  #{$c}__left,
-  #{$c}__right {
-    flex: 0 0 auto;
-  }
-
-  #{$c}__left {
-    justify-content: flex-start;
-  }
-
-  #{$c}__middle {
-    color: $color-text-primary;
-    padding-inline: 10px;
-    justify-content: center;
-    flex: 1;
-  }
-
-  #{$c}__right {
-    justify-content: flex-end;
-  }
-
   #{$c}__separator {
-    background-color: $color-border-secondary;
-    width: 1px;
-    height: 20px;
     margin-inline: 14px;
   }
 
@@ -144,7 +125,6 @@ $c: ".a-inbox-topbar";
 
       #{$c}__identity-badge {
         margin-block-start: 1px;
-        margin-inline-end: 6px;
       }
     }
 
@@ -155,29 +135,12 @@ $c: ".a-inbox-topbar";
       #{$c}__identity-badge {
         fill: $color-base-green-normal;
         margin-block-start: 2px;
-        margin-inline-end: 5px;
       }
     }
 
     #{$c}__identity-badge {
+      margin-inline-end: 5px;
       flex: 0 0 auto;
-    }
-  }
-
-  #{$c}__actions {
-    display: flex;
-
-    #{$c}__action {
-      margin-inline: 3px;
-      flex: 0 0 auto;
-
-      &:first-child {
-        margin-inline-start: 0;
-      }
-
-      &:last-child {
-        margin-inline-end: 0;
-      }
     }
   }
 }

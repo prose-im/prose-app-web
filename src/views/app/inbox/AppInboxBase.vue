@@ -20,7 +20,9 @@
         class="v-app-inbox-base__timeline"
       )
 
-      .v-app-inbox-base__form
+      inbox-form(
+        class="v-app-inbox-base__form"
+      )
 
     inbox-userinfo(
       class="v-app-inbox-base__userinfo"
@@ -38,11 +40,12 @@ import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
 // PROJECT: ASSEMBLIES
 import InboxTopbar from "@/assemblies/inbox/InboxTopbar.vue";
 import InboxUserinfo from "@/assemblies/inbox/InboxUserinfo.vue";
+import InboxForm from "@/assemblies/inbox/InboxForm.vue";
 
 export default {
   name: "AppInboxBase",
 
-  components: { InboxMessaging, InboxTopbar, InboxUserinfo }
+  components: { InboxMessaging, InboxTopbar, InboxUserinfo, InboxForm }
 };
 </script>
 
@@ -52,6 +55,9 @@ export default {
 
 <style lang="scss">
 $c: ".v-app-inbox-base";
+
+// VARIABLES
+$content-padding-sides: 14px;
 
 .v-app-inbox-base {
   height: 100%;
@@ -63,7 +69,7 @@ $c: ".v-app-inbox-base";
     background-color: $color-base-grey-light;
     border-bottom: 1px solid $color-border-secondary;
     height: 60px;
-    padding: 0 26px;
+    padding: 0 $content-padding-sides;
     flex: 0 0 auto;
   }
 
@@ -85,6 +91,7 @@ $c: ".v-app-inbox-base";
       #{$c}__form {
         border-top: 1px solid $color-border-secondary;
         height: $size-inbox-form-height;
+        padding: 0 $content-padding-sides;
         flex: 0 0 auto;
       }
     }

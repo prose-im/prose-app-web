@@ -77,7 +77,7 @@ $c: ".c-base-presence";
 // VARIABLES
 $sizes: (
   "small": 8px,
-  "medium": 10px,
+  "medium": 9px,
   "large": 12px
 );
 
