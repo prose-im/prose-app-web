@@ -43,7 +43,7 @@ $c: ".v-app-base";
 
   #{$c}__sidebar {
     background-color: $color-base-purple-ultra-light;
-    border-right: 1px solid $color-border-secondary;
+    border-inline-end: 1px solid $color-border-secondary;
     width: 300px;
     flex: 0 0 auto;
     display: flex;
@@ -54,7 +54,7 @@ $c: ".v-app-base";
     }
 
     #{$c}__sidebar-context {
-      border-top: 1px solid $color-border-secondary;
+      border-block-start: 1px solid $color-border-secondary;
       height: $size-inbox-form-height;
       flex: 0 0 auto;
     }

@@ -9,7 +9,7 @@
  * **************************************************************************/
 
 // VARIABLES
-$animate-toast-margin-bottom: -3px;
+$animate-toast-margin-block-end: -3px;
 
 .animate {
   animation-duration: 0.5s;
@@ -53,23 +53,23 @@ $animate-toast-margin-bottom: -3px;
 @keyframes fadeInUpSmall {
   from {
     opacity: 0;
-    margin-bottom: $animate-toast-margin-bottom;
+    margin-block-end: $animate-toast-margin-block-end;
   }
 
   to {
     opacity: 1;
-    margin-bottom: 0;
+    margin-block-end: 0;
   }
 }
 
 @keyframes fadeOutDownSmall {
   from {
     opacity: 1;
-    margin-bottom: 0;
+    margin-block-end: 0;
   }
 
   to {
     opacity: 0;
-    margin-bottom: $animate-toast-margin-bottom;
+    margin-block-end: $animate-toast-margin-block-end;
   }
 }

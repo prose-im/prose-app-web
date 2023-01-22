@@ -67,7 +67,7 @@ $content-padding-sides: 14px;
 
   #{$c}__topbar {
     background-color: $color-base-grey-light;
-    border-bottom: 1px solid $color-border-secondary;
+    border-block-end: 1px solid $color-border-secondary;
     height: 60px;
     padding: 0 $content-padding-sides;
     flex: 0 0 auto;
@@ -117,7 +117,7 @@ $content-padding-sides: 14px;
       }
 
       #{$c}__form {
-        border-top: 1px solid $color-border-secondary;
+        border-block-start: 1px solid $color-border-secondary;
         min-height: $size-inbox-form-height;
         padding: 0 $content-padding-sides;
         flex: 0 0 auto;
@@ -125,7 +125,7 @@ $content-padding-sides: 14px;
     }
 
     #{$c}__userinfo {
-      border-left: 1px solid $color-border-secondary;
+      border-inline-start: 1px solid $color-border-secondary;
       width: 240px;
       flex: 0 0 auto;
     }
