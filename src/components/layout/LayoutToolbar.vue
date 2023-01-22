@@ -11,21 +11,21 @@
 <template lang="pug">
 .c-layout-toolbar
   .c-layout-toolbar__left(
-    v-if="$slots['left']"
+    v-if="$slots.left"
   )
     slot(
       name="left"
     )
 
   .c-layout-toolbar__middle(
-    v-if="$slots['middle']"
+    v-if="$slots.middle"
   )
     slot(
       name="middle"
     )
 
   .c-layout-toolbar__right(
-    v-if="$slots['right']"
+    v-if="$slots.right"
   )
     slot(
       name="right"
