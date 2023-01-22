@@ -33,12 +33,27 @@
       )
 
   .a-inbox-topbar__middle
-    span.a-inbox-topbar__identity.a-inbox-topbar__identity--name.u-bold
-      | Valerian Saliou
+    span.a-inbox-topbar__identity.a-inbox-topbar__identity--name
+      base-presence(
+        class="a-inbox-topbar__identity-badge"
+        type="available"
+        show="chat"
+        size="medium"
+      )
+
+      span.u-bold
+        | Valerian Saliou
 
   .a-inbox-topbar__right
     span.a-inbox-topbar__identity.a-inbox-topbar__identity--jid
-      | valerian@crisp.chat
+      base-icon(
+        class="a-inbox-topbar__identity-badge"
+        name="checkmark.seal.fill"
+        size="16px"
+      )
+
+      span.u-regular
+        | valerian@crisp.chat
 
     span.a-inbox-topbar__separator
 
@@ -120,14 +135,32 @@ $c: ".a-inbox-topbar";
   }
 
   #{$c}__identity {
+    display: flex;
+    align-items: center;
+
     &--name {
       color: $color-text-primary;
       font-size: 16px;
+
+      #{$c}__identity-badge {
+        margin-block-start: 1px;
+        margin-inline-end: 6px;
+      }
     }
 
     &--jid {
       color: $color-text-secondary;
       font-size: 15px;
+
+      #{$c}__identity-badge {
+        fill: $color-base-green-normal;
+        margin-block-start: 2px;
+        margin-inline-end: 5px;
+      }
+    }
+
+    #{$c}__identity-badge {
+      flex: 0 0 auto;
     }
   }
 
