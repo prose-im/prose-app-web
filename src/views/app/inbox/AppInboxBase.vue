@@ -90,7 +90,7 @@ $content-padding-sides: 14px;
 
       #{$c}__form {
         border-top: 1px solid $color-border-secondary;
-        height: $size-inbox-form-height;
+        min-height: $size-inbox-form-height;
         padding: 0 $content-padding-sides;
         flex: 0 0 auto;
       }

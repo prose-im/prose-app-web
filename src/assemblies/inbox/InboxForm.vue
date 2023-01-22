@@ -25,6 +25,17 @@ layout-toolbar(
   template(
     v-slot:middle
   )
+    form.a-inbox-form__compose(
+      @submit.prevent="onSubmit"
+    )
+      form-field(
+        v-model="message"
+        class="a-inbox-form__compose-field"
+        type="textarea"
+        name="message"
+        placeholder="Message Valerian"
+        size="large"
+      )
 
   template(
     v-slot:right
@@ -49,7 +60,24 @@ layout-toolbar(
 
 <script lang="ts">
 export default {
-  name: "InboxForm"
+  name: "InboxForm",
+
+  data() {
+    return {
+      // --> STATE <--
+
+      message: ""
+    };
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onSubmit(): void {
+      // TODO
+      console.error("send message: " + this.message);
+    }
+  }
 };
 </script>
 
@@ -60,7 +88,28 @@ export default {
 <style lang="scss">
 $c: ".a-inbox-form";
 
+// VARIABLES
+$form-compose-padding-block: 10px;
+$form-compose-field-height-minimum: (
+  $size-inbox-form-height - (2 * $form-compose-padding-block)
+);
+
 .a-inbox-form {
-  /* TODO */
+  #{$c}__compose {
+    margin-inline: 10px;
+
+    &,
+    #{$c}__compose-field {
+      width: 100%;
+    }
+
+    #{$c}__compose-field {
+      /* TODO: remove base height please */
+      height: $form-compose-field-height-minimum;
+      min-height: $form-compose-field-height-minimum;
+      max-height: 200px;
+      padding-block: $form-compose-padding-block;
+    }
+  }
 }
 </style>
