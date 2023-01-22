@@ -16,16 +16,31 @@ div(
     "c-base-button--" + tint,
     {
       "c-base-button--reverse": reverse,
+      "c-base-button--round": round,
       "c-base-button--disabled": disabled,
       "c-base-button--loading": loading
     }
   ]`
 )
-  button.c-base-button__inner(
+  button(
     @click="onInnerClick"
     :type="type"
+    :class=`[
+      "c-base-button__inner",
+      {
+        [buttonClass]: buttonClass
+      }
+    ]`
   )
+    template(
+      v-if="$slots.custom"
+    )
+      slot(
+        name="custom"
+      )
+
     div(
+      v-else
       :class=`[
         "c-base-button__label",
         {
@@ -70,6 +85,7 @@ export default {
 
       validator(x: string) {
         return [
+          "custom",
           "medium",
           "mid-medium",
           "large",
@@ -80,6 +96,11 @@ export default {
     },
 
     bolder: {
+      type: Boolean,
+      default: false
+    },
+
+    round: {
       type: Boolean,
       default: false
     },
@@ -97,6 +118,11 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+
+    buttonClass: {
+      type: String,
+      default: null
     }
   },
 
@@ -285,6 +311,12 @@ $size-ultra-large-padding-sides: 44px;
           background-color: rgba($color-black, 0.15);
         }
       }
+    }
+  }
+
+  &--round {
+    #{$c}__inner {
+      border-radius: 100%;
     }
   }
 
