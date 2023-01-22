@@ -102,7 +102,7 @@ $c: ".c-base-action";
     margin: 0;
     padding: 0 8px;
     min-width: 36px;
-    height: 30px;
+    height: 34px;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -131,7 +131,7 @@ $c: ".c-base-action";
     }
 
     #{$c}__dropdown {
-      margin-left: 7px;
+      margin-inline-start: 7px;
     }
   }
 
