@@ -28,14 +28,31 @@ layout-toolbar(
     form.a-inbox-form__compose(
       @submit.prevent="onSubmit"
     )
-      form-field(
-        v-model="message"
-        class="a-inbox-form__compose-field"
-        type="textarea"
-        name="message"
-        placeholder="Message Valerian"
-        size="large"
-      )
+      .a-inbox-form__compose-inner
+        form-field(
+          v-model="message"
+          class="a-inbox-form__compose-field"
+          type="textarea"
+          name="message"
+          placeholder="Message Valerian"
+          size="large"
+        )
+
+        base-button(
+          size="custom"
+          type="submit"
+          class="a-inbox-form__compose-send"
+          button-class="a-inbox-form__compose-send-button"
+          round
+        )
+          template(
+            v-slot:custom
+          )
+            base-icon(
+              name="paperplane.fill"
+              size="18px"
+              class="a-inbox-form__compose-send-icon"
+            )
 
   template(
     v-slot:right
@@ -93,10 +110,20 @@ $form-compose-padding-block: 10px;
 $form-compose-field-height-minimum: (
   $size-inbox-form-height - (2 * $form-compose-padding-block)
 );
+$form-compose-send-position-edges: 6px;
+$form-compose-send-button-size: (
+  $form-compose-field-height-minimum -
+    (2 * ($form-compose-send-position-edges - 1px))
+);
 
 .a-inbox-form {
   #{$c}__compose {
     margin-inline: 10px;
+    padding-block: $form-compose-padding-block;
+
+    #{$c}__compose-inner {
+      position: relative;
+    }
 
     &,
     #{$c}__compose-field {
@@ -108,7 +135,30 @@ $form-compose-field-height-minimum: (
       height: $form-compose-field-height-minimum;
       min-height: $form-compose-field-height-minimum;
       max-height: 220px;
-      padding-block: $form-compose-padding-block;
+
+      textarea {
+        border-radius: ceil($form-compose-field-height-minimum / 2);
+        padding-inline-end: 60px; /* TODO: from variable */
+      }
+    }
+
+    #{$c}__compose-send {
+      position: absolute;
+      inset-block-start: $form-compose-send-position-edges;
+      inset-inline-end: $form-compose-send-position-edges;
+
+      #{$c}__compose-send-button {
+        width: $form-compose-send-button-size;
+        height: $form-compose-send-button-size;
+        display: flex;
+        align-content: center;
+        justify-content: center;
+      }
+
+      #{$c}__compose-send-icon {
+        fill: $color-white;
+        margin-inline-start: -2px;
+      }
     }
   }
 }
