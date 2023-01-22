@@ -14,12 +14,8 @@ import { Strophe } from "strophe.js";
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 
-/**************************************************************************
- * CONSTANTS
- * ************************************************************************* */
-
-// TODO: move to configuration
-const HOST_WEBSOCKET = "wss://chat.prose.org/websocket/";
+// PROJECT: COMMONS
+import CONFIG from "@/commons/config";
 
 /**************************************************************************
  * TYPES
@@ -43,6 +39,13 @@ class BrokerClient {
     password: string,
     remember = true
   ): Promise<void> {
+    // Acquire relay host
+    const relayHost = CONFIG.hosts.websocket || null;
+
+    if (!relayHost) {
+      throw new Error("No relay host configured");
+    }
+
     // Incomplete parameters?
     if (!jid) {
       throw new Error("Please provide a Jabber ID");
@@ -65,7 +68,7 @@ class BrokerClient {
     }
 
     // Create connection
-    this.__connection = new Strophe.Connection(HOST_WEBSOCKET, {
+    this.__connection = new Strophe.Connection(relayHost, {
       protocol: "wss"
     });
 
