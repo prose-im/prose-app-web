@@ -26,6 +26,7 @@ div(
     :value="value"
     :placeholder="placeholder"
     :disabled="disabled"
+    rows="1"
     ref="field"
   )
 
@@ -208,45 +209,85 @@ $size-ultra-large-padding-sides: 24px;
   &--medium {
     #{$c}__inner {
       font-size: 11px;
-      line-height: 25px;
       padding-inline-start: $size-medium-padding-sides;
       padding-inline-end: $size-medium-padding-sides;
+
+      &--input {
+        line-height: 25px;
+      }
+
+      &--textarea {
+        line-height: 16px;
+        padding-block: 7px;
+      }
     }
   }
 
   &--mid-medium {
     #{$c}__inner {
       font-size: 13px;
-      line-height: 32px;
       padding-inline-start: $size-mid-medium-padding-sides;
       padding-inline-end: $size-mid-medium-padding-sides;
+
+      &--input {
+        line-height: 32px;
+      }
+
+      &--textarea {
+        line-height: 18px;
+        padding-block: 9px;
+      }
     }
   }
 
   &--large {
     #{$c}__inner {
       font-size: 15px;
-      line-height: 42px;
       padding-inline-start: $size-large-padding-sides;
       padding-inline-end: $size-large-padding-sides;
+
+      &--input {
+        line-height: 42px;
+      }
+
+      &--textarea {
+        line-height: 20px;
+        padding-block: 11px;
+      }
     }
   }
 
   &--mid-large {
     #{$c}__inner {
       font-size: 16px;
-      line-height: 48px;
       padding-inline-start: $size-mid-large-padding-sides;
       padding-inline-end: $size-mid-large-padding-sides;
+
+      &--input {
+        line-height: 48px;
+      }
+
+      &--textarea {
+        line-height: 21px;
+        padding-block: 12px;
+      }
     }
   }
 
   &--ultra-large {
     #{$c}__inner {
       font-size: 17px;
-      line-height: 58px;
       padding-inline-start: $size-ultra-large-padding-sides;
       padding-inline-end: $size-ultra-large-padding-sides;
+
+      &--input {
+        line-height: 58px;
+      }
+
+      &--textarea {
+        line-height: 22px;
+        padding-block: 13px;
+      }
     }
   }
 
