@@ -19,6 +19,9 @@ import App from "@/App.vue";
 import router from "@/router";
 
 // PROJECT: BOOTSTRAP
+import "@/bootstrap/icons";
+
+import BootstrapConfig from "@/bootstrap/config";
 import BootstrapComponents from "@/bootstrap/components";
 import BootstrapPlugins from "@/bootstrap/plugins";
 
@@ -34,6 +37,7 @@ app.use(router);
  * BOOTSTRAP
  * ************************************************************************* */
 
+BootstrapConfig.init(app);
 BootstrapComponents.init(app);
 BootstrapPlugins.init(app);
 

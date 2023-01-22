@@ -8,11 +8,18 @@
  * IMPORTS
  * ************************************************************************* */
 
+import fs from "fs";
 import path from "path";
+import merge from "lodash.merge";
 import vue from "@vitejs/plugin-vue";
 import vitePugPlugin from "vite-plugin-pug-transformer";
 import { viteStaticCopy as viteStaticCopyPlugin } from "vite-plugin-static-copy";
+import { createSvgIconsPlugin as viteSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { getInstalledPathSync } from "get-installed-path";
+
+import commonConfig from "./config/common";
+import developmentConfig from "./config/development";
+import productionConfig from "./config/production";
 
 /**************************************************************************
  * CONSTANTS
@@ -25,6 +32,8 @@ const PROSE_CORE_VIEWS_PATH = getInstalledPathSync(
     local: true
   }
 );
+
+const ASSETS_ICONS_PATH = path.join(__dirname, "src/assets/images/icons/");
 
 /**************************************************************************
  * EXPORTS
@@ -74,6 +83,14 @@ export default {
           dest: "includes/views"
         }
       ]
+    }),
+
+    viteSvgIconsPlugin({
+      iconDirs: [ASSETS_ICONS_PATH],
+      symbolId: "icon-[name]",
+      inject: "body-last",
+      customDomId: "__svg__icons__",
+      svgoOptions: false
     })
   ],
 
@@ -88,5 +105,29 @@ export default {
         `
       }
     }
+  },
+
+  define: {
+    __CONFIG__: (function () {
+      const config = {};
+
+      // Merge common configuration
+      merge(config, commonConfig);
+
+      // Merge per-environment configuration
+      switch (process.env.NODE_ENV) {
+        case "production": {
+          merge(config, productionConfig);
+
+          break;
+        }
+
+        default: {
+          merge(config, developmentConfig);
+        }
+      }
+
+      return config;
+    })()
   }
 };

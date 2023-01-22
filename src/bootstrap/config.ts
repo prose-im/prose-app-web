@@ -11,17 +11,17 @@
 // NPM
 import { App } from "vue";
 
-// PROJECT: UTILITIES
-import logger from "@/utilities/logger";
+// PROJECT: COMMONS
+import CONFIG from "@/commons/config";
 
 /**************************************************************************
- * PLUGINS
+ * CONFIG
  * ************************************************************************* */
 
-class BootstrapPlugins {
+class BootstrapConfig {
   init(app: App): void {
-    // Vue Logger
-    app.use(logger);
+    // Global configuration
+    app.config.globalProperties.$CONFIG = CONFIG;
   }
 }
 
@@ -29,4 +29,4 @@ class BootstrapPlugins {
  * EXPORTS
  * ************************************************************************* */
 
-export default new BootstrapPlugins();
+export default new BootstrapConfig();

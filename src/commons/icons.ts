@@ -8,25 +8,17 @@
  * IMPORTS
  * ************************************************************************* */
 
-// NPM
-import { App } from "vue";
-
-// PROJECT: UTILITIES
-import logger from "@/utilities/logger";
+// VIRTUAL
+import iconIds from "virtual:svg-icons-names";
 
 /**************************************************************************
- * PLUGINS
+ * CONSTANTS
  * ************************************************************************* */
 
-class BootstrapPlugins {
-  init(app: App): void {
-    // Vue Logger
-    app.use(logger);
-  }
-}
+const ICONS = new Set(iconIds);
 
 /**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
-export default new BootstrapPlugins();
+export default ICONS;
