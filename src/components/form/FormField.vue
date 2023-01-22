@@ -19,12 +19,24 @@ div(
     }
   ]`
 )
-  input.c-form-field__input(
+  textarea.c-form-field__inner.c-form-field__inner--textarea(
+    v-if="type === 'textarea'"
+    @input="onFieldInput"
+    :name="name"
+    :value="value"
+    :placeholder="placeholder"
+    :disabled="disabled"
+    ref="field"
+  )
+
+  input.c-form-field__inner.c-form-field__inner--input(
+    v-else
     @input="onFieldInput"
     :type="type"
     :name="name"
     :value="value"
     :placeholder="placeholder"
+    :disabled="disabled"
     ref="field"
   )
 </template>
@@ -46,7 +58,18 @@ export default {
     type: {
       type: String,
       default: "text",
-      required: true
+      required: true,
+
+      validator(x: string) {
+        return [
+          "text",
+          "password",
+          "number",
+          "email",
+          "url",
+          "textarea"
+        ].includes(x);
+      }
     },
 
     size: {
@@ -140,12 +163,12 @@ $size-ultra-large-padding-sides: 24px;
 .c-form-field {
   display: inline-block;
 
-  #{$c}__input {
+  #{$c}__inner {
     background-color: $color-white;
     border: 1px solid rgba($color-black, 0.1);
     color: $color-text-primary;
     outline: 2px solid transparent;
-    text-align: center;
+    font-family: inherit;
     width: 100%;
     transition: all 150ms linear;
     transition-property: box-shadow, border-color, outline-color;
@@ -153,6 +176,15 @@ $size-ultra-large-padding-sides: 24px;
     box-sizing: border-box;
     box-shadow: 0 3px 4px 0 rgba($color-black, 0.01),
       inset 0 1px 2px 0 rgba($color-black, 0.04);
+
+    &--input {
+      text-align: center;
+    }
+
+    &--textarea {
+      height: 100%;
+      resize: none;
+    }
 
     &::placeholder {
       color: $color-text-secondary;
@@ -174,8 +206,8 @@ $size-ultra-large-padding-sides: 24px;
   // --> SIZES <--
 
   &--medium {
-    #{$c}__input {
-      font-size: 10px;
+    #{$c}__inner {
+      font-size: 11px;
       line-height: 25px;
       padding-inline-start: $size-medium-padding-sides;
       padding-inline-end: $size-medium-padding-sides;
@@ -183,8 +215,8 @@ $size-ultra-large-padding-sides: 24px;
   }
 
   &--mid-medium {
-    #{$c}__input {
-      font-size: 12px;
+    #{$c}__inner {
+      font-size: 13px;
       line-height: 32px;
       padding-inline-start: $size-mid-medium-padding-sides;
       padding-inline-end: $size-mid-medium-padding-sides;
@@ -192,8 +224,8 @@ $size-ultra-large-padding-sides: 24px;
   }
 
   &--large {
-    #{$c}__input {
-      font-size: 14px;
+    #{$c}__inner {
+      font-size: 15px;
       line-height: 42px;
       padding-inline-start: $size-large-padding-sides;
       padding-inline-end: $size-large-padding-sides;
@@ -201,8 +233,8 @@ $size-ultra-large-padding-sides: 24px;
   }
 
   &--mid-large {
-    #{$c}__input {
-      font-size: 15px;
+    #{$c}__inner {
+      font-size: 16px;
       line-height: 48px;
       padding-inline-start: $size-mid-large-padding-sides;
       padding-inline-end: $size-mid-large-padding-sides;
@@ -210,8 +242,8 @@ $size-ultra-large-padding-sides: 24px;
   }
 
   &--ultra-large {
-    #{$c}__input {
-      font-size: 16px;
+    #{$c}__inner {
+      font-size: 17px;
       line-height: 58px;
       padding-inline-start: $size-ultra-large-padding-sides;
       padding-inline-end: $size-ultra-large-padding-sides;
@@ -227,7 +259,7 @@ $size-ultra-large-padding-sides: 24px;
       cursor: wait;
     }
 
-    #{$c}__input {
+    #{$c}__inner {
       background-color: rgba($color-base-grey-light, 0.6);
       color: $color-text-secondary;
       pointer-events: none;
