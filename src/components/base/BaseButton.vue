@@ -117,7 +117,7 @@ export default {
      STYLE
      ********************************************************************** -->
 
-<style lang="scss" scoped>
+<style lang="scss">
 $c: ".c-base-button";
 
 // VARIABLES

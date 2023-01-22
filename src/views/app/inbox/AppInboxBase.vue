@@ -10,7 +10,9 @@
 
 <template lang="pug">
 .v-app-inbox-base
-  .v-app-inbox-base__topbar
+  inbox-topbar(
+    class="v-app-inbox-base__topbar"
+  )
 
   .v-app-inbox-base__content
     .v-app-inbox-base__messages
@@ -34,12 +36,13 @@
 import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
 
 // PROJECT: ASSEMBLIES
+import InboxTopbar from "@/assemblies/inbox/InboxTopbar.vue";
 import InboxUserinfo from "@/assemblies/inbox/InboxUserinfo.vue";
 
 export default {
   name: "AppInboxBase",
 
-  components: { InboxMessaging, InboxUserinfo }
+  components: { InboxMessaging, InboxTopbar, InboxUserinfo }
 };
 </script>
 
@@ -60,6 +63,7 @@ $c: ".v-app-inbox-base";
     background-color: $color-base-grey-light;
     border-bottom: 1px solid $color-border-secondary;
     height: 60px;
+    padding: 0 26px;
     flex: 0 0 auto;
   }
 
