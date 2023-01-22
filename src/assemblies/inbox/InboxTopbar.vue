@@ -19,12 +19,14 @@ layout-toolbar(
       base-action(
         class="a-inbox-topbar__action"
         icon="chevron.left"
+        context="grey"
         size="14px"
       )
 
       base-action(
         class="a-inbox-topbar__action"
         icon="chevron.right"
+        context="grey"
         size="14px"
         disabled
       )
@@ -32,6 +34,7 @@ layout-toolbar(
       base-action(
         class="a-inbox-topbar__action"
         icon="clock"
+        context="grey"
         size="18px"
         dropdown
       )
@@ -71,12 +74,14 @@ layout-toolbar(
       base-action(
         class="a-inbox-topbar__action"
         icon="video"
+        context="grey"
         size="20px"
       )
 
       base-action(
         class="a-inbox-topbar__action"
         icon="info.circle"
+        context="grey"
         size="18px"
         active
       )
@@ -89,6 +94,7 @@ layout-toolbar(
       base-action(
         class="a-inbox-topbar__action"
         icon="magnifyingglass"
+        context="grey"
         size="17px"
       )
 </template>

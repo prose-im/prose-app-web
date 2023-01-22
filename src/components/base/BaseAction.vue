@@ -12,6 +12,7 @@
 div(
   :class=`[
     "c-base-action",
+    "c-base-action--" + context,
     {
       "c-base-action--active": active,
       "c-base-action--disabled": disabled
@@ -52,6 +53,15 @@ export default {
     size: {
       type: String,
       default: "20px"
+    },
+
+    context: {
+      type: String,
+      default: "white",
+
+      validator(x) {
+        return ["white", "grey"].includes(x);
+      }
     },
 
     dropdown: {
@@ -111,16 +121,8 @@ $c: ".c-base-action";
     border-radius: 5px;
     transition: background-color 100ms linear;
 
-    &:hover {
-      background-color: darken($color-base-grey-light, 4%);
-    }
-
-    &:active {
-      background-color: darken($color-base-grey-light, 8%);
-    }
-
     &:focus-visible {
-      outline-color: rgba($color-base-purple-light, 0.3);
+      outline-color: rgba($color-base-purple-normal, 0.3);
       outline-offset: 1px;
     }
 
@@ -139,10 +141,20 @@ $c: ".c-base-action";
 
   &--active {
     #{$c}__inner {
-      background-color: darken($color-base-grey-light, 3%);
-
       #{$c}__icon {
         fill: darken($color-base-blue-normal, 6%);
+      }
+    }
+
+    &#{$c}--white {
+      #{$c}__inner {
+        background-color: $color-base-grey-light;
+      }
+    }
+
+    &#{$c}--grey {
+      #{$c}__inner {
+        background-color: darken($color-base-grey-light, 3%);
       }
     }
   }
@@ -153,6 +165,32 @@ $c: ".c-base-action";
     #{$c}__inner {
       pointer-events: none;
       opacity: 0.35;
+    }
+  }
+
+  // --> CONTEXTS <--
+
+  &--white {
+    #{$c}__inner {
+      &:hover {
+        background-color: darken($color-base-grey-light, 1%);
+      }
+
+      &:active {
+        background-color: darken($color-base-grey-light, 4%);
+      }
+    }
+  }
+
+  &--grey {
+    #{$c}__inner {
+      &:hover {
+        background-color: darken($color-base-grey-light, 4%);
+      }
+
+      &:active {
+        background-color: darken($color-base-grey-light, 8%);
+      }
     }
   }
 }
