@@ -138,7 +138,7 @@ $form-compose-send-button-size: (
       max-height: 220px;
 
       textarea {
-        border-radius: ceil($form-compose-field-height-minimum / 2);
+        border-radius: ceil(calc($form-compose-field-height-minimum / 2));
         padding-inline-end: (
           $form-compose-send-button-size + $form-compose-send-position-edges +
             2px
