@@ -36,6 +36,7 @@ layout-toolbar(
           name="message"
           placeholder="Message Valerian"
           size="large"
+          autogrow
         )
 
         base-button(
@@ -132,13 +133,10 @@ $form-compose-send-button-size: (
     }
 
     #{$c}__compose-field {
-      /* TODO: remove base height please */
-      height: $form-compose-field-height-minimum;
-      min-height: $form-compose-field-height-minimum;
-      max-height: 220px;
-
       textarea {
         border-radius: ceil(calc($form-compose-field-height-minimum / 2));
+        min-height: $form-compose-field-height-minimum;
+        max-height: 220px;
         padding-inline-end: (
           $form-compose-send-button-size + $form-compose-send-position-edges +
             2px

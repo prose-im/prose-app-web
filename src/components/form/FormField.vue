@@ -98,6 +98,11 @@ export default {
       default: null
     },
 
+    autogrow: {
+      type: Boolean,
+      default: false
+    },
+
     disabled: {
       type: Boolean,
       default: false
@@ -125,11 +130,36 @@ export default {
 
       handler(value) {
         this.value = value;
+
+        // Refresh auto-grow (if enabled)
+        this.refreshAutogrow();
       }
     }
   },
 
+  mounted() {
+    // Refresh auto-grow (if enabled)
+    this.refreshAutogrow();
+  },
+
   methods: {
+    // --> HELPERS <--
+
+    refreshAutogrow(): void {
+      if (this.autogrow === true) {
+        const field = this.$refs.field || null;
+
+        if (field !== null) {
+          // Reset height to default (so that later measured scroll height \
+          //   reports its real value)
+          field.style.height = "auto";
+
+          // Assign new field height
+          field.style.height = `${field.scrollHeight}px`;
+        }
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onFieldInput(): void {
