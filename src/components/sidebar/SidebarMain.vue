@@ -71,10 +71,10 @@
       name="Guillaume"
     )
 
-    list-item(
+    sidebar-main-item-add(
+      title="Add a member"
       important
     )
-      | Add a member
 
   list-disclosure(
     :list-class="disclosureListClass"
@@ -85,10 +85,10 @@
       name="Rémi"
     )
 
-    list-item(
+    sidebar-main-item-add(
+      title="Connect with someone"
       important
     )
-      | Connect with someone
 
   list-disclosure(
     :list-class="disclosureListClass"
@@ -111,10 +111,10 @@
       name="support"
     )
 
-    list-item(
+    sidebar-main-item-add(
+      title="Add a group"
       important
     )
-      | Add a group
 </template>
 
 <!-- **********************************************************************
@@ -126,6 +126,7 @@
 import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
 import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
 import SidebarMainItemSection from "@/components/sidebar/SidebarMainItemSection.vue";
+import SidebarMainItemAdd from "@/components/sidebar/SidebarMainItemAdd.vue";
 
 export default {
   name: "SidebarMain",
@@ -133,7 +134,8 @@ export default {
   components: {
     SidebarMainItemUser,
     SidebarMainItemChannel,
-    SidebarMainItemSection
+    SidebarMainItemSection,
+    SidebarMainItemAdd
   },
 
   props: {
