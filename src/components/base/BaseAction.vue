@@ -15,7 +15,8 @@ div(
     "c-base-action--" + context,
     {
       "c-base-action--active": active,
-      "c-base-action--disabled": disabled
+      "c-base-action--disabled": disabled,
+      "c-base-action--auto-width": autoWidth
     }
   ]`
 )
@@ -25,6 +26,9 @@ div(
     base-icon(
       :name="icon"
       :size="size"
+      :style=`{
+        transform: iconTransform
+      }`
       class="c-base-action__icon"
     )
 
@@ -64,6 +68,15 @@ export default {
       }
     },
 
+    rotate: {
+      type: String,
+      default: null,
+
+      validator(x) {
+        return ["-90deg", "90deg"].includes(x);
+      }
+    },
+
     dropdown: {
       type: Boolean,
       default: false
@@ -77,10 +90,25 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+
+    autoWidth: {
+      type: Boolean,
+      default: false
     }
   },
 
   emits: ["click"],
+
+  computed: {
+    iconTransform() {
+      if (this.rotate) {
+        return `rotate(${this.rotate})`;
+      }
+
+      return null;
+    }
+  },
 
   methods: {
     // --> EVENT LISTENERS <--
@@ -165,6 +193,12 @@ $c: ".c-base-action";
     #{$c}__inner {
       pointer-events: none;
       opacity: 0.35;
+    }
+  }
+
+  &--auto-width {
+    #{$c}__inner {
+      min-width: auto;
     }
   }
 

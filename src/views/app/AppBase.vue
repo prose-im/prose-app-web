@@ -11,9 +11,13 @@
 <template lang="pug">
 .v-app-base
   .v-app-base__sidebar
-    .v-app-base__sidebar-main
+    sidebar-main(
+      class="v-app-base__sidebar-main"
+    )
 
-    .v-app-base__sidebar-context
+    sidebar-context(
+      class="v-app-base__sidebar-context"
+    )
 
   .v-app-base__content
     router-view
@@ -24,8 +28,14 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import SidebarMain from "@/components/sidebar/SidebarMain.vue";
+import SidebarContext from "@/components/sidebar/SidebarContext.vue";
+
 export default {
-  name: "AppBase"
+  name: "AppBase",
+
+  components: { SidebarMain, SidebarContext }
 };
 </script>
 
@@ -49,8 +59,28 @@ $c: ".v-app-base";
     display: flex;
     flex-direction: column;
 
+    #{$c}__sidebar-main,
+    #{$c}__sidebar-context {
+      padding-inline: 20px;
+    }
+
     #{$c}__sidebar-main {
       flex: 1;
+      position: relative;
+
+      &:after {
+        content: "";
+        background-image: linear-gradient(
+          180deg,
+          rgba($color-black, 0) 0%,
+          rgba($color-black, 0.01) 100%
+        );
+        height: 6px;
+        position: absolute;
+        inset-inline: 0;
+        inset-block-end: 0;
+        pointer-events: none;
+      }
     }
 
     #{$c}__sidebar-context {

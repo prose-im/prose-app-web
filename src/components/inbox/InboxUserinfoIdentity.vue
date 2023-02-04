@@ -10,7 +10,11 @@
 
 <template lang="pug">
 .c-inbox-userinfo-identity
-  .c-inbox-userinfo-identity__avatar
+  base-avatar(
+    class="c-inbox-userinfo-identity__avatar"
+    jid="valerian@prose.org"
+    size="100px"
+  )
 
   .c-inbox-userinfo-identity__details
     p.c-inbox-userinfo-identity__name.u-bold
@@ -46,24 +50,11 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-userinfo-identity";
 
-// VARIABLES
-$avatar-size: 100px;
-
 .c-inbox-userinfo-identity {
   text-align: center;
 
   #{$c}__avatar {
-    background-color: $color-base-grey-light;
-    background-image: url("@/assets/images/components/inbox/InboxUserinfoIdentity/avatar.webp");
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    width: $avatar-size;
-    height: $avatar-size;
     margin-block-end: 16px;
-    display: inline-block;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px 0 rgba($color-black, 0.08);
   }
 
   #{$c}__details {
