@@ -112,10 +112,9 @@ $form-compose-field-height-minimum: (
   $size-inbox-form-height - (2 * $form-compose-padding-block)
 );
 
-$form-compose-send-position-edges: 6px;
+$form-compose-send-position-edges: 5px;
 $form-compose-send-button-size: (
-  $form-compose-field-height-minimum -
-    (2 * ($form-compose-send-position-edges - 1px))
+  $form-compose-field-height-minimum - (2 * $form-compose-send-position-edges)
 );
 
 .a-inbox-form {

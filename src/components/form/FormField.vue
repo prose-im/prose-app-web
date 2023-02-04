@@ -214,6 +214,7 @@ $size-ultra-large-padding-sides: 24px;
 
     &--textarea {
       height: 100%;
+      margin: 0;
       resize: none;
     }
 
