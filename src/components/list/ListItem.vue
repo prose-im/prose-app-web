@@ -13,7 +13,8 @@ div(
   :class=`[
     "c-list-item",
     {
-      "c-list-item--active": active
+      "c-list-item--active": active,
+      "c-list-item--important": important
     }
   ]`
 )
@@ -26,7 +27,8 @@ div(
     :class=`[
       "c-list-item__label",
       {
-        "u-medium": important
+        "u-medium": emphasis,
+        "u-bold": important
       }
     ]`
   )
@@ -50,6 +52,11 @@ export default {
 
   props: {
     active: {
+      type: Boolean,
+      default: false
+    },
+
+    emphasis: {
       type: Boolean,
       default: false
     },
@@ -122,6 +129,24 @@ $c: ".c-list-item";
 
     #{$c}__label {
       color: $color-white;
+    }
+  }
+
+  &--important {
+    &:nth-child(odd) {
+      background-color: darken($color-base-grey-light, 0.75%);
+    }
+
+    &:nth-child(even) {
+      background-color: lighten($color-base-grey-light, 0.25%);
+    }
+
+    &:hover {
+      background-color: darken($color-base-grey-light, 2.5%);
+    }
+
+    &:active {
+      background-color: darken($color-base-grey-light, 3.5%);
     }
   }
 }
