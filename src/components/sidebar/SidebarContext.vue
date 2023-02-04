@@ -10,15 +10,27 @@
 
 <template lang="pug">
 .c-sidebar-context
-  base-avatar(
-    :presence-class="avatarPresenceClass"
+  layout-avatar-presence(
     class="c-sidebar-context__avatar"
-    jid="baptiste@prose.org"
-    size="32px"
-    presence-type="available"
-    presence-show="chat"
-    presence-size="small"
+    :presence-class="avatarPresenceClass"
   )
+    template(
+      v-slot:avatar
+    )
+      base-avatar(
+        jid="baptiste@prose.org"
+        size="32px"
+        shadow="light"
+      )
+
+    template(
+      v-slot:presence
+    )
+      base-presence(
+        type="available"
+        show="chat"
+        size="small"
+      )
 
   .c-sidebar-context__current
     p.c-sidebar-context__team.u-bold
@@ -64,9 +76,6 @@ export default {
 
 <style lang="scss">
 $c: ".c-sidebar-context";
-
-// VARIABLES
-/* TODO */
 
 .c-sidebar-context {
   display: flex;
