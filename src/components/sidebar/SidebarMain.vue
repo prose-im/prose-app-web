@@ -15,17 +15,25 @@
     title="Spotlight"
     expanded
   )
-    list-item
-      | Unread stack
+    sidebar-main-item-section(
+      title="Unread stack"
+      icon="tray.2"
+    )
 
-    list-item
-      | Replies
+    sidebar-main-item-section(
+      title="Replies"
+      icon="arrowshape.turn.up.left.2"
+    )
 
-    list-item
-      | Direct messages
+    sidebar-main-item-section(
+      title="Direct messages"
+      icon="message"
+    )
 
-    list-item
-      | People & groups
+    sidebar-main-item-section(
+      title="People & groups"
+      icon="text.book.closed"
+    )
 
   list-disclosure(
     :list-class="disclosureListClass"
@@ -87,17 +95,21 @@
     title="Groups"
     expanded
   )
-    list-item
-      | bugs
+    sidebar-main-item-channel(
+      name="bugs"
+    )
 
-    list-item
-      | constellation
+    sidebar-main-item-channel(
+      name="constellation"
+    )
 
-    list-item
-      | general
+    sidebar-main-item-channel(
+      name="general"
+    )
 
-    list-item
-      | support
+    sidebar-main-item-channel(
+      name="support"
+    )
 
     list-item(
       important
@@ -112,11 +124,17 @@
 <script lang="ts">
 // PROJECT: COMPONENTS
 import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
+import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
+import SidebarMainItemSection from "@/components/sidebar/SidebarMainItemSection.vue";
 
 export default {
   name: "SidebarMain",
 
-  components: { SidebarMainItemUser },
+  components: {
+    SidebarMainItemUser,
+    SidebarMainItemChannel,
+    SidebarMainItemSection
+  },
 
   props: {
     disclosureListClass: {
