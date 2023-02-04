@@ -17,6 +17,7 @@
 
     sidebar-context(
       class="v-app-base__sidebar-context"
+      avatar-presence-class="v-app-base__sidebar-context-presence"
     )
 
   .v-app-base__content
@@ -51,8 +52,12 @@ $c: ".v-app-base";
   width: 100%;
   display: flex;
 
-  #{$c}__sidebar {
+  #{$c}__sidebar,
+  #{$c}__sidebar-context #{$c}__sidebar-context-presence {
     background-color: $color-base-purple-ultra-light;
+  }
+
+  #{$c}__sidebar {
     border-inline-end: 1px solid $color-border-secondary;
     width: 300px;
     flex: 0 0 auto;

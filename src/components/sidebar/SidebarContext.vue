@@ -11,9 +11,13 @@
 <template lang="pug">
 .c-sidebar-context
   base-avatar(
+    :presence-class="avatarPresenceClass"
     class="c-sidebar-context__avatar"
     jid="baptiste@prose.org"
     size="32px"
+    presence-type="available"
+    presence-show="chat"
+    presence-size="small"
   )
 
   .c-sidebar-context__current
@@ -43,9 +47,14 @@
 
 <script lang="ts">
 export default {
-  name: "SidebarContext"
+  name: "SidebarContext",
 
-  /* TODO */
+  props: {
+    avatarPresenceClass: {
+      type: String,
+      default: null
+    }
+  }
 };
 </script>
 
