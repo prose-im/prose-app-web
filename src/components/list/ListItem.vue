@@ -89,6 +89,9 @@ $c: ".c-list-item";
     min-width: 22px;
     padding-inline-end: 7px;
     flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   #{$c}__label {
