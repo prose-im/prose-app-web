@@ -94,6 +94,10 @@ $sidebar-items-padding-sides: 20px;
 
       #{$c}__sidebar-main-list {
         margin-inline: (-1 * $sidebar-items-padding-sides);
+
+        > * {
+          padding-inline: $sidebar-items-padding-sides;
+        }
       }
     }
 

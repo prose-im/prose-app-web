@@ -25,24 +25,48 @@
     title="Favorites"
     expanded
   )
-    list-item
-    list-item
+    sidebar-main-item-user(
+      jid="valerian@prose.org"
+      name="Valerian"
+      active
+    )
+
+    sidebar-main-item-user(
+      jid="julien@prose.org"
+      name="Julien"
+    )
 
   list-disclosure(
     :list-class="disclosureListClass"
     title="Team members"
     expanded
   )
-    list-item
-    list-item
-    list-item
+    sidebar-main-item-user(
+      jid="marc@prose.org"
+      name="Marc"
+    )
+
+    sidebar-main-item-user(
+      jid="saif@prose.org"
+      name="Saif"
+    )
+
+    sidebar-main-item-user(
+      jid="guillaume@prose.org"
+      name="Guillaume"
+    )
+
     list-item
 
   list-disclosure(
     :list-class="disclosureListClass"
     title="Other contacts"
   )
-    list-item
+    sidebar-main-item-user(
+      jid="remi@prose.org"
+      name="Rémi"
+    )
+
     list-item
 
   list-disclosure(
@@ -62,8 +86,13 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
+
 export default {
   name: "SidebarMain",
+
+  components: { SidebarMainItemUser },
 
   props: {
     disclosureListClass: {
@@ -85,6 +114,10 @@ $c: ".c-sidebar-main";
 /* TODO */
 
 .c-sidebar-main {
-  /* TODO */
+  #{$c}__item {
+    #{$c}__item-avatar {
+      display: block;
+    }
+  }
 }
 </style>

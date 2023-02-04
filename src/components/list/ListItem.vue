@@ -9,7 +9,30 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-list-item
+div(
+  :class=`[
+    "c-list-item",
+    {
+      "c-list-item--active": active
+    }
+  ]`
+)
+  .c-list-item__icon(
+    v-if="$slots.icon"
+  )
+    slot(
+      name="icon"
+    )
+
+  .c-list-item__label
+    slot
+
+  .c-list-item__count(
+    v-if="$slots.count"
+  )
+    slot(
+      name="count"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -18,9 +41,14 @@
 
 <script lang="ts">
 export default {
-  name: "ListItem"
+  name: "ListItem",
 
-  /* TODO */
+  props: {
+    active: {
+      type: Boolean,
+      default: false
+    }
+  }
 };
 </script>
 
@@ -31,17 +59,51 @@ export default {
 <style lang="scss">
 $c: ".c-list-item";
 
-// VARIABLES
-/* TODO */
-
 .c-list-item {
-  border-color: $color-base-grey-normal;
-  border-style: solid;
-  border-block-start-width: 1px;
+  background-color: transparent;
   height: 34px;
+  padding-inline: 12px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
 
-  &:last-child {
-    border-block-end-width: 1px;
+  &:hover {
+    background-color: darken($color-base-grey-light, 1%);
+  }
+
+  &:active {
+    background-color: darken($color-base-grey-light, 2%);
+  }
+
+  #{$c}__icon {
+    margin-inline-end: 7px;
+  }
+
+  #{$c}__label {
+    color: $color-text-primary;
+    font-size: 14px;
+  }
+
+  #{$c}__count {
+    margin-inline-start: 6px;
+  }
+
+  // --> BOOLEANS <--
+
+  &--active {
+    background-color: $color-base-blue-normal;
+
+    &:hover {
+      background-color: darken($color-base-blue-normal, 4%);
+    }
+
+    &:active {
+      background-color: darken($color-base-blue-normal, 6%);
+    }
+
+    #{$c}__label {
+      color: $color-white;
+    }
   }
 }
 </style>
