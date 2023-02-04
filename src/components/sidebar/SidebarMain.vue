@@ -16,9 +16,16 @@
     expanded
   )
     list-item
+      | Unread stack
+
     list-item
+      | Replies
+
     list-item
+      | Direct messages
+
     list-item
+      | People & groups
 
   list-disclosure(
     :list-class="disclosureListClass"
@@ -57,6 +64,7 @@
     )
 
     list-item
+      | Add a member
 
   list-disclosure(
     :list-class="disclosureListClass"
@@ -68,6 +76,7 @@
     )
 
     list-item
+      | Connect with someone
 
   list-disclosure(
     :list-class="disclosureListClass"
@@ -75,10 +84,19 @@
     expanded
   )
     list-item
+      | bugs
+
     list-item
+      | constellation
+
     list-item
+      | general
+
     list-item
+      | support
+
     list-item
+      | Add a group
 </template>
 
 <!-- **********************************************************************
