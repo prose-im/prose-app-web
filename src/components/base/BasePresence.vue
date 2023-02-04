@@ -32,7 +32,7 @@ export default {
       type: String,
       required: true,
 
-      validator(x) {
+      validator(x: string) {
         return [
           "available",
           "unavailable",
@@ -50,7 +50,7 @@ export default {
       type: String,
       required: true,
 
-      validator(x) {
+      validator(x: string) {
         return ["away", "chat", "dnd", "xa"].includes(x);
       }
     },
@@ -59,7 +59,7 @@ export default {
       type: String,
       default: "medium",
 
-      validator(x) {
+      validator(x: string) {
         return ["small", "medium", "large"].includes(x);
       }
     }

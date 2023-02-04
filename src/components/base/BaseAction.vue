@@ -63,7 +63,7 @@ export default {
       type: String,
       default: "white",
 
-      validator(x) {
+      validator(x: string) {
         return ["white", "grey"].includes(x);
       }
     },
@@ -72,7 +72,7 @@ export default {
       type: String,
       default: null,
 
-      validator(x) {
+      validator(x: string) {
         return ["-90deg", "90deg"].includes(x);
       }
     },
