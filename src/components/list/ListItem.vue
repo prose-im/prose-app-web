@@ -17,14 +17,19 @@ div(
     }
   ]`
 )
-  .c-list-item__icon(
-    v-if="$slots.icon"
-  )
+  .c-list-item__icon
     slot(
       name="icon"
     )
 
-  .c-list-item__label
+  div(
+    :class=`[
+      "c-list-item__label",
+      {
+        "u-medium": important
+      }
+    ]`
+  )
     slot
 
   .c-list-item__count(
@@ -47,6 +52,11 @@ export default {
     active: {
       type: Boolean,
       default: false
+    },
+
+    important: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -61,7 +71,7 @@ $c: ".c-list-item";
 
 .c-list-item {
   background-color: transparent;
-  height: 34px;
+  height: 32px;
   padding-inline: 12px;
   display: flex;
   align-items: center;
@@ -76,7 +86,8 @@ $c: ".c-list-item";
   }
 
   #{$c}__icon {
-    margin-inline-end: 7px;
+    min-width: 22px;
+    padding-inline-end: 7px;
   }
 
   #{$c}__label {

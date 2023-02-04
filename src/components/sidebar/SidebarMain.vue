@@ -63,7 +63,9 @@
       name="Guillaume"
     )
 
-    list-item
+    list-item(
+      important
+    )
       | Add a member
 
   list-disclosure(
@@ -75,7 +77,9 @@
       name="Rémi"
     )
 
-    list-item
+    list-item(
+      important
+    )
       | Connect with someone
 
   list-disclosure(
@@ -95,7 +99,9 @@
     list-item
       | support
 
-    list-item
+    list-item(
+      important
+    )
       | Add a group
 </template>
 
