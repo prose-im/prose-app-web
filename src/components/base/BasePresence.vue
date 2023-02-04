@@ -14,7 +14,10 @@ span(
     "c-base-presence",
     "c-base-presence--" + size,
     "c-base-presence--" + type,
-    "c-base-presence--" + show
+    "c-base-presence--" + show,
+    {
+      "c-base-presence--active": active
+    }
   ]`
 )
 </template>
@@ -51,7 +54,7 @@ export default {
       required: true,
 
       validator(x: string) {
-        return ["away", "chat", "dnd", "xa"].includes(x);
+        return ["none", "away", "chat", "dnd", "xa"].includes(x);
       }
     },
 
@@ -62,6 +65,11 @@ export default {
       validator(x: string) {
         return ["small", "medium", "large"].includes(x);
       }
+    },
+
+    active: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -117,7 +125,17 @@ $type-shows: (
           background-color: $color;
         }
       }
+
+      &#{$c}--active {
+        background-color: $color-white;
+      }
     }
+  }
+
+  // --> BOOLEANS <--
+
+  &--active {
+    border-color: $color-white;
   }
 }
 </style>

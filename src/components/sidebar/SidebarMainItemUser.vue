@@ -26,7 +26,17 @@ list-item(
   template(
     v-slot:default
   )
-    | {{ name }}
+    span.c-sidebar-main-item-user__name
+      | {{ name }}
+
+    base-presence(
+      v-if="presence.type === 'available'"
+      :type="presence.type",
+      :show="presence.show",
+      :active="active"
+      size="small"
+      class="c-sidebar-main-item-user__presence"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -52,6 +62,28 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+
+  computed: {
+    presence() {
+      // TODO: those are fixtures, this data should come somewhere from the \
+      //   store, based on the user JID!
+      if (
+        this.jid.startsWith("v") === true ||
+        this.jid.startsWith("m") === true ||
+        this.jid.startsWith("r") === true
+      ) {
+        return {
+          type: "available",
+          show: "chat"
+        };
+      }
+
+      return {
+        type: "unavailable",
+        show: "none"
+      };
+    }
   }
 };
 </script>
@@ -66,6 +98,11 @@ $c: ".c-sidebar-main-item-user";
 .c-sidebar-main-item-user {
   #{$c}__avatar {
     display: block;
+  }
+
+  #{$c}__presence {
+    margin-inline-start: 5px;
+    margin-block-start: 2px;
   }
 }
 </style>

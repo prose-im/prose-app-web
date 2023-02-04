@@ -88,15 +88,20 @@ $c: ".c-list-item";
   #{$c}__icon {
     min-width: 22px;
     padding-inline-end: 7px;
+    flex: 0 0 auto;
   }
 
   #{$c}__label {
     color: $color-text-primary;
     font-size: 14px;
+    display: flex;
+    align-items: center;
+    flex: 1;
   }
 
   #{$c}__count {
     margin-inline-start: 6px;
+    flex: 0 0 auto;
   }
 
   // --> BOOLEANS <--
