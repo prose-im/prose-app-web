@@ -13,6 +13,7 @@
   .v-app-base__sidebar
     sidebar-main(
       class="v-app-base__sidebar-main"
+      disclosure-list-class="v-app-base__sidebar-main-list"
     )
 
     sidebar-context(
@@ -47,6 +48,9 @@ export default {
 <style lang="scss">
 $c: ".v-app-base";
 
+// VARIABLES
+$sidebar-items-padding-sides: 20px;
+
 .v-app-base {
   height: 100%;
   width: 100%;
@@ -66,10 +70,11 @@ $c: ".v-app-base";
 
     #{$c}__sidebar-main,
     #{$c}__sidebar-context {
-      padding-inline: 20px;
+      padding-inline: $sidebar-items-padding-sides;
     }
 
     #{$c}__sidebar-main {
+      padding-block: 20px;
       flex: 1;
       position: relative;
 
@@ -85,6 +90,10 @@ $c: ".v-app-base";
         inset-inline: 0;
         inset-block-end: 0;
         pointer-events: none;
+      }
+
+      #{$c}__sidebar-main-list {
+        margin-inline: (-1 * $sidebar-items-padding-sides);
       }
     }
 

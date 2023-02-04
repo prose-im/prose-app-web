@@ -120,7 +120,7 @@ $checkbox-size: 24px;
       inset: 0;
       box-sizing: border-box;
       border-radius: 6px;
-      transition: border linear 150ms;
+      transition: border 150ms linear;
     }
 
     &:after {

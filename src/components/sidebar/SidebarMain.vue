@@ -10,6 +10,51 @@
 
 <template lang="pug">
 .c-sidebar-main
+  list-disclosure(
+    :list-class="disclosureListClass"
+    title="Spotlight"
+    expanded
+  )
+    list-item
+    list-item
+    list-item
+    list-item
+
+  list-disclosure(
+    :list-class="disclosureListClass"
+    title="Favorites"
+    expanded
+  )
+    list-item
+    list-item
+
+  list-disclosure(
+    :list-class="disclosureListClass"
+    title="Team members"
+    expanded
+  )
+    list-item
+    list-item
+    list-item
+    list-item
+
+  list-disclosure(
+    :list-class="disclosureListClass"
+    title="Other contacts"
+  )
+    list-item
+    list-item
+
+  list-disclosure(
+    :list-class="disclosureListClass"
+    title="Groups"
+    expanded
+  )
+    list-item
+    list-item
+    list-item
+    list-item
+    list-item
 </template>
 
 <!-- **********************************************************************
@@ -18,9 +63,14 @@
 
 <script lang="ts">
 export default {
-  name: "SidebarMain"
+  name: "SidebarMain",
 
-  /* TODO */
+  props: {
+    disclosureListClass: {
+      type: String,
+      default: null
+    }
+  }
 };
 </script>
 

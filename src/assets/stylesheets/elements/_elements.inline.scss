@@ -12,6 +12,6 @@ a {
   outline: 0;
   color: $color-base-blue-link;
   text-decoration: none;
-  transition: color linear 100ms;
+  transition: color 100ms linear;
   cursor: pointer;
 }
