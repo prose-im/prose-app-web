@@ -18,7 +18,7 @@ list-item(
   )
     base-avatar(
       :jid="jid"
-      class="c-sidebar-main-item-user-avatar"
+      class="c-sidebar-main-item-user__avatar"
       size="22px"
       shadow="none"
     )
