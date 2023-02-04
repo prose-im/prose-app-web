@@ -11,6 +11,7 @@
 <template lang="pug">
 list-item(
   class="c-sidebar-main-item-add"
+  emphasis
 )
   template(
     v-slot:icon

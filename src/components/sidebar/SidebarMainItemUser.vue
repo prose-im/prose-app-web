@@ -11,6 +11,7 @@
 <template lang="pug">
 list-item(
   :active="active"
+  :important="unreadCount > 0"
   class="c-sidebar-main-item-user"
 )
   template(
@@ -21,6 +22,14 @@ list-item(
       class="c-sidebar-main-item-user__avatar"
       size="22px"
       shadow="none"
+    )
+
+  template(
+    v-if="unreadCount > 0"
+    v-slot:count
+  )
+    base-count(
+      :count="unreadCount"
     )
 
   template(
@@ -65,6 +74,20 @@ export default {
   },
 
   computed: {
+    unreadCount() {
+      // TODO: those are fixtures, this data should come somewhere from the \
+      //   store, based on the user JID!
+      if (this.jid.startsWith("m") === true) {
+        return 8;
+      }
+
+      if (this.jid.startsWith("s") === true) {
+        return 15;
+      }
+
+      return 0;
+    },
+
     presence() {
       // TODO: those are fixtures, this data should come somewhere from the \
       //   store, based on the user JID!

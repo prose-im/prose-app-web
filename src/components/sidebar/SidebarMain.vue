@@ -73,7 +73,6 @@
 
     sidebar-main-item-add(
       title="Add a member"
-      important
     )
 
   list-disclosure(
@@ -87,7 +86,6 @@
 
     sidebar-main-item-add(
       title="Connect with someone"
-      important
     )
 
   list-disclosure(
@@ -113,7 +111,6 @@
 
     sidebar-main-item-add(
       title="Add a group"
-      important
     )
 </template>
 
