@@ -11,16 +11,16 @@
 <template lang="pug">
 div(
   :class=`[
-    "c-list-item",
-    "c-list-item--" + size,
-    "c-list-item--color-" + color,
+    "c-list-button",
+    "c-list-button--" + size,
+    "c-list-button--color-" + color,
     {
-      "c-list-item--active": active,
-      "c-list-item--important": important
+      "c-list-button--active": active,
+      "c-list-button--important": important
     }
   ]`
 )
-  .c-list-item__icon(
+  .c-list-button__icon(
     v-if="$slots.icon"
   )
     slot(
@@ -29,7 +29,7 @@ div(
 
   div(
     :class=`[
-      "c-list-item__label",
+      "c-list-button__label",
       {
         "u-medium": emphasis,
         "u-bold": important
@@ -38,7 +38,7 @@ div(
   )
     slot
 
-  .c-list-item__details(
+  .c-list-button__details(
     v-if="$slots.details"
   )
     slot(
@@ -52,7 +52,7 @@ div(
 
 <script lang="ts">
 export default {
-  name: "ListItem",
+  name: "ListButton",
 
   props: {
     size: {
@@ -96,9 +96,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-list-item";
+$c: ".c-list-button";
 
-.c-list-item {
+.c-list-button {
   background-color: transparent;
   display: flex;
   align-items: center;

@@ -9,7 +9,7 @@
      ********************************************************************** -->
 
 <template lang="pug">
-list-item(
+list-button(
   :active="active"
   :important="unreadCount > 0"
   class="c-sidebar-main-item-user"

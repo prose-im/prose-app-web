@@ -9,7 +9,7 @@
      ********************************************************************** -->
 
 <template lang="pug">
-list-item(
+list-button(
   class="c-sidebar-main-item-add"
   emphasis
 )

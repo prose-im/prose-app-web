@@ -9,7 +9,7 @@
      ********************************************************************** -->
 
 <template lang="pug">
-list-item(
+list-button(
   :active="active"
   class="c-sidebar-main-item-channel"
 )

@@ -15,7 +15,7 @@ list-disclosure(
   class="c-inbox-userinfo-actions"
   separated
 )
-  list-item(
+  list-button(
     v-for="action in actions"
     :key="action.id"
     :class=`[
@@ -64,11 +64,9 @@ export default {
     }
   },
 
-  data() {
-    return {
-      // --> DATA <--
-
-      actions: [
+  computed: {
+    actions() {
+      return [
         {
           id: "files",
           title: "View shared files",
@@ -90,8 +88,8 @@ export default {
           id: "block",
           title: "Block contact"
         }
-      ]
-    };
+      ];
+    }
   }
 };
 </script>
