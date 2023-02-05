@@ -17,12 +17,14 @@
   inbox-userinfo-information(
     class="a-inbox-userinfo__block a-inbox-userinfo__block--information"
     header-class="a-inbox-userinfo__block-header"
+    item-class="a-inbox-userinfo__block-item"
     expanded
   )
 
   inbox-userinfo-security(
     class="a-inbox-userinfo__block a-inbox-userinfo__block--security"
     header-class="a-inbox-userinfo__block-header"
+    item-class="a-inbox-userinfo__block-item"
     expanded
   )
 

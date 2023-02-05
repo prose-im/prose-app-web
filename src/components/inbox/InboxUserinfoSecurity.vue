@@ -15,6 +15,14 @@ list-disclosure(
   class="c-inbox-userinfo-security"
   separated
 )
+  list-entry(
+    v-for="entry in entries"
+    :key="entry.id"
+    :class=`{
+      [itemClass]: itemClass
+    }`
+  )
+    | {{ entry.title }}
 </template>
 
 <!-- **********************************************************************
@@ -29,19 +37,28 @@ export default {
     headerClass: {
       type: String,
       default: null
+    },
+
+    itemClass: {
+      type: String,
+      default: null
+    }
+  },
+
+  computed: {
+    entries() {
+      return [
+        {
+          id: "identity",
+          title: "Identity verified"
+        },
+
+        {
+          id: "encryption",
+          title: "Encrypted (C648A)"
+        }
+      ];
     }
   }
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".c-inbox-userinfo-security";
-
-.c-inbox-userinfo-security {
-  /* TODO */
-}
-</style>
