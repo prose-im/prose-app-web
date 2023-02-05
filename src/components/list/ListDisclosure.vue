@@ -13,12 +13,19 @@ div(
   :class=`[
     "c-list-disclosure",
     {
+      "c-list-disclosure--separated": separated,
       "c-list-disclosure--expanded": isListVisible
     }
   ]`
 )
-  .c-list-disclosure__header(
+  div(
     @click="onHeaderClick"
+    :class=`[
+      "c-list-disclosure__header",
+      {
+        [headerClass]: headerClass
+      }
+    ]`
   )
     span.c-list-disclosure__header-title.u-medium
       | {{ title }}
@@ -55,9 +62,19 @@ export default {
       required: true
     },
 
+    separated: {
+      type: Boolean,
+      default: false
+    },
+
     expanded: {
       type: Boolean,
       default: false
+    },
+
+    headerClass: {
+      type: String,
+      default: null
     },
 
     listClass: {
@@ -155,6 +172,13 @@ $c: ".c-list-disclosure";
   }
 
   // --> BOOLEANS <--
+
+  &--separated {
+    #{$c}__header {
+      border-bottom: 1px solid rgba($color-base-grey-normal, 0.2);
+      padding-bottom: 4px;
+    }
+  }
 
   &--expanded {
     #{$c}__header {
