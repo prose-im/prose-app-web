@@ -91,7 +91,7 @@ $content-padding-sides: 14px;
         &:before,
         &:after {
           content: "";
-          height: 6px;
+          height: $size-layout-gradient-height;
           position: absolute;
           inset-inline: 0;
           pointer-events: none;
