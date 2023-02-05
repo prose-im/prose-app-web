@@ -17,19 +17,37 @@
   )
 
   .c-inbox-userinfo-identity__details
-    p.c-inbox-userinfo-identity__name.u-bold
-      | Valerian Saliou
+    p.c-inbox-userinfo-identity__name
+      base-presence(
+        class="c-inbox-userinfo-identity__name-presence"
+        type="available"
+        show="chat"
+        size="small"
+      )
+
+      span.c-inbox-userinfo-identity__name-full.u-bold
+        | Valerian Saliou
 
     p.c-inbox-userinfo-identity__role
       | CTO at Crisp
 
   ul.c-inbox-userinfo-identity__actions
     li.c-inbox-userinfo-identity__action
-      a.c-inbox-userinfo-identity__action-button
+      base-button(
+        class="c-inbox-userinfo-identity__action-button"
+        icon="phone.fill"
+        size="medium"
+        reverse
+      )
         | Phone
 
     li.c-inbox-userinfo-identity__action
-      a.c-inbox-userinfo-identity__action-button
+      base-button(
+        class="c-inbox-userinfo-identity__action-button"
+        icon="envelope.fill"
+        size="medium"
+        reverse
+      )
         | Email
 </template>
 
@@ -58,11 +76,23 @@ $c: ".c-inbox-userinfo-identity";
   }
 
   #{$c}__details {
-    margin-block-end: 16px;
+    margin-block-end: 20px;
 
     #{$c}__name {
-      color: $color-text-primary;
       font-size: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      #{$c}__name-presence {
+        margin-inline-end: 4px;
+        margin-block-start: 1px;
+        flex: 0 0 auto;
+      }
+
+      #{$c}__name-full {
+        color: $color-text-primary;
+      }
     }
 
     #{$c}__role {
@@ -74,11 +104,15 @@ $c: ".c-inbox-userinfo-identity";
 
   #{$c}__actions {
     #{$c}__action {
-      margin-inline: 14px;
+      margin-inline: 4px;
       display: inline-block;
 
-      #{$c}__action-button {
-        color: $color-base-blue-normal;
+      &:first-child {
+        margin-inline-start: 0;
+      }
+
+      &:last-child {
+        margin-inline-end: 0;
       }
     }
   }

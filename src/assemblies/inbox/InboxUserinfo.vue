@@ -15,15 +15,21 @@
   )
 
   inbox-userinfo-information(
-    class="a-inbox-userinfo__information"
+    class="a-inbox-userinfo__block a-inbox-userinfo__block--information"
+    header-class="a-inbox-userinfo__block-header"
+    expanded
   )
 
   inbox-userinfo-security(
-    class="a-inbox-userinfo__security"
+    class="a-inbox-userinfo__block a-inbox-userinfo__block--security"
+    header-class="a-inbox-userinfo__block-header"
+    expanded
   )
 
   inbox-userinfo-actions(
-    class="a-inbox-userinfo__actions"
+    class="a-inbox-userinfo__block a-inbox-userinfo__block--actions"
+    header-class="a-inbox-userinfo__block-header"
+    expanded
   )
 </template>
 
@@ -57,18 +63,27 @@ export default {
 <style lang="scss">
 $c: ".a-inbox-userinfo";
 
+// VARIABLES
+$userinfo-item-padding-sides: 15px;
+
 .a-inbox-userinfo {
   padding: 20px 0;
   overflow-x: hidden;
   overflow-y: auto;
 
-  #{$c}__information {
-    margin-block-start: 20px;
-  }
+  #{$c}__block {
+    &--information {
+      margin-block-start: 22px;
+    }
 
-  #{$c}__security,
-  #{$c}__actions {
-    margin-block-start: 10px;
+    &--security,
+    &--actions {
+      margin-block-start: 18px;
+    }
+
+    #{$c}__block-header {
+      padding-inline: $userinfo-item-padding-sides;
+    }
   }
 }
 </style>

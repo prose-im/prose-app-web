@@ -9,7 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-inbox-userinfo-actions
+list-disclosure(
+  :header-class="headerClass"
+  title="Actions"
+  class="c-inbox-userinfo-actions"
+  separated
+)
 </template>
 
 <!-- **********************************************************************
@@ -18,7 +23,14 @@
 
 <script lang="ts">
 export default {
-  name: "InboxUserinfoActions"
+  name: "InboxUserinfoActions",
+
+  props: {
+    headerClass: {
+      type: String,
+      default: null
+    }
+  }
 };
 </script>
 
