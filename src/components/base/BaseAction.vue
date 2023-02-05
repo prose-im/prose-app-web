@@ -138,7 +138,7 @@ $c: ".c-base-action";
     user-select: none;
     width: 100%;
     margin: 0;
-    padding: 0 8px;
+    padding: 0 $size-base-action-padding-sides;
     min-width: 36px;
     height: 34px;
     display: flex;

@@ -68,7 +68,7 @@ $content-padding-sides: 14px;
   #{$c}__topbar {
     background-color: $color-base-grey-light;
     border-block-end: 1px solid $color-border-secondary;
-    height: 60px;
+    height: $size-inbox-topbar-height;
     padding: 0 $content-padding-sides;
     flex: 0 0 auto;
   }
