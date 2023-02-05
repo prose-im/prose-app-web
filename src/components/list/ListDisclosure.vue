@@ -113,8 +113,6 @@ export default {
 $c: ".c-list-disclosure";
 
 .c-list-disclosure {
-  margin-block-end: 15px;
-
   #{$c}__header {
     color: $color-base-grey-normal;
     font-size: 12.5px;

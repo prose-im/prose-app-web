@@ -151,13 +151,12 @@ export default {
 <style lang="scss">
 $c: ".c-sidebar-main";
 
-// VARIABLES
-/* TODO */
-
 .c-sidebar-main {
-  #{$c}__item {
-    #{$c}__item-avatar {
-      display: block;
+  > * {
+    margin-block-end: 15px;
+
+    &:last-child {
+      margin-block-end: 0;
     }
   }
 }
