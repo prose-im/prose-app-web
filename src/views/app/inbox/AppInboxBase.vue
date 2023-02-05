@@ -76,6 +76,7 @@ $content-padding-sides: 14px;
   #{$c}__content {
     flex: 1;
     display: flex;
+    overflow: hidden;
 
     #{$c}__messages {
       display: flex;
@@ -127,6 +128,8 @@ $content-padding-sides: 14px;
     #{$c}__userinfo {
       border-inline-start: 1px solid $color-border-secondary;
       width: 240px;
+      overflow-x: hidden;
+      overflow-y: auto;
       flex: 0 0 auto;
     }
   }
