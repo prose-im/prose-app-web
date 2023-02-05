@@ -101,6 +101,7 @@ $type-shows: (
 .c-base-presence {
   background-color: transparent;
   border: 1px solid $color-base-grey-normal;
+  display: inline-block;
   box-sizing: border-box;
   border-radius: 100%;
 
