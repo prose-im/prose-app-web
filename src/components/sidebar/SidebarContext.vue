@@ -119,7 +119,7 @@ $c: ".c-sidebar-context";
 
   #{$c}__actions {
     margin-inline-start: 6px;
-    margin-inline-end: -6px;
+    margin-inline-end: (-1 * $size-base-action-padding-sides);
     flex: 0 0 auto;
   }
 }
