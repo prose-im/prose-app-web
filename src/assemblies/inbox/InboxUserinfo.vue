@@ -29,6 +29,7 @@
   inbox-userinfo-actions(
     class="a-inbox-userinfo__block a-inbox-userinfo__block--actions"
     header-class="a-inbox-userinfo__block-header"
+    item-class="a-inbox-userinfo__block-item"
     expanded
   )
 </template>
@@ -81,7 +82,8 @@ $userinfo-item-padding-sides: 15px;
       margin-block-start: 18px;
     }
 
-    #{$c}__block-header {
+    #{$c}__block-header,
+    #{$c}__block-item {
       padding-inline: $userinfo-item-padding-sides;
     }
   }

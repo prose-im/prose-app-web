@@ -26,7 +26,7 @@ list-item(
 
   template(
     v-if="unreadCount > 0"
-    v-slot:count
+    v-slot:details
   )
     base-count(
       :count="unreadCount"

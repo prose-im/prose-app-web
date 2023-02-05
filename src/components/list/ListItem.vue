@@ -12,13 +12,17 @@
 div(
   :class=`[
     "c-list-item",
+    "c-list-item--" + size,
+    "c-list-item--color-" + color,
     {
       "c-list-item--active": active,
       "c-list-item--important": important
     }
   ]`
 )
-  .c-list-item__icon
+  .c-list-item__icon(
+    v-if="$slots.icon"
+  )
     slot(
       name="icon"
     )
@@ -34,11 +38,11 @@ div(
   )
     slot
 
-  .c-list-item__count(
-    v-if="$slots.count"
+  .c-list-item__details(
+    v-if="$slots.details"
   )
     slot(
-      name="count"
+      name="details"
     )
 </template>
 
@@ -51,6 +55,24 @@ export default {
   name: "ListItem",
 
   props: {
+    size: {
+      type: String,
+      default: "medium",
+
+      validator(x: string) {
+        return ["small", "medium"].includes(x);
+      }
+    },
+
+    color: {
+      type: String,
+      default: "normal",
+
+      validator(x: string) {
+        return ["normal", "lighter"].includes(x);
+      }
+    },
+
     active: {
       type: Boolean,
       default: false
@@ -78,8 +100,6 @@ $c: ".c-list-item";
 
 .c-list-item {
   background-color: transparent;
-  height: 32px;
-  padding-inline: 12px;
   display: flex;
   align-items: center;
   cursor: pointer;
@@ -102,16 +122,49 @@ $c: ".c-list-item";
   }
 
   #{$c}__label {
-    color: $color-text-primary;
-    font-size: 14px;
     display: flex;
     align-items: center;
     flex: 1;
   }
 
-  #{$c}__count {
+  #{$c}__details {
     margin-inline-start: 6px;
+    display: flex;
     flex: 0 0 auto;
+  }
+
+  // --> SIZES <--
+
+  &--small {
+    height: 28px;
+    padding-inline: 10px;
+
+    #{$c}__label {
+      font-size: 13px;
+    }
+  }
+
+  &--medium {
+    height: 32px;
+    padding-inline: 12px;
+
+    #{$c}__label {
+      font-size: 14px;
+    }
+  }
+
+  // --> COLORS <--
+
+  &--color-normal {
+    #{$c}__label {
+      color: $color-text-primary;
+    }
+  }
+
+  &--color-lighter {
+    #{$c}__label {
+      color: lighten($color-text-primary, 26%);
+    }
   }
 
   // --> BOOLEANS <--
