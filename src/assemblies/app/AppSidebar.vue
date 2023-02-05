@@ -11,10 +11,16 @@
 <template lang="pug">
 .a-app-sidebar
   sidebar-header(
-    class="a-app-sidebar__actions"
+    :class=`[
+      "a-app-sidebar__header",
+      {
+        "a-app-sidebar__header--floating": isHeaderFloating
+      }
+    ]`
   )
 
   sidebar-main(
+    @scroll="onMainScroll"
     class="a-app-sidebar__main"
     disclosure-list-class="a-app-sidebar__main-list"
   )
@@ -35,10 +41,35 @@ import SidebarHeader from "@/components/sidebar/SidebarHeader.vue";
 import SidebarMain from "@/components/sidebar/SidebarMain.vue";
 import SidebarContext from "@/components/sidebar/SidebarContext.vue";
 
+// CONSTANTS
+const MAIN_SCROLLED_THRESHOLD_VERTICAL = 16;
+
 export default {
   name: "AppSidebar",
 
-  components: { SidebarHeader, SidebarMain, SidebarContext }
+  components: { SidebarHeader, SidebarMain, SidebarContext },
+
+  data() {
+    return {
+      // --> STATES <--
+
+      isHeaderFloating: false
+    };
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onMainScroll(event: object): void {
+      const forceFloating =
+        event.target.scrollTop >= MAIN_SCROLLED_THRESHOLD_VERTICAL;
+
+      // Update floating marker? (only if changed)
+      if (forceFloating !== this.isHeaderFloating) {
+        this.isHeaderFloating = forceFloating;
+      }
+    }
+  }
 };
 </script>
 
@@ -65,13 +96,13 @@ $sidebar-context-height: $size-inbox-form-height;
     background-color: $color-base-purple-ultra-light;
   }
 
-  #{$c}__actions,
+  #{$c}__header,
   #{$c}__main,
   #{$c}__context {
     padding-inline: $sidebar-items-padding-sides;
   }
 
-  #{$c}__actions,
+  #{$c}__header,
   #{$c}__context {
     background-color: rgba($color-base-purple-ultra-light, 0.9);
     position: absolute;
@@ -79,10 +110,39 @@ $sidebar-context-height: $size-inbox-form-height;
     backdrop-filter: blur(9px);
   }
 
-  #{$c}__actions {
+  #{$c}__context:before,
+  #{$c}__header:after {
+    content: "";
+    height: $size-layout-gradient-height;
+    position: absolute;
+    inset-inline: 0;
+    pointer-events: none;
+  }
+
+  #{$c}__header {
+    border-block-end: $sidebar-header-border-width solid transparent;
     height: $sidebar-header-height;
     inset-block-start: 0;
     z-index: 1;
+    transition: border-color 100ms linear;
+
+    &:after {
+      background-image: linear-gradient(
+        0deg,
+        rgba($color-black, 0) 0%,
+        rgba($color-black, 0.015) 100%
+      );
+      inset-block-start: calc(100% + 1px);
+      display: none;
+    }
+
+    &--floating {
+      border-block-end-color: $color-border-secondary;
+
+      &:after {
+        display: block;
+      }
+    }
   }
 
   #{$c}__main {
@@ -117,17 +177,12 @@ $sidebar-context-height: $size-inbox-form-height;
     z-index: 2;
 
     &:before {
-      content: "";
       background-image: linear-gradient(
         180deg,
         rgba($color-black, 0) 0%,
         rgba($color-black, 0.01) 100%
       );
-      height: 6px;
-      position: absolute;
-      inset-inline: 0;
       inset-block-end: calc(100% + 1px);
-      pointer-events: none;
     }
   }
 }
