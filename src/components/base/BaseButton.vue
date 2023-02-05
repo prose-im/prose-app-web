@@ -39,17 +39,26 @@ div(
         name="custom"
       )
 
-    div(
+    template(
       v-else
-      :class=`[
-        "c-base-button__label",
-        {
-          "u-medium": !bolder,
-          "u-bold": bolder
-        }
-      ]`
     )
-      slot
+      base-icon(
+        v-if="icon"
+        :name="icon"
+        :size="iconSize"
+        class="c-base-button__icon"
+      )
+
+      div(
+        :class=`[
+          "c-base-button__label",
+          {
+            "u-medium": !bolder,
+            "u-bold": bolder
+          }
+        ]`
+      )
+        slot
 </template>
 
 <!-- **********************************************************************
@@ -57,6 +66,29 @@ div(
      ********************************************************************** -->
 
 <script lang="ts">
+// CONSTANTS
+const AVAILABLE_SIZES = {
+  medium: {
+    icon: "13px"
+  },
+
+  "mid-medium": {
+    icon: "14px"
+  },
+
+  large: {
+    icon: "16px"
+  },
+
+  "mid-large": {
+    icon: "17px"
+  },
+
+  "ultra-large": {
+    icon: "18px"
+  }
+};
+
 export default {
   name: "BaseButton",
 
@@ -84,15 +116,13 @@ export default {
       default: "large",
 
       validator(x: string) {
-        return [
-          "custom",
-          "medium",
-          "mid-medium",
-          "large",
-          "mid-large",
-          "ultra-large"
-        ].includes(x);
+        return [].concat(Object.keys(AVAILABLE_SIZES), ["custom"]).includes(x);
       }
+    },
+
+    icon: {
+      type: String,
+      default: null
     },
 
     bolder: {
@@ -128,6 +158,25 @@ export default {
 
   emits: ["click"],
 
+  computed: {
+    iconSize() {
+      if (this.icon) {
+        const sizeProperties = AVAILABLE_SIZES[this.size];
+
+        // Return icon size for button size?
+        if (sizeProperties) {
+          return sizeProperties.icon;
+        }
+
+        // Return fallback size
+        return "15px";
+      }
+
+      // No icon set (therefore no icon size)
+      return null;
+    }
+  },
+
   methods: {
     // --> EVENT LISTENERS <--
 
@@ -152,7 +201,7 @@ $color-button-dark-reverse: $color-white;
 $color-button-light-normal: rgba(#4f4e58, 0.04);
 $color-button-light-reverse: rgba($color-black, 0.11);
 
-$size-medium-padding-sides: 16px;
+$size-medium-padding-sides: 15px;
 $size-mid-medium-padding-sides: 20px;
 $size-large-padding-sides: 24px;
 $size-mid-large-padding-sides: 34px;
@@ -185,6 +234,11 @@ $size-ultra-large-padding-sides: 44px;
       outline-offset: 1px;
     }
 
+    #{$c}__icon {
+      margin-inline-end: 10px;
+      flex: 0 0 auto;
+    }
+
     #{$c}__label {
       overflow: hidden;
       text-overflow: ellipsis;
@@ -200,6 +254,10 @@ $size-ultra-large-padding-sides: 44px;
       background-color: $color-button-dark-normal;
       box-shadow: 0 4px 4px 0 rgba($color-button-dark-normal, 0.04),
         inset 0 1px 0 0 rgba($color-white, 0.15);
+
+      #{$c}__icon {
+        fill: $color-white;
+      }
 
       #{$c}__label {
         color: $color-white;
@@ -219,6 +277,10 @@ $size-ultra-large-padding-sides: 44px;
   &--light {
     #{$c}__inner {
       background-color: $color-button-light-normal;
+
+      #{$c}__icon {
+        fill: $color-black;
+      }
 
       #{$c}__label {
         color: $color-black;
@@ -289,6 +351,10 @@ $size-ultra-large-padding-sides: 44px;
         background-color: $color-button-dark-reverse;
         border-color: $color-button-dark-normal;
 
+        #{$c}__icon {
+          fill: $color-button-dark-normal;
+        }
+
         #{$c}__label {
           color: $color-button-dark-normal;
         }
@@ -298,6 +364,10 @@ $size-ultra-large-padding-sides: 44px;
     &#{$c}--light {
       #{$c}__inner {
         background-color: $color-button-light-reverse;
+
+        #{$c}__icon {
+          fill: $color-black;
+        }
 
         #{$c}__label {
           color: $color-black;
