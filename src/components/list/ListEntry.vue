@@ -68,8 +68,8 @@ $c: ".c-list-entry";
   align-items: center;
 
   #{$c}__icon {
-    min-width: 22px;
-    padding-inline-end: 7px;
+    min-width: 18px;
+    padding-inline-end: $size-list-item-icon-padding-inline-end;
     flex: 0 0 auto;
     display: flex;
     align-items: center;
@@ -84,7 +84,7 @@ $c: ".c-list-entry";
   }
 
   #{$c}__details {
-    margin-inline-start: 6px;
+    margin-inline-start: $size-list-item-details-margin-inline-start;
     display: flex;
     flex: 0 0 auto;
   }

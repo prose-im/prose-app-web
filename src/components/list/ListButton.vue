@@ -114,7 +114,7 @@ $c: ".c-list-button";
 
   #{$c}__icon {
     min-width: 22px;
-    padding-inline-end: 7px;
+    padding-inline-end: $size-list-item-icon-padding-inline-end;
     flex: 0 0 auto;
     display: flex;
     align-items: center;
@@ -128,7 +128,7 @@ $c: ".c-list-button";
   }
 
   #{$c}__details {
-    margin-inline-start: 6px;
+    margin-inline-start: $size-list-item-details-margin-inline-start;
     display: flex;
     flex: 0 0 auto;
   }
