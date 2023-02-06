@@ -10,6 +10,13 @@
 
 <template lang="pug">
 .c-sidebar-header
+  .c-sidebar-header__identity
+    base-server-logo(
+      class="c-sidebar-header__identity-logo"
+      domain="crisp.chat"
+      size="30px"
+    )
+
   layout-actions(
     class="c-sidebar-header__actions"
   )
@@ -46,10 +53,28 @@ $c: ".c-sidebar-header";
 .c-sidebar-header {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+
+  #{$c}__identity {
+    flex: 1;
+
+    #{$c}__identity-logo {
+      cursor: pointer;
+      display: block;
+
+      &:hover {
+        filter: brightness(105%);
+      }
+
+      &:active {
+        filter: brightness(98%);
+      }
+    }
+  }
 
   #{$c}__actions {
+    margin-inline-start: 6px;
     margin-inline-end: (-1 * ($size-base-action-padding-sides - 1px));
+    flex: 0 0 auto;
   }
 }
 </style>
