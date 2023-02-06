@@ -37,7 +37,7 @@ list-disclosure(
           "c-inbox-userinfo-security__icon",
           "c-inbox-userinfo-security__icon--" + entry.id
         ]`
-        size="14px"
+        size="16px"
       )
 
     template(
