@@ -22,7 +22,32 @@ list-disclosure(
       [itemClass]: itemClass
     }`
   )
-    | {{ entry.title }}
+    template(
+      v-slot:default
+    )
+      | {{ entry.title }}
+
+    template(
+      v-slot:icon
+    )
+      base-icon(
+        v-if="entry.icon"
+        :name="entry.icon"
+        :class=`[
+          "c-inbox-userinfo-security__icon",
+          "c-inbox-userinfo-security__icon--" + entry.id
+        ]`
+        size="14px"
+      )
+
+    template(
+      v-slot:details
+    )
+      base-icon(
+        name="info.circle"
+        size="13px"
+        class="c-inbox-userinfo-security__details"
+      )
 </template>
 
 <!-- **********************************************************************
@@ -50,15 +75,50 @@ export default {
       return [
         {
           id: "identity",
-          title: "Identity verified"
+          title: "Identity verified",
+          icon: "checkmark.seal.fill"
         },
 
         {
           id: "encryption",
-          title: "Encrypted (C648A)"
+          title: "Encrypted (C648A)",
+          icon: "lock.fill"
         }
       ];
     }
   }
 };
 </script>
+
+<!-- **********************************************************************
+     STYLE
+     ********************************************************************** -->
+
+<style lang="scss">
+$c: ".c-inbox-userinfo-security";
+
+.c-inbox-userinfo-security {
+  #{$c}__icon {
+    &--identity {
+      fill: $color-base-green-normal;
+    }
+
+    &--encryption {
+      fill: $color-base-blue-dark;
+    }
+  }
+
+  #{$c}__details {
+    fill: rgba($color-base-grey-dark, 0.65);
+    cursor: pointer;
+
+    &:hover {
+      fill: rgba($color-base-grey-dark, 0.8);
+    }
+
+    &:active {
+      fill: $color-base-grey-dark;
+    }
+  }
+}
+</style>
