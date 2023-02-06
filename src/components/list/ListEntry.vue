@@ -9,7 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-list-entry
+div(
+  :class=`[
+    "c-list-entry",
+    "c-list-entry--color-" + color
+  ]`
+)
   .c-list-entry__icon(
     v-if="$slots.icon"
   )
@@ -34,7 +39,18 @@
 
 <script lang="ts">
 export default {
-  name: "ListEntry"
+  name: "ListEntry",
+
+  props: {
+    color: {
+      type: String,
+      default: "normal",
+
+      validator(x: string) {
+        return ["normal", "lighter"].includes(x);
+      }
+    }
+  }
 };
 </script>
 
@@ -46,7 +62,7 @@ export default {
 $c: ".c-list-entry";
 
 .c-list-entry {
-  height: 28px;
+  height: 30px;
   padding-inline: 12px;
   display: flex;
   align-items: center;
@@ -61,7 +77,6 @@ $c: ".c-list-entry";
   }
 
   #{$c}__label {
-    color: lighten($color-text-primary, 26%);
     font-size: 14px;
     display: flex;
     align-items: center;
@@ -72,6 +87,20 @@ $c: ".c-list-entry";
     margin-inline-start: 6px;
     display: flex;
     flex: 0 0 auto;
+  }
+
+  // --> COLORS <--
+
+  &--color-normal {
+    #{$c}__label {
+      color: lighten($color-text-primary, 26%);
+    }
+  }
+
+  &--color-lighter {
+    #{$c}__label {
+      color: $color-text-secondary;
+    }
   }
 }
 </style>
