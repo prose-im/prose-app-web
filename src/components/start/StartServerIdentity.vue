@@ -10,7 +10,12 @@
 
 <template lang="pug">
 .c-start-server-identity
-  .c-start-server-identity__logo
+  base-server-logo(
+    class="c-start-server-identity__logo"
+    domain="crisp.chat"
+    size="44px"
+    shadow="none"
+  )
 
   .c-start-server-identity__text
     .c-start-server-identity__server
@@ -72,16 +77,8 @@ $logo-size: 44px;
   box-shadow: 0 4px 4px 0 rgba($color-black, 0.01);
 
   #{$c}__logo {
-    background-color: $color-base-grey-light;
-    background-image: url("@/assets/images/components/start/StartServerIdentity/logo.png");
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
-    width: $logo-size;
-    height: $logo-size;
     margin-inline-end: 12px;
     flex: 0 0 auto;
-    border-radius: 100%;
   }
 
   #{$c}__text {
