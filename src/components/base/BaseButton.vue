@@ -201,7 +201,7 @@ $color-button-dark-reverse: $color-white;
 $color-button-light-normal: rgba(#4f4e58, 0.04);
 $color-button-light-reverse: rgba($color-black, 0.11);
 
-$size-medium-padding-sides: 15px;
+$size-medium-padding-sides: 14px;
 $size-mid-medium-padding-sides: 20px;
 $size-large-padding-sides: 24px;
 $size-mid-large-padding-sides: 34px;
