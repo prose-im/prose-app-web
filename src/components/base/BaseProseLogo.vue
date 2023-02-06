@@ -11,9 +11,9 @@
 <template lang="pug">
 span(
   :class=`[
-    "c-base-logo",
-    "c-base-logo--" + size,
-    "c-base-logo--" + tint
+    "c-base-prose-logo",
+    "c-base-prose-logo--" + size,
+    "c-base-prose-logo--" + tint
   ]`
 )
 </template>
@@ -24,7 +24,7 @@ span(
 
 <script lang="ts">
 export default {
-  name: "BaseLogo",
+  name: "BaseProseLogo",
 
   props: {
     size: {
@@ -53,7 +53,7 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-base-logo";
+$c: ".c-base-prose-logo";
 
 // VARIABLES
 $size-ratio: calc(28 / 104);
@@ -64,8 +64,10 @@ $size-widths: (
   "large": 140px
 );
 
-.c-base-logo {
-  @include mask-image("@/assets/images/components/base/BaseLogo/logo-path.svg");
+.c-base-prose-logo {
+  @include mask-image(
+    "@/assets/images/components/base/BaseProseLogo/logo-path.svg"
+  );
   @include mask-repeat(no-repeat);
   @include mask-size(contain);
   @include mask-position(left);
@@ -87,7 +89,7 @@ $size-widths: (
 
   &--normal {
     background-color: $color-base-blue-normal;
-    background-image: url("@/assets/images/components/base/BaseLogo/logo-tint-normal.webp");
+    background-image: url("@/assets/images/components/base/BaseProseLogo/logo-tint-normal.webp");
     background-repeat: no-repeat;
     background-size: contain;
     background-position: left;

@@ -10,7 +10,7 @@
 
 <template lang="pug">
 .a-start-login-form
-  base-logo(
+  base-prose-logo(
     class="a-start-login-form__logo"
     size="large"
   )
