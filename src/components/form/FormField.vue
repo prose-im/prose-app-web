@@ -14,6 +14,7 @@ div(
     "c-form-field",
     "c-form-field--" + size,
     {
+      "c-form-field--focused": isFocused,
       "c-form-field--disabled": disabled,
       "c-form-field--loading": loading
     }
@@ -22,6 +23,8 @@ div(
   textarea.c-form-field__inner.c-form-field__inner--textarea(
     v-if="type === 'textarea'"
     @input="onFieldInput"
+    @focus="onFieldFocus"
+    @blur="onFieldBlur"
     :name="name"
     :value="value"
     :placeholder="placeholder"
@@ -33,6 +36,8 @@ div(
   input.c-form-field__inner.c-form-field__inner--input(
     v-else
     @input="onFieldInput"
+    @focus="onFieldFocus"
+    @blur="onFieldBlur"
     :type="type"
     :name="name"
     :value="value"
@@ -120,6 +125,8 @@ export default {
     return {
       // --> STATE <--
 
+      isFocused: false,
+
       value: ""
     };
   },
@@ -172,6 +179,14 @@ export default {
 
       // Update model value
       this.$emit("update:modelValue", inputValue);
+    },
+
+    onFieldFocus(): void {
+      this.isFocused = true;
+    },
+
+    onFieldBlur(): void {
+      this.isFocused = false;
     }
   }
 };
@@ -193,17 +208,35 @@ $size-ultra-large-padding-sides: 24px;
 
 .c-form-field {
   display: inline-block;
+  position: relative;
+
+  &:before,
+  #{$c}__inner {
+    transition-duration: 150ms;
+    transition-timing-function: linear;
+  }
+
+  &:before {
+    content: "";
+    border: $size-form-field-outline-width solid transparent;
+    inset: (-1 * $size-form-field-outline-width);
+    position: absolute;
+    pointer-events: none;
+    transition-property: border-color;
+    border-radius: (
+      $size-form-field-border-radius + $size-form-field-outline-width
+    );
+  }
 
   #{$c}__inner {
     background-color: $color-white;
     border: 1px solid rgba($color-black, 0.1);
+    outline: 0 none;
     color: $color-text-primary;
-    outline: 2px solid transparent;
     font-family: inherit;
     width: 100%;
-    transition: all 150ms linear;
-    transition-property: box-shadow, border-color, outline-color;
-    border-radius: 10px;
+    transition-property: box-shadow, border-color;
+    border-radius: $size-form-field-border-radius;
     box-sizing: border-box;
     box-shadow: 0 3px 4px 0 rgba($color-black, 0.01),
       inset 0 1px 2px 0 rgba($color-black, 0.04);
@@ -216,6 +249,7 @@ $size-ultra-large-padding-sides: 24px;
       height: 100%;
       margin: 0;
       resize: none;
+      display: block;
     }
 
     &::placeholder {
@@ -229,7 +263,6 @@ $size-ultra-large-padding-sides: 24px;
 
     &:focus {
       border-color: $color-base-purple-normal;
-      outline-color: rgba($color-base-purple-normal, 0.2);
       box-shadow: 0 3px 4px 0 rgba($color-black, 0.1),
         inset 0 1px 2px 0 rgba($color-black, 0.04);
     }
@@ -339,6 +372,12 @@ $size-ultra-large-padding-sides: 24px;
       &::placeholder {
         color: $color-text-tertiary;
       }
+    }
+  }
+
+  &--focused {
+    &:before {
+      border-color: rgba($color-base-purple-normal, 0.2);
     }
   }
 }

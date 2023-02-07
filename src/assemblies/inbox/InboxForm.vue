@@ -111,6 +111,9 @@ $form-compose-padding-block: 10px;
 $form-compose-field-height-minimum: (
   $size-inbox-form-height - (2 * $form-compose-padding-block)
 );
+$form-compose-field-border-radius: ceil(
+  calc($form-compose-field-height-minimum / 2)
+);
 
 $form-compose-send-position-edges: 5px;
 $form-compose-send-button-size: (
@@ -132,14 +135,20 @@ $form-compose-send-button-size: (
     }
 
     #{$c}__compose-field {
+      &:before {
+        border-radius: (
+          $form-compose-field-border-radius + $size-form-field-outline-width
+        );
+      }
+
       textarea {
-        border-radius: ceil(calc($form-compose-field-height-minimum / 2));
         min-height: $form-compose-field-height-minimum;
         max-height: 220px;
         padding-inline-end: (
           $form-compose-send-button-size + $form-compose-send-position-edges +
             2px
         );
+        border-radius: $form-compose-field-border-radius;
       }
     }
 

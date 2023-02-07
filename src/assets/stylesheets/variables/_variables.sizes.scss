@@ -8,11 +8,25 @@
  * VARIABLES > SIZES
  * **************************************************************************/
 
+// --> LAYOUT <--
+
 $size-layout-gradient-height: 6px;
+
+// --> INBOX <--
+
 $size-inbox-topbar-height: 60px;
 $size-inbox-form-height: 65px;
 
+// --> BASE ACTION <--
+
 $size-base-action-padding-sides: 8px;
+
+// --> LIST ITEM <--
 
 $size-list-item-icon-padding-inline-end: 7px;
 $size-list-item-details-margin-inline-start: 6px;
+
+// --> FORM FIELD <--
+
+$size-form-field-border-radius: 10px;
+$size-form-field-outline-width: 2px;
