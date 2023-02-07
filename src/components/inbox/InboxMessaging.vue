@@ -87,6 +87,7 @@ export default {
     setupContext(runtime: Window) {
       // TODO: from dynamic context
       runtime.MessagingContext.setLanguage("en");
+      runtime.MessagingContext.setStylePlatform("web");
       runtime.MessagingContext.setStyleTheme("light");
       runtime.MessagingContext.setAccountJID("valerian@prose.org");
     },
