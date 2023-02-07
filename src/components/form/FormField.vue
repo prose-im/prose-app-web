@@ -12,6 +12,7 @@
 div(
   :class=`[
     "c-form-field",
+    "c-form-field--" + type,
     "c-form-field--" + size,
     {
       "c-form-field--focused": isFocused,
@@ -207,7 +208,6 @@ $size-mid-large-padding-sides: 22px;
 $size-ultra-large-padding-sides: 24px;
 
 .c-form-field {
-  display: inline-block;
   position: relative;
 
   &:before,
@@ -266,6 +266,16 @@ $size-ultra-large-padding-sides: 24px;
       box-shadow: 0 3px 4px 0 rgba($color-black, 0.1),
         inset 0 1px 2px 0 rgba($color-black, 0.04);
     }
+  }
+
+  // --> TYPES <--
+
+  &--input {
+    display: inline-block;
+  }
+
+  &--textarea {
+    display: block;
   }
 
   // --> SIZES <--
