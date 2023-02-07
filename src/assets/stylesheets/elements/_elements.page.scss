@@ -18,3 +18,7 @@ html {
 
   @include font-smoothing(antialiased);
 }
+
+body {
+  overflow: hidden;
+}
