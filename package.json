@@ -31,7 +31,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-core-views": "0.18.x",
+    "@prose-im/prose-core-views": "0.18.1",
     "lodash.camelcase": "4.3.x",
     "lodash.upperfirst": "4.3.x",
     "lodash.merge": "4.6.x",
