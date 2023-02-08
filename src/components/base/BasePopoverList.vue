@@ -19,8 +19,13 @@ base-popover(
       v-if="item.type === 'button'"
       :emphasis="item.emphasis"
       :color="item.color"
+      :class=`[
+        "c-base-popover-list__button",
+        {
+          ["c-base-popover-list__button--color-" + item.color]: item.color
+        }
+      ]`
       size="small"
-      class="c-base-popover-list__button"
       icon-class="c-base-popover-list__button-icon"
     )
       template(
@@ -35,7 +40,7 @@ base-popover(
         base-icon(
           v-if="item.icon"
           :name="item.icon"
-          size="11px"
+          size="14px"
           class="c-base-popover-list__button-icon-inner"
         )
 
@@ -81,10 +86,38 @@ $entry-spacing-sides: 14px;
     padding-inline: $entry-spacing-sides;
 
     #{$c}__button-icon {
-      min-width: 13px;
+      min-width: 16px;
 
       #{$c}__button-icon-inner {
-        fill: lighten($color-base-grey-dark, 6%);
+        fill: $color-base-grey-dark;
+      }
+    }
+
+    &--color-blue,
+    &--color-red {
+      &:hover,
+      &:active {
+        #{$c}__button-icon {
+          #{$c}__button-icon-inner {
+            fill: $color-white;
+          }
+        }
+      }
+    }
+
+    &--color-blue {
+      #{$c}__button-icon {
+        #{$c}__button-icon-inner {
+          fill: $color-base-blue-normal;
+        }
+      }
+    }
+
+    &--color-red {
+      #{$c}__button-icon {
+        #{$c}__button-icon-inner {
+          fill: $color-base-red-normal;
+        }
       }
     }
   }
