@@ -20,8 +20,14 @@ div(
     }
   ]`
 )
-  .c-list-button__icon(
+  div(
     v-if="$slots.icon"
+    :class=`[
+      "c-list-button__icon",
+      {
+        [iconClass]: iconClass
+      }
+    ]`
   )
     slot(
       name="icon"
@@ -69,7 +75,7 @@ export default {
       default: "normal",
 
       validator(x: string) {
-        return ["normal", "lighter"].includes(x);
+        return ["normal", "lighter", "blue", "red"].includes(x);
       }
     },
 
@@ -86,6 +92,11 @@ export default {
     important: {
       type: Boolean,
       default: false
+    },
+
+    iconClass: {
+      type: String,
+      default: null
     }
   }
 };
@@ -164,6 +175,48 @@ $c: ".c-list-button";
   &--color-lighter {
     #{$c}__label {
       color: lighten($color-text-primary, 26%);
+    }
+  }
+
+  &--color-blue {
+    #{$c}__label {
+      color: $color-base-blue-normal;
+    }
+
+    &:hover,
+    &:active {
+      #{$c}__label {
+        color: $color-white;
+      }
+    }
+
+    &:hover {
+      background-color: $color-base-blue-normal;
+    }
+
+    &:active {
+      background-color: darken($color-base-blue-normal, 4%);
+    }
+  }
+
+  &--color-red {
+    #{$c}__label {
+      color: $color-base-red-normal;
+    }
+
+    &:hover,
+    &:active {
+      #{$c}__label {
+        color: $color-white;
+      }
+    }
+
+    &:hover {
+      background-color: $color-base-red-normal;
+    }
+
+    &:active {
+      background-color: darken($color-base-red-normal, 4%);
     }
   }
 
