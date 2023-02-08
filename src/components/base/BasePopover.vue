@@ -37,7 +37,7 @@ $c: ".c-base-popover";
   max-width: 360px;
   padding-block: 7px;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 5px;
   box-shadow: 0 2px 6px 0 rgba($color-black, 0.015);
 }
 </style>
