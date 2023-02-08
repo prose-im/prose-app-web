@@ -178,16 +178,19 @@ $c: ".c-list-button";
     }
   }
 
-  &--color-blue {
-    #{$c}__label {
-      color: $color-base-blue-normal;
-    }
-
+  &--color-blue,
+  &--color-red {
     &:hover,
     &:active {
       #{$c}__label {
         color: $color-white;
       }
+    }
+  }
+
+  &--color-blue {
+    #{$c}__label {
+      color: $color-base-blue-normal;
     }
 
     &:hover {
@@ -202,13 +205,6 @@ $c: ".c-list-button";
   &--color-red {
     #{$c}__label {
       color: $color-base-red-normal;
-    }
-
-    &:hover,
-    &:active {
-      #{$c}__label {
-        color: $color-white;
-      }
     }
 
     &:hover {
