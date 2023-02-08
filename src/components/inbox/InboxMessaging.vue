@@ -245,18 +245,18 @@ export default {
           event.origin.parent || event.origin.anchor,
 
           [
-            // TODO: populate those
+            // TODO: dynamically insert second part if message is from self
 
             {
               type: "button",
-              icon: "clock.fill",
-              label: "Set reminder"
+              icon: "doc.on.clipboard",
+              label: "Copy text"
             },
 
             {
               type: "button",
-              icon: "lock.fill",
-              label: "Hide message"
+              icon: "face.smiling",
+              label: "Add reaction…"
             },
 
             {
@@ -265,23 +265,15 @@ export default {
 
             {
               type: "button",
-              label: "View message edits"
-            },
-
-            {
-              type: "divider"
-            },
-
-            {
-              type: "button",
-              label: "Copy message",
-              color: "blue",
+              icon: "pencil",
+              label: "Edit message…",
               emphasis: true
             },
 
             {
               type: "button",
-              label: "Delete message",
+              icon: "trash",
+              label: "Remove message",
               color: "red",
               emphasis: true
             }
@@ -315,7 +307,8 @@ export default {
 
             {
               type: "button",
-              label: "Pick a reaction..."
+              label: "Pick a reaction...",
+              color: "blue"
             }
           ],
 
