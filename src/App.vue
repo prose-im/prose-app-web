@@ -9,7 +9,9 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.s-app
+.s-app(
+  @contextmenu.prevent
+)
   base-alert
 
   router-view

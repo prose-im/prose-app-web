@@ -26,6 +26,7 @@ div(
     @input="onFieldInput"
     @focus="onFieldFocus"
     @blur="onFieldBlur"
+    @contextmenu.stop
     :name="name"
     :value="value"
     :placeholder="placeholder"
@@ -39,6 +40,7 @@ div(
     @input="onFieldInput"
     @focus="onFieldFocus"
     @blur="onFieldBlur"
+    @contextmenu.stop
     :type="type"
     :name="name"
     :value="value"
