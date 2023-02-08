@@ -16,6 +16,16 @@
     ref="frame"
     sandbox="allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
   )
+
+  base-popover-list(
+    v-if="popover.items.length > 0"
+    :items="popover.items"
+    :style=`{
+      insetBlockStart: popover.position.blockStart,
+      insetInlineStart: popover.position.inlineStart
+    }`
+    class="c-inbox-messaging__popover"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -24,6 +34,8 @@
 
 <script lang="ts">
 // CONSTANTS
+const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
+
 const MESSAGE_FIXTURES = [
   {
     id: "b4d303b1-17c9-4863-81b7-bc5281f3590f",
@@ -81,10 +93,25 @@ const MESSAGE_FIXTURES = [
 export default {
   name: "InboxMessaging",
 
+  data() {
+    return {
+      // --> STATE <--
+
+      popover: {
+        position: {
+          blockStart: "0px",
+          inlineStart: "0px"
+        },
+
+        items: []
+      }
+    };
+  },
+
   methods: {
     // --> HELPERS <--
 
-    setupContext(runtime: Window) {
+    setupContext(runtime: Window): void {
       // TODO: from dynamic context
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform("web");
@@ -92,7 +119,7 @@ export default {
       runtime.MessagingContext.setAccountJID("valerian@prose.org");
     },
 
-    setupEvents(runtime: Window) {
+    setupEvents(runtime: Window): void {
       runtime.MessagingEvent.on(
         "message:actions:view",
         this.onEventMessageActionsView
@@ -114,7 +141,7 @@ export default {
       );
     },
 
-    setupStore(runtime: Window) {
+    setupStore(runtime: Window): void {
       // TODO: those are fixtures
       runtime.MessagingStore.loader("forwards", true);
 
@@ -131,6 +158,37 @@ export default {
       }, 500);
     },
 
+    showPopover(anchor: object, items: Array, interaction?: object): void {
+      // Compute popover position relative to anchor
+      const positionX = anchor.x || 0;
+
+      const positionY =
+        (anchor.y || 0) +
+        (anchor.height ? anchor.height + POPOVER_ANCHOR_HEIGHT_Y_OFFSET : 0);
+
+      this.popover.position.blockStart = `${positionY}px`;
+      this.popover.position.inlineStart = `${positionX}px`;
+
+      // Assign items (will show popover)
+      this.popover.items = items;
+
+      // Propagate interaction?
+      if (interaction) {
+        const frameRuntime = this.$refs.frame.contentWindow;
+
+        frameRuntime.MessagingStore.interact(
+          interaction.id,
+          interaction.action,
+          true
+        );
+      }
+    },
+
+    hidePopover(): void {
+      // Empty items (will hide popover)
+      this.popover.items = [];
+    },
+
     // --> EVENT LISTENERS <--
 
     onFrameLoad(): void {
@@ -144,10 +202,100 @@ export default {
 
     onEventMessageActionsView(event: object): void {
       this.$log.debug("Got message actions view", event);
+
+      // Show popover with actions? (if any origin set)
+      if (event.origin) {
+        // Build popover interaction (if button origin)
+        const interaction =
+          event.origin.type === "button"
+            ? {
+                id: event.id,
+                action: "actions"
+              }
+            : null;
+
+        // Show popover
+        this.showPopover(
+          event.origin.parent || event.origin.anchor,
+
+          [
+            // TODO: populate those
+
+            {
+              type: "button",
+              icon: "clock.fill",
+              label: "Set reminder"
+            },
+
+            {
+              type: "button",
+              icon: "lock.fill",
+              label: "Hide message"
+            },
+
+            {
+              type: "divider"
+            },
+
+            {
+              type: "button",
+              label: "View message edits"
+            },
+
+            {
+              type: "divider"
+            },
+
+            {
+              type: "button",
+              label: "Copy message",
+              color: "blue",
+              emphasis: true
+            },
+
+            {
+              type: "button",
+              label: "Delete message",
+              color: "red",
+              emphasis: true
+            }
+          ],
+
+          interaction
+        );
+      }
     },
 
     onEventMessageReactionsView(event: object): void {
       this.$log.debug("Got message reactions view", event);
+
+      // Show popover with actions? (if any origin set)
+      if (event.origin) {
+        // Build popover interaction (if button origin)
+        const interaction =
+          event.origin.type === "button"
+            ? {
+                id: event.id,
+                action: "reactions"
+              }
+            : null;
+
+        // Show popover
+        this.showPopover(
+          event.origin.parent || event.origin.anchor,
+
+          [
+            // TODO: populate those
+
+            {
+              type: "button",
+              label: "Pick a reaction..."
+            }
+          ],
+
+          interaction
+        );
+      }
     },
 
     onEventMessageReactionsReact(event: object): void {
@@ -169,9 +317,16 @@ export default {
 $c: ".c-inbox-messaging";
 
 .c-inbox-messaging {
+  position: relative;
+
   #{$c}__frame {
     height: 100%;
     width: 100%;
+  }
+
+  #{$c}__popover {
+    position: absolute;
+    z-index: 1;
   }
 }
 </style>
