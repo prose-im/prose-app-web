@@ -12,6 +12,7 @@
 .c-inbox-messaging
   iframe.c-inbox-messaging__frame(
     @load="onFrameLoad"
+    @click="onFrameClick"
     src="/includes/views/messaging.html"
     ref="frame"
     sandbox="allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
@@ -103,7 +104,8 @@ export default {
           inlineStart: "0px"
         },
 
-        items: []
+        items: [],
+        interaction: null
       }
     };
   },
@@ -158,7 +160,14 @@ export default {
       }, 500);
     },
 
+    setupListeners(runtime: Window): void {
+      runtime.addEventListener("click", this.onFrameInnerClick);
+    },
+
     showPopover(anchor: object, items: Array, interaction?: object): void {
+      // Clear any previously-shown popover
+      this.hidePopover();
+
       // Compute popover position relative to anchor
       const positionX = anchor.x || 0;
 
@@ -174,9 +183,9 @@ export default {
 
       // Propagate interaction?
       if (interaction) {
-        const frameRuntime = this.$refs.frame.contentWindow;
+        this.popover.interaction = interaction;
 
-        frameRuntime.MessagingStore.interact(
+        this.$refs.frame.contentWindow.MessagingStore.interact(
           interaction.id,
           interaction.action,
           true
@@ -187,6 +196,17 @@ export default {
     hidePopover(): void {
       // Empty items (will hide popover)
       this.popover.items = [];
+
+      // Any interaction to hide?
+      if (this.popover.interaction) {
+        this.$refs.frame.contentWindow.MessagingStore.interact(
+          this.popover.interaction.id,
+          this.popover.interaction.action,
+          false
+        );
+
+        this.popover.interaction = null;
+      }
     },
 
     // --> EVENT LISTENERS <--
@@ -198,6 +218,12 @@ export default {
       this.setupContext(frameRuntime);
       this.setupEvents(frameRuntime);
       this.setupStore(frameRuntime);
+      this.setupListeners(frameRuntime);
+    },
+
+    onFrameInnerClick(): void {
+      // Hide popover (if any opened)
+      this.hidePopover();
     },
 
     onEventMessageActionsView(event: object): void {
