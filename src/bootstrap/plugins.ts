@@ -10,6 +10,7 @@
 
 // NPM
 import { App } from "vue";
+import VueClickAway from "vue3-click-away";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -22,6 +23,9 @@ class BootstrapPlugins {
   init(app: App): void {
     // Vue Logger
     app.use(logger);
+
+    // Vue directives
+    app.use(VueClickAway);
   }
 }
 
