@@ -38,6 +38,8 @@ div(
       size="8px"
       class="c-base-action__dropdown"
     )
+
+  slot
 </template>
 
 <!-- **********************************************************************
@@ -130,6 +132,7 @@ $c: ".c-base-action";
 
 .c-base-action {
   display: inline-block;
+  position: relative;
 
   #{$c}__inner {
     background-color: transparent;
