@@ -122,8 +122,10 @@ $c: ".c-sidebar-header";
 
     #{$c}__identity-popover {
       position: absolute;
-      inset-inline-start: -4px;
-      inset-block-start: calc(100% + 8px);
+      inset-inline-start: $size-sidebar-popover-inset-inline-side;
+      inset-block-start: calc(
+        100% + #{$size-sidebar-popover-inset-block-edge-offset}
+      );
       z-index: 1;
     }
   }
