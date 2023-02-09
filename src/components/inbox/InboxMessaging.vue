@@ -82,12 +82,12 @@ const MESSAGE_FIXTURES = [
     reactions: [
       {
         reaction: "🤠",
-        authors: ["valerian@prose.org", "baptiste@prose.org"]
+        authors: ["valerian@prose.org", "baptiste@crisp.chat"]
       },
 
       {
         reaction: "🚀",
-        authors: ["baptiste@prose.org"]
+        authors: ["baptiste@crisp.chat"]
       }
     ]
   }
