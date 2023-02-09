@@ -12,9 +12,16 @@
 .c-sidebar-header
   .c-sidebar-header__identity
     base-server-logo(
+      @click="onIdentityLogoClick"
       class="c-sidebar-header__identity-logo"
       domain="crisp.chat"
       size="30px"
+    )
+
+    base-popover-list(
+      v-if="isIdentityPopoverVisible"
+      :items="identityPopoverItems"
+      class="c-sidebar-header__identity-popover"
     )
 
   layout-actions(
@@ -39,7 +46,49 @@
 
 <script lang="ts">
 export default {
-  name: "SidebarHeader"
+  name: "SidebarHeader",
+
+  data() {
+    return {
+      // --> STATE <--
+
+      isIdentityPopoverVisible: false
+    };
+  },
+
+  computed: {
+    identityPopoverItems() {
+      return [
+        {
+          type: "button",
+          label: "Invite workspace members"
+        },
+
+        {
+          type: "button",
+          label: "Create a group"
+        },
+
+        {
+          type: "divider"
+        },
+
+        {
+          type: "button",
+          label: "Server administration"
+        }
+      ];
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onIdentityLogoClick() {
+      // Toggle popover
+      this.isIdentityPopoverVisible = !this.isIdentityPopoverVisible;
+    }
+  }
 };
 </script>
 
@@ -56,6 +105,7 @@ $c: ".c-sidebar-header";
 
   #{$c}__identity {
     flex: 1;
+    position: relative;
 
     #{$c}__identity-logo {
       cursor: pointer;
@@ -68,6 +118,13 @@ $c: ".c-sidebar-header";
       &:active {
         filter: brightness(98%);
       }
+    }
+
+    #{$c}__identity-popover {
+      position: absolute;
+      inset-inline-start: -4px;
+      inset-block-start: calc(100% + 8px);
+      z-index: 1;
     }
   }
 
