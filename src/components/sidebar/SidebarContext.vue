@@ -19,7 +19,7 @@
     )
       base-avatar(
         @click="onAvatarImageClick"
-        jid="baptiste@prose.org"
+        jid="baptiste@crisp.chat"
         size="32px"
         shadow="light"
         class="c-sidebar-context__avatar-image"
@@ -75,6 +75,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import SidebarContextAccount from "@/components/sidebar/SidebarContextAccount.vue";
+
 export default {
   name: "SidebarContext",
 
@@ -97,6 +100,17 @@ export default {
   computed: {
     avatarPopoverItems() {
       return [
+        {
+          type: "component",
+          target: SidebarContextAccount,
+
+          properties: {
+            type: "user",
+            name: "Baptiste Jamin",
+            address: "baptiste@crisp.chat"
+          }
+        },
+
         {
           type: "button",
           label: "🚀 Update mood"
@@ -150,6 +164,17 @@ export default {
 
     actionsPopoverItems() {
       return [
+        {
+          type: "component",
+          target: SidebarContextAccount,
+
+          properties: {
+            type: "server",
+            name: "Crisp",
+            address: "crisp.chat"
+          }
+        },
+
         {
           type: "button",
           label: "Switch account"
