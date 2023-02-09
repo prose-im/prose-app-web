@@ -20,6 +20,7 @@
 
     base-popover-list(
       v-if="isIdentityPopoverVisible"
+      v-click-away="onIdentityPopoverClickAway"
       :items="identityPopoverItems"
       class="c-sidebar-header__identity-popover"
     )
@@ -87,6 +88,11 @@ export default {
     onIdentityLogoClick() {
       // Toggle popover
       this.isIdentityPopoverVisible = !this.isIdentityPopoverVisible;
+    },
+
+    onIdentityPopoverClickAway() {
+      // Close popover
+      this.isIdentityPopoverVisible = false;
     }
   }
 };

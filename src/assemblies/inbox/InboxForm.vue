@@ -25,6 +25,7 @@ layout-toolbar(
       )
         base-popover-list(
           v-if="isActionFormattingPopoverVisible"
+          v-click-away="onActionFormattingPopoverClickAway"
           :items="actionFormattingPopoverItems"
           class="a-inbox-form__action-popover a-inbox-form__action-popover--left"
         )
@@ -81,6 +82,7 @@ layout-toolbar(
       )
         base-popover-list(
           v-if="isActionEmojisPopoverVisible"
+          v-click-away="onActionEmojisPopoverClickAway"
           :items="actionEmojisPopoverItems"
           class="a-inbox-form__action-popover a-inbox-form__action-popover--right"
         )
@@ -136,9 +138,19 @@ export default {
         !this.isActionFormattingPopoverVisible;
     },
 
+    onActionFormattingPopoverClickAway() {
+      // Close popover
+      this.isActionFormattingPopoverVisible = false;
+    },
+
     onActionEmojisClick() {
       // Toggle popover
       this.isActionEmojisPopoverVisible = !this.isActionEmojisPopoverVisible;
+    },
+
+    onActionEmojisPopoverClickAway() {
+      // Close popover
+      this.isActionEmojisPopoverVisible = false;
     },
 
     onSubmit(): void {

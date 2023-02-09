@@ -42,6 +42,7 @@ layout-toolbar(
       )
         base-popover-list(
           v-if="isActionHistoryPopoverVisible"
+          v-click-away="onActionHistoryPopoverClickAway"
           :items="actionHistoryPopoverItems"
           class="a-inbox-topbar__action-popover"
         )
@@ -140,6 +141,11 @@ export default {
     onActionHistoryClick() {
       // Toggle popover
       this.isActionHistoryPopoverVisible = !this.isActionHistoryPopoverVisible;
+    },
+
+    onActionHistoryPopoverClickAway() {
+      // Close popover
+      this.isActionHistoryPopoverVisible = false;
     }
   }
 };
