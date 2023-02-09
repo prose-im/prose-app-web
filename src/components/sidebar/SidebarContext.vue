@@ -18,9 +18,17 @@
       v-slot:avatar
     )
       base-avatar(
+        @click="onAvatarImageClick"
         jid="baptiste@prose.org"
         size="32px"
         shadow="light"
+        class="c-sidebar-context__avatar-image"
+      )
+
+      base-popover-list(
+        v-if="isAvatarPopoverVisible"
+        :items="avatarPopoverItems"
+        class="c-sidebar-context__avatar-popover"
       )
 
     template(
@@ -43,14 +51,22 @@
       span.c-sidebar-context__status-text
         | Building new features.
 
-  base-action(
-    class="c-sidebar-context__actions"
-    icon="ellipsis"
-    context="grey"
-    rotate="90deg"
-    size="16px"
-    auto-width
-  )
+  .c-sidebar-context__actions
+    base-action(
+      @click="onActionsClick"
+      :active="isActionsPopoverVisible"
+      icon="ellipsis"
+      context="grey"
+      rotate="90deg"
+      size="16px"
+      auto-width
+    )
+
+    base-popover-list(
+      v-if="isActionsPopoverVisible"
+      :items="actionsPopoverItems"
+      class="c-sidebar-context__actions-popover"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -65,6 +81,108 @@ export default {
     avatarPresenceClass: {
       type: String,
       default: null
+    }
+  },
+
+  data() {
+    return {
+      // --> STATE <--
+
+      isAvatarPopoverVisible: false,
+      isActionsPopoverVisible: false
+    };
+  },
+
+  computed: {
+    avatarPopoverItems() {
+      return [
+        {
+          type: "button",
+          label: "🚀 Update mood"
+        },
+
+        {
+          type: "button",
+          label: "Change availability"
+        },
+
+        {
+          type: "button",
+          label: "Pause notifications"
+        },
+
+        {
+          type: "divider"
+        },
+
+        {
+          type: "button",
+          label: "Edit profile"
+        },
+
+        {
+          type: "button",
+          label: "Account settings"
+        },
+
+        {
+          type: "divider"
+        },
+
+        {
+          type: "button",
+          label: "Offline mode"
+        },
+
+        {
+          type: "divider"
+        },
+
+        {
+          type: "button",
+          label: "Sign me out",
+          color: "red",
+          emphasis: true
+        }
+      ];
+    },
+
+    actionsPopoverItems() {
+      return [
+        {
+          type: "button",
+          label: "Switch account"
+        },
+
+        {
+          type: "button",
+          label: "Connect account"
+        },
+
+        {
+          type: "divider"
+        },
+
+        {
+          type: "button",
+          label: "Manage server",
+          emphasis: true
+        }
+      ];
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onAvatarImageClick() {
+      // Toggle popover
+      this.isAvatarPopoverVisible = !this.isAvatarPopoverVisible;
+    },
+
+    onActionsClick() {
+      // Toggle popover
+      this.isActionsPopoverVisible = !this.isActionsPopoverVisible;
     }
   }
 };
@@ -84,6 +202,28 @@ $c: ".c-sidebar-context";
   #{$c}__avatar {
     margin-inline-end: 13px;
     flex: 0 0 auto;
+    position: relative;
+
+    #{$c}__avatar-image {
+      cursor: pointer;
+
+      &:hover {
+        filter: brightness(105%);
+      }
+
+      &:active {
+        filter: brightness(98%);
+      }
+    }
+
+    #{$c}__avatar-popover {
+      position: absolute;
+      inset-inline-start: $size-sidebar-popover-inset-inline-side;
+      inset-block-end: calc(
+        100% + #{$size-sidebar-popover-inset-block-edge-offset}
+      );
+      z-index: 1;
+    }
   }
 
   #{$c}__current {
@@ -121,6 +261,16 @@ $c: ".c-sidebar-context";
     margin-inline-start: 6px;
     margin-inline-end: (-1 * $size-base-action-padding-sides);
     flex: 0 0 auto;
+    position: relative;
+
+    #{$c}__actions-popover {
+      position: absolute;
+      inset-inline-end: $size-sidebar-popover-inset-inline-side;
+      inset-block-end: calc(
+        100% + #{$size-sidebar-popover-inset-block-edge-offset}
+      );
+      z-index: 1;
+    }
   }
 }
 </style>
