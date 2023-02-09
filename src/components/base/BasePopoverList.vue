@@ -48,6 +48,13 @@ base-popover(
       v-else-if="item.type === 'divider'"
       class="c-base-popover-list__divider"
     )
+
+    component(
+      v-else-if="item.type === 'component'"
+      v-bind="item.properties"
+      :is="item.target"
+      class="c-base-popover-list__component"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -124,6 +131,11 @@ $entry-spacing-sides: 14px;
 
   #{$c}__divider {
     margin-inline: ($entry-spacing-sides - 1px);
+  }
+
+  #{$c}__component {
+    margin-inline: $entry-spacing-sides;
+    margin-block: 4px 10px;
   }
 }
 </style>
