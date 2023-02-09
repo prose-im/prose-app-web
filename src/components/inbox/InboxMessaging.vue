@@ -9,7 +9,9 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-inbox-messaging
+.c-inbox-messaging(
+  ref="container"
+)
   iframe.c-inbox-messaging__frame(
     @load="onFrameLoad"
     @click="onFrameClick"
@@ -209,6 +211,12 @@ export default {
       }
     },
 
+    triggerContainerClick(): void {
+      // Trigger ghost click event on container (so that eg. the click away \
+      //   directive handles the click event accordingly)
+      this.$refs.container.click();
+    },
+
     // --> EVENT LISTENERS <--
 
     onFrameLoad(): void {
@@ -224,6 +232,9 @@ export default {
     onFrameInnerClick(): void {
       // Hide popover (if any opened)
       this.hidePopover();
+
+      // Trigger container click
+      this.triggerContainerClick();
     },
 
     onEventMessageActionsView(event: object): void {
@@ -281,6 +292,9 @@ export default {
 
           interaction
         );
+
+        // Trigger container click
+        this.triggerContainerClick();
       }
     },
 
@@ -314,6 +328,9 @@ export default {
 
           interaction
         );
+
+        // Trigger container click
+        this.triggerContainerClick();
       }
     },
 
