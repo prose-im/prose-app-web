@@ -17,10 +17,17 @@ layout-toolbar(
   )
     layout-actions
       base-action(
+        @click="onActionFormattingClick"
+        :active="isActionFormattingPopoverVisible"
         class="a-inbox-form__action"
         icon="textformat.alt"
         size="18px"
       )
+        base-popover-list(
+          v-if="isActionFormattingPopoverVisible"
+          :items="actionFormattingPopoverItems"
+          class="a-inbox-form__action-popover a-inbox-form__action-popover--left"
+        )
 
   template(
     v-slot:middle
@@ -66,10 +73,17 @@ layout-toolbar(
       )
 
       base-action(
+        @click="onActionEmojisClick"
+        :active="isActionEmojisPopoverVisible"
         class="a-inbox-form__action"
         icon="face.smiling"
         size="18px"
       )
+        base-popover-list(
+          v-if="isActionEmojisPopoverVisible"
+          :items="actionEmojisPopoverItems"
+          class="a-inbox-form__action-popover a-inbox-form__action-popover--right"
+        )
 </template>
 
 <!-- **********************************************************************
@@ -84,12 +98,48 @@ export default {
     return {
       // --> STATE <--
 
-      message: ""
+      message: "",
+
+      isActionFormattingPopoverVisible: false,
+      isActionEmojisPopoverVisible: false
     };
+  },
+
+  computed: {
+    actionFormattingPopoverItems() {
+      return [
+        {
+          type: "button",
+          label: "Formatting items...",
+          color: "blue"
+        }
+      ];
+    },
+
+    actionEmojisPopoverItems() {
+      return [
+        {
+          type: "button",
+          label: "Emoji picker...",
+          color: "blue"
+        }
+      ];
+    }
   },
 
   methods: {
     // --> EVENT LISTENERS <--
+
+    onActionFormattingClick() {
+      // Toggle popover
+      this.isActionFormattingPopoverVisible =
+        !this.isActionFormattingPopoverVisible;
+    },
+
+    onActionEmojisClick() {
+      // Toggle popover
+      this.isActionEmojisPopoverVisible = !this.isActionEmojisPopoverVisible;
+    },
 
     onSubmit(): void {
       // TODO
@@ -121,6 +171,24 @@ $form-compose-send-button-size: (
 );
 
 .a-inbox-form {
+  #{$c}__action {
+    #{$c}__action-popover {
+      position: absolute;
+      inset-block-end: calc(
+        100% + #{$size-base-popover-list-inset-block-edge-offset}
+      );
+      z-index: 1;
+
+      &--left {
+        inset-inline-start: 0;
+      }
+
+      &--right {
+        inset-inline-end: 0;
+      }
+    }
+  }
+
   #{$c}__compose {
     margin-inline: 12px;
     padding-block: $form-compose-padding-block;

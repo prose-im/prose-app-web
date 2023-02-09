@@ -32,12 +32,19 @@ layout-toolbar(
       )
 
       base-action(
+        @click="onActionHistoryClick"
+        :active="isActionHistoryPopoverVisible"
         class="a-inbox-topbar__action"
         icon="clock"
         context="grey"
         size="18px"
         dropdown
       )
+        base-popover-list(
+          v-if="isActionHistoryPopoverVisible"
+          :items="actionHistoryPopoverItems"
+          class="a-inbox-topbar__action-popover"
+        )
 
   template(
     v-slot:middle
@@ -105,7 +112,36 @@ layout-toolbar(
 
 <script lang="ts">
 export default {
-  name: "InboxTopbar"
+  name: "InboxTopbar",
+
+  data() {
+    return {
+      // --> STATE <--
+
+      isActionHistoryPopoverVisible: false
+    };
+  },
+
+  computed: {
+    actionHistoryPopoverItems() {
+      return [
+        {
+          type: "button",
+          label: "History items...",
+          color: "blue"
+        }
+      ];
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onActionHistoryClick() {
+      // Toggle popover
+      this.isActionHistoryPopoverVisible = !this.isActionHistoryPopoverVisible;
+    }
+  }
 };
 </script>
 
@@ -119,6 +155,17 @@ $c: ".a-inbox-topbar";
 .a-inbox-topbar {
   #{$c}__separator {
     margin-inline: 14px;
+  }
+
+  #{$c}__action {
+    #{$c}__action-popover {
+      position: absolute;
+      inset-inline-start: 0;
+      inset-block-start: calc(
+        100% + #{$size-base-popover-list-inset-block-edge-offset}
+      );
+      z-index: 1;
+    }
   }
 
   #{$c}__identity {
