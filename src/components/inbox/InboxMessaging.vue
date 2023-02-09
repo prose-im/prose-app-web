@@ -14,7 +14,6 @@
 )
   iframe.c-inbox-messaging__frame(
     @load="onFrameLoad"
-    @click="onFrameClick"
     src="/includes/views/messaging.html"
     ref="frame"
     sandbox="allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
@@ -22,6 +21,7 @@
 
   base-popover-list(
     v-if="popover.items.length > 0"
+    v-click-away="onPopoverClickAway"
     :items="popover.items"
     :style=`{
       insetBlockStart: popover.position.blockStart,
@@ -230,11 +230,13 @@ export default {
     },
 
     onFrameInnerClick(): void {
-      // Hide popover (if any opened)
-      this.hidePopover();
-
       // Trigger container click
       this.triggerContainerClick();
+    },
+
+    onPopoverClickAway(): void {
+      // Hide popover (if any opened)
+      this.hidePopover();
     },
 
     onEventMessageActionsView(event: object): void {
