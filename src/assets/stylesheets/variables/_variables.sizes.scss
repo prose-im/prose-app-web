@@ -15,7 +15,6 @@ $size-layout-gradient-height: 6px;
 // --> SIDEBAR <--
 
 $size-sidebar-popover-inset-inline-side: -3px;
-$size-sidebar-popover-inset-block-edge-offset: 8px;
 
 // --> INBOX <--
 
@@ -25,6 +24,10 @@ $size-inbox-form-height: 65px;
 // --> BASE ACTION <--
 
 $size-base-action-padding-sides: 8px;
+
+// --> BASE POPOVER LIST <--
+
+$size-base-popover-list-inset-block-edge-offset: 7px;
 
 // --> LIST ITEM <--
 

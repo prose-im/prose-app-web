@@ -219,7 +219,7 @@ $c: ".c-sidebar-context";
       position: absolute;
       inset-inline-start: $size-sidebar-popover-inset-inline-side;
       inset-block-end: calc(
-        100% + #{$size-sidebar-popover-inset-block-edge-offset}
+        100% + #{$size-base-popover-list-inset-block-edge-offset}
       );
       z-index: 1;
     }
@@ -265,7 +265,7 @@ $c: ".c-sidebar-context";
       position: absolute;
       inset-inline-end: $size-sidebar-popover-inset-inline-side;
       inset-block-end: calc(
-        100% + #{$size-sidebar-popover-inset-block-edge-offset}
+        100% + #{$size-base-popover-list-inset-block-edge-offset}
       );
       z-index: 1;
     }

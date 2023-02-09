@@ -124,7 +124,7 @@ $c: ".c-sidebar-header";
       position: absolute;
       inset-inline-start: $size-sidebar-popover-inset-inline-side;
       inset-block-start: calc(
-        100% + #{$size-sidebar-popover-inset-block-edge-offset}
+        100% + #{$size-base-popover-list-inset-block-edge-offset}
       );
       z-index: 1;
     }
