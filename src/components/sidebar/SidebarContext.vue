@@ -51,17 +51,16 @@
       span.c-sidebar-context__status-text
         | Building new features.
 
-  .c-sidebar-context__actions
-    base-action(
-      @click="onActionsClick"
-      :active="isActionsPopoverVisible"
-      icon="ellipsis"
-      context="grey"
-      rotate="90deg"
-      size="16px"
-      auto-width
-    )
-
+  base-action(
+    @click="onActionsClick"
+    :active="isActionsPopoverVisible"
+    icon="ellipsis"
+    context="grey"
+    rotate="90deg"
+    size="16px"
+    class="c-sidebar-context__actions"
+    auto-width
+  )
     base-popover-list(
       v-if="isActionsPopoverVisible"
       :items="actionsPopoverItems"
@@ -261,7 +260,6 @@ $c: ".c-sidebar-context";
     margin-inline-start: 6px;
     margin-inline-end: (-1 * $size-base-action-padding-sides);
     flex: 0 0 auto;
-    position: relative;
 
     #{$c}__actions-popover {
       position: absolute;
