@@ -8,7 +8,6 @@
  * IMPORTS
  * ************************************************************************* */
 
-import fs from "fs";
 import path from "path";
 import merge from "lodash.merge";
 import vue from "@vitejs/plugin-vue";
