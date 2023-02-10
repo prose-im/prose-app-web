@@ -16,6 +16,7 @@ div(
     "c-list-button--color-" + color,
     {
       "c-list-button--active": active,
+      "c-list-button--actionable": actionable,
       "c-list-button--important": important
     }
   ]`
@@ -50,6 +51,10 @@ div(
     slot(
       name="details"
     )
+
+  slot(
+    name="expanded"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -84,6 +89,11 @@ export default {
       default: false
     },
 
+    actionable: {
+      type: Boolean,
+      default: true
+    },
+
     emphasis: {
       type: Boolean,
       default: false
@@ -113,14 +123,10 @@ $c: ".c-list-button";
   background-color: transparent;
   display: flex;
   align-items: center;
-  cursor: pointer;
+  cursor: default;
 
   &:hover {
     background-color: darken($color-base-grey-light, 1%);
-  }
-
-  &:active {
-    background-color: darken($color-base-grey-light, 2%);
   }
 
   #{$c}__icon {
@@ -181,7 +187,7 @@ $c: ".c-list-button";
   &--color-blue,
   &--color-red {
     &:hover,
-    &:active {
+    &#{$c}--actionable:active {
       #{$c}__label {
         color: $color-white;
       }
@@ -197,7 +203,7 @@ $c: ".c-list-button";
       background-color: $color-base-blue-normal;
     }
 
-    &:active {
+    &#{$c}--actionable:active {
       background-color: darken($color-base-blue-normal, 4%);
     }
   }
@@ -211,12 +217,20 @@ $c: ".c-list-button";
       background-color: $color-base-red-normal;
     }
 
-    &:active {
+    &#{$c}--actionable:active {
       background-color: darken($color-base-red-normal, 4%);
     }
   }
 
   // --> BOOLEANS <--
+
+  &--actionable {
+    cursor: pointer;
+
+    &:active {
+      background-color: darken($color-base-grey-light, 2%);
+    }
+  }
 
   &--active {
     background-color: $color-base-blue-normal;
@@ -225,7 +239,7 @@ $c: ".c-list-button";
       background-color: darken($color-base-blue-normal, 4%);
     }
 
-    &:active {
+    &#{$c}--actionable:active {
       background-color: darken($color-base-blue-normal, 6%);
     }
 
@@ -247,7 +261,7 @@ $c: ".c-list-button";
       background-color: darken($color-base-grey-light, 2.5%);
     }
 
-    &:active {
+    &#{$c}--actionable:active {
       background-color: darken($color-base-grey-light, 3.5%);
     }
   }
