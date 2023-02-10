@@ -17,6 +17,7 @@ base-popover(
   )
     list-button(
       v-if="item.type === 'button'"
+      @click="item.click(context)"
       :emphasis="item.emphasis"
       :color="item.color"
       :class=`[
@@ -72,6 +73,14 @@ export default {
 
       validator(x: Array): void {
         return x.length > 0;
+      }
+    },
+
+    context: {
+      type: Object,
+
+      default() {
+        return {};
       }
     }
   }
