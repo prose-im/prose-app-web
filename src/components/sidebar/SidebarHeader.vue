@@ -62,7 +62,7 @@ export default {
       return [
         {
           type: "button",
-          label: "Invite workspace members"
+          label: "Invite people"
         },
 
         {
