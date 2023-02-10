@@ -23,6 +23,7 @@
     v-if="popover.items.length > 0"
     v-click-away="onPopoverClickAway"
     :items="popover.items"
+    :context="popover.context"
     :style=`{
       insetBlockStart: popover.position.blockStart,
       insetInlineStart: popover.position.inlineStart
@@ -36,6 +37,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
+
 // CONSTANTS
 const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 
@@ -115,6 +119,10 @@ export default {
   methods: {
     // --> HELPERS <--
 
+    frame(): Window {
+      return this.$refs.frame.contentWindow;
+    },
+
     setupContext(runtime: Window): void {
       // TODO: from dynamic context
       runtime.MessagingContext.setLanguage("en");
@@ -166,7 +174,12 @@ export default {
       runtime.addEventListener("click", this.onFrameInnerClick);
     },
 
-    showPopover(anchor: object, items: Array, interaction?: object): void {
+    showPopover(
+      anchor: object,
+      items: Array,
+      context?: object,
+      interaction?: object
+    ): void {
       // Clear any previously-shown popover
       this.hidePopover();
 
@@ -180,6 +193,9 @@ export default {
       this.popover.position.blockStart = `${positionY}px`;
       this.popover.position.inlineStart = `${positionX}px`;
 
+      // Assign context (or empty)
+      this.popover.context = context || {};
+
       // Assign items (will show popover)
       this.popover.items = items;
 
@@ -187,7 +203,7 @@ export default {
       if (interaction) {
         this.popover.interaction = interaction;
 
-        this.$refs.frame.contentWindow.MessagingStore.interact(
+        this.frame().MessagingStore.interact(
           interaction.id,
           interaction.action,
           true
@@ -201,7 +217,7 @@ export default {
 
       // Any interaction to hide?
       if (this.popover.interaction) {
-        this.$refs.frame.contentWindow.MessagingStore.interact(
+        this.frame().MessagingStore.interact(
           this.popover.interaction.id,
           this.popover.interaction.action,
           false
@@ -220,7 +236,7 @@ export default {
     // --> EVENT LISTENERS <--
 
     onFrameLoad(): void {
-      const frameRuntime = this.$refs.frame.contentWindow;
+      const frameRuntime = this.frame();
 
       // Setup frame
       this.setupContext(frameRuntime);
@@ -239,11 +255,92 @@ export default {
       this.hidePopover();
     },
 
+    onPopoverActionsCopyClick({ messageId }: { messageId: string }): void {
+      // Acquire message contents
+      const messageData = this.frame().MessagingStore.resolve(messageId);
+
+      if (messageData && messageData.type === "text" && messageData.text) {
+        // Copy to clipboard
+        navigator.clipboard
+          .writeText(messageData.text)
+          .then(() => {
+            this.$log.info(`Copied message text: ${messageData.text}`);
+
+            BaseAlert.success(
+              "Text copied",
+              "Message text was copied to clipboard"
+            );
+
+            // Hide popover
+            this.hidePopover();
+          })
+          .catch(error => {
+            this.$log.info(
+              `Could not copy message text: ${messageData.text}`,
+              error
+            );
+
+            BaseAlert.error(
+              "Cannot copy text",
+              "Message text could not be copied to clipboard"
+            );
+          });
+      } else {
+        BaseAlert.warning(
+          "No text to copy",
+          "This message does not contain any text to copy"
+        );
+      }
+    },
+
+    onPopoverActionsReactionClick({ messageId }: { messageId: string }): void {
+      // TODO: open reaction popover at same position as reaction button
+
+      // TODO: temporary alert
+      BaseAlert.warning("Not implemented");
+    },
+
+    onPopoverActionsEditClick({ messageId }: { messageId: string }): void {
+      // Highlight message to edit
+      this.frame().MessagingStore.highlight(messageId);
+
+      // TODO: enter edit mode
+
+      // Hide popover
+      this.hidePopover();
+    },
+
+    onPopoverActionsRemoveClick({ messageId }: { messageId: string }): void {
+      // Remove from store
+      // TODO: move this to a store/factory?
+      const wasRemoved = this.frame().MessagingStore.retract(messageId);
+
+      // TODO: send removal order to protocol
+
+      // Acknowledge removal
+      if (wasRemoved === true) {
+        BaseAlert.info("Message removed", "The message has been deleted");
+
+        // Hide popover
+        this.hidePopover();
+      } else {
+        BaseAlert.error(
+          "Cannot remove message",
+          "The message could not be deleted"
+        );
+      }
+    },
+
     onEventMessageActionsView(event: object): void {
       this.$log.debug("Got message actions view", event);
 
       // Show popover with actions? (if any origin set)
       if (event.origin) {
+        // Build context
+        const context = {
+          messageId: event.id
+        };
+
         // Build popover interaction (if button origin)
         const interaction =
           event.origin.type === "button"
@@ -263,13 +360,15 @@ export default {
             {
               type: "button",
               icon: "doc.on.clipboard",
-              label: "Copy text"
+              label: "Copy text",
+              click: this.onPopoverActionsCopyClick
             },
 
             {
               type: "button",
               icon: "face.smiling",
-              label: "Add reaction…"
+              label: "Add reaction…",
+              click: this.onPopoverActionsReactionClick
             },
 
             {
@@ -280,7 +379,8 @@ export default {
               type: "button",
               icon: "pencil",
               label: "Edit message…",
-              emphasis: true
+              emphasis: true,
+              click: this.onPopoverActionsEditClick
             },
 
             {
@@ -288,10 +388,12 @@ export default {
               icon: "trash",
               label: "Remove message",
               color: "red",
-              emphasis: true
+              emphasis: true,
+              click: this.onPopoverActionsRemoveClick
             }
           ],
 
+          context,
           interaction
         );
 
@@ -305,6 +407,11 @@ export default {
 
       // Show popover with actions? (if any origin set)
       if (event.origin) {
+        // Build context
+        const context = {
+          messageId: event.id
+        };
+
         // Build popover interaction (if button origin)
         const interaction =
           event.origin.type === "button"
@@ -328,6 +435,7 @@ export default {
             }
           ],
 
+          context,
           interaction
         );
 
