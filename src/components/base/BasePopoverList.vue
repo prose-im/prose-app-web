@@ -13,12 +13,15 @@ base-popover(
   class="c-base-popover-list"
 )
   template(
-    v-for="item in items"
+    v-for="(item, index) in items"
   )
     list-button(
       v-if="item.type === 'button'"
       @click="item.click ? item.click(context) : null"
+      @mouseenter="onButtonMouseEnter(item, index)"
+      @mouseleave="onButtonMouseLeave(index)"
       :emphasis="item.emphasis"
+      :actionable="!childrenPopoverVisible[index]"
       :color="item.color"
       :class=`[
         "c-base-popover-list__button",
@@ -53,6 +56,16 @@ base-popover(
           name="chevron.right"
           size="8px"
           class="c-base-popover-list__button-arrow"
+        )
+
+      template(
+        v-if="item.children"
+        v-slot:expanded
+      )
+        base-popover-list(
+          v-if="childrenPopoverVisible[index]"
+          :items="item.children"
+          class="c-base-popover-list__button-popover"
         )
 
     list-divider(
@@ -93,6 +106,30 @@ export default {
         return {};
       }
     }
+  },
+
+  data() {
+    return {
+      // --> STATE <--
+
+      childrenPopoverVisible: {}
+    };
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onButtonMouseEnter(item: object, index: number): void {
+      if (item.children && item.children.length > 0) {
+        this.childrenPopoverVisible[index] = true;
+      }
+    },
+
+    onButtonMouseLeave(index: number): void {
+      if (this.childrenPopoverVisible[index] === true) {
+        delete this.childrenPopoverVisible[index];
+      }
+    }
   }
 };
 </script>
@@ -107,9 +144,15 @@ $c: ".c-base-popover-list";
 // VARIABLES
 $entry-spacing-sides: 14px;
 
+$entry-button-popover-edges-offset: (
+  $size-base-popover-border-width +
+    $size-base-popover-list-inset-block-edge-offset
+);
+
 .c-base-popover-list {
   #{$c}__button {
     padding-inline: $entry-spacing-sides;
+    position: relative;
 
     #{$c}__button-icon {
       min-width: 16px;
@@ -121,6 +164,13 @@ $entry-spacing-sides: 14px;
 
     #{$c}__button-arrow {
       fill: $color-base-grey-dark;
+    }
+
+    #{$c}__button-popover {
+      position: absolute;
+      inset-inline-start: calc(100% - #{$entry-button-popover-edges-offset});
+      inset-block-end: (-1 * $entry-button-popover-edges-offset);
+      z-index: 1;
     }
 
     &--color-blue,
