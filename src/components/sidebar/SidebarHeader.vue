@@ -76,7 +76,8 @@ export default {
 
         {
           type: "button",
-          label: "Server administration"
+          label: "Manage server",
+          emphasis: true
         }
       ];
     }

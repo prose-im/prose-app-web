@@ -225,16 +225,6 @@ export default {
         {
           type: "button",
           label: "Connect account"
-        },
-
-        {
-          type: "divider"
-        },
-
-        {
-          type: "button",
-          label: "Manage server",
-          emphasis: true
         }
       ];
     }
