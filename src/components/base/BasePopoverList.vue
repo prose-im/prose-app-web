@@ -45,6 +45,16 @@ base-popover(
           class="c-base-popover-list__button-icon-inner"
         )
 
+      template(
+        v-if="item.children"
+        v-slot:details
+      )
+        base-icon(
+          name="chevron.right"
+          size="8px"
+          class="c-base-popover-list__button-arrow"
+        )
+
     list-divider(
       v-else-if="item.type === 'divider'"
       class="c-base-popover-list__divider"
@@ -107,6 +117,10 @@ $entry-spacing-sides: 14px;
       #{$c}__button-icon-inner {
         fill: $color-base-grey-dark;
       }
+    }
+
+    #{$c}__button-arrow {
+      fill: $color-base-grey-dark;
     }
 
     &--color-blue,
