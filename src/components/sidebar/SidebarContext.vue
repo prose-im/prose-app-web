@@ -118,12 +118,51 @@ export default {
 
         {
           type: "button",
-          label: "Change availability"
+          label: "Change availability",
+
+          children: [
+            {
+              type: "button",
+              label: "Available for chat"
+            },
+
+            {
+              type: "button",
+              label: "Do not disturb"
+            }
+          ]
         },
 
         {
           type: "button",
-          label: "Pause notifications"
+          label: "Pause notifications",
+
+          children: [
+            {
+              type: "button",
+              label: "For 10 minutes"
+            },
+
+            {
+              type: "button",
+              label: "For 1 hour"
+            },
+
+            {
+              type: "button",
+              label: "For 3 hours"
+            },
+
+            {
+              type: "button",
+              label: "For 1 day"
+            },
+
+            {
+              type: "button",
+              label: "Custom..."
+            }
+          ]
         },
 
         {
@@ -138,15 +177,6 @@ export default {
         {
           type: "button",
           label: "Account settings"
-        },
-
-        {
-          type: "divider"
-        },
-
-        {
-          type: "button",
-          label: "Offline mode"
         },
 
         {
@@ -177,7 +207,19 @@ export default {
 
         {
           type: "button",
-          label: "Switch account"
+          label: "Switch account",
+
+          children: [
+            {
+              type: "button",
+              label: "Crisp – crisp.chat"
+            },
+
+            {
+              type: "button",
+              label: "MakAir – makair.life"
+            }
+          ]
         },
 
         {
