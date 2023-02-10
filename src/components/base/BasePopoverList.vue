@@ -17,7 +17,7 @@ base-popover(
   )
     list-button(
       v-if="item.type === 'button'"
-      @click="item.click(context)"
+      @click="item.click ? item.click(context) : null"
       :emphasis="item.emphasis"
       :color="item.color"
       :class=`[
