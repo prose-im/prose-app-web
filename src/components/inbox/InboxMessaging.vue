@@ -12,8 +12,14 @@
 .c-inbox-messaging(
   ref="container"
 )
-  iframe.c-inbox-messaging__frame(
+  iframe(
     @load="onFrameLoad"
+    :class=`[
+      "c-inbox-messaging__frame",
+      {
+        "c-inbox-messaging__frame--visible": isFrameLoaded
+      }
+    ]`
     src="/includes/views/messaging.html"
     ref="frame"
     sandbox="allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
@@ -48,11 +54,15 @@
 // NPM
 import { shallowRef } from "vue";
 
+// PROJECT: STYLES
+import styleElementsFonts from "@/assets/stylesheets/elements/_elements.fonts.scss?inline";
+
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 
 // CONSTANTS
+const FRAME_STYLE_FONT_FAMILY = "Prose Outfit";
 const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 
 const MESSAGE_FIXTURES = [
@@ -116,6 +126,8 @@ export default {
     return {
       // --> STATE <--
 
+      isFrameLoaded: false,
+
       popover: {
         style: {
           insetBlockStart: "0px",
@@ -137,6 +149,26 @@ export default {
 
     frame(): Window {
       return this.$refs.frame.contentWindow;
+    },
+
+    setupDocument(runtime: Window): void {
+      // Generate custom inline style
+      const inlineStyle = `
+        ${styleElementsFonts}
+
+        #app {
+          font-family: "${FRAME_STYLE_FONT_FAMILY}";
+          font-size: 13.5px;
+        }
+      `;
+
+      // Append style element
+      const styleElement = runtime.document.createElement("style");
+
+      styleElement.type = "text/css";
+      styleElement.innerHTML = inlineStyle;
+
+      runtime.document.head.appendChild(styleElement);
     },
 
     setupContext(runtime: Window): void {
@@ -269,10 +301,14 @@ export default {
       const frameRuntime = this.frame();
 
       // Setup frame
+      this.setupDocument(frameRuntime);
       this.setupContext(frameRuntime);
       this.setupEvents(frameRuntime);
       this.setupStore(frameRuntime);
       this.setupListeners(frameRuntime);
+
+      // Mark frame as loaded
+      this.isFrameLoaded = true;
     },
 
     onFrameInnerClick(): void {
@@ -504,6 +540,11 @@ $c: ".c-inbox-messaging";
   #{$c}__frame {
     height: 100%;
     width: 100%;
+    visibility: hidden;
+
+    &--visible {
+      visibility: visible;
+    }
   }
 
   #{$c}__popover {
