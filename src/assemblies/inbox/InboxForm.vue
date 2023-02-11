@@ -122,23 +122,23 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onActionFormattingClick() {
+    onActionFormattingClick(): void {
       // Toggle popover
       this.isActionFormattingPopoverVisible =
         !this.isActionFormattingPopoverVisible;
     },
 
-    onActionFormattingPopoverClickAway() {
+    onActionFormattingPopoverClickAway(): void {
       // Close popover
       this.isActionFormattingPopoverVisible = false;
     },
 
-    onActionEmojisClick() {
+    onActionEmojisClick(): void {
       // Toggle popover
       this.isActionEmojisPopoverVisible = !this.isActionEmojisPopoverVisible;
     },
 
-    onActionEmojisPopoverClickAway() {
+    onActionEmojisPopoverClickAway(): void {
       // Close popover
       this.isActionEmojisPopoverVisible = false;
     },

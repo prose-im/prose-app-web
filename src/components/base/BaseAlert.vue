@@ -116,7 +116,7 @@ export default {
   },
 
   methods: {
-    show({ level, title, description = null }) {
+    show({ level, title, description = null }): void {
       if (!level || !title) {
         throw new Error("No alert level or title provided");
       }
@@ -141,7 +141,7 @@ export default {
       }, ALERT_SHOW_AFTER_DELAY);
     },
 
-    hide() {
+    hide(): void {
       if (this.title) {
         // Unschedule hide
         this.unscheduleHide();
@@ -153,7 +153,7 @@ export default {
       }
     },
 
-    scheduleHide(shortLived = false) {
+    scheduleHide(shortLived = false): void {
       // Unschedule any previously-scheduled hide
       this.unscheduleHide();
 
@@ -172,7 +172,7 @@ export default {
       );
     },
 
-    unscheduleHide() {
+    unscheduleHide(): void {
       // Clear existing hide timer?
       if (this.timers.hide !== null) {
         clearTimeout(this.timers.hide);
@@ -181,7 +181,7 @@ export default {
       }
     },
 
-    unscheduleShow() {
+    unscheduleShow(): void {
       // Clear existing show timer?
       if (this.timers.show !== null) {
         clearTimeout(this.timers.show);
@@ -192,17 +192,17 @@ export default {
 
     // --> EVENT LISTENERS <--
 
-    onMouseOver() {
+    onMouseOver(): void {
       // Unschedules close
       this.unscheduleHide();
     },
 
-    onMouseLeave() {
+    onMouseLeave(): void {
       // Re-schedule closure (as it was previously unscheduled)
       this.scheduleHide(true);
     },
 
-    onCloseClick() {
+    onCloseClick(): void {
       // Hide alert
       this.hide();
     }

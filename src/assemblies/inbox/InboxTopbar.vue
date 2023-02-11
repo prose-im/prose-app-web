@@ -138,12 +138,12 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onActionHistoryClick() {
+    onActionHistoryClick(): void {
       // Toggle popover
       this.isActionHistoryPopoverVisible = !this.isActionHistoryPopoverVisible;
     },
 
-    onActionHistoryPopoverClickAway() {
+    onActionHistoryPopoverClickAway(): void {
       // Close popover
       this.isActionHistoryPopoverVisible = false;
     }

@@ -86,12 +86,12 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onIdentityLogoClick() {
+    onIdentityLogoClick(): void {
       // Toggle popover
       this.isIdentityPopoverVisible = !this.isIdentityPopoverVisible;
     },
 
-    onIdentityPopoverClickAway() {
+    onIdentityPopoverClickAway(): void {
       // Close popover
       this.isIdentityPopoverVisible = false;
     }

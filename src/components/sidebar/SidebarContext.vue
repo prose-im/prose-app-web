@@ -233,22 +233,22 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onAvatarImageClick() {
+    onAvatarImageClick(): void {
       // Toggle popover
       this.isAvatarPopoverVisible = !this.isAvatarPopoverVisible;
     },
 
-    onAvatarPopoverClickAway() {
+    onAvatarPopoverClickAway(): void {
       // Close popover
       this.isAvatarPopoverVisible = false;
     },
 
-    onActionsClick() {
+    onActionsClick(): void {
       // Toggle popover
       this.isActionsPopoverVisible = !this.isActionsPopoverVisible;
     },
 
-    onActionsPopoverClickAway() {
+    onActionsPopoverClickAway(): void {
       // Close popover
       this.isActionsPopoverVisible = false;
     }
