@@ -24,12 +24,19 @@
     v-click-away="onPopoverClickAway"
     :items="popover.items"
     :context="popover.context"
-    :style=`{
-      insetBlockStart: popover.position.blockStart,
-      insetInlineStart: popover.position.inlineStart
-    }`
+    :style="popover.style"
     class="c-inbox-messaging__popover"
   )
+
+  base-popover(
+    v-else-if="popover.component"
+    v-click-away="onPopoverClickAway"
+    :style="popover.style"
+    class="c-inbox-messaging__popover"
+  )
+    component(
+      :is="popover.component"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -37,8 +44,12 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { shallowRef } from "vue";
+
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
+import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 
 // CONSTANTS
 const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
@@ -105,12 +116,13 @@ export default {
       // --> STATE <--
 
       popover: {
-        position: {
-          blockStart: "0px",
-          inlineStart: "0px"
+        style: {
+          insetBlockStart: "0px",
+          insetInlineStart: "0px"
         },
 
         items: [],
+        component: null,
         interaction: null
       }
     };
@@ -174,12 +186,19 @@ export default {
       runtime.addEventListener("click", this.onFrameInnerClick);
     },
 
-    showPopover(
-      anchor: object,
-      items: Array,
-      context?: object,
-      interaction?: object
-    ): void {
+    showPopover({
+      anchor,
+      items,
+      component,
+      context,
+      interaction
+    }: {
+      anchor: object;
+      items?: Array;
+      component?: object;
+      context?: object;
+      interaction?: object;
+    }): void {
       // Clear any previously-shown popover
       this.hidePopover();
 
@@ -190,14 +209,15 @@ export default {
         (anchor.y || 0) +
         (anchor.height ? anchor.height + POPOVER_ANCHOR_HEIGHT_Y_OFFSET : 0);
 
-      this.popover.position.blockStart = `${positionY}px`;
-      this.popover.position.inlineStart = `${positionX}px`;
+      this.popover.style.insetBlockStart = `${positionY}px`;
+      this.popover.style.insetInlineStart = `${positionX}px`;
 
       // Assign context (or empty)
       this.popover.context = context || {};
 
-      // Assign items (will show popover)
-      this.popover.items = items;
+      // Assign items and/or component (will show popover)
+      this.popover.items = items || [];
+      this.popover.component = component || null;
 
       // Propagate interaction?
       if (interaction) {
@@ -212,8 +232,9 @@ export default {
     },
 
     hidePopover(): void {
-      // Empty items (will hide popover)
+      // Empty items + component (will hide popover)
       this.popover.items = [];
+      this.popover.component = null;
 
       // Any interaction to hide?
       if (this.popover.interaction) {
@@ -351,10 +372,10 @@ export default {
             : null;
 
         // Show popover
-        this.showPopover(
-          event.origin.parent || event.origin.anchor,
+        this.showPopover({
+          anchor: event.origin.parent || event.origin.anchor,
 
-          [
+          items: [
             // TODO: dynamically insert second part if message is from self
 
             {
@@ -395,7 +416,7 @@ export default {
 
           context,
           interaction
-        );
+        });
 
         // Trigger container click
         this.triggerContainerClick();
@@ -422,22 +443,12 @@ export default {
             : null;
 
         // Show popover
-        this.showPopover(
-          event.origin.parent || event.origin.anchor,
-
-          [
-            // TODO: populate those
-
-            {
-              type: "button",
-              label: "Pick a reaction...",
-              color: "blue"
-            }
-          ],
-
+        this.showPopover({
+          anchor: event.origin.parent || event.origin.anchor,
+          component: shallowRef(ToolEmojiPicker),
           context,
           interaction
-        );
+        });
 
         // Trigger container click
         this.triggerContainerClick();
