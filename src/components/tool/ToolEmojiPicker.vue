@@ -87,6 +87,9 @@ $c: ".c-tool-emoji-picker";
       padding-block-end: 0;
 
       .v3-body-inner {
+        scroll-behavior: auto;
+        scrollbar-color: initial;
+
         .v3-group {
           h5 {
             background: rgba($color-white, 0.925);
