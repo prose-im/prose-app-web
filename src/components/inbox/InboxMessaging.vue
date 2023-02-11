@@ -62,7 +62,11 @@ import BaseAlert from "@/components/base/BaseAlert.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 
 // CONSTANTS
-const FRAME_STYLE_FONT_FAMILY = "Prose Outfit";
+const FRAME_STYLE = {
+  fontFamily: "Prose Outfit",
+  fontSize: "13.5px"
+};
+
 const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 
 const MESSAGE_FIXTURES = [
@@ -157,8 +161,8 @@ export default {
         ${styleElementsFonts}
 
         #app {
-          font-family: "${FRAME_STYLE_FONT_FAMILY}";
-          font-size: 13.5px;
+          font-family: "${FRAME_STYLE.fontFamily}";
+          font-size: ${FRAME_STYLE.fontSize};
         }
       `;
 
