@@ -10,6 +10,7 @@
 
 <template lang="pug">
 emoji-picker(
+  @select="onEmojiSelect"
   :native="true"
   class="c-tool-emoji-picker"
   disable-skin-tones
@@ -29,7 +30,19 @@ import "vue3-emoji-picker/css";
 export default {
   name: "ToolEmojiPicker",
 
-  components: { EmojiPicker }
+  components: { EmojiPicker },
+
+  emits: ["pick"],
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onEmojiSelect(emoji: object): void {
+      const emojiGlyph = emoji.i;
+
+      this.$emit("pick", emojiGlyph);
+    }
+  }
 };
 </script>
 
