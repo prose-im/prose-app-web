@@ -80,12 +80,12 @@ layout-toolbar(
         icon="face.smiling"
         size="18px"
       )
-        base-popover-list(
+        base-popover(
           v-if="isActionEmojisPopoverVisible"
           v-click-away="onActionEmojisPopoverClickAway"
-          :items="actionEmojisPopoverItems"
           class="a-inbox-form__action-popover a-inbox-form__action-popover--right"
         )
+          tool-emoji-picker
 </template>
 
 <!-- **********************************************************************
@@ -113,16 +113,6 @@ export default {
         {
           type: "button",
           label: "Formatting items...",
-          color: "blue"
-        }
-      ];
-    },
-
-    actionEmojisPopoverItems() {
-      return [
-        {
-          type: "button",
-          label: "Emoji picker...",
           color: "blue"
         }
       ];

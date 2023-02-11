@@ -40,7 +40,8 @@
     "vue": "3.2.x",
     "vue-router": "4.1.x",
     "vue-logger-plugin": "2.2.x",
-    "vue3-click-away": "1.2.x"
+    "vue3-click-away": "1.2.x",
+    "vue3-emoji-picker": "1.1.x"
   },
   "devDependencies": {
     "@types/node": "18.11.x",
