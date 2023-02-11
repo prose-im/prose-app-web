@@ -35,6 +35,7 @@
     class="c-inbox-messaging__popover"
   )
     component(
+      v-on="popover.listeners"
       :is="popover.component"
     )
 </template>
@@ -123,6 +124,9 @@ export default {
 
         items: [],
         component: null,
+
+        context: null,
+        listeners: null,
         interaction: null
       }
     };
@@ -191,12 +195,14 @@ export default {
       items,
       component,
       context,
+      listeners,
       interaction
     }: {
       anchor: object;
       items?: Array;
       component?: object;
       context?: object;
+      listeners?: object;
       interaction?: object;
     }): void {
       // Clear any previously-shown popover
@@ -214,6 +220,9 @@ export default {
 
       // Assign context (or empty)
       this.popover.context = context || {};
+
+      // Assign listeners (or empty)
+      this.popover.listeners = listeners || {};
 
       // Assign items and/or component (will show popover)
       this.popover.items = items || [];
@@ -352,6 +361,16 @@ export default {
       }
     },
 
+    onPopoverReactionsPick({
+      messageId,
+      emoji
+    }: {
+      messageId: string;
+      emoji: string;
+    }): void {
+      // TODO: react to message
+    },
+
     onEventMessageActionsView(event: object): void {
       this.$log.debug("Got message actions view", event);
 
@@ -428,9 +447,11 @@ export default {
 
       // Show popover with actions? (if any origin set)
       if (event.origin) {
-        // Build context
-        const context = {
-          messageId: event.id
+        // Build listeners
+        const listeners = {
+          pick: (emoji: string) => {
+            this.onPopoverReactionsPick({ messageId: event.id, emoji });
+          }
         };
 
         // Build popover interaction (if button origin)
@@ -446,7 +467,7 @@ export default {
         this.showPopover({
           anchor: event.origin.parent || event.origin.anchor,
           component: shallowRef(ToolEmojiPicker),
-          context,
+          listeners,
           interaction
         });
 
@@ -457,10 +478,14 @@ export default {
 
     onEventMessageReactionsReact(event: object): void {
       this.$log.debug("Got message reactions react", event);
+
+      // TODO: add/retract reaction to message
     },
 
     onEventMessageHistorySeek(event: object): void {
       this.$log.debug("Got message history seek", event);
+
+      // TODO: load messages from history
     }
   }
 };
