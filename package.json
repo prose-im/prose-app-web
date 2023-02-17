@@ -38,6 +38,7 @@
     "strophe.js": "1.6.x",
     "mitt": "3.0.x",
     "pinia": "2.0.x",
+    "pinia-plugin-persistedstate": "3.0.x",
     "vue": "3.2.x",
     "vue-router": "4.1.x",
     "vue-logger-plugin": "2.2.x",
