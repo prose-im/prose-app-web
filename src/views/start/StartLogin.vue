@@ -36,8 +36,8 @@ import StartLoginForm from "@/assemblies/start/StartLoginForm.vue";
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import StartServerIdentity from "@/components/start/StartServerIdentity.vue";
 
-// PROJECT: BROKER
-import BrokerClient from "@/broker/client";
+// PROJECT: STORES
+import { $session } from "@/store";
 
 // CONSTANTS
 const REDIRECT_APP_HOLD_TIME = 2000; // 2 second
@@ -65,11 +65,7 @@ export default {
 
         // Attempt to authenticate
         try {
-          await BrokerClient.authenticate(
-            form.jid,
-            form.password,
-            form.remember
-          );
+          await $session.login(form.jid, form.password, form.remember);
 
           // Show success alert
           BaseAlert.success("Authenticated", "Accessing your dashboard...");

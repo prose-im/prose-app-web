@@ -34,11 +34,7 @@ class BrokerClient {
   __connection: Strophe.Connection;
   __connectLifecycle?: ConnectLifecycle;
 
-  async authenticate(
-    jid: string,
-    password: string,
-    remember = true
-  ): Promise<void> {
+  async authenticate(jid: string, password: string): Promise<void> {
     // Acquire relay host
     const relayHost = CONFIG.hosts.websocket || null;
 

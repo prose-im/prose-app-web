@@ -10,7 +10,10 @@
 
 // NPM
 import { createPinia } from "pinia";
-import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+import { createPersistedState } from "pinia-plugin-persistedstate";
+
+// PROJECT: STORE
+import StoreTableSession from "@/store/tables/session";
 
 /**************************************************************************
  * STORE
@@ -22,10 +25,23 @@ const store = createPinia();
  * PLUGINS
  * ************************************************************************* */
 
-store.use(piniaPluginPersistedstate);
+store.use(
+  createPersistedState({
+    key: id => `$prose_${id}`,
+    storage: localStorage
+  })
+);
+
+/**************************************************************************
+ * TABLES
+ * ************************************************************************* */
+
+const $session = StoreTableSession(store);
 
 /**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
 export default store;
+
+export { $session };
