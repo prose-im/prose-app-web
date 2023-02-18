@@ -39,9 +39,6 @@ import StartServerIdentity from "@/components/start/StartServerIdentity.vue";
 // PROJECT: STORES
 import Store from "@/store";
 
-// CONSTANTS
-const REDIRECT_APP_HOLD_TIME = 2000; // 2 second
-
 export default {
   name: "StartLogin",
 
@@ -68,14 +65,12 @@ export default {
           await Store.$account.login(form.jid, form.password, form.remember);
 
           // Show success alert
-          BaseAlert.success("Authenticated", "Accessing your dashboard...");
+          BaseAlert.success("Authenticated", "Welcome back!");
 
-          // Redirect to dashboard (after some hold time)
-          setTimeout(() => {
-            this.$router.push({
-              name: "app.inbox"
-            });
-          }, REDIRECT_APP_HOLD_TIME);
+          // Redirect to dashboard
+          this.$router.push({
+            name: "app.inbox"
+          });
         } catch (error) {
           // Show error alert
           BaseAlert.error(
