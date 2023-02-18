@@ -19,13 +19,13 @@ import camelCase from "lodash.camelcase";
 
 class BootstrapComponents {
   init(app: App): void {
-    this.registerGlobally(
+    this.__registerGlobally(
       app,
       import.meta.globEager("@/components/(base|form|list|layout|tool)/*.vue")
     );
   }
 
-  registerGlobally(app: App, componentFiles: object): void {
+  private __registerGlobally(app: App, componentFiles: object): void {
     Object.entries(componentFiles).forEach(
       ([componentPath, componentModule]) => {
         // Get PascalCase name of component

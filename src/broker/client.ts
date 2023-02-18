@@ -86,7 +86,7 @@ class BrokerClient {
     });
   }
 
-  __onConnect(status: Strophe.Status): void {
+  private __onConnect(status: Strophe.Status): void {
     switch (status) {
       case Strophe.Status.CONNECTING: {
         logger.debug("Connecting...");
@@ -126,15 +126,15 @@ class BrokerClient {
     }
   }
 
-  __onInput(data: object): void {
+  private __onInput(data: object): void {
     logger.log("(in)", data);
   }
 
-  __onOutput(data: object): void {
+  private __onOutput(data: object): void {
     logger.log("(out)", data);
   }
 
-  __raiseConnectLifecycle(error?: Error): void {
+  private __raiseConnectLifecycle(error?: Error): void {
     if (this.__connectLifecycle) {
       if (error) {
         this.__connectLifecycle.failure(error);

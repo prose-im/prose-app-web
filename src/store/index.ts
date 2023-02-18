@@ -45,13 +45,13 @@ class Store {
     app.use(this.__store);
 
     // #2. Bind all plugins
-    this.applyPlugins();
+    this.__applyPlugins();
 
     // #3. Load all tables
-    this.loadTables();
+    this.__loadTables();
   }
 
-  applyPlugins(): void {
+  private __applyPlugins(): void {
     this.__store.use(
       createPersistedState({
         key: id => [STORE_PERSIST_PREFIX, STORE_PERSIST_REVISION, id].join(":"),
@@ -60,7 +60,7 @@ class Store {
     );
   }
 
-  loadTables(): void {
+  private __loadTables(): void {
     this.$account = StoreTableAccount(this.__store);
   }
 }
