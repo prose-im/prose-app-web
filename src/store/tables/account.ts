@@ -18,7 +18,7 @@ import BrokerClient from "@/broker/client";
  * TABLE
  * ************************************************************************* */
 
-const StoreTableSession = defineStore("session", {
+const StoreTableAccount = defineStore("account", {
   persist: true,
 
   state: () => {
@@ -60,4 +60,4 @@ const StoreTableSession = defineStore("session", {
  * EXPORTS
  * ************************************************************************* */
 
-export default StoreTableSession;
+export default StoreTableAccount;

@@ -14,7 +14,7 @@ import { Pinia, createPinia } from "pinia";
 import { createPersistedState } from "pinia-plugin-persistedstate";
 
 // PROJECT: STORE
-import StoreTableSession from "@/store/tables/session";
+import StoreTableAccount from "@/store/tables/account";
 
 /**************************************************************************
  * CONSTANTS
@@ -30,7 +30,7 @@ const STORE_PERSIST_REVISION = "v1";
 class Store {
   private __store: Pinia;
 
-  $session?: StoreTableSession;
+  $account?: StoreTableAccount;
 
   constructor() {
     this.__store = createPinia();
@@ -61,7 +61,7 @@ class Store {
   }
 
   loadTables(): void {
-    this.$session = StoreTableSession(this.__store);
+    this.$account = StoreTableAccount(this.__store);
   }
 }
 

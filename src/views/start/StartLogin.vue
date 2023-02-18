@@ -65,7 +65,7 @@ export default {
 
         // Attempt to authenticate
         try {
-          await Store.$session.login(form.jid, form.password, form.remember);
+          await Store.$account.login(form.jid, form.password, form.remember);
 
           // Show success alert
           BaseAlert.success("Authenticated", "Accessing your dashboard...");
