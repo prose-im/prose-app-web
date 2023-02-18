@@ -31,8 +31,8 @@ type ConnectLifecycle = {
  * ************************************************************************* */
 
 class BrokerClient {
-  __connection: Strophe.Connection;
-  __connectLifecycle?: ConnectLifecycle;
+  private __connection: Strophe.Connection;
+  private __connectLifecycle?: ConnectLifecycle;
 
   async authenticate(jid: string, password: string): Promise<void> {
     // Acquire relay host

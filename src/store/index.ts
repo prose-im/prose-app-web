@@ -28,12 +28,12 @@ const STORE_PERSIST_REVISION = "v1";
  * ************************************************************************* */
 
 class Store {
-  store: Pinia;
+  private __store: Pinia;
 
   $session?: StoreTableSession;
 
   constructor() {
-    this.store = createPinia();
+    this.__store = createPinia();
   }
 
   bind(app: App): void {
@@ -42,7 +42,7 @@ class Store {
     //   applied AFTER binding to the app. The same applies to loading tables.
 
     // #1. Bind to app
-    app.use(this.store);
+    app.use(this.__store);
 
     // #2. Bind all plugins
     this.applyPlugins();
@@ -52,7 +52,7 @@ class Store {
   }
 
   applyPlugins(): void {
-    this.store.use(
+    this.__store.use(
       createPersistedState({
         key: id => [STORE_PERSIST_PREFIX, STORE_PERSIST_REVISION, id].join(":"),
         storage: localStorage
@@ -61,7 +61,7 @@ class Store {
   }
 
   loadTables(): void {
-    this.$session = StoreTableSession(this.store);
+    this.$session = StoreTableSession(this.__store);
   }
 }
 
