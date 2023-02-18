@@ -44,8 +44,8 @@ const StoreTableAccount = defineStore("account", {
       }
     },
 
-    logout() {
-      // TODO: disconnect
+    async logout() {
+      // TODO: disconnect from broker
 
       // Clear stored credentials
       this.$patch(state => {
