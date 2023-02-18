@@ -21,6 +21,9 @@ import StartLogin from "@/views/start/StartLogin.vue";
 import AppBase from "@/views/app/AppBase.vue";
 import AppInboxBase from "@/views/app/inbox/AppInboxBase.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 /**************************************************************************
  * ROUTER
  * ************************************************************************* */
@@ -36,7 +39,17 @@ class Router {
         // --> START <--
 
         { path: "/start/", redirect: { name: "start.login" } },
-        { path: "/start/login/", name: "start.login", component: StartLogin },
+
+        {
+          path: "/start/login/",
+          name: "start.login",
+          component: StartLogin,
+
+          beforeEnter: () => {
+            // Ensure that user is not already logged-in
+            this.__guardAnonymous();
+          }
+        },
 
         // --> APP <--
 
@@ -44,6 +57,11 @@ class Router {
           path: "/",
           name: "app",
           component: AppBase,
+
+          beforeEnter: () => {
+            // Ensure that user is logged-in
+            this.__guardAuthenticated();
+          },
 
           children: [
             {
@@ -64,6 +82,24 @@ class Router {
   bind(app: App): void {
     // Bind to app
     app.use(this.__router);
+  }
+
+  private __guardAuthenticated() {
+    // Ensure that user is logged in (redirect to base if not)
+    if (!Store.$account.credentials.jid) {
+      this.__router.push({
+        name: "start.login"
+      });
+    }
+  }
+
+  private __guardAnonymous() {
+    // Ensure that user is not logged-in (redirect to app if so)
+    if (Store.$account.credentials.jid) {
+      this.__router.push({
+        name: "app"
+      });
+    }
   }
 }
 
