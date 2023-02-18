@@ -9,7 +9,8 @@
  * ************************************************************************* */
 
 // NPM
-import { createPinia } from "pinia";
+import { App } from "vue";
+import { Pinia, createPinia } from "pinia";
 import { createPersistedState } from "pinia-plugin-persistedstate";
 
 // PROJECT: STORE
@@ -23,32 +24,49 @@ const STORE_PERSIST_PREFIX = "prose";
 const STORE_PERSIST_REVISION = "v1";
 
 /**************************************************************************
- * STORE
+ * COMPONENTS
  * ************************************************************************* */
 
-const store = createPinia();
+class Store {
+  store: Pinia;
 
-/**************************************************************************
- * PLUGINS
- * ************************************************************************* */
+  $session?: StoreTableSession;
 
-store.use(
-  createPersistedState({
-    key: id => [STORE_PERSIST_PREFIX, STORE_PERSIST_REVISION, id].join(":"),
-    storage: localStorage
-  })
-);
+  constructor() {
+    this.store = createPinia();
+  }
 
-/**************************************************************************
- * TABLES
- * ************************************************************************* */
+  bind(app: App): void {
+    // Notice: order of binding is critical, eg. the plugins will not work if \
+    //   they are applied before Pinia is bound to the app. They need to be \
+    //   applied AFTER binding to the app. The same applies to loading tables.
 
-const $session = StoreTableSession(store);
+    // #1. Bind to app
+    app.use(this.store);
+
+    // #2. Bind all plugins
+    this.applyPlugins();
+
+    // #3. Load all tables
+    this.loadTables();
+  }
+
+  applyPlugins(): void {
+    this.store.use(
+      createPersistedState({
+        key: id => [STORE_PERSIST_PREFIX, STORE_PERSIST_REVISION, id].join(":"),
+        storage: localStorage
+      })
+    );
+  }
+
+  loadTables(): void {
+    this.$session = StoreTableSession(this.store);
+  }
+}
 
 /**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
-export default store;
-
-export { $session };
+export default new Store();

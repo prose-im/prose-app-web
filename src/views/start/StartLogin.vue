@@ -37,7 +37,7 @@ import BaseAlert from "@/components/base/BaseAlert.vue";
 import StartServerIdentity from "@/components/start/StartServerIdentity.vue";
 
 // PROJECT: STORES
-import { $session } from "@/store";
+import Store from "@/store";
 
 // CONSTANTS
 const REDIRECT_APP_HOLD_TIME = 2000; // 2 second
@@ -65,7 +65,7 @@ export default {
 
         // Attempt to authenticate
         try {
-          await $session.login(form.jid, form.password, form.remember);
+          await Store.$session.login(form.jid, form.password, form.remember);
 
           // Show success alert
           BaseAlert.success("Authenticated", "Accessing your dashboard...");

@@ -72,7 +72,7 @@
 
 <script lang="ts">
 // PROJECT: STORES
-import { $session } from "@/store";
+import Store from "@/store";
 
 export default {
   name: "StartLoginForm",
@@ -100,7 +100,7 @@ export default {
 
   created() {
     // Populate initial values
-    this.form.jid = $session.credentials.jid;
+    this.form.jid = Store.$session.credentials.jid;
   },
 
   methods: {

@@ -17,7 +17,7 @@ import "@/assets/stylesheets/all.scss";
 // PROJECT: MAIN
 import App from "@/App.vue";
 import router from "@/router";
-import store from "@/store";
+import Store from "@/store";
 
 // PROJECT: BOOTSTRAP
 import "@/bootstrap/icons";
@@ -33,7 +33,7 @@ import BootstrapPlugins from "@/bootstrap/plugins";
 const app = createApp(App);
 
 app.use(router);
-app.use(store);
+Store.bind(app);
 
 /**************************************************************************
  * BOOTSTRAP
