@@ -16,6 +16,13 @@ import { createPersistedState } from "pinia-plugin-persistedstate";
 import StoreTableSession from "@/store/tables/session";
 
 /**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const STORE_PERSIST_PREFIX = "prose";
+const STORE_PERSIST_REVISION = "1";
+
+/**************************************************************************
  * STORE
  * ************************************************************************* */
 
@@ -27,7 +34,7 @@ const store = createPinia();
 
 store.use(
   createPersistedState({
-    key: id => `$prose_${id}`,
+    key: id => [STORE_PERSIST_PREFIX, STORE_PERSIST_REVISION, id].join(":"),
     storage: localStorage
   })
 );
