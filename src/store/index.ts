@@ -24,7 +24,7 @@ const STORE_PERSIST_PREFIX = "prose";
 const STORE_PERSIST_REVISION = "v1";
 
 /**************************************************************************
- * COMPONENTS
+ * STORE
  * ************************************************************************* */
 
 class Store {
