@@ -16,7 +16,7 @@ import "@/assets/stylesheets/all.scss";
 
 // PROJECT: MAIN
 import App from "@/App.vue";
-import router from "@/router";
+import Router from "@/router";
 import Store from "@/store";
 
 // PROJECT: BOOTSTRAP
@@ -32,7 +32,11 @@ import BootstrapPlugins from "@/bootstrap/plugins";
 
 const app = createApp(App);
 
-app.use(router);
+/**************************************************************************
+ * PLUGINS
+ * ************************************************************************* */
+
+Router.bind(app);
 Store.bind(app);
 
 /**************************************************************************

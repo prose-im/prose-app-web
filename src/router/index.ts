@@ -9,7 +9,12 @@
  * ************************************************************************* */
 
 // NPM
-import { createWebHistory, createRouter } from "vue-router";
+import { App } from "vue";
+import {
+  Router as VueRouter,
+  createWebHistory,
+  createRouter
+} from "vue-router";
 
 // PROJECT: VIEWS
 import StartLogin from "@/views/start/StartLogin.vue";
@@ -20,39 +25,50 @@ import AppInboxBase from "@/views/app/inbox/AppInboxBase.vue";
  * ROUTER
  * ************************************************************************* */
 
-const router = createRouter({
-  history: createWebHistory(),
+class Router {
+  private __router: VueRouter;
 
-  routes: [
-    // --> START <--
+  constructor() {
+    this.__router = createRouter({
+      history: createWebHistory(),
 
-    { path: "/start/", redirect: { name: "start.login" } },
-    { path: "/start/login/", name: "start.login", component: StartLogin },
+      routes: [
+        // --> START <--
 
-    // --> APP <--
+        { path: "/start/", redirect: { name: "start.login" } },
+        { path: "/start/login/", name: "start.login", component: StartLogin },
 
-    {
-      path: "/",
-      name: "app",
-      component: AppBase,
+        // --> APP <--
 
-      children: [
         {
-          path: "inbox/",
-          name: "app.inbox",
-          component: AppInboxBase
-        }
+          path: "/",
+          name: "app",
+          component: AppBase,
+
+          children: [
+            {
+              path: "inbox/",
+              name: "app.inbox",
+              component: AppInboxBase
+            }
+          ]
+        },
+
+        // --> REDIRECT <--
+
+        { path: "/:path(.*)*", redirect: "/" }
       ]
-    },
+    });
+  }
 
-    // --> REDIRECT <--
-
-    { path: "/:path(.*)*", redirect: "/" }
-  ]
-});
+  bind(app: App): void {
+    // Bind to app
+    app.use(this.__router);
+  }
+}
 
 /**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
-export default router;
+export default new Router();
