@@ -9,6 +9,7 @@
  * ************************************************************************* */
 
 // NPM
+import { App } from "vue";
 import upperFirst from "lodash.upperfirst";
 import camelCase from "lodash.camelcase";
 
@@ -17,14 +18,14 @@ import camelCase from "lodash.camelcase";
  * ************************************************************************* */
 
 class BootstrapComponents {
-  init(app: object): void {
+  init(app: App): void {
     this.registerGlobally(
       app,
       import.meta.globEager("@/components/(base|form|list|layout|tool)/*.vue")
     );
   }
 
-  registerGlobally(app: object, componentFiles: object): void {
+  registerGlobally(app: App, componentFiles: object): void {
     Object.entries(componentFiles).forEach(
       ([componentPath, componentModule]) => {
         // Get PascalCase name of component
