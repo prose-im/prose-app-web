@@ -76,7 +76,11 @@
 
 <script lang="ts">
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import SidebarContextAccount from "@/components/sidebar/SidebarContextAccount.vue";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 export default {
   name: "SidebarContext",
@@ -187,7 +191,8 @@ export default {
           type: "button",
           label: "Sign me out",
           color: "red",
-          emphasis: true
+          emphasis: true,
+          click: this.onAvatarPopoverSignOutClick
         }
       ];
     },
@@ -241,6 +246,18 @@ export default {
     onAvatarPopoverClickAway(): void {
       // Close popover
       this.isAvatarPopoverVisible = false;
+    },
+
+    async onAvatarPopoverSignOutClick(): void {
+      await Store.$account.logout();
+
+      // Show confirm alert
+      BaseAlert.info("Signed out", "Successfully signed out");
+
+      // Redirect to login
+      this.$router.push({
+        name: "start.login"
+      });
     },
 
     onActionsClick(): void {
