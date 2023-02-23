@@ -10,6 +10,7 @@
 
 // NPM
 import { Strophe } from "strophe.js";
+import { JID } from "@xmpp/jid";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -34,7 +35,7 @@ class BrokerClient {
   private __connection: Strophe.Connection;
   private __connectLifecycle?: ConnectLifecycle;
 
-  async authenticate(jid: string, password: string): Promise<void> {
+  async authenticate(jid: JID, password: string): Promise<void> {
     // Acquire relay host
     const relayHost = CONFIG.hosts.websocket || null;
 

@@ -8,6 +8,9 @@
  * IMPORTS
  * ************************************************************************* */
 
+// NPM
+import { JID } from "@xmpp/jid";
+
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
 
@@ -15,7 +18,11 @@ import BrokerModule from "@/broker/modules";
  * CLASS
  * ************************************************************************* */
 
-class BrokerModuleMessage extends BrokerModule {}
+class BrokerModuleMessage extends BrokerModule {
+  sendMessage(to: JID, body: string): void {
+    // TODO
+  }
+}
 
 /**************************************************************************
  * EXPORTS
