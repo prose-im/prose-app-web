@@ -23,6 +23,7 @@ div(
 )
   textarea.c-form-field__inner.c-form-field__inner--textarea(
     v-if="type === 'textarea'"
+    @keydown="onFieldKeyDown"
     @input="onFieldInput"
     @focus="onFieldFocus"
     @blur="onFieldBlur"
@@ -37,6 +38,7 @@ div(
 
   input.c-form-field__inner.c-form-field__inner--input(
     v-else
+    @keydown="onFieldKeyDown"
     @input="onFieldInput"
     @focus="onFieldFocus"
     @blur="onFieldBlur"
@@ -55,6 +57,9 @@ div(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { codes as keyCodes } from "keycode";
+
 export default {
   name: "FormField",
 
@@ -111,6 +116,11 @@ export default {
       default: false
     },
 
+    submittable: {
+      type: Boolean,
+      default: false
+    },
+
     disabled: {
       type: Boolean,
       default: false
@@ -122,7 +132,7 @@ export default {
     }
   },
 
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "submit"],
 
   data() {
     return {
@@ -171,6 +181,19 @@ export default {
     },
 
     // --> EVENT LISTENERS <--
+
+    onFieldKeyDown(event: Event): void {
+      // Submittable field? Handle key presses.
+      if (this.submittable === true) {
+        // Handle 'Enter' key press? (if not new line)
+        if (event.keyCode === keyCodes.enter && event.shiftKey !== true) {
+          event.preventDefault();
+
+          // Trigger field submit event
+          this.$emit("submit");
+        }
+      }
+    },
 
     onFieldInput(): void {
       let inputValue = this.$refs.field.value || "";
