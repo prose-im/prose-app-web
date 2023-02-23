@@ -180,7 +180,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onInnerClick(event: object): void {
+    onInnerClick(event: Event): void {
       // Re-emit click event
       this.$emit("click", event);
     }

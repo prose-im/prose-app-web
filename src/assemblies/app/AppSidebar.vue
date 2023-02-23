@@ -60,7 +60,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onMainScroll(event: object): void {
+    onMainScroll(event: Event): void {
       const forceFloating =
         event.target.scrollTop >= MAIN_SCROLLED_THRESHOLD_VERTICAL;
 

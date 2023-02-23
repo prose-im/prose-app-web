@@ -68,7 +68,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onInputChange(event: object): void {
+    onInputChange(event: Event): void {
       // Update model value
       this.$emit("update:modelValue", event.target.checked);
     },
