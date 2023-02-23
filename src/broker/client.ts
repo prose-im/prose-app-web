@@ -21,10 +21,10 @@ import CONFIG from "@/commons/config";
  * TYPES
  * ************************************************************************* */
 
-type ConnectLifecycle = {
+interface ConnectLifecycle {
   success: (value: void) => void;
   failure: (error: Error) => void;
-};
+}
 
 /**************************************************************************
  * CLASS
@@ -151,4 +151,4 @@ class BrokerClient {
  * EXPORTS
  * ************************************************************************* */
 
-export default new BrokerClient();
+export default BrokerClient;

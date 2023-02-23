@@ -12,7 +12,7 @@
 import { defineStore } from "pinia";
 
 // PROJECT: BROKER
-import BrokerClient from "@/broker/client";
+import Broker from "@/broker";
 
 /**************************************************************************
  * TABLE
@@ -33,7 +33,7 @@ const StoreTableAccount = defineStore("account", {
   actions: {
     async login(jid: string, password: string, remember = true): Promise<void> {
       // Connect and authenticate to server
-      await BrokerClient.authenticate(jid, password);
+      await Broker.client.authenticate(jid, password);
 
       // Store credentials? (if success)
       if (remember === true) {
