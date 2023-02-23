@@ -17,7 +17,7 @@ import {
   MessageID,
   MessageChatState,
   MessageReaction
-} from "@/broker/stanza/message";
+} from "@/broker/stanzas/message";
 
 /**************************************************************************
  * CLASS
