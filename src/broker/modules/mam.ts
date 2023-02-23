@@ -15,7 +15,9 @@ import BrokerModule from "@/broker/modules";
  * CLASS
  * ************************************************************************* */
 
-class BrokerModuleMAM extends BrokerModule {}
+class BrokerModuleMAM extends BrokerModule {
+  // TODO
+}
 
 /**************************************************************************
  * EXPORTS
