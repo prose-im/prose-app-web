@@ -39,11 +39,13 @@ layout-toolbar(
       .a-inbox-form__compose-inner
         form-field(
           v-model="message"
+          @submit="onSubmit"
           class="a-inbox-form__compose-field"
           type="textarea"
           name="message"
           placeholder="Message Valerian"
           size="large"
+          submittable
           autogrow
         )
 
@@ -93,6 +95,9 @@ layout-toolbar(
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 export default {
   name: "InboxForm",
 
@@ -144,8 +149,15 @@ export default {
     },
 
     onSubmit(): void {
-      // TODO
-      console.error("send message: " + this.message);
+      const message = this.message.trim();
+
+      if (message) {
+        // TODO
+        console.error("send message: " + message);
+
+        // TODO: send from jid to jid as text
+        // Broker.modules.chat.
+      }
     }
   }
 };
