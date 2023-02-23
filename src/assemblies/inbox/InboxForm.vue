@@ -152,11 +152,14 @@ export default {
       const message = this.message.trim();
 
       if (message) {
-        // TODO
-        console.error("send message: " + message);
+        // TODO: inject dynamic JID (from where?)
+        const to = "valerian@valeriansaliou.name";
 
-        // TODO: send from jid to jid as text
-        // Broker.modules.chat.sendMessage(to, body)
+        // Send message
+        Broker.$chat.sendMessage(to, message);
+
+        // Clear message field
+        this.message = "";
       }
     }
   }

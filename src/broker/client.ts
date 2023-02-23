@@ -87,6 +87,15 @@ class BrokerClient {
     });
   }
 
+  emit(builder: Strophe.Builder) {
+    // Emit stanza on the wire? (if connected)
+    if (this.__connection && this.__connection.connected === true) {
+      this.__connection.send(builder.tree());
+    } else {
+      throw new Error("Client is disconnected");
+    }
+  }
+
   private __onConnect(status: Strophe.Status): void {
     switch (status) {
       case Strophe.Status.CONNECTING: {

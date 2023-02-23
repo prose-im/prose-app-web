@@ -9,6 +9,7 @@
  * ************************************************************************* */
 
 // NPM
+import { $msg } from "strophe.js";
 import { JID } from "@xmpp/jid";
 
 // PROJECT: BROKER
@@ -25,7 +26,10 @@ import {
 
 class BrokerModuleMessage extends BrokerModule {
   sendMessage(to: JID, body: string): void {
-    // TODO
+    // TODO: move builder to stanza?
+    this.__client.emit(
+      $msg({ to: to.toString(), type: "chat" }).c("body").t(body)
+    );
   }
 
   updateMessage(messageId: MessageID, to: JID, body: string): void {

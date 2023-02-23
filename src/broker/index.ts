@@ -18,37 +18,28 @@ import BrokerModuleProfile from "@/broker/modules/profile";
 import BrokerModuleRoster from "@/broker/modules/roster";
 
 /**************************************************************************
- * TYPES
- * ************************************************************************* */
-
-interface BrokerModules {
-  chat: BrokerModuleChat;
-  connection: BrokerModuleConnection;
-  mam: BrokerModuleMAM;
-  profile: BrokerModuleProfile;
-  roster: BrokerModuleRoster;
-}
-
-/**************************************************************************
  * CLASS
  * ************************************************************************* */
 
 class Broker {
   client: BrokerClient;
-  modules: BrokerModules;
+
+  $chat: BrokerModuleChat;
+  $connection: BrokerModuleConnection;
+  $mam: BrokerModuleMAM;
+  $profile: BrokerModuleProfile;
+  $roster: BrokerModuleRoster;
 
   constructor() {
     // Initialize client
     this.client = new BrokerClient();
 
     // Bootstrap all modules (for client)
-    this.modules = {
-      chat: new BrokerModuleChat(this.client),
-      connection: new BrokerModuleConnection(this.client),
-      mam: new BrokerModuleMAM(this.client),
-      profile: new BrokerModuleProfile(this.client),
-      roster: new BrokerModuleRoster(this.client)
-    };
+    this.$chat = new BrokerModuleChat(this.client);
+    this.$connection = new BrokerModuleConnection(this.client);
+    this.$mam = new BrokerModuleMAM(this.client);
+    this.$profile = new BrokerModuleProfile(this.client);
+    this.$roster = new BrokerModuleRoster(this.client);
   }
 }
 
