@@ -156,7 +156,7 @@ export default {
         console.error("send message: " + message);
 
         // TODO: send from jid to jid as text
-        // Broker.modules.chat.
+        // Broker.modules.chat.sendMessage(to, body)
       }
     }
   }
