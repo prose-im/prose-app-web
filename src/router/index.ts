@@ -29,7 +29,7 @@ import Store from "@/store";
  * ************************************************************************* */
 
 class Router {
-  private __router: VueRouter;
+  private readonly __router: VueRouter;
 
   constructor() {
     this.__router = createRouter({

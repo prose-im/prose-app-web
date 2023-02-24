@@ -15,8 +15,8 @@ import BrokerClient from "@/broker/client";
  * CLASS
  * ************************************************************************* */
 
-class BrokerModule {
-  private __client: BrokerClient;
+abstract class BrokerModule {
+  private readonly __client: BrokerClient;
 
   constructor(client: BrokerClient) {
     this.__client = client;

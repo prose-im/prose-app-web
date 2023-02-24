@@ -28,7 +28,7 @@ const STORE_PERSIST_REVISION = "v1";
  * ************************************************************************* */
 
 class Store {
-  private __store: Pinia;
+  private readonly __store: Pinia;
 
   $account?: StoreTableAccount;
 

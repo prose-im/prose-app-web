@@ -22,13 +22,13 @@ import BrokerModuleRoster from "@/broker/modules/roster";
  * ************************************************************************* */
 
 class Broker {
-  client: BrokerClient;
+  readonly client: BrokerClient;
 
-  $chat: BrokerModuleChat;
-  $connection: BrokerModuleConnection;
-  $mam: BrokerModuleMAM;
-  $profile: BrokerModuleProfile;
-  $roster: BrokerModuleRoster;
+  readonly $chat: BrokerModuleChat;
+  readonly $connection: BrokerModuleConnection;
+  readonly $mam: BrokerModuleMAM;
+  readonly $profile: BrokerModuleProfile;
+  readonly $roster: BrokerModuleRoster;
 
   constructor() {
     // Initialize client
