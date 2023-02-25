@@ -152,7 +152,7 @@ export default {
         this.value = value;
 
         // Refresh auto-grow (if enabled)
-        this.refreshAutogrow();
+        this.$nextTick(this.refreshAutogrow);
       }
     }
   },
