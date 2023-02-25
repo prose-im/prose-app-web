@@ -17,8 +17,15 @@ import BrokerModule from "@/broker/modules";
 import {
   MessageID,
   MessageChatState,
-  MessageReaction
+  MessageReaction,
+  MessageType
 } from "@/broker/stanzas/message";
+import {
+  NS_MESSAGE_CORRECT,
+  NS_MESSAGE_RETRACT,
+  NS_FASTEN,
+  NS_FALLBACK
+} from "@/broker/stanzas/xmlns";
 
 /**************************************************************************
  * CLASS
@@ -26,26 +33,52 @@ import {
 
 class BrokerModuleMessage extends BrokerModule {
   sendMessage(to: JID, body: string): void {
-    // TODO: move builder to stanza?
     this.__client.emit(
-      $msg({ to: to.toString(), type: "chat" }).c("body").t(body)
+      $msg({ to: to.toString(), type: MessageType.Chat }).c("body").t(body)
     );
   }
 
-  updateMessage(messageId: MessageID, to: JID, body: string): void {
-    // TODO
+  updateMessage(
+    to: JID,
+    body: string,
+    messageIds: { original: MessageID; replacement: MessageID }
+  ): void {
+    // XEP-0308: Last Message Correction
+    // https://xmpp.org/extensions/xep-0308.html
+    this.__client.emit(
+      $msg({ id: messageIds.replacement, to: to.toString() })
+        .c("body")
+        .t(body)
+        .up()
+        .c("replace", { xmlns: NS_MESSAGE_CORRECT, id: messageIds.original })
+    );
   }
 
   retractMessage(messageId: MessageID, to: JID): void {
-    // TODO
+    // XEP-0424: Message Retraction
+    // https://xmpp.org/extensions/xep-0424.html
+    this.__client.emit(
+      $msg({ to: to.toString(), type: MessageType.Chat })
+        .c("body")
+        .t(
+          "This person attempted to retract a previous message, but it's " +
+            "unsupported by your client."
+        )
+        .up()
+        .c("apply-to", { xmlns: NS_FASTEN, id: messageId })
+        .c("retract", { xmlns: NS_MESSAGE_RETRACT })
+        .up()
+        .up()
+        .c("fallback", { xmlns: NS_FALLBACK })
+        .up()
+        .c("store", { xmlns: NS_HINTS })
+    );
   }
 
-  // TODO: define a chat state
   sendChatState(to: JID, chatState: MessageChatState): void {
     // TODO
   }
 
-  // TODO: define a reaction
   sendReactions(to: JID, reactions: Array<MessageReaction>): void {
     // TODO
   }
