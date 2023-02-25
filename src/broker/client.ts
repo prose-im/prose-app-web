@@ -36,15 +36,15 @@ interface ConnectLifecycle {
  * ************************************************************************* */
 
 class BrokerClient {
-  private readonly __ingest: BrokerEvent;
+  private readonly __ingestors: BrokerEvent;
 
   private __connection: Strophe.Connection;
   private __connectLifecycle?: ConnectLifecycle;
   private __boundReceivers: Array<Strophe.Handler> = [];
 
   constructor() {
-    // Initialize events ingestor
-    this.__ingest = new BrokerEvent();
+    // Initialize event ingestors
+    this.__ingestors = new BrokerEvent();
   }
 
   async authenticate(jid: JID, password: string): Promise<void> {
@@ -170,21 +170,21 @@ class BrokerClient {
     logger.log("(presence)", stanza);
 
     // Pass to presence ingestor
-    this.__ingest.presence(stanza);
+    this.__ingestors.presence(stanza);
   }
 
   private __onReceiveMessage(stanza: Element): void {
     logger.log("(message)", stanza);
 
     // Pass to message ingestor
-    this.__ingest.message(stanza);
+    this.__ingestors.message(stanza);
   }
 
   private __onReceiveIQ(stanza: Element): void {
     logger.log("(iq)", stanza);
 
     // Pass to IQ ingestor
-    this.__ingest.iq(stanza);
+    this.__ingestors.iq(stanza);
   }
 
   private __raiseConnectLifecycle(error?: Error): void {
