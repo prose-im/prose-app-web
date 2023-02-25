@@ -8,6 +8,10 @@
  * CONSTANTS
  * ************************************************************************* */
 
+export const NS_VCARD4 = "urn:ietf:params:xml:ns:vcard-4.0";
+
+export const NS_ROSTER = "jabber:iq:roster";
+
 export const NS_FASTEN = "urn:xmpp:fasten:0";
 export const NS_FALLBACK = "urn:xmpp:fallback:0";
 export const NS_HINTS = "urn:xmpp:hints";
