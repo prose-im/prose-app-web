@@ -29,14 +29,17 @@ class BrokerEvent {
   }
 
   presence(stanza: Element): void {
+    // Ingest presence stanza in event broker
     return this.__presence.ingest(stanza);
   }
 
   message(stanza: Element): void {
+    // Ingest message stanza in event broker
     return this.__message.ingest(stanza);
   }
 
   iq(stanza: Element): void {
+    // Ingest IQ stanza in event broker
     return this.__iq.ingest(stanza);
   }
 }
