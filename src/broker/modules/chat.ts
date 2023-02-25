@@ -28,6 +28,14 @@ import {
 } from "@/broker/stanzas/xmlns";
 
 /**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const RETRACT_MESSAGE_BODY =
+  "This person attempted to retract a previous message, but it's unsupported " +
+  "by your client.";
+
+/**************************************************************************
  * CLASS
  * ************************************************************************* */
 
@@ -60,10 +68,7 @@ class BrokerModuleMessage extends BrokerModule {
     this.__client.emit(
       $msg({ to: to.toString(), type: MessageType.Chat })
         .c("body")
-        .t(
-          "This person attempted to retract a previous message, but it's " +
-            "unsupported by your client."
-        )
+        .t(RETRACT_MESSAGE_BODY)
         .up()
         .c("apply-to", { xmlns: NS_FASTEN, id: messageId })
         .c("retract", { xmlns: NS_MESSAGE_RETRACT })
