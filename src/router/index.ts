@@ -15,6 +15,7 @@ import {
   createWebHistory,
   createRouter
 } from "vue-router";
+import { jid } from "@xmpp/jid";
 
 // PROJECT: VIEWS
 import StartLogin from "@/views/start/StartLogin.vue";
@@ -113,7 +114,7 @@ class Router {
     const credentials = Store.$account.credentials;
 
     Broker.client
-      .authenticate(credentials.jid, credentials.password)
+      .authenticate(jid(credentials.jid), credentials.password)
       .catch(() => {
         // Ignore authentication errors here
       });

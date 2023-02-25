@@ -10,7 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { JID } from "@xmpp/jid";
+import { jid, JID } from "@xmpp/jid";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -32,14 +32,18 @@ const StoreTableAccount = defineStore("account", {
   },
 
   actions: {
-    async login(jid: JID, password: string, remember = true): Promise<void> {
+    async login(
+      rawJid: string,
+      password: string,
+      remember = true
+    ): Promise<void> {
       // Connect and authenticate to server
-      await Broker.client.authenticate(jid, password);
+      await Broker.client.authenticate(jid(rawJid), password);
 
       // Store credentials? (if success)
       if (remember === true) {
         this.$patch(state => {
-          state.credentials.jid = jid.toString();
+          state.credentials.jid = rawJid;
           state.credentials.password = password;
         });
       }

@@ -12,6 +12,10 @@
 import { Strophe } from "strophe.js";
 import { JID } from "@xmpp/jid";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+import BrokerEvent from "@/broker/events";
+
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 
@@ -32,9 +36,16 @@ interface ConnectLifecycle {
  * ************************************************************************* */
 
 class BrokerClient {
+  private readonly __ingest: BrokerEvent;
+
   private __connection: Strophe.Connection;
   private __connectLifecycle?: ConnectLifecycle;
   private __boundReceivers: Array<Strophe.Handler> = [];
+
+  constructor() {
+    // Initialize events ingestor
+    this.__ingest = new BrokerEvent();
+  }
 
   async authenticate(jid: JID, password: string): Promise<void> {
     // Acquire relay host
@@ -45,13 +56,13 @@ class BrokerClient {
     }
 
     // Incomplete parameters?
-    if (!jid) {
+    if (!jid.toString()) {
       throw new Error("Please provide a Jabber ID");
     }
     if (!password) {
       throw new Error("Please provide a password");
     }
-    if (jid.includes("@") === false) {
+    if (!jid.getLocal()) {
       throw new Error("Invalid Jabber ID");
     }
 
@@ -82,7 +93,11 @@ class BrokerClient {
       };
 
       // Connect to server
-      this.__connection.connect(jid, password, this.__onConnect.bind(this));
+      this.__connection.connect(
+        jid.toString(),
+        password,
+        this.__onConnect.bind(this)
+      );
     }).catch(error => {
       throw error;
     });
@@ -114,6 +129,7 @@ class BrokerClient {
       case Strophe.Status.DISCONNECTED: {
         logger.warn("Disconnected");
 
+        // Trigger disconnected hooks
         this.__unbindReceivers();
         this.__raiseConnectLifecycle(new Error("Disconnected from server"));
 
@@ -123,8 +139,10 @@ class BrokerClient {
       case Strophe.Status.CONNECTED: {
         logger.info("Connected");
 
+        // Trigger connected hooks
         this.__bindReceivers();
         this.__raiseConnectLifecycle();
+        this.__setupConnection();
 
         break;
       }
@@ -132,6 +150,7 @@ class BrokerClient {
       case Strophe.Status.CONNFAIL: {
         logger.error("Connection failure");
 
+        // Trigger connection failure hooks
         this.__raiseConnectLifecycle(new Error("Failed to authenticate"));
 
         break;
@@ -139,30 +158,33 @@ class BrokerClient {
     }
   }
 
-  private __onInput(data: object): void {
+  private __onInput(data: string): void {
     logger.debug("(in)", data);
   }
 
-  private __onOutput(data: object): void {
+  private __onOutput(data: string): void {
     logger.debug("(out)", data);
   }
 
-  private __onReceivePresence(presence: object): void {
-    logger.log("(presence)", presence);
+  private __onReceivePresence(stanza: Element): void {
+    logger.log("(presence)", stanza);
 
-    // TODO: pass to more specific handler
+    // Pass to presence ingestor
+    this.__ingest.presence(stanza);
   }
 
-  private __onReceiveMessage(message: object): void {
-    logger.log("(message)", message);
+  private __onReceiveMessage(stanza: Element): void {
+    logger.log("(message)", stanza);
 
-    // TODO: pass to more specific handler
+    // Pass to message ingestor
+    this.__ingest.message(stanza);
   }
 
-  private __onReceiveIQ(iq: object): void {
-    logger.log("(iq)", iq);
+  private __onReceiveIQ(stanza: Element): void {
+    logger.log("(iq)", stanza);
 
-    // TODO: pass to more specific handler
+    // Pass to IQ ingestor
+    this.__ingest.iq(stanza);
   }
 
   private __raiseConnectLifecycle(error?: Error): void {
@@ -177,19 +199,27 @@ class BrokerClient {
     }
   }
 
+  private __setupConnection(): void {
+    // Send initial presence
+    // TODO: this should not be done here, some kind of event bus w/ a hook is \
+    //   cleaner than that. This is a temporary solution.
+    Broker.$connection.sendInitialPresence();
+  }
+
   private __bindReceivers(): void {
     // Not already bound? Bind all receivers
     if (this.__boundReceivers.length === 0) {
-      this.__boundReceivers.push(
-        this.__connection.addHandler(
-          this.__onReceivePresence,
-          null,
-          "presence"
-        ),
+      const handlers = {
+        presence: this.__onReceivePresence,
+        message: this.__onReceiveMessage,
+        iq: this.__onReceiveIQ
+      };
 
-        this.__connection.addHandler(this.__onReceiveMessage, null, "message"),
-        this.__connection.addHandler(this.__onReceiveIQ, null, "iq")
-      );
+      for (const [handlerName, handlerFn] of Object.entries(handlers)) {
+        this.__boundReceivers.push(
+          this.__connection.addHandler(handlerFn.bind(this), null, handlerName)
+        );
+      }
     }
   }
 
