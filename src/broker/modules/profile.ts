@@ -9,10 +9,13 @@
  * ************************************************************************* */
 
 // NPM
+import { $iq } from "strophe.js";
 import { JID } from "@xmpp/jid";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
+import { IQType } from "@/broker/stanzas/iq";
+import { NS_VCARD4 } from "@/broker/stanzas/xmlns";
 
 /**************************************************************************
  * CLASS
