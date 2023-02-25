@@ -19,3 +19,5 @@ export const NS_PING = "urn:xmpp:ping";
 
 export const NS_MESSAGE_CORRECT = "urn:xmpp:message-correct:0";
 export const NS_MESSAGE_RETRACT = "urn:xmpp:message-retract:0";
+
+export const NS_CHAT_STATES = "http://jabber.org/protocol/chatstates";

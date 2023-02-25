@@ -23,6 +23,7 @@ import {
 import {
   NS_MESSAGE_CORRECT,
   NS_MESSAGE_RETRACT,
+  NS_CHAT_STATES,
   NS_FASTEN,
   NS_FALLBACK
 } from "@/broker/stanzas/xmlns";
@@ -82,8 +83,14 @@ class BrokerModuleMessage extends BrokerModule {
     );
   }
 
-  sendChatState(to: JID, chatState: MessageChatState): void {
-    // TODO
+  sendChatState(to: JID, state: MessageChatState): void {
+    // XEP-0085: Chat State Notifications
+    // https://xmpp.org/extensions/xep-0085.html
+    this.__client.emit(
+      $msg({ to: to.toString(), type: MessageType.Chat }).c(state, {
+        xmlns: NS_CHAT_STATES
+      })
+    );
   }
 
   sendReactions(to: JID, reactions: Array<MessageReaction>): void {
