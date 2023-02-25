@@ -23,7 +23,7 @@ import { NS_ROSTER } from "@/broker/stanzas/xmlns";
 class BrokerModuleRoster extends BrokerModule {
   async loadRoster(): Promise<void> {
     // XMPP: Instant Messaging and Presence
-    // https://xmpp.org/rfcs/rfc6121.html
+    // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-get
     this.__client.emit(
       $iq({ type: IQType.Get }).c("query", { xmlns: NS_ROSTER })
     );

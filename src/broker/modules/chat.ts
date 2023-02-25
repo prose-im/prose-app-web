@@ -47,7 +47,7 @@ const RETRACT_MESSAGE_BODY =
 class BrokerModuleMessage extends BrokerModule {
   sendMessage(to: JID, body: string): void {
     // XMPP: Instant Messaging and Presence
-    // https://xmpp.org/rfcs/rfc6121.html
+    // https://xmpp.org/rfcs/rfc6121.html#message
     this.__client.emit(
       $msg({ to: to.toString(), type: MessageType.Chat }).c("body").t(body)
     );

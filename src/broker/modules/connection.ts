@@ -23,7 +23,7 @@ import { NS_PING } from "@/broker/stanzas/xmlns";
 class BrokerModuleConnection extends BrokerModule {
   sendInitialPresence(): void {
     // XMPP: Instant Messaging and Presence
-    // https://xmpp.org/rfcs/rfc6121.html
+    // https://xmpp.org/rfcs/rfc6121.html#presence
     this.__client.emit($pres());
   }
 
