@@ -15,6 +15,7 @@ export const NS_ROSTER = "jabber:iq:roster";
 export const NS_FASTEN = "urn:xmpp:fasten:0";
 export const NS_FALLBACK = "urn:xmpp:fallback:0";
 export const NS_HINTS = "urn:xmpp:hints";
+export const NS_PING = "urn:xmpp:ping";
 
 export const NS_MESSAGE_CORRECT = "urn:xmpp:message-correct:0";
 export const NS_MESSAGE_RETRACT = "urn:xmpp:message-retract:0";
