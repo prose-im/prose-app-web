@@ -8,8 +8,13 @@
  * IMPORTS
  * ************************************************************************* */
 
+// NPM
+import { $iq } from "strophe.js";
+
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
+import { IQType } from "@/broker/stanzas/iq";
+import { NS_ROSTER } from "@/broker/stanzas/xmlns";
 
 /**************************************************************************
  * CLASS
@@ -17,7 +22,13 @@ import BrokerModule from "@/broker/modules";
 
 class BrokerModuleRoster extends BrokerModule {
   async loadRoster(): Promise<void> {
-    // TODO
+    // XMPP: Instant Messaging and Presence
+    // https://xmpp.org/rfcs/rfc6121.html
+    this.__client.emit(
+      $iq({ type: IQType.Get }).c("query", { xmlns: NS_ROSTER })
+    );
+
+    // TODO: setup promise handler
   }
 }
 
