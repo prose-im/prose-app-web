@@ -8,15 +8,21 @@
  * IMPORTS
  * ************************************************************************* */
 
+// NPM
+import { JID } from "@xmpp/jid";
+
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
+import { MessageID } from "@/broker/stanzas/message";
 
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
 
 class BrokerModuleMAM extends BrokerModule {
-  // TODO
+  async loadMessages(to: JID, beforeId?: MessageID): Promise<void> {
+    // TODO
+  }
 }
 
 /**************************************************************************

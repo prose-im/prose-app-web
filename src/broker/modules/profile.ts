@@ -8,6 +8,9 @@
  * IMPORTS
  * ************************************************************************* */
 
+// NPM
+import { JID } from "@xmpp/jid";
+
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
 
@@ -16,7 +19,9 @@ import BrokerModule from "@/broker/modules";
  * ************************************************************************* */
 
 class BrokerModuleProfile extends BrokerModule {
-  // TODO
+  async loadVCard(jid: JID): Promise<void> {
+    // TODO
+  }
 }
 
 /**************************************************************************

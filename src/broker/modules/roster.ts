@@ -16,7 +16,9 @@ import BrokerModule from "@/broker/modules";
  * ************************************************************************* */
 
 class BrokerModuleRoster extends BrokerModule {
-  // TODO
+  async loadRoster(): Promise<void> {
+    // TODO
+  }
 }
 
 /**************************************************************************

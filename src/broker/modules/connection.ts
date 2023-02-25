@@ -16,7 +16,13 @@ import BrokerModule from "@/broker/modules";
  * ************************************************************************* */
 
 class BrokerModuleConnection extends BrokerModule {
-  // TODO
+  sendInitialPresence(): void {
+    // TODO
+  }
+
+  sendPing(): void {
+    // TODO
+  }
 }
 
 /**************************************************************************
