@@ -34,6 +34,7 @@ interface ConnectLifecycle {
 class BrokerClient {
   private __connection: Strophe.Connection;
   private __connectLifecycle?: ConnectLifecycle;
+  private __boundReceivers: Array<Strophe.Handler> = [];
 
   async authenticate(jid: JID, password: string): Promise<void> {
     // Acquire relay host
@@ -113,6 +114,7 @@ class BrokerClient {
       case Strophe.Status.DISCONNECTED: {
         logger.warn("Disconnected");
 
+        this.__unbindReceivers();
         this.__raiseConnectLifecycle(new Error("Disconnected from server"));
 
         break;
@@ -121,6 +123,7 @@ class BrokerClient {
       case Strophe.Status.CONNECTED: {
         logger.info("Connected");
 
+        this.__bindReceivers();
         this.__raiseConnectLifecycle();
 
         break;
@@ -137,11 +140,29 @@ class BrokerClient {
   }
 
   private __onInput(data: object): void {
-    logger.log("(in)", data);
+    logger.debug("(in)", data);
   }
 
   private __onOutput(data: object): void {
-    logger.log("(out)", data);
+    logger.debug("(out)", data);
+  }
+
+  private __onReceivePresence(presence: object): void {
+    logger.log("(presence)", presence);
+
+    // TODO: pass to more specific handler
+  }
+
+  private __onReceiveMessage(message: object): void {
+    logger.log("(message)", message);
+
+    // TODO: pass to more specific handler
+  }
+
+  private __onReceiveIQ(iq: object): void {
+    logger.log("(iq)", iq);
+
+    // TODO: pass to more specific handler
   }
 
   private __raiseConnectLifecycle(error?: Error): void {
@@ -153,6 +174,32 @@ class BrokerClient {
       }
 
       delete this.__connectLifecycle;
+    }
+  }
+
+  private __bindReceivers(): void {
+    // Not already bound? Bind all receivers
+    if (this.__boundReceivers.length === 0) {
+      this.__boundReceivers.push(
+        this.__connection.addHandler(
+          this.__onReceivePresence,
+          null,
+          "presence"
+        ),
+
+        this.__connection.addHandler(this.__onReceiveMessage, null, "message"),
+        this.__connection.addHandler(this.__onReceiveIQ, null, "iq")
+      );
+    }
+  }
+
+  private __unbindReceivers(): void {
+    // Anything bound? Unbind all receivers
+    if (this.__boundReceivers.length === 0) {
+      // Unbind all receivers
+      while (this.__boundReceivers.length > 0) {
+        this.__connection.deleteHandler(this.__boundReceivers.pop());
+      }
     }
   }
 }
