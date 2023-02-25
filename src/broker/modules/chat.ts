@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { $msg } from "strophe.js";
+import { $msg, $iq } from "strophe.js";
 import { JID } from "@xmpp/jid";
 
 // PROJECT: BROKER
@@ -20,12 +20,16 @@ import {
   MessageReaction,
   MessageType
 } from "@/broker/stanzas/message";
+import { IQType } from "@/broker/stanzas/iq";
 import {
   NS_MESSAGE_CORRECT,
   NS_MESSAGE_RETRACT,
   NS_CHAT_STATES,
   NS_FASTEN,
-  NS_FALLBACK
+  NS_FALLBACK,
+  NS_REACTIONS,
+  NS_HINTS,
+  NS_CARBONS
 } from "@/broker/stanzas/xmlns";
 
 /**************************************************************************
@@ -93,12 +97,32 @@ class BrokerModuleMessage extends BrokerModule {
     );
   }
 
-  sendReactions(to: JID, reactions: Array<MessageReaction>): void {
-    // TODO
+  sendReactions(to: JID, reactions: Set<MessageReaction>): void {
+    // XEP-0444: Message Reactions
+    // https://xmpp.org/extensions/xep-0444.html
+    const stanza = $msg({ to: to.toString(), type: MessageType.Chat });
+
+    // Append reactions
+    const stanzaReactions = stanza.c("reactions", { xmlns: NS_REACTIONS });
+
+    reactions.forEach(reaction => {
+      stanzaReactions.c("reaction", {}, reaction);
+    });
+
+    // Append hints
+    stanza.c("store", { xmlns: NS_HINTS });
+
+    this.__client.emit(stanza);
   }
 
   setMessageCarbonsEnabled(enabled: boolean): void {
-    // TODO
+    // XEP-0280: Message Carbons
+    // https://xmpp.org/extensions/xep-0280.html
+    this.__client.emit(
+      $iq({ type: IQType.Set }).c(enabled === true ? "enable" : "disable", {
+        xmlns: NS_CARBONS
+      })
+    );
   }
 }
 

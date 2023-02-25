@@ -11,13 +11,18 @@
 export const NS_VCARD4 = "urn:ietf:params:xml:ns:vcard-4.0";
 
 export const NS_ROSTER = "jabber:iq:roster";
+export const NS_DATA = "jabber:x:data";
 
 export const NS_FASTEN = "urn:xmpp:fasten:0";
 export const NS_FALLBACK = "urn:xmpp:fallback:0";
 export const NS_HINTS = "urn:xmpp:hints";
 export const NS_PING = "urn:xmpp:ping";
+export const NS_REACTIONS = "urn:xmpp:reactions:0";
+export const NS_CARBONS = "urn:xmpp:carbons:2";
+export const NS_MAM = "urn:xmpp:mam:2";
 
 export const NS_MESSAGE_CORRECT = "urn:xmpp:message-correct:0";
 export const NS_MESSAGE_RETRACT = "urn:xmpp:message-retract:0";
 
 export const NS_CHAT_STATES = "http://jabber.org/protocol/chatstates";
+export const NS_RSM = "http://jabber.org/protocol/rsm";
