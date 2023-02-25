@@ -21,25 +21,44 @@ abstract class BrokerEventIngestor {
   };
 
   ingest(stanza: Element): void {
-    // Ingest root (root handler is required)
-    this._handlers.root(stanza);
+    let _wasHandled = false;
+
+    // Ingest anything (if any)
+    const anyHandlerFn = this._handlers.any || null;
+
+    if (anyHandlerFn !== null) {
+      anyHandlerFn(stanza);
+
+      // Mark as handled
+      _wasHandled = true;
+    }
 
     // Ingest each child
     Strophe.forEachChild(stanza, null, (element: Element) => {
       const namespace = element.getAttribute("xmlns") || null;
 
       if (namespace !== null) {
-        const handler = this._handlers[namespace] || null;
+        const childHandlerFn = this._handlers[namespace] || null;
 
         // Execute handler for namespace?
-        if (handler !== null) {
-          handler(stanza, element);
+        if (childHandlerFn !== null) {
+          childHandlerFn(stanza, element);
+
+          // Mark as handled
+          _wasHandled = true;
         }
       }
     });
-  }
 
-  protected abstract _base(stanza: Element): void;
+    // Trigger other handler? (if any, and was not handled)
+    if (_wasHandled !== true) {
+      const otherHandlerFn = this._handlers.other || null;
+
+      if (otherHandlerFn !== null) {
+        otherHandlerFn(stanza);
+      }
+    }
+  }
 }
 
 /**************************************************************************
