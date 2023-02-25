@@ -24,6 +24,9 @@ import AppInboxBase from "@/views/app/inbox/AppInboxBase.vue";
 // PROJECT: STORES
 import Store from "@/store";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 /**************************************************************************
  * ROUTER
  * ************************************************************************* */
@@ -61,6 +64,9 @@ class Router {
           beforeEnter: () => {
             // Ensure that user is logged-in
             this.__guardAuthenticated();
+
+            // Setup broker client (resume session)
+            this.__setupBrokerClient();
           },
 
           children: [
@@ -100,6 +106,17 @@ class Router {
         name: "app"
       });
     }
+  }
+
+  private __setupBrokerClient() {
+    // Authenticate to broker client
+    const credentials = Store.$account.credentials;
+
+    Broker.client
+      .authenticate(credentials.jid, credentials.password)
+      .catch(() => {
+        // Ignore authentication errors here
+      });
   }
 }
 
