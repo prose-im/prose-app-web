@@ -78,18 +78,33 @@ class BrokerEventIQ extends BrokerEventIngestor {
     // Do not handle non-request IQs
     const kind = stanza.getAttribute("type");
 
-    if (kind !== IQType.Get && kind !== IQType.Set) {
-      logger.info(
-        `Ignoring IQ from: '${stanza.getAttribute(
-          "from"
-        )}' as it is not 'get' or 'set'`
+    if (kind === IQType.Error) {
+      // Log error
+      logger.warn(
+        `Received error IQ from: '${
+          stanza.getAttribute("from") || ""
+        }' with text:`,
+        stanza.querySelector("error text")?.textContent
       );
 
+      // Do not route
       return false;
     }
 
-    logger.info(`Processing IQ from: '${stanza.getAttribute("from")}'`);
+    if (kind !== IQType.Get && kind !== IQType.Set) {
+      logger.info(
+        `Ignoring IQ from: '${
+          stanza.getAttribute("from") || ""
+        }' as it is not 'get' or 'set'`
+      );
 
+      // Do not route
+      return false;
+    }
+
+    logger.info(`Processing IQ from: '${stanza.getAttribute("from") || ""}'`);
+
+    // Do route
     return true;
   }
 
@@ -194,7 +209,9 @@ class BrokerEventIQ extends BrokerEventIngestor {
           .c("text", { xmlns: NS_STANZAS }, ERROR_FEATURE_NOT_IMPLEMENTED_TEXT);
 
         logger.warn(
-          `Sending unsupported IQ error to: '${stanza.getAttribute("from")}'`
+          `Sending unsupported IQ error to: '${
+            stanza.getAttribute("from") || ""
+          }'`
         );
       },
 

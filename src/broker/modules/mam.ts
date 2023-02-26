@@ -10,6 +10,7 @@
 
 // NPM
 import { $iq } from "strophe.js";
+import xmppID from "@xmpp/id";
 import { JID } from "@xmpp/jid";
 
 // PROJECT: BROKER
@@ -32,10 +33,10 @@ const HISTORY_PAGE_SIZE = 40;
  * ************************************************************************* */
 
 class BrokerModuleMAM extends BrokerModule {
-  async loadMessages(jid: JID, beforeId?: MessageID): Promise<void> {
+  async loadMessages(jid: JID, beforeId?: MessageID): Promise<Element> {
     // XEP-0313: Message Archive Management
     // https://xmpp.org/extensions/xep-0313.html
-    const stanza = $iq({ type: IQType.Set });
+    const stanza = $iq({ type: IQType.Set, id: xmppID() });
 
     // Append query
     const stanzaQuery = stanza.c("query", { xmlns: NS_MAM });
@@ -59,13 +60,13 @@ class BrokerModuleMAM extends BrokerModule {
     // Append RSM (Result Set Management)
     stanzaQuery.c("set", { xmlns: NS_RSM }).c("max", {}, HISTORY_PAGE_SIZE);
 
-    this.__client.emit(stanza);
-
-    // TODO: setup promise handler
-
     logger.info(
-      `Loaded messages from history from: '${jid}' before #${beforeId || "--"}`
+      `Will load messages from history from: '${jid}' before #${
+        beforeId || "--"
+      }`
     );
+
+    return this._client.request(stanza);
   }
 }
 

@@ -15,6 +15,7 @@ import { JID } from "@xmpp/jid";
 // PROJECT: BROKER
 import Broker from "@/broker";
 import BrokerEvent from "@/broker/events";
+import { IQType } from "@/broker/stanzas/iq";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -23,13 +24,26 @@ import logger from "@/utilities/logger";
 import CONFIG from "@/commons/config";
 
 /**************************************************************************
- * TYPES
+ * INTERFACES
  * ************************************************************************* */
 
 interface ConnectLifecycle {
   success: (value: void) => void;
   failure: (error: Error) => void;
 }
+
+interface PendingRequest {
+  id: string;
+  success: (stanza: Element) => void;
+  failure: (error: Error) => void;
+  timeout: number;
+}
+
+/**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const REQUEST_TIMEOUT_DEFAULT = 10000; // 10 seconds
 
 /**************************************************************************
  * CLASS
@@ -41,6 +55,7 @@ class BrokerClient {
   private __connection: Strophe.Connection;
   private __connectLifecycle?: ConnectLifecycle;
   private __boundReceivers: Array<Strophe.Handler> = [];
+  private __pendingRequests: { [id: string]: PendingRequest } = {};
 
   constructor() {
     // Initialize event ingestors
@@ -112,6 +127,51 @@ class BrokerClient {
     }
   }
 
+  async request(
+    builder: Strophe.Builder,
+    timeout: number = REQUEST_TIMEOUT_DEFAULT
+  ): Promise<Element | void> {
+    return await new Promise((resolve, reject) => {
+      const stanzaElement = builder.tree(),
+        stanzaType = stanzaElement.getAttribute("type") || null,
+        stanzaID = stanzaElement.getAttribute("id") || null;
+
+      // Ensure that builder root is an IQ packet (cannot request using non-IQ \
+      //   stanzas)
+      if (stanzaElement.tagName !== "iq") {
+        throw new Error(
+          `Cannot request using non-IQ stanza, got: ${stanzaElement.tagName}`
+        );
+      }
+
+      // Ensure that IQ packet type is either 'get' or 'set' (can only request \
+      //   using those types)
+      if (stanzaType !== IQType.Get && stanzaType !== IQType.Set) {
+        throw new Error(`Cannot request using IQ type: '${stanzaType}'`);
+      }
+
+      // Ensure that IQ packet holds an ID, as this is required to route the \
+      //   response
+      if (stanzaID === null) {
+        throw new Error("Missing required IQ identifier");
+      }
+
+      // Stack pending request
+      this.__pendingRequests[stanzaID] = {
+        id: stanzaID,
+        success: resolve,
+        failure: reject,
+
+        timeout: setTimeout(() => {
+          this.__handlePendingRequest(stanzaID);
+        }, timeout)
+      };
+
+      // Emit stanza
+      this.emit(builder);
+    });
+  }
+
   private __onConnect(status: Strophe.Status): void {
     switch (status) {
       case Strophe.Status.CONNECTING: {
@@ -131,6 +191,7 @@ class BrokerClient {
 
         // Trigger disconnected hooks
         this.__unbindReceivers();
+        this.__cancelAllPendingRequests();
         this.__raiseConnectLifecycle(new Error("Disconnected from server"));
 
         break;
@@ -183,6 +244,19 @@ class BrokerClient {
     // TODO: this should not be done here, some kind of event bus w/ a hook is \
     //   cleaner than that. This is a temporary solution.
     Broker.$connection.sendInitialPresence();
+
+    // Load roster
+    // TODO: do not do this here!!
+    Broker.$roster
+      .loadRoster()
+      .then((roster: Element) => {
+        // TODO
+        console.error("==> got roster = ", roster);
+      })
+      .catch((error: Error) => {
+        // TODO
+        console.error("==> error loading roster = ", error);
+      });
   }
 
   private __bindReceivers(): void {
@@ -193,8 +267,19 @@ class BrokerClient {
         const handlerFn = (stanza: Element) => {
           logger.log(`(${handlerName})`, stanza);
 
-          // Pass to specific ingestor
-          this.__ingestors[handlerName](stanza);
+          // Acquire registered handler (if any)
+          const stanzaID = stanza.getAttribute("id") || "";
+
+          // Pass to pending request handler (if any)
+          const hadPendingRequest = this.__handlePendingRequest(
+            stanzaID,
+            stanza
+          );
+
+          // Pass to specific ingestor?
+          if (hadPendingRequest !== true) {
+            this.__ingestors[handlerName](stanza);
+          }
 
           // Important: keep handler alive (otherwise it will get torn out \
           //   after it gets fired once)
@@ -216,6 +301,63 @@ class BrokerClient {
       while (this.__boundReceivers.length > 0) {
         this.__connection.deleteHandler(this.__boundReceivers.pop());
       }
+    }
+  }
+
+  private __handlePendingRequest(id: string, stanza?: Element): boolean {
+    // Acquire pending request
+    const request = id ? this.__pendingRequests[id] : undefined;
+
+    if (request) {
+      // Unstack pending request from register
+      clearTimeout(request.timeout);
+
+      delete this.__pendingRequests[request.id];
+
+      if (
+        stanza?.tagName === "iq" &&
+        (stanza?.getAttribute("type") as IQType) === IQType.Result
+      ) {
+        logger.info(
+          `Pending request #${id} to: '${
+            stanza.getAttribute("from") || ""
+          }' response received`
+        );
+
+        // Pass to success handler
+        request.success(stanza);
+      } else if (stanza) {
+        const errorText =
+          stanza.querySelector("error text")?.textContent || "Failed";
+
+        logger.warn(
+          `Pending request #${id} to: '${
+            stanza.getAttribute("from") || ""
+          }' received error reply:`,
+          errorText
+        );
+
+        // Pass to error handler (got stanza response)
+        request.failure(new Error(errorText));
+      } else {
+        logger.warn(
+          `Pending request #${id} has been cancelled (it may have timed out)`
+        );
+
+        // Pass to error handler (no response received)
+        request.failure(new Error("Cancelled"));
+      }
+
+      return true;
+    }
+
+    return false;
+  }
+
+  private __cancelAllPendingRequests(): void {
+    // Cancel all pending requests
+    for (const id in this.__pendingRequests) {
+      this.__handlePendingRequest(id);
     }
   }
 }

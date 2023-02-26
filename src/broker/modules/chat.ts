@@ -52,7 +52,7 @@ class BrokerModuleMessage extends BrokerModule {
   sendMessage(to: JID, body: string, id?: MessageID): void {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#message
-    this.__client.emit(
+    this._client.emit(
       $msg({ to: to.toString(), type: MessageType.Chat, id: id || xmppID() })
         .c("body")
         .t(body)
@@ -68,7 +68,7 @@ class BrokerModuleMessage extends BrokerModule {
   ): void {
     // XEP-0308: Last Message Correction
     // https://xmpp.org/extensions/xep-0308.html
-    this.__client.emit(
+    this._client.emit(
       $msg({ id: ids.replacement || xmppID(), to: to.toString() })
         .c("body")
         .t(body)
@@ -85,7 +85,7 @@ class BrokerModuleMessage extends BrokerModule {
   retractMessage(id: MessageID, to: JID): void {
     // XEP-0424: Message Retraction
     // https://xmpp.org/extensions/xep-0424.html
-    this.__client.emit(
+    this._client.emit(
       $msg({ to: to.toString(), type: MessageType.Chat })
         .c("body")
         .t(RETRACT_MESSAGE_BODY)
@@ -105,7 +105,7 @@ class BrokerModuleMessage extends BrokerModule {
   sendChatState(to: JID, state: MessageChatState): void {
     // XEP-0085: Chat State Notifications
     // https://xmpp.org/extensions/xep-0085.html
-    this.__client.emit(
+    this._client.emit(
       $msg({ to: to.toString(), type: MessageType.Chat }).c(state, {
         xmlns: NS_CHAT_STATES
       })
@@ -129,7 +129,7 @@ class BrokerModuleMessage extends BrokerModule {
     // Append hints
     stanza.c("store", { xmlns: NS_HINTS });
 
-    this.__client.emit(stanza);
+    this._client.emit(stanza);
 
     logger.info(
       `Reacted to message #${id} sent to: '${to}' with reactions:`,
@@ -137,18 +137,18 @@ class BrokerModuleMessage extends BrokerModule {
     );
   }
 
-  setMessageCarbonsEnabled(enabled: boolean): void {
+  async setMessageCarbonsEnabled(enabled: boolean): Promise<Element> {
     // XEP-0280: Message Carbons
     // https://xmpp.org/extensions/xep-0280.html
     const state = enabled === true ? "enable" : "disable";
 
-    this.__client.emit(
-      $iq({ type: IQType.Set }).c(state, {
+    logger.info(`Will toggle message carbons to state: ${state}`);
+
+    return this._client.request(
+      $iq({ type: IQType.Set, id: xmppID() }).c(state, {
         xmlns: NS_CARBONS
       })
     );
-
-    logger.info(`Toggled message carbons to state: ${state}`);
   }
 }
 

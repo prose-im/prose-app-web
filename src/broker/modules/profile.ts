@@ -10,6 +10,7 @@
 
 // NPM
 import { $iq } from "strophe.js";
+import xmppID from "@xmpp/id";
 import { JID } from "@xmpp/jid";
 
 // PROJECT: BROKER
@@ -25,16 +26,14 @@ import logger from "@/utilities/logger";
  * ************************************************************************* */
 
 class BrokerModuleProfile extends BrokerModule {
-  async loadVCard(jid: JID): Promise<void> {
+  async loadVCard(jid: JID): Promise<Element> {
     // XEP-0292: vCard4 Over XMPP
     // https://xmpp.org/extensions/xep-0292.html
-    this.__client.emit(
-      $iq({ type: IQType.Get }).c("vcard", { xmlns: NS_VCARD4 })
+    logger.info(`Will load vCard profile for: '${jid}'`);
+
+    return this._client.request(
+      $iq({ type: IQType.Get, id: xmppID() }).c("vcard", { xmlns: NS_VCARD4 })
     );
-
-    // TODO: setup promise handler
-
-    logger.info(`Loaded vCard profile for: '${jid}'`);
   }
 }
 

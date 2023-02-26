@@ -10,6 +10,7 @@
 
 // NPM
 import { $iq } from "strophe.js";
+import xmppID from "@xmpp/id";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -24,16 +25,14 @@ import logger from "@/utilities/logger";
  * ************************************************************************* */
 
 class BrokerModuleRoster extends BrokerModule {
-  async loadRoster(): Promise<void> {
+  async loadRoster(): Promise<Element> {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-get
-    this.__client.emit(
-      $iq({ type: IQType.Get }).c("query", { xmlns: NS_ROSTER })
+    logger.info("Will load roster");
+
+    return this._client.request(
+      $iq({ type: IQType.Get, id: xmppID() }).c("query", { xmlns: NS_ROSTER })
     );
-
-    // TODO: setup promise handler
-
-    logger.info("Loaded roster");
   }
 }
 

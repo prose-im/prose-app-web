@@ -16,10 +16,10 @@ import BrokerClient from "@/broker/client";
  * ************************************************************************* */
 
 abstract class BrokerModule {
-  private readonly __client: BrokerClient;
+  protected readonly _client: BrokerClient;
 
   constructor(client: BrokerClient) {
-    this.__client = client;
+    this._client = client;
   }
 }
 
