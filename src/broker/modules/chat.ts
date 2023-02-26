@@ -33,6 +33,9 @@ import {
   NS_CARBONS
 } from "@/broker/stanzas/xmlns";
 
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
@@ -54,6 +57,8 @@ class BrokerModuleMessage extends BrokerModule {
         .c("body")
         .t(body)
     );
+
+    logger.info(`Sent message to: '${to}' with body:`, body);
   }
 
   updateMessage(
@@ -69,6 +74,11 @@ class BrokerModuleMessage extends BrokerModule {
         .t(body)
         .up()
         .c("replace", { xmlns: NS_MESSAGE_CORRECT, id: ids.original })
+    );
+
+    logger.info(
+      `Updated message #${ids.original} sent to: '${to}' with new body:`,
+      body
     );
   }
 
@@ -88,6 +98,8 @@ class BrokerModuleMessage extends BrokerModule {
         .up()
         .c("store", { xmlns: NS_HINTS })
     );
+
+    logger.info(`Retracted message #${id} sent to: '${to}'`);
   }
 
   sendChatState(to: JID, state: MessageChatState): void {
@@ -98,9 +110,11 @@ class BrokerModuleMessage extends BrokerModule {
         xmlns: NS_CHAT_STATES
       })
     );
+
+    logger.info(`Sent ${state} chat state to: '${to}'`);
   }
 
-  sendReactions(to: JID, reactions: Set<MessageReaction>): void {
+  sendReactions(id: MessageID, to: JID, reactions: Set<MessageReaction>): void {
     // XEP-0444: Message Reactions
     // https://xmpp.org/extensions/xep-0444.html
     const stanza = $msg({ to: to.toString(), type: MessageType.Chat });
@@ -116,16 +130,25 @@ class BrokerModuleMessage extends BrokerModule {
     stanza.c("store", { xmlns: NS_HINTS });
 
     this.__client.emit(stanza);
+
+    logger.info(
+      `Reacted to message #${id} sent to: '${to}' with reactions:`,
+      reactions
+    );
   }
 
   setMessageCarbonsEnabled(enabled: boolean): void {
     // XEP-0280: Message Carbons
     // https://xmpp.org/extensions/xep-0280.html
+    const state = enabled === true ? "enable" : "disable";
+
     this.__client.emit(
-      $iq({ type: IQType.Set }).c(enabled === true ? "enable" : "disable", {
+      $iq({ type: IQType.Set }).c(state, {
         xmlns: NS_CARBONS
       })
     );
+
+    logger.info(`Toggled message carbons to state: ${state}`);
   }
 }
 

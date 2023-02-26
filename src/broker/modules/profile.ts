@@ -17,6 +17,9 @@ import BrokerModule from "@/broker/modules";
 import { IQType } from "@/broker/stanzas/iq";
 import { NS_VCARD4 } from "@/broker/stanzas/xmlns";
 
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
@@ -30,6 +33,8 @@ class BrokerModuleProfile extends BrokerModule {
     );
 
     // TODO: setup promise handler
+
+    logger.info(`Loaded vCard profile for: '${jid}'`);
   }
 }
 

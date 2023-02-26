@@ -16,6 +16,9 @@ import BrokerModule from "@/broker/modules";
 import { IQType } from "@/broker/stanzas/iq";
 import { NS_PING } from "@/broker/stanzas/xmlns";
 
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
@@ -25,12 +28,16 @@ class BrokerModuleConnection extends BrokerModule {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#presence
     this.__client.emit($pres());
+
+    logger.info("Sent initial presence to server");
   }
 
   sendPing(): void {
     // XEP-0199: XMPP Ping
     // https://xmpp.org/extensions/xep-0199.html
     this.__client.emit($iq({ type: IQType.Get }).c("ping", { xmlns: NS_PING }));
+
+    logger.info("Sent ping to server");
   }
 }
 

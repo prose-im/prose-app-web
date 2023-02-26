@@ -16,6 +16,9 @@ import BrokerModule from "@/broker/modules";
 import { IQType } from "@/broker/stanzas/iq";
 import { NS_ROSTER } from "@/broker/stanzas/xmlns";
 
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
@@ -29,6 +32,8 @@ class BrokerModuleRoster extends BrokerModule {
     );
 
     // TODO: setup promise handler
+
+    logger.info("Loaded roster");
   }
 }
 

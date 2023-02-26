@@ -30,6 +30,9 @@ import {
 } from "@/broker/stanzas/xmlns";
 import * as xmlns from "@/broker/stanzas/xmlns";
 
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
@@ -76,8 +79,16 @@ class BrokerEventIQ extends BrokerEventIngestor {
     const kind = stanza.getAttribute("type");
 
     if (kind !== IQType.Get && kind !== IQType.Set) {
+      logger.info(
+        `Ignoring IQ from: '${stanza.getAttribute(
+          "from"
+        )}' as it is not 'get' or 'set'`
+      );
+
       return false;
     }
+
+    logger.info(`Processing IQ from: '${stanza.getAttribute("from")}'`);
 
     return true;
   }
@@ -160,7 +171,9 @@ class BrokerEventIQ extends BrokerEventIngestor {
     // XEP-0199: XMPP Ping
     // https://xmpp.org/extensions/xep-0199.html
 
-    this.__respondTo(stanza);
+    this.__respondTo(stanza, () => {
+      logger.debug("Got ping request");
+    });
   }
 
   private __other(stanza: Element): void {
@@ -179,6 +192,10 @@ class BrokerEventIQ extends BrokerEventIngestor {
           .c("feature-not-implemented", { xmlns: NS_STANZAS })
           .up()
           .c("text", { xmlns: NS_STANZAS }, ERROR_FEATURE_NOT_IMPLEMENTED_TEXT);
+
+        logger.warn(
+          `Sending unsupported IQ error to: '${stanza.getAttribute("from")}'`
+        );
       },
 
       IQType.Error
@@ -190,6 +207,8 @@ class BrokerEventIQ extends BrokerEventIngestor {
     respondFn?: (response: Strophe.Builder) => void,
     kind: IQType = IQType.Result
   ): void {
+    // TODO: limit on get/set type, and send back an error code if mismatch
+
     // Craft response IQ
     const response = $iq({
       type: kind,

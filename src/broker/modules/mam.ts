@@ -18,6 +18,9 @@ import { IQType } from "@/broker/stanzas/iq";
 import { MessageID } from "@/broker/stanzas/message";
 import { NS_MAM, NS_RSM, NS_DATA } from "@/broker/stanzas/xmlns";
 
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
@@ -59,6 +62,10 @@ class BrokerModuleMAM extends BrokerModule {
     this.__client.emit(stanza);
 
     // TODO: setup promise handler
+
+    logger.info(
+      `Loaded messages from history from: '${jid}' before #${beforeId || "--"}`
+    );
   }
 }
 

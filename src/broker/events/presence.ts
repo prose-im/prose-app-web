@@ -12,6 +12,9 @@
 import BrokerEventIngestor from "@/broker/events/ingestor";
 import { NS_CAPS } from "@/broker/stanzas/xmlns";
 
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
@@ -23,16 +26,15 @@ class BrokerEventPresence extends BrokerEventIngestor {
   };
 
   private __any(stanza: Element): void {
+    logger.info(`Processing presence from: '${stanza.getAttribute("from")}'`);
+
     // TODO
-    console.error("==> event : presence : received any", stanza);
   }
 
   private __caps(stanza: Element, element: Element): void {
     // XEP-0115: Entity Capabilities
     // https://xmpp.org/extensions/xep-0115.html
-
     // TODO
-    console.error("==> event : presence : got caps", element);
   }
 }
 
