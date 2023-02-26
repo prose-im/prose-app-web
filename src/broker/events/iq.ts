@@ -27,12 +27,26 @@ import {
   NS_TIME,
   NS_PING
 } from "@/broker/stanzas/xmlns";
+import * as xmlns from "@/broker/stanzas/xmlns";
 
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
-const VERSION_NAME = "Prose";
+const DISCO_FEATURES = Object.entries(xmlns)
+  .filter(([namespaceName, _]) => {
+    return namespaceName.startsWith("NS_");
+  })
+  .map(([_, namespaceValue]) => {
+    return namespaceValue;
+  })
+  .sort();
+
+const DISCO_CATEGORY = "client";
+const DISCO_TYPE = "web";
+const DISCO_NAME = "Prose";
+
+const VERSION_NAME = DISCO_NAME;
 const VERSION_SYSTEM = "Web";
 const VERSION_REVISION_FALLBACK = "0.0.0";
 
@@ -89,8 +103,11 @@ class BrokerEventIQ extends BrokerEventIngestor {
     // https://xmpp.org/extensions/xep-0012.html
 
     this.__respondTo(stanza, response => {
-      // TODO
-      console.error("==> event : iq : got last activity query", element);
+      // TODO: add dynamic data
+      const lastActiveSeconds = 0;
+
+      // Append query response
+      response.c("query", { xmlns: NS_LAST, seconds: lastActiveSeconds });
     });
   }
 
@@ -98,9 +115,8 @@ class BrokerEventIQ extends BrokerEventIngestor {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
 
-    this.__respondTo(stanza, response => {
-      // TODO
-      console.error("==> event : iq : got roster push", element);
+    this.__respondTo(stanza, () => {
+      // TODO: handle and do not respond
     });
   }
 
@@ -109,8 +125,18 @@ class BrokerEventIQ extends BrokerEventIngestor {
     // https://xmpp.org/extensions/xep-0030.html
 
     this.__respondTo(stanza, response => {
-      // TODO
-      console.error("==> event : iq : got disco info query", element);
+      // Append query response
+      const responseQuery = response.c("query", { xmlns: NS_DISCO_INFO });
+
+      responseQuery.c("identity", {
+        category: DISCO_CATEGORY,
+        type: DISCO_TYPE,
+        name: DISCO_NAME
+      });
+
+      DISCO_FEATURES.forEach(featureNamespace => {
+        responseQuery.c("feature", { var: featureNamespace });
+      });
     });
   }
 
@@ -119,16 +145,12 @@ class BrokerEventIQ extends BrokerEventIngestor {
     // https://xmpp.org/extensions/xep-0202.html
 
     this.__respondTo(stanza, response => {
-      // TODO
-      console.error("==> event : iq : got user time query", element);
-
       // Append time response
-      // TODO
-      // const responseTime = response.c("time", { xmlns: NS_TIME });
+      const responseTime = response.c("time", { xmlns: NS_TIME });
 
       // TODO: add dynamic data
-      // responseTime.c("tzo", {}, "-06:00");
-      // responseTime.c("utc", {}, "2006-12-19T17:58:35Z");
+      responseTime.c("tzo", {}, "-06:00");
+      responseTime.c("utc", {}, "2006-12-19T17:58:35Z");
     });
   }
 
