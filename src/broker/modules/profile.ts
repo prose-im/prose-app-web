@@ -32,7 +32,9 @@ class BrokerModuleProfile extends BrokerModule {
     logger.info(`Will load vCard profile for: '${jid}'`);
 
     return this._client.request(
-      $iq({ type: IQType.Get, id: xmppID() }).c("vcard", { xmlns: NS_VCARD4 })
+      $iq({ to: jid, type: IQType.Get, id: xmppID() }).c("vcard", {
+        xmlns: NS_VCARD4
+      })
     );
   }
 }
