@@ -10,6 +10,7 @@
 
 // NPM
 import { $msg, $iq } from "strophe.js";
+import xmppID from "@xmpp/id";
 import { JID } from "@xmpp/jid";
 
 // PROJECT: BROKER
@@ -45,31 +46,33 @@ const RETRACT_MESSAGE_BODY =
  * ************************************************************************* */
 
 class BrokerModuleMessage extends BrokerModule {
-  sendMessage(to: JID, body: string): void {
+  sendMessage(to: JID, body: string, id?: MessageID): void {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#message
     this.__client.emit(
-      $msg({ to: to.toString(), type: MessageType.Chat }).c("body").t(body)
+      $msg({ to: to.toString(), type: MessageType.Chat, id: id || xmppID() })
+        .c("body")
+        .t(body)
     );
   }
 
   updateMessage(
     to: JID,
     body: string,
-    messageIds: { original: MessageID; replacement: MessageID }
+    ids: { original: MessageID; replacement?: MessageID }
   ): void {
     // XEP-0308: Last Message Correction
     // https://xmpp.org/extensions/xep-0308.html
     this.__client.emit(
-      $msg({ id: messageIds.replacement, to: to.toString() })
+      $msg({ id: ids.replacement || xmppID(), to: to.toString() })
         .c("body")
         .t(body)
         .up()
-        .c("replace", { xmlns: NS_MESSAGE_CORRECT, id: messageIds.original })
+        .c("replace", { xmlns: NS_MESSAGE_CORRECT, id: ids.original })
     );
   }
 
-  retractMessage(messageId: MessageID, to: JID): void {
+  retractMessage(id: MessageID, to: JID): void {
     // XEP-0424: Message Retraction
     // https://xmpp.org/extensions/xep-0424.html
     this.__client.emit(
@@ -77,7 +80,7 @@ class BrokerModuleMessage extends BrokerModule {
         .c("body")
         .t(RETRACT_MESSAGE_BODY)
         .up()
-        .c("apply-to", { xmlns: NS_FASTEN, id: messageId })
+        .c("apply-to", { xmlns: NS_FASTEN, id: id })
         .c("retract", { xmlns: NS_MESSAGE_RETRACT })
         .up()
         .up()
