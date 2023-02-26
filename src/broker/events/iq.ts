@@ -8,9 +8,18 @@
  * IMPORTS
  * ************************************************************************* */
 
+// NPM
+import { Strophe } from "strophe.js";
+
+// PACKAGE
+import * as projectPackage from "/package.json";
+
 // PROJECT: BROKER
 import BrokerEventIngestor from "@/broker/events/ingestor";
+import { IQType } from "@/broker/stanzas/iq";
 import {
+  NS_CLIENT,
+  NS_STANZAS,
   NS_VERSION,
   NS_LAST,
   NS_ROSTER,
@@ -20,13 +29,24 @@ import {
 } from "@/broker/stanzas/xmlns";
 
 /**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const VERSION_NAME = "Prose";
+const VERSION_SYSTEM = "Web";
+const VERSION_REVISION_FALLBACK = "0.0.0";
+
+const ERROR_FEATURE_NOT_IMPLEMENTED_TEXT =
+  "The feature requested is not implemented by the recipient or server and " +
+  "therefore cannot be processed.";
+
+/**************************************************************************
  * CLASS
  * ************************************************************************* */
 
 class BrokerEventIQ extends BrokerEventIngestor {
-  // TODO: ANY IQ should be replied-to, w/ an error as a fallback
-
   protected _handlers = {
+    assert: this.__assert,
     [NS_VERSION]: this.__version,
     [NS_LAST]: this.__last,
     [NS_ROSTER]: this.__roster,
@@ -36,59 +56,130 @@ class BrokerEventIQ extends BrokerEventIngestor {
     other: this.__other
   };
 
+  private __assert(stanza: Element): boolean {
+    // Do not handle non-request IQs
+    const kind = stanza.getAttribute("type");
+
+    if (kind !== IQType.Get && kind !== IQType.Set) {
+      return false;
+    }
+
+    return true;
+  }
+
   private __version(stanza: Element, element: Element): void {
     // XEP-0092: Software Version
     // https://xmpp.org/extensions/xep-0092.html
 
-    // TODO
-    console.error("==> event : iq : got software version query", element);
+    this.__respondTo(stanza, response => {
+      // Read application version
+      const appVersion = projectPackage.version || VERSION_REVISION_FALLBACK;
+
+      // Append query response
+      const responseQuery = response.c("query", { xmlns: NS_VERSION });
+
+      responseQuery.c("name", {}, VERSION_NAME);
+      responseQuery.c("version", {}, appVersion);
+      responseQuery.c("os", {}, VERSION_SYSTEM);
+    });
   }
 
   private __last(stanza: Element, element: Element): void {
     // XEP-0012: Last Activity
     // https://xmpp.org/extensions/xep-0012.html
 
-    // TODO
-    console.error("==> event : iq : got last activity query", element);
+    this.__respondTo(stanza, response => {
+      // TODO
+      console.error("==> event : iq : got last activity query", element);
+    });
   }
 
   private __roster(stanza: Element, element: Element): void {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
 
-    // TODO
-    console.error("==> event : iq : got roster push", element);
+    this.__respondTo(stanza, response => {
+      // TODO
+      console.error("==> event : iq : got roster push", element);
+    });
   }
 
   private __discoInfo(stanza: Element, element: Element): void {
     // XEP-0030: Service Discovery
     // https://xmpp.org/extensions/xep-0030.html
 
-    // TODO
-    console.error("==> event : iq : got disco info query", element);
+    this.__respondTo(stanza, response => {
+      // TODO
+      console.error("==> event : iq : got disco info query", element);
+    });
   }
 
   private __time(stanza: Element, element: Element): void {
     // XEP-0202: Entity Time
     // https://xmpp.org/extensions/xep-0202.html
 
-    // TODO
-    console.error("==> event : iq : got user time query", element);
+    this.__respondTo(stanza, response => {
+      // TODO
+      console.error("==> event : iq : got user time query", element);
+
+      // Append time response
+      // TODO
+      // const responseTime = response.c("time", { xmlns: NS_TIME });
+
+      // TODO: add dynamic data
+      // responseTime.c("tzo", {}, "-06:00");
+      // responseTime.c("utc", {}, "2006-12-19T17:58:35Z");
+    });
   }
 
   private __ping(stanza: Element, element: Element): void {
     // XEP-0199: XMPP Ping
     // https://xmpp.org/extensions/xep-0199.html
 
-    // TODO
-    console.error("==> event : iq : got ping query", element);
+    this.__respondTo(stanza);
   }
 
   private __other(stanza: Element): void {
-    // TODO: raise other error
+    this.__respondTo(
+      stanza,
 
-    // TODO
-    console.error("==> event : iq : got other", stanza);
+      response => {
+        // Append original stanza content
+        Strophe.forEachChild(stanza, null, (element: Element) => {
+          response.cnode(Strophe.copyElement(element));
+        });
+
+        // Append error content
+        response
+          .c("error", { xmlns: NS_CLIENT, code: "501", type: "cancel" })
+          .c("feature-not-implemented", { xmlns: NS_STANZAS })
+          .up()
+          .c("text", { xmlns: NS_STANZAS }, ERROR_FEATURE_NOT_IMPLEMENTED_TEXT);
+      },
+
+      IQType.Error
+    );
+  }
+
+  private __respondTo(
+    stanza: Element,
+    respondFn?: (response: Strophe.Builder) => void,
+    kind: IQType = IQType.Result
+  ): void {
+    // Craft response IQ
+    const response = $iq({
+      type: kind,
+      id: stanza.getAttribute("id") || "",
+      to: stanza.getAttribute("from") || ""
+    });
+
+    // Pass builder to respond function? (if any)
+    if (respondFn !== undefined) {
+      respondFn(response);
+    }
+
+    // Emit response stanza
+    this._client.emit(response);
   }
 }
 

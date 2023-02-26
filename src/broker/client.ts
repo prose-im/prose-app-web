@@ -44,7 +44,7 @@ class BrokerClient {
 
   constructor() {
     // Initialize event ingestors
-    this.__ingestors = new BrokerEvent();
+    this.__ingestors = new BrokerEvent(this);
   }
 
   async authenticate(jid: JID, password: string): Promise<void> {

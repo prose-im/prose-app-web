@@ -9,6 +9,7 @@
  * ************************************************************************* */
 
 // PROJECT: BROKER
+import BrokerClient from "@/broker/client";
 import BrokerEventPresence from "@/broker/events/presence";
 import BrokerEventMessage from "@/broker/events/message";
 import BrokerEventIQ from "@/broker/events/iq";
@@ -22,10 +23,10 @@ class BrokerEvent {
   private readonly __message: BrokerEventMessage;
   private readonly __iq: BrokerEventIQ;
 
-  constructor() {
-    this.__presence = new BrokerEventPresence();
-    this.__message = new BrokerEventMessage();
-    this.__iq = new BrokerEventIQ();
+  constructor(client: BrokerClient) {
+    this.__presence = new BrokerEventPresence(client);
+    this.__message = new BrokerEventMessage(client);
+    this.__iq = new BrokerEventIQ(client);
   }
 
   presence(stanza: Element): void {

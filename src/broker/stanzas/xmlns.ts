@@ -8,8 +8,10 @@
  * CONSTANTS
  * ************************************************************************* */
 
+export const NS_STANZAS = "urn:ietf:params:xml:ns:xmpp-stanzas";
 export const NS_VCARD4 = "urn:ietf:params:xml:ns:vcard-4.0";
 
+export const NS_CLIENT = "jabber:client";
 export const NS_ROSTER = "jabber:iq:roster";
 export const NS_VERSION = "jabber:iq:version";
 export const NS_LAST = "jabber:iq:last";
