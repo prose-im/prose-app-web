@@ -22,7 +22,7 @@ abstract class BrokerEventIngestor {
   protected readonly _client: BrokerClient;
 
   protected abstract _handlers: {
-    [namespace: string]: (stanza: Element, element?: Element) => void;
+    [namespace: string]: (stanza: Element, element?: Element) => void | boolean;
   };
 
   constructor(client: BrokerClient) {
