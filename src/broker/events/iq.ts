@@ -10,6 +10,7 @@
 
 // NPM
 import { Strophe } from "strophe.js";
+import xmppTime from "@xmpp/time";
 
 // PACKAGE
 import * as projectPackage from "/package.json";
@@ -145,12 +146,13 @@ class BrokerEventIQ extends BrokerEventIngestor {
     // https://xmpp.org/extensions/xep-0202.html
 
     this.__respondTo(stanza, response => {
+      const nowDate = new Date();
+
       // Append time response
       const responseTime = response.c("time", { xmlns: NS_TIME });
 
-      // TODO: add dynamic data
-      responseTime.c("tzo", {}, "-06:00");
-      responseTime.c("utc", {}, "2006-12-19T17:58:35Z");
+      responseTime.c("tzo", {}, xmppTime.offset(nowDate));
+      responseTime.c("utc", {}, xmppTime.datetime(nowDate));
     });
   }
 
