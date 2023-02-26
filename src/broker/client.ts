@@ -191,7 +191,7 @@ class BrokerClient {
 
         // Trigger disconnected hooks
         this.__unbindReceivers();
-        this.__cancelAllPendingRequests();
+        this.__cancelPendingRequests();
         this.__raiseConnectLifecycle(new Error("Disconnected from server"));
 
         break;
@@ -271,13 +271,8 @@ class BrokerClient {
           const stanzaID = stanza.getAttribute("id") || "";
 
           // Pass to pending request handler (if any)
-          const hadPendingRequest = this.__handlePendingRequest(
-            stanzaID,
-            stanza
-          );
-
-          // Pass to specific ingestor?
-          if (hadPendingRequest !== true) {
+          if (this.__handlePendingRequest(stanzaID, stanza) !== true) {
+            // Pass to specific ingestor instead
             this.__ingestors[handlerName](stanza);
           }
 
@@ -348,13 +343,15 @@ class BrokerClient {
         request.failure(new Error("Cancelled"));
       }
 
+      // A pending request was handled
       return true;
     }
 
+    // No pending request found
     return false;
   }
 
-  private __cancelAllPendingRequests(): void {
+  private __cancelPendingRequests(): void {
     // Cancel all pending requests
     for (const id in this.__pendingRequests) {
       this.__handlePendingRequest(id);
