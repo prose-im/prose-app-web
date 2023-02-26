@@ -32,7 +32,9 @@
   },
   "dependencies": {
     "@prose-im/prose-core-views": "0.18.2",
+    "@xmpp/id": "0.13.x",
     "@xmpp/jid": "0.13.x",
+    "@xmpp/time": "0.13.x",
     "lodash.camelcase": "4.3.x",
     "lodash.upperfirst": "4.3.x",
     "lodash.merge": "4.6.x",
@@ -50,7 +52,9 @@
   "devDependencies": {
     "@types/node": "18.11.x",
     "@types/strophe.js": "1.4.x",
+    "@types/xmpp__id": "0.13.x",
     "@types/xmpp__jid": "1.3.x",
+    "@types/xmpp__time": "0.13.x",
     "@types/lodash.camelcase": "4.3.x",
     "@types/lodash.upperfirst": "4.3.x",
     "@types/lodash.merge": "4.6.x",
