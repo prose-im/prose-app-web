@@ -31,7 +31,7 @@ class BrokerEventPresence extends BrokerEventIngestor {
     // TODO
   }
 
-  private __caps(stanza: Element, element: Element): void {
+  private __caps(stanza: Element, element?: Element): void {
     // XEP-0115: Entity Capabilities
     // https://xmpp.org/extensions/xep-0115.html
     // TODO

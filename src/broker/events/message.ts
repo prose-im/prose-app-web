@@ -41,31 +41,31 @@ class BrokerEventMessage extends BrokerEventIngestor {
     // TODO
   }
 
-  private __chatState(stanza: Element, element: Element): void {
+  private __chatState(stanza: Element, element?: Element): void {
     // XEP-0085: Chat State Notifications
     // https://xmpp.org/extensions/xep-0085.html
     // TODO
   }
 
-  private __reactions(stanza: Element, element: Element): void {
+  private __reactions(stanza: Element, element?: Element): void {
     // XEP-0444: Message Reactions
     // https://xmpp.org/extensions/xep-0444.html
     // TODO
   }
 
-  private __fasten(stanza: Element, element: Element): void {
+  private __fasten(stanza: Element, element?: Element): void {
     // XEP-0422: Message Fastening
     // https://xmpp.org/extensions/xep-0422.html
     // TODO
   }
 
-  private __carbons(stanza: Element, element: Element): void {
+  private __carbons(stanza: Element, element?: Element): void {
     // XEP-0280: Message Carbons
     // https://xmpp.org/extensions/xep-0280.html
     // TODO
   }
 
-  private __mam(stanza: Element, element: Element): void {
+  private __mam(stanza: Element, element?: Element): void {
     // XEP-0313: Message Archive Management
     // https://xmpp.org/extensions/xep-0313.html
     // TODO

@@ -51,7 +51,7 @@ abstract class BrokerEventIngestor {
     }
 
     // Ingest each child
-    Strophe.forEachChild(stanza, null, (element: Element) => {
+    Strophe.forEachChild(stanza, "", (element: Element) => {
       const namespace = element.getAttribute("xmlns") || null;
 
       if (namespace !== null) {
