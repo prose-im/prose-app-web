@@ -51,14 +51,16 @@ class BrokerModuleMAM extends BrokerModule {
       .c("field", { var: "FORM_TYPE", type: "hidden" })
       .c("value", {}, NS_MAM);
 
-    stanzaQueryData.c("field", { var: "with" }).c("value", {}, jid);
+    stanzaQueryData.c("field", { var: "with" }).c("value", {}, jid.toString());
 
     if (beforeId) {
       stanzaQueryData.c("field", { var: "before-id" }).c("value", {}, beforeId);
     }
 
     // Append RSM (Result Set Management)
-    stanzaQuery.c("set", { xmlns: NS_RSM }).c("max", {}, HISTORY_PAGE_SIZE);
+    stanzaQuery
+      .c("set", { xmlns: NS_RSM })
+      .c("max", {}, HISTORY_PAGE_SIZE.toString());
 
     logger.info(
       `Will load messages from history from: '${jid}' before #${

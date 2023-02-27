@@ -30,7 +30,7 @@ const STORE_PERSIST_REVISION = "v1";
 class Store {
   private readonly __store: Pinia;
 
-  $account?: StoreTableAccount;
+  $account?: typeof StoreTableAccount;
 
   constructor() {
     this.__store = createPinia();

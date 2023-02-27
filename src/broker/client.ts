@@ -36,7 +36,7 @@ interface PendingRequest {
   id: string;
   success: (stanza: Element) => void;
   failure: (error: Error) => void;
-  timeout: number;
+  timeout: ReturnType<typeof setTimeout>;
 }
 
 /**************************************************************************
@@ -130,7 +130,7 @@ class BrokerClient {
   async request(
     builder: Strophe.Builder,
     timeout: number = REQUEST_TIMEOUT_DEFAULT
-  ): Promise<Element | void> {
+  ): Promise<Element> {
     return await new Promise((resolve, reject) => {
       const stanzaElement = builder.tree(),
         stanzaType = stanzaElement.getAttribute("type") || null,
@@ -283,7 +283,7 @@ class BrokerClient {
 
         // Append handler
         this.__boundReceivers.push(
-          this.__connection.addHandler(handlerFn, null, handlerName)
+          this.__connection.addHandler(handlerFn, "", handlerName)
         );
       });
     }
