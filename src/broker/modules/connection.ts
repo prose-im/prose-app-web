@@ -9,6 +9,7 @@
  * ************************************************************************* */
 
 // NPM
+// @ts-expect-error ignore @types/strophe.js issue w/ declarations
 import { $pres } from "strophe.js";
 
 // PROJECT: BROKER

@@ -9,6 +9,7 @@
  * ************************************************************************* */
 
 // NPM
+// @ts-expect-error ignore @types/strophe.js issue w/ declarations
 import { $iq } from "strophe.js";
 import xmppID from "@xmpp/id";
 import { JID } from "@xmpp/jid";
