@@ -248,7 +248,7 @@ export default {
       this.isAvatarPopoverVisible = false;
     },
 
-    async onAvatarPopoverSignOutClick(): void {
+    async onAvatarPopoverSignOutClick(): Promise<void> {
       await Store.$account.logout();
 
       // Show confirm alert

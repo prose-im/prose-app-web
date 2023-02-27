@@ -55,7 +55,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    async onFormSubmit(form: object): void {
+    async onFormSubmit(form: object): Promise<void> {
       if (this.isFormLoading !== true) {
         // Mark as loading
         this.isFormLoading = true;
