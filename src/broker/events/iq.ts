@@ -13,7 +13,7 @@ import { Strophe } from "strophe.js";
 import xmppTime from "@xmpp/time";
 
 // PACKAGE
-import * as projectPackage from "/package.json";
+import * as projectPackage from "@/../package.json";
 
 // PROJECT: BROKER
 import BrokerEventIngestor from "@/broker/events/ingestor";

@@ -40,7 +40,7 @@
 
 <script lang="ts">
 // PACKAGE
-import * as projectPackage from "/package.json";
+import * as projectPackage from "@/../package.json";
 
 export default {
   name: "StartServerIdentity",
