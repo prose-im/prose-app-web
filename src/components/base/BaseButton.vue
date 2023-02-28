@@ -67,7 +67,7 @@ div(
 
 <script lang="ts">
 // CONSTANTS
-const AVAILABLE_SIZES = {
+const AVAILABLE_SIZES: { [size: string]: object } = {
   medium: {
     icon: "13px"
   },
@@ -116,7 +116,9 @@ export default {
       default: "large",
 
       validator(x: string) {
-        return [].concat(Object.keys(AVAILABLE_SIZES), ["custom"]).includes(x);
+        const sizes = Object.keys(AVAILABLE_SIZES);
+
+        return [].concat(sizes, ["custom"]).includes(x);
       }
     },
 
