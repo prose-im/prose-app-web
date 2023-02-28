@@ -24,6 +24,13 @@ import logger from "@/utilities/logger";
 import CONFIG from "@/commons/config";
 
 /**************************************************************************
+ * TYPES
+ * ************************************************************************* */
+
+// Notice: Strophe types do not define the 'Strophe.Handler' type
+type StropheHandler = object;
+
+/**************************************************************************
  * INTERFACES
  * ************************************************************************* */
 
@@ -39,6 +46,11 @@ interface PendingRequest {
   timeout: ReturnType<typeof setTimeout>;
 }
 
+// Notice: Strophe types do not define the 'connection' property
+interface ConnectionWithConnected extends Strophe.Connection {
+  connected: boolean;
+}
+
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
@@ -52,9 +64,9 @@ const REQUEST_TIMEOUT_DEFAULT = 10000; // 10 seconds
 class BrokerClient {
   private readonly __ingestors: BrokerEvent;
 
-  private __connection: Strophe.Connection;
+  private __connection?: Strophe.Connection;
   private __connectLifecycle?: ConnectLifecycle;
-  private __boundReceivers: Array<Strophe.Handler> = [];
+  private __boundReceivers: Array<StropheHandler> = [];
   private __pendingRequests: { [id: string]: PendingRequest } = {};
 
   constructor() {
@@ -108,7 +120,7 @@ class BrokerClient {
       };
 
       // Connect to server
-      this.__connection.connect(
+      this.__connection?.connect(
         jid.toString(),
         password,
         this.__onConnect.bind(this)
@@ -120,7 +132,10 @@ class BrokerClient {
 
   emit(builder: Strophe.Builder) {
     // Emit stanza on the wire? (if connected)
-    if (this.__connection && this.__connection.connected === true) {
+    if (
+      this.__connection &&
+      (this.__connection as ConnectionWithConnected).connected === true
+    ) {
       this.__connection.send(builder.tree());
     } else {
       throw new Error("Client is disconnected");
@@ -273,7 +288,7 @@ class BrokerClient {
           // Pass to pending request handler (if any)
           if (this.__handlePendingRequest(stanzaID, stanza) !== true) {
             // Pass to specific ingestor instead
-            this.__ingestors[handlerName](stanza);
+            this.__ingestors[handlerName as keyof BrokerEvent](stanza);
           }
 
           // Important: keep handler alive (otherwise it will get torn out \
@@ -283,7 +298,11 @@ class BrokerClient {
 
         // Append handler
         this.__boundReceivers.push(
-          this.__connection.addHandler(handlerFn, "", handlerName)
+          this.__connection?.addHandler(
+            handlerFn,
+            "",
+            handlerName
+          ) as StropheHandler
         );
       });
     }
@@ -294,7 +313,7 @@ class BrokerClient {
     if (this.__boundReceivers.length === 0) {
       // Unbind all receivers
       while (this.__boundReceivers.length > 0) {
-        this.__connection.deleteHandler(this.__boundReceivers.pop());
+        this.__connection?.deleteHandler(this.__boundReceivers.pop());
       }
     }
   }
