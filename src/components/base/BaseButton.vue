@@ -118,7 +118,9 @@ export default {
       validator(x: string) {
         const sizes = Object.keys(AVAILABLE_SIZES);
 
-        return [].concat(sizes, ["custom"]).includes(x);
+        sizes.push("custom");
+
+        return sizes.includes(x);
       }
     },
 
