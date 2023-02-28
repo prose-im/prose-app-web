@@ -28,18 +28,18 @@ class BootstrapComponents {
   private __registerGlobally(app: App, componentFiles: object): void {
     Object.entries(componentFiles).forEach(
       ([componentPath, componentModule]) => {
-        // Get PascalCase name of component
-        const componentName = upperFirst(
-          camelCase(
-            componentPath
-              .split("/")
-              .pop()
-              .replace(/^(.+)\.vue$/, "$1")
-          )
-        );
+        // Acquire file name from component path
+        const componentFileName = componentPath.split("/").pop();
 
-        // Register component globally
-        app.component(componentName, componentModule.default);
+        if (componentFileName) {
+          // Get PascalCase name of component
+          const componentName = upperFirst(
+            camelCase(componentFileName.replace(/^(.+)\.vue$/, "$1"))
+          );
+
+          // Register component globally
+          app.component(componentName, componentModule.default);
+        }
       }
     );
   }
