@@ -10,11 +10,11 @@
 
 // NPM
 import { App } from "vue";
-import { Pinia, createPinia } from "pinia";
+import { Pinia, Store as PiniaStore, createPinia } from "pinia";
 import { createPersistedState } from "pinia-plugin-persistedstate";
 
 // PROJECT: STORE
-import StoreTableAccount from "@/store/tables/account";
+import { Account, $account } from "@/store/tables/account";
 
 /**************************************************************************
  * CONSTANTS
@@ -30,7 +30,8 @@ const STORE_PERSIST_REVISION = "v1";
 class Store {
   private readonly __store: Pinia;
 
-  $account?: typeof StoreTableAccount;
+  // @ts-expect-error $account will be definitely initialized
+  $account: PiniaStore<"account", Account, object, object>;
 
   constructor() {
     this.__store = createPinia();
@@ -61,7 +62,7 @@ class Store {
   }
 
   private __loadTables(): void {
-    this.$account = StoreTableAccount(this.__store);
+    this.$account = $account(this.__store);
   }
 }
 

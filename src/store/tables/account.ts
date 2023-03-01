@@ -10,19 +10,30 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { jid, JID } from "@xmpp/jid";
+import { jid } from "@xmpp/jid";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
 
 /**************************************************************************
+ * INTERFACES
+ * ************************************************************************* */
+
+export interface Account {
+  credentials: {
+    jid: string;
+    password: string;
+  };
+}
+
+/**************************************************************************
  * TABLE
  * ************************************************************************* */
 
-const StoreTableAccount = defineStore("account", {
+export const $account = defineStore("account", {
   persist: true,
 
-  state: () => {
+  state: (): Account => {
     return {
       credentials: {
         jid: "",
@@ -60,9 +71,3 @@ const StoreTableAccount = defineStore("account", {
     }
   }
 });
-
-/**************************************************************************
- * EXPORTS
- * ************************************************************************* */
-
-export default StoreTableAccount;
