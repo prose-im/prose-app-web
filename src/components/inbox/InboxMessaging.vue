@@ -61,6 +61,58 @@ import styleElementsFonts from "@/assets/stylesheets/elements/_elements.fonts.sc
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 
+// ENUMERATIONS
+export enum EventMessageHistorySeekDirection {
+  // History will load in backwards direction.
+  Backwards = "backwards",
+  // History will load in forwards direction.
+  Forwards = "forwards"
+}
+
+export enum EventMessageAnyOriginType {
+  // Origin is button.
+  Button = "button",
+  // Origin is context menu.
+  ContextMenu = "context-menu"
+}
+
+// INTERFACES
+interface EventMessageAnyOrigin {
+  type: EventMessageAnyOriginType;
+
+  anchor: {
+    x: number;
+    y: number;
+  };
+
+  parent: void | {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+}
+
+interface EventMessageActionsView {
+  id: string;
+  origin: EventMessageAnyOrigin;
+}
+
+interface EventMessageReactionsView {
+  id: string;
+  origin: EventMessageAnyOrigin;
+}
+
+interface EventMessageReactionsReact {
+  id: string;
+  reaction: string;
+  active: boolean;
+}
+
+interface EventMessageHistorySeek {
+  direction: EventMessageHistorySeekDirection;
+}
+
 // CONSTANTS
 const FRAME_STYLE = {
   fontFamily: "Prose Outfit",
@@ -296,7 +348,7 @@ export default {
     triggerContainerClick(): void {
       // Trigger ghost click event on container (so that eg. the click away \
       //   directive handles the click event accordingly)
-      this.$refs.container.click();
+      (this.$refs.container as HTMLElement).click();
     },
 
     // --> EVENT LISTENERS <--
@@ -411,7 +463,7 @@ export default {
       // TODO: react to message
     },
 
-    onEventMessageActionsView(event: object): void {
+    onEventMessageActionsView(event: EventMessageActionsView): void {
       this.$log.debug("Got message actions view", event);
 
       // Show popover with actions? (if any origin set)
@@ -482,7 +534,7 @@ export default {
       }
     },
 
-    onEventMessageReactionsView(event: object): void {
+    onEventMessageReactionsView(event: EventMessageReactionsView): void {
       this.$log.debug("Got message reactions view", event);
 
       // Show popover with actions? (if any origin set)
@@ -516,13 +568,13 @@ export default {
       }
     },
 
-    onEventMessageReactionsReact(event: object): void {
+    onEventMessageReactionsReact(event: EventMessageReactionsReact): void {
       this.$log.debug("Got message reactions react", event);
 
       // TODO: add/retract reaction to message
     },
 
-    onEventMessageHistorySeek(event: object): void {
+    onEventMessageHistorySeek(event: EventMessageHistorySeek): void {
       this.$log.debug("Got message history seek", event);
 
       // TODO: load messages from history
