@@ -75,7 +75,9 @@ export default {
           // Show error alert
           BaseAlert.error(
             "Cannot authenticate",
-            error ? error.message || error.toString() : undefined
+            error
+              ? (error as Error).message || (error as Error).toString()
+              : undefined
           );
 
           // Mark as not loading anymore

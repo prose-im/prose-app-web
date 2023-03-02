@@ -44,7 +44,31 @@ transition(
 
 <script lang="ts">
 // NPM
-import mitt from "mitt";
+import mitt, { Handler } from "mitt";
+
+// ENUMERATIONS
+enum Level {
+  // Error alert level.
+  Error = "error",
+  // Warning alert level.
+  Warning = "warning",
+  // Info alert level.
+  Info = "info",
+  // Success alert level.
+  Success = "success"
+}
+
+// INTERFACES
+interface State {
+  level: Level;
+  title: string;
+  description: string;
+
+  timers: {
+    show: null | ReturnType<typeof setTimeout>;
+    hide: null | ReturnType<typeof setTimeout>;
+  };
+}
 
 // CONSTANTS
 const ALERT_SHOW_AFTER_DELAY = 250; // 250 milliseconds
@@ -62,7 +86,7 @@ export default {
     return {
       // --> STATE <--
 
-      level: "error",
+      level: Level.Error,
       title: "",
       description: "",
 
@@ -70,12 +94,12 @@ export default {
         show: null,
         hide: null
       }
-    };
+    } as State;
   },
 
   error(title: string, description?: string) {
     EventBus.emit("show", {
-      level: "error",
+      level: Level.Error,
       title,
       description
     });
@@ -83,7 +107,7 @@ export default {
 
   warning(title: string, description?: string) {
     EventBus.emit("show", {
-      level: "warning",
+      level: Level.Warning,
       title,
       description
     });
@@ -91,7 +115,7 @@ export default {
 
   info(title: string, description?: string) {
     EventBus.emit("show", {
-      level: "info",
+      level: Level.Info,
       title,
       description
     });
@@ -99,7 +123,7 @@ export default {
 
   success(title: string, description?: string) {
     EventBus.emit("show", {
-      level: "success",
+      level: Level.Success,
       title,
       description
     });
@@ -107,16 +131,24 @@ export default {
 
   created() {
     // Bind show event
-    EventBus.on("show", this.show);
+    EventBus.on("show", this.show as Handler);
   },
 
   beforeUnmount() {
     // Unbind show event
-    EventBus.off("show", this.show);
+    EventBus.off("show", this.show as Handler);
   },
 
   methods: {
-    show({ level, title, description = null }): void {
+    show({
+      level,
+      title,
+      description = ""
+    }: {
+      level: Level;
+      title: string;
+      description?: string;
+    }): void {
       if (!level || !title) {
         throw new Error("No alert level or title provided");
       }
@@ -147,7 +179,6 @@ export default {
         this.unscheduleHide();
 
         // Hide alert
-        this.level = "";
         this.title = "";
         this.description = "";
       }
