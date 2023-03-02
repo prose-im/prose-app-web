@@ -30,6 +30,7 @@ const STORE_PERSIST_REVISION = "v1";
 class Store {
   private readonly __store: Pinia;
 
+  // TODO: find a way to type-check all getters and actions, instead of 'any'
   // @ts-expect-error $account will be definitely initialized
   $account: PiniaStore<"account", Account, any, any>;
 
