@@ -24,8 +24,14 @@ emoji-picker(
 
 <script lang="ts">
 // NPM
+// @ts-expect-error EmojiPicker is a Vue component w/o any declaration
 import EmojiPicker from "vue3-emoji-picker";
 import "vue3-emoji-picker/css";
+
+// INTERFACES
+interface Emoji {
+  i: string;
+}
 
 export default {
   name: "ToolEmojiPicker",
@@ -37,7 +43,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onEmojiSelect(emoji: object): void {
+    onEmojiSelect(emoji: Emoji): void {
       const emojiGlyph = emoji.i;
 
       this.$emit("pick", emojiGlyph);
