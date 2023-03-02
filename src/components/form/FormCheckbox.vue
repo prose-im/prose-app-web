@@ -69,8 +69,13 @@ export default {
     // --> EVENT LISTENERS <--
 
     onInputChange(event: Event): void {
-      // Update model value
-      this.$emit("update:modelValue", event.target.checked);
+      // Update model value?
+      if (event.target) {
+        this.$emit(
+          "update:modelValue",
+          (event.target as HTMLInputElement).checked
+        );
+      }
     },
 
     onLabelClick(): void {

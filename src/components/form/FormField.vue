@@ -167,7 +167,7 @@ export default {
 
     refreshAutogrow(): void {
       if (this.autogrow === true) {
-        const field = this.$refs.field || null;
+        const field = (this.$refs.field as HTMLElement) || null;
 
         if (field !== null) {
           // Reset height to default (so that later measured scroll height \
@@ -196,7 +196,7 @@ export default {
     },
 
     onFieldInput(): void {
-      let inputValue = this.$refs.field.value || "";
+      let inputValue = (this.$refs.field as HTMLInputElement).value || "";
 
       // Convert raw input value to number?
       if (inputValue && this.type === "number") {

@@ -61,12 +61,15 @@ export default {
     // --> EVENT LISTENERS <--
 
     onMainScroll(event: Event): void {
-      const forceFloating =
-        event.target.scrollTop >= MAIN_SCROLLED_THRESHOLD_VERTICAL;
+      if (event.target) {
+        const forceFloating =
+          (event.target as HTMLElement).scrollTop >=
+          MAIN_SCROLLED_THRESHOLD_VERTICAL;
 
-      // Update floating marker? (only if changed)
-      if (forceFloating !== this.isHeaderFloating) {
-        this.isHeaderFloating = forceFloating;
+        // Update floating marker? (only if changed)
+        if (forceFloating !== this.isHeaderFloating) {
+          this.isHeaderFloating = forceFloating;
+        }
       }
     }
   }
