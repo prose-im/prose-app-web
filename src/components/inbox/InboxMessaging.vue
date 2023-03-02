@@ -66,6 +66,20 @@ import {
 } from "@/components/base/BasePopoverList.vue";
 
 // ENUMERATIONS
+enum MessagingContextTheme {
+  // Light theme.
+  Light = "light",
+  // Dark theme.
+  Dark = "dark"
+}
+
+enum MessagingContextPlatform {
+  // Web platform.
+  Web = "web",
+  // macOS platform.
+  macOS = "macos"
+}
+
 enum EventMessageHistorySeekDirection {
   // History will load in backwards direction.
   Backwards = "backwards",
@@ -99,15 +113,44 @@ interface StatePopover {
   interaction: null | StatePopoverInteraction;
 }
 
-// TODO: move all that follows to @prose/prose-core-views *.d.ts files
-// TODO: specify more thoroughly all types
-interface MessagingMessageData {
+interface MessagingContext {
+  getLanguage: () => string;
+  getStylePlatform: () => MessagingContextPlatform;
+  getStyleTheme: () => MessagingContextTheme;
+  getAccountJID: () => string;
+  setLanguage: (code: string) => void;
+  setStylePlatform: (platform: MessagingContextPlatform) => void;
+  setStyleTheme: (theme: MessagingContextTheme) => void;
+  setAccountJID: (jid: string) => void;
+}
+
+interface MessagingStore {
+  exists: (messageId: string) => boolean;
+  resolve: (messageId: string) => null | MessagingStoreMessageData;
+  restore: (...messages: MessagingStoreMessageData[]) => boolean;
+  insert: (...messages: MessagingStoreMessageData[]) => boolean;
+  update: (
+    messageId: string,
+    messageDiff: MessagingStoreMessageData
+  ) => boolean;
+  retract: (messageId: string) => boolean;
+  flush: () => boolean;
+  highlight: (messageId: null | string) => boolean;
+  interact: (messageId: string, action: string, isActive: boolean) => boolean;
+  loader: (type: string, isVisible: null | boolean) => boolean;
+  identify: (
+    jid: string,
+    identity: null | MessagingStoreIdentifyIdentity
+  ) => boolean;
+}
+
+interface MessagingStoreMessageData {
   id?: string;
   type?: string;
   date?: string;
   from?: string;
-  text?: string;
   content?: string;
+  text?: string;
 
   metas?: {
     encrypted?: boolean;
@@ -120,44 +163,20 @@ interface MessagingMessageData {
   }>;
 }
 
-interface MessagingIdentifyIdentity {
+interface MessagingStoreIdentifyIdentity {
   name?: string;
   avatar?: string;
 }
 
+interface MessagingEvent {
+  off: (namespace: string) => boolean;
+  on: (namespace: string, handler: (event: any) => void) => boolean;
+}
+
 interface MessagingRuntime extends Window {
-  MessagingContext: {
-    getLanguage: () => string;
-    getStylePlatform: () => string;
-    getStyleTheme: () => string;
-    getAccountJID: () => string;
-    setLanguage: (code: string) => void;
-    setStylePlatform: (platform: string) => void;
-    setStyleTheme: (theme: string) => void;
-    setAccountJID: (jid: string) => void;
-  };
-
-  MessagingStore: {
-    exists: (messageId: string) => boolean;
-    resolve: (messageId: string) => null | MessagingMessageData;
-    restore: (...messages: MessagingMessageData[]) => boolean;
-    insert: (...messages: MessagingMessageData[]) => boolean;
-    update: (messageId: string, messageDiff: MessagingMessageData) => boolean;
-    retract: (messageId: string) => boolean;
-    flush: () => boolean;
-    highlight: (messageId: null | string) => boolean;
-    interact: (messageId: string, action: string, isActive: boolean) => boolean;
-    loader: (type: string, isVisible: null | boolean) => boolean;
-    identify: (
-      jid: string,
-      identity: null | MessagingIdentifyIdentity
-    ) => boolean;
-  };
-
-  MessagingEvent: {
-    off: (namespace: string) => boolean;
-    on: (namespace: string, handler: (event: any) => void) => boolean;
-  };
+  MessagingContext: MessagingContext;
+  MessagingStore: MessagingStore;
+  MessagingEvent: MessagingEvent;
 }
 
 interface EventMessageAnyOrigin {
@@ -314,8 +333,8 @@ export default {
     setupContext(runtime: MessagingRuntime): void {
       // TODO: from dynamic context
       runtime.MessagingContext.setLanguage("en");
-      runtime.MessagingContext.setStylePlatform("web");
-      runtime.MessagingContext.setStyleTheme("light");
+      runtime.MessagingContext.setStylePlatform(MessagingContextPlatform.Web);
+      runtime.MessagingContext.setStyleTheme(MessagingContextTheme.Light);
       runtime.MessagingContext.setAccountJID("valerian@prose.org");
     },
 
