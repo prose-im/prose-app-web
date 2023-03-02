@@ -74,6 +74,13 @@
 // PROJECT: STORES
 import Store from "@/store";
 
+// INTERFACES
+export interface StateForm {
+  jid: string;
+  password: string;
+  remember: true;
+}
+
 export default {
   name: "StartLoginForm",
 
@@ -94,7 +101,7 @@ export default {
         jid: "",
         password: "",
         remember: true
-      }
+      } as StateForm
     };
   },
 

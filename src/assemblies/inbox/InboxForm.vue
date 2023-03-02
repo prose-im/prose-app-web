@@ -95,6 +95,15 @@ layout-toolbar(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { jid } from "@xmpp/jid";
+
+// PROJECT: COMPONENTS
+import {
+  Item as PopoverItem,
+  ItemType as PopoverItemType
+} from "@/components/base/BasePopoverList.vue";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 
@@ -113,10 +122,10 @@ export default {
   },
 
   computed: {
-    actionFormattingPopoverItems() {
+    actionFormattingPopoverItems(): Array<PopoverItem> {
       return [
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Formatting items...",
           color: "blue"
         }
@@ -153,7 +162,7 @@ export default {
 
       if (message) {
         // TODO: inject dynamic JID (from where?)
-        const to = "valerian@valeriansaliou.name";
+        const to = jid("valerian@valeriansaliou.name");
 
         // Send message
         Broker.$chat.sendMessage(to, message);

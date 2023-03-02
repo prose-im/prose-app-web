@@ -112,6 +112,12 @@ layout-toolbar(
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import {
+  Item as PopoverItem,
+  ItemType as PopoverItemType
+} from "@/components/base/BasePopoverList.vue";
+
 export default {
   name: "InboxTopbar",
 
@@ -124,10 +130,10 @@ export default {
   },
 
   computed: {
-    actionHistoryPopoverItems() {
+    actionHistoryPopoverItems(): Array<PopoverItem> {
       return [
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "History items...",
           color: "blue"
         }

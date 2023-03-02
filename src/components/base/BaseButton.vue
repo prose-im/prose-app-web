@@ -67,7 +67,7 @@ div(
 
 <script lang="ts">
 // CONSTANTS
-const AVAILABLE_SIZES: { [size: string]: object } = {
+const AVAILABLE_SIZES: { [size: string]: { icon: string } } = {
   medium: {
     icon: "13px"
   },

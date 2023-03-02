@@ -78,6 +78,10 @@
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import SidebarContextAccount from "@/components/sidebar/SidebarContextAccount.vue";
+import {
+  Item as PopoverItem,
+  ItemType as PopoverItemType
+} from "@/components/base/BasePopoverList.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -102,10 +106,10 @@ export default {
   },
 
   computed: {
-    avatarPopoverItems() {
+    avatarPopoverItems(): Array<PopoverItem> {
       return [
         {
-          type: "component",
+          type: PopoverItemType.Component,
           target: SidebarContextAccount,
 
           properties: {
@@ -116,79 +120,79 @@ export default {
         },
 
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "🚀 Update mood"
         },
 
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Change availability",
 
           children: [
             {
-              type: "button",
+              type: PopoverItemType.Button,
               label: "Available for chat"
             },
 
             {
-              type: "button",
+              type: PopoverItemType.Button,
               label: "Do not disturb"
             }
           ]
         },
 
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Pause notifications",
 
           children: [
             {
-              type: "button",
+              type: PopoverItemType.Button,
               label: "For 10 minutes"
             },
 
             {
-              type: "button",
+              type: PopoverItemType.Button,
               label: "For 1 hour"
             },
 
             {
-              type: "button",
+              type: PopoverItemType.Button,
               label: "For 3 hours"
             },
 
             {
-              type: "button",
+              type: PopoverItemType.Button,
               label: "For 1 day"
             },
 
             {
-              type: "button",
+              type: PopoverItemType.Button,
               label: "Custom..."
             }
           ]
         },
 
         {
-          type: "divider"
+          type: PopoverItemType.Divider
         },
 
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Edit profile"
         },
 
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Account settings"
         },
 
         {
-          type: "divider"
+          type: PopoverItemType.Divider
         },
 
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Sign me out",
           color: "red",
           emphasis: true,
@@ -197,10 +201,10 @@ export default {
       ];
     },
 
-    actionsPopoverItems() {
+    actionsPopoverItems(): Array<PopoverItem> {
       return [
         {
-          type: "component",
+          type: PopoverItemType.Component,
           target: SidebarContextAccount,
 
           properties: {
@@ -211,24 +215,24 @@ export default {
         },
 
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Switch account",
 
           children: [
             {
-              type: "button",
+              type: PopoverItemType.Button,
               label: "Crisp – crisp.chat"
             },
 
             {
-              type: "button",
+              type: PopoverItemType.Button,
               label: "MakAir – makair.life"
             }
           ]
         },
 
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Connect account"
         }
       ];

@@ -182,7 +182,7 @@ export default {
 
     // --> EVENT LISTENERS <--
 
-    onFieldKeyDown(event: Event): void {
+    onFieldKeyDown(event: KeyboardEvent): void {
       // Submittable field? Handle key presses.
       if (this.submittable === true) {
         // Handle 'Enter' key press? (if not new line)
@@ -196,7 +196,8 @@ export default {
     },
 
     onFieldInput(): void {
-      let inputValue = (this.$refs.field as HTMLInputElement).value || "";
+      let inputValue: string | number =
+        (this.$refs.field as HTMLInputElement).value || "";
 
       // Convert raw input value to number?
       if (inputValue && this.type === "number") {

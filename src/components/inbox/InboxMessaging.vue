@@ -60,16 +60,20 @@ import styleElementsFonts from "@/assets/stylesheets/elements/_elements.fonts.sc
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
+import {
+  Item as PopoverItem,
+  ItemType as PopoverItemType
+} from "@/components/base/BasePopoverList.vue";
 
 // ENUMERATIONS
-export enum EventMessageHistorySeekDirection {
+enum EventMessageHistorySeekDirection {
   // History will load in backwards direction.
   Backwards = "backwards",
   // History will load in forwards direction.
   Forwards = "forwards"
 }
 
-export enum EventMessageAnyOriginType {
+enum EventMessageAnyOriginType {
   // Origin is button.
   Button = "button",
   // Origin is context menu.
@@ -77,6 +81,38 @@ export enum EventMessageAnyOriginType {
 }
 
 // INTERFACES
+interface MessagingRuntime extends Window {
+  MessagingContext: {
+    getLanguage: () => string;
+    getStylePlatform: () => string;
+    getStyleTheme: () => string;
+    getAccountJID: () => string;
+    setLanguage: (code: string) => void;
+    setStylePlatform: (platform: string) => void;
+    setStyleTheme: (theme: string) => void;
+    setAccountJID: (jid: string) => void;
+  };
+
+  MessagingStore: {
+    exists: (messageId: string) => boolean;
+    resolve: (messageId: string) => null | object;
+    restore: (...messages: object[]) => boolean;
+    insert: (...messages: object[]) => boolean;
+    update: (messageId: string, messageDiff: object) => boolean;
+    retract: (messageId: string) => boolean;
+    flush: () => boolean;
+    highlight: (messageId: null | string) => boolean;
+    interact: (messageId: string, action: string, isActive: boolean) => boolean;
+    loader: (type: string, isVisible: null | boolean) => boolean;
+    identify: (jid: string, identity: null | object) => boolean;
+  };
+
+  MessagingEvent: {
+    off: (namespace: string) => boolean;
+    on: (namespace: string, handler: (event: any) => void) => boolean;
+  };
+}
+
 interface EventMessageAnyOrigin {
   type: EventMessageAnyOriginType;
 
@@ -203,11 +239,12 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    frame(): Window {
-      return this.$refs.frame.contentWindow;
+    frame(): MessagingRuntime {
+      return (this.$refs.frame as HTMLIFrameElement)
+        .contentWindow as MessagingRuntime;
     },
 
-    setupDocument(runtime: Window): void {
+    setupDocument(runtime: MessagingRuntime): void {
       // Generate custom inline style
       const inlineStyle = `
         ${styleElementsFonts}
@@ -227,7 +264,7 @@ export default {
       runtime.document.head.appendChild(styleElement);
     },
 
-    setupContext(runtime: Window): void {
+    setupContext(runtime: MessagingRuntime): void {
       // TODO: from dynamic context
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform("web");
@@ -235,7 +272,7 @@ export default {
       runtime.MessagingContext.setAccountJID("valerian@prose.org");
     },
 
-    setupEvents(runtime: Window): void {
+    setupEvents(runtime: MessagingRuntime): void {
       runtime.MessagingEvent.on(
         "message:actions:view",
         this.onEventMessageActionsView
@@ -257,7 +294,7 @@ export default {
       );
     },
 
-    setupStore(runtime: Window): void {
+    setupStore(runtime: MessagingRuntime): void {
       // TODO: those are fixtures
       runtime.MessagingStore.loader("forwards", true);
 
@@ -274,7 +311,7 @@ export default {
       }, 500);
     },
 
-    setupListeners(runtime: Window): void {
+    setupListeners(runtime: MessagingRuntime): void {
       runtime.addEventListener("click", this.onFrameInnerClick);
     },
 
@@ -286,8 +323,8 @@ export default {
       listeners,
       interaction
     }: {
-      anchor: object;
-      items?: Array;
+      anchor: { x: number; y: number; height: number };
+      items?: Array<PopoverItem>;
       component?: object;
       context?: object;
       listeners?: object;
@@ -490,25 +527,25 @@ export default {
             // TODO: dynamically insert second part if message is from self
 
             {
-              type: "button",
+              type: PopoverItemType.Button,
               icon: "doc.on.clipboard",
               label: "Copy text",
               click: this.onPopoverActionsCopyClick
             },
 
             {
-              type: "button",
+              type: PopoverItemType.Button,
               icon: "face.smiling",
               label: "Add reaction…",
               click: this.onPopoverActionsReactionClick
             },
 
             {
-              type: "divider"
+              type: PopoverItemType.Divider
             },
 
             {
-              type: "button",
+              type: PopoverItemType.Button,
               icon: "pencil",
               label: "Edit message…",
               emphasis: true,
@@ -516,7 +553,7 @@ export default {
             },
 
             {
-              type: "button",
+              type: PopoverItemType.Button,
               icon: "trash",
               label: "Remove message",
               color: "red",

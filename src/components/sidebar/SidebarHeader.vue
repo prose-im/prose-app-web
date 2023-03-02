@@ -46,6 +46,12 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import {
+  Item as PopoverItem,
+  ItemType as PopoverItemType
+} from "@/components/base/BasePopoverList.vue";
+
 export default {
   name: "SidebarHeader",
 
@@ -58,24 +64,24 @@ export default {
   },
 
   computed: {
-    identityPopoverItems() {
+    identityPopoverItems(): Array<PopoverItem> {
       return [
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Invite people"
         },
 
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Create a group"
         },
 
         {
-          type: "divider"
+          type: PopoverItemType.Divider
         },
 
         {
-          type: "button",
+          type: PopoverItemType.Button,
           label: "Manage server",
           emphasis: true
         }

@@ -86,6 +86,29 @@ base-popover(
      ********************************************************************** -->
 
 <script lang="ts">
+// ENUMERATIONS
+export enum ItemType {
+  // Button item.
+  Button = "button",
+  // Divider item.
+  Divider = "divider",
+  // Component item.
+  Component = "component"
+}
+
+// INTERFACES
+export interface Item {
+  type: ItemType;
+  children?: Array<Item>;
+  click?: (_: any) => void;
+  emphasis?: boolean;
+  color?: string;
+  label?: string;
+  icon?: string;
+  properties?: object;
+  target?: object;
+}
+
 export default {
   name: "BasePopoverList",
 
@@ -94,7 +117,7 @@ export default {
       type: Array,
       required: true,
 
-      validator(x: Array): void {
+      validator(x: Array<Item>): boolean {
         return x.length > 0;
       }
     },
@@ -112,14 +135,14 @@ export default {
     return {
       // --> STATE <--
 
-      childrenPopoverVisible: {}
+      childrenPopoverVisible: {} as { [index: number]: boolean }
     };
   },
 
   methods: {
     // --> EVENT LISTENERS <--
 
-    onButtonMouseEnter(item: object, index: number): void {
+    onButtonMouseEnter(item: Item, index: number): void {
       if (item.children && item.children.length > 0) {
         this.childrenPopoverVisible[index] = true;
       }

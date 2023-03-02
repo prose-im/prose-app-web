@@ -30,7 +30,9 @@
 
 <script lang="ts">
 // PROJECT: ASSEMBLIES
-import StartLoginForm from "@/assemblies/start/StartLoginForm.vue";
+import StartLoginForm, {
+  StateForm as FormStateForm
+} from "@/assemblies/start/StartLoginForm.vue";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -55,7 +57,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    async onFormSubmit(form: object): Promise<void> {
+    async onFormSubmit(form: FormStateForm): Promise<void> {
       if (this.isFormLoading !== true) {
         // Mark as loading
         this.isFormLoading = true;
