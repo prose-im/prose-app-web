@@ -31,7 +31,7 @@ class Store {
   private readonly __store: Pinia;
 
   // @ts-expect-error $account will be definitely initialized
-  $account: PiniaStore<"account", Account, object, object>;
+  $account: PiniaStore<"account", Account, any, any>;
 
   constructor() {
     this.__store = createPinia();
