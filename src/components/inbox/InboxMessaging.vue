@@ -80,7 +80,51 @@ enum EventMessageAnyOriginType {
   ContextMenu = "context-menu"
 }
 
+// TYPES
+type StatePopoverListeners = { [name: string]: (_: any) => void };
+type StatePopoverInteraction = { id: string; action: string };
+
 // INTERFACES
+interface StatePopover {
+  style: {
+    insetBlockStart: string;
+    insetInlineStart: string;
+  };
+
+  items: Array<PopoverItem>;
+  component: null | object;
+
+  context: null | object;
+  listeners: null | StatePopoverListeners;
+  interaction: null | StatePopoverInteraction;
+}
+
+// TODO: move all that follows to @prose/prose-core-views *.d.ts files
+// TODO: specify more thoroughly all types
+interface MessagingMessageData {
+  id?: string;
+  type?: string;
+  date?: string;
+  from?: string;
+  text?: string;
+  content?: string;
+
+  metas?: {
+    encrypted?: boolean;
+    edited?: boolean;
+  };
+
+  reactions?: Array<{
+    reaction: string;
+    authors: Array<string>;
+  }>;
+}
+
+interface MessagingIdentifyIdentity {
+  name?: string;
+  avatar?: string;
+}
+
 interface MessagingRuntime extends Window {
   MessagingContext: {
     getLanguage: () => string;
@@ -95,16 +139,19 @@ interface MessagingRuntime extends Window {
 
   MessagingStore: {
     exists: (messageId: string) => boolean;
-    resolve: (messageId: string) => null | object;
-    restore: (...messages: object[]) => boolean;
-    insert: (...messages: object[]) => boolean;
-    update: (messageId: string, messageDiff: object) => boolean;
+    resolve: (messageId: string) => null | MessagingMessageData;
+    restore: (...messages: MessagingMessageData[]) => boolean;
+    insert: (...messages: MessagingMessageData[]) => boolean;
+    update: (messageId: string, messageDiff: MessagingMessageData) => boolean;
     retract: (messageId: string) => boolean;
     flush: () => boolean;
     highlight: (messageId: null | string) => boolean;
     interact: (messageId: string, action: string, isActive: boolean) => boolean;
     loader: (type: string, isVisible: null | boolean) => boolean;
-    identify: (jid: string, identity: null | object) => boolean;
+    identify: (
+      jid: string,
+      identity: null | MessagingIdentifyIdentity
+    ) => boolean;
   };
 
   MessagingEvent: {
@@ -232,7 +279,7 @@ export default {
         context: null,
         listeners: null,
         interaction: null
-      }
+      } as StatePopover
     };
   },
 
@@ -323,12 +370,12 @@ export default {
       listeners,
       interaction
     }: {
-      anchor: { x: number; y: number; height: number };
+      anchor: { x: number; y: number; height?: number };
       items?: Array<PopoverItem>;
       component?: object;
       context?: object;
-      listeners?: object;
-      interaction?: object;
+      listeners?: StatePopoverListeners;
+      interaction?: StatePopoverInteraction;
     }): void {
       // Clear any previously-shown popover
       this.hidePopover();
@@ -517,7 +564,7 @@ export default {
                 id: event.id,
                 action: "actions"
               }
-            : null;
+            : undefined;
 
         // Show popover
         this.showPopover({
@@ -590,7 +637,7 @@ export default {
                 id: event.id,
                 action: "reactions"
               }
-            : null;
+            : undefined;
 
         // Show popover
         this.showPopover({
