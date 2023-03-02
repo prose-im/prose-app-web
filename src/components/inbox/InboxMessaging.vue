@@ -53,6 +53,15 @@
 <script lang="ts">
 // NPM
 import { shallowRef } from "vue";
+import {
+  Messaging as MessagingRuntime,
+  Platform as MessagingPlatform,
+  Theme as MessagingTheme,
+  EventMessageActionsView,
+  EventMessageReactionsView,
+  EventMessageReactionsReact,
+  EventMessageHistorySeek
+} from "@prose-im/prose-core-views/types/messaging";
 
 // PROJECT: STYLES
 import styleElementsFonts from "@/assets/stylesheets/elements/_elements.fonts.scss?inline";
@@ -64,35 +73,6 @@ import {
   Item as PopoverItem,
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
-
-// ENUMERATIONS
-enum MessagingContextTheme {
-  // Light theme.
-  Light = "light",
-  // Dark theme.
-  Dark = "dark"
-}
-
-enum MessagingContextPlatform {
-  // Web platform.
-  Web = "web",
-  // macOS platform.
-  macOS = "macos"
-}
-
-enum EventMessageHistorySeekDirection {
-  // History will load in backwards direction.
-  Backwards = "backwards",
-  // History will load in forwards direction.
-  Forwards = "forwards"
-}
-
-enum EventMessageAnyOriginType {
-  // Origin is button.
-  Button = "button",
-  // Origin is context menu.
-  ContextMenu = "context-menu"
-}
 
 // TYPES
 type StatePopoverListeners = { [name: string]: (_: any) => void };
@@ -111,108 +91,6 @@ interface StatePopover {
   context: null | object;
   listeners: null | StatePopoverListeners;
   interaction: null | StatePopoverInteraction;
-}
-
-interface MessagingContext {
-  getLanguage: () => string;
-  getStylePlatform: () => MessagingContextPlatform;
-  getStyleTheme: () => MessagingContextTheme;
-  getAccountJID: () => string;
-  setLanguage: (code: string) => void;
-  setStylePlatform: (platform: MessagingContextPlatform) => void;
-  setStyleTheme: (theme: MessagingContextTheme) => void;
-  setAccountJID: (jid: string) => void;
-}
-
-interface MessagingStore {
-  exists: (messageId: string) => boolean;
-  resolve: (messageId: string) => null | MessagingStoreMessageData;
-  restore: (...messages: MessagingStoreMessageData[]) => boolean;
-  insert: (...messages: MessagingStoreMessageData[]) => boolean;
-  update: (
-    messageId: string,
-    messageDiff: MessagingStoreMessageData
-  ) => boolean;
-  retract: (messageId: string) => boolean;
-  flush: () => boolean;
-  highlight: (messageId: null | string) => boolean;
-  interact: (messageId: string, action: string, isActive: boolean) => boolean;
-  loader: (type: string, isVisible: null | boolean) => boolean;
-  identify: (
-    jid: string,
-    identity: null | MessagingStoreIdentifyIdentity
-  ) => boolean;
-}
-
-interface MessagingStoreMessageData {
-  id?: string;
-  type?: string;
-  date?: string;
-  from?: string;
-  content?: string;
-  text?: string;
-
-  metas?: {
-    encrypted?: boolean;
-    edited?: boolean;
-  };
-
-  reactions?: Array<{
-    reaction: string;
-    authors: Array<string>;
-  }>;
-}
-
-interface MessagingStoreIdentifyIdentity {
-  name?: string;
-  avatar?: string;
-}
-
-interface MessagingEvent {
-  off: (namespace: string) => boolean;
-  on: (namespace: string, handler: (event: any) => void) => boolean;
-}
-
-interface MessagingRuntime extends Window {
-  MessagingContext: MessagingContext;
-  MessagingStore: MessagingStore;
-  MessagingEvent: MessagingEvent;
-}
-
-interface EventMessageAnyOrigin {
-  type: EventMessageAnyOriginType;
-
-  anchor: {
-    x: number;
-    y: number;
-  };
-
-  parent: void | {
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  };
-}
-
-interface EventMessageActionsView {
-  id: string;
-  origin: EventMessageAnyOrigin;
-}
-
-interface EventMessageReactionsView {
-  id: string;
-  origin: EventMessageAnyOrigin;
-}
-
-interface EventMessageReactionsReact {
-  id: string;
-  reaction: string;
-  active: boolean;
-}
-
-interface EventMessageHistorySeek {
-  direction: EventMessageHistorySeekDirection;
 }
 
 // CONSTANTS
@@ -333,8 +211,8 @@ export default {
     setupContext(runtime: MessagingRuntime): void {
       // TODO: from dynamic context
       runtime.MessagingContext.setLanguage("en");
-      runtime.MessagingContext.setStylePlatform(MessagingContextPlatform.Web);
-      runtime.MessagingContext.setStyleTheme(MessagingContextTheme.Light);
+      runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
+      runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
       runtime.MessagingContext.setAccountJID("valerian@prose.org");
     },
 
