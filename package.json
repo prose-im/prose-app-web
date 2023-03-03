@@ -32,7 +32,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-core-views": "0.19.3",
+    "@prose-im/prose-core-views": "0.19.4",
     "@xmpp/id": "0.13.x",
     "@xmpp/jid": "0.13.x",
     "@xmpp/time": "0.13.x",
