@@ -100,7 +100,7 @@ export enum ItemType {
 export interface Item {
   type: ItemType;
   children?: Array<Item>;
-  click?: (_: unknown) => void;
+  click?: (_: any) => void;
   emphasis?: boolean;
   color?: string;
   label?: string;

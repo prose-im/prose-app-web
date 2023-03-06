@@ -75,7 +75,7 @@ import {
 } from "@/components/base/BasePopoverList.vue";
 
 // TYPES
-type StatePopoverListeners = { [name: string]: (_: unknown) => void };
+type StatePopoverListeners = { [name: string]: (_: any) => void };
 type StatePopoverInteraction = { id: string; action: string };
 
 // INTERFACES
