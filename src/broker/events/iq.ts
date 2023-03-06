@@ -38,10 +38,10 @@ import logger from "@/utilities/logger";
  * ************************************************************************* */
 
 const DISCO_FEATURES = Object.entries(xmlns)
-  .filter(([namespaceName, _]) => {
+  .filter(([namespaceName]) => {
     return namespaceName.startsWith("NS_");
   })
-  .map(([_, namespaceValue]) => {
+  .map(([, namespaceValue]) => {
     return namespaceValue;
   })
   .sort();
