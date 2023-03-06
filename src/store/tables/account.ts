@@ -16,24 +16,13 @@ import { jid } from "@xmpp/jid";
 import Broker from "@/broker";
 
 /**************************************************************************
- * INTERFACES
- * ************************************************************************* */
-
-export interface Account {
-  credentials: {
-    jid: string;
-    password: string;
-  };
-}
-
-/**************************************************************************
  * TABLE
  * ************************************************************************* */
 
-export const $account = defineStore("account", {
+const $account = defineStore("account", {
   persist: true,
 
-  state: (): Account => {
+  state: () => {
     return {
       credentials: {
         jid: "",
@@ -71,3 +60,9 @@ export const $account = defineStore("account", {
     }
   }
 });
+
+/**************************************************************************
+ * EXPORTS
+ * ************************************************************************* */
+
+export default $account;

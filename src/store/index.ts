@@ -10,11 +10,11 @@
 
 // NPM
 import { App } from "vue";
-import { Pinia, Store as PiniaStore, createPinia } from "pinia";
+import { Pinia, createPinia } from "pinia";
 import { createPersistedState } from "pinia-plugin-persistedstate";
 
 // PROJECT: STORE
-import { Account, $account } from "@/store/tables/account";
+import $account from "@/store/tables/account";
 
 /**************************************************************************
  * CONSTANTS
@@ -33,7 +33,7 @@ class Store {
   // TODO: find a way to type-check all getters and actions, instead of \
   //   'unknown'
   // @ts-expect-error $account will be definitely initialized
-  $account: PiniaStore<"account", Account, unknown, unknown>;
+  $account: ReturnType<typeof $account>;
 
   constructor() {
     this.__store = createPinia();
