@@ -72,7 +72,7 @@ class Router {
 
           children: [
             {
-              path: "inbox/",
+              path: "inbox/:jid/",
               name: "app.inbox",
               component: AppInboxBase
             }
