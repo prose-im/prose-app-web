@@ -15,6 +15,7 @@ import { createPersistedState } from "pinia-plugin-persistedstate";
 
 // PROJECT: STORE
 import $account from "@/store/tables/account";
+import $inbox from "@/store/tables/inbox";
 
 /**************************************************************************
  * CONSTANTS
@@ -30,10 +31,10 @@ const STORE_PERSIST_REVISION = "v1";
 class Store {
   private readonly __store: Pinia;
 
-  // TODO: find a way to type-check all getters and actions, instead of \
-  //   'unknown'
   // @ts-expect-error $account will be definitely initialized
   $account: ReturnType<typeof $account>;
+  // @ts-expect-error $inbox will be definitely initialized
+  $inbox: ReturnType<typeof $inbox>;
 
   constructor() {
     this.__store = createPinia();
@@ -65,6 +66,7 @@ class Store {
 
   private __loadTables(): void {
     this.$account = $account(this.__store);
+    this.$inbox = $inbox(this.__store);
   }
 }
 
