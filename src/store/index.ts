@@ -31,10 +31,8 @@ const STORE_PERSIST_REVISION = "v1";
 class Store {
   private readonly __store: Pinia;
 
-  // @ts-expect-error $account will be definitely initialized
-  $account: ReturnType<typeof $account>;
-  // @ts-expect-error $inbox will be definitely initialized
-  $inbox: ReturnType<typeof $inbox>;
+  $account!: ReturnType<typeof $account>;
+  $inbox!: ReturnType<typeof $inbox>;
 
   constructor() {
     this.__store = createPinia();
