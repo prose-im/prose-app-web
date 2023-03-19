@@ -71,7 +71,7 @@ export default {
 
           // Redirect to dashboard
           this.$router.push({
-            name: "app.inbox"
+            name: "app"
           });
         } catch (error) {
           // Show error alert
