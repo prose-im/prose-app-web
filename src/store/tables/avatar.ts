@@ -52,7 +52,38 @@ const $avatar = defineStore("avatar", {
 
   getters: {
     getAvatar: (state: Avatar) => {
-      return (jid: JID) => state[jid.toString()] || null;
+      return (jid: JID): AvatarEntry | void => {
+        // TODO: need to assert from there? (maybe?)
+        // this.assertAvatar(jid);
+
+        state[jid.toString()] || null;
+      };
+    }
+  },
+
+  actions: {
+    async assertAvatar(jid: JID, reload = false): Promise<AvatarEntry | void> {
+      // Read cached avatar
+      const avatar = this.getAvatar(jid);
+
+      // Load avatar? (or reload)
+      if (!avatar || reload === true) {
+        // TODO
+      }
+
+      return Promise.resolve(avatar);
+    },
+
+    async updateMetadata(jid: JID, id: string): Promise<AvatarEntry | void> {
+      // Read cached avatar
+      const avatar = this.getAvatar(jid);
+
+      // Reload avatar? (w/ updated metadata, only if avatar had been loaded)
+      if (avatar && avatar.metadata.id !== id) {
+        return this.assertAvatar(jid, true);
+      }
+
+      return Promise.resolve(avatar);
     }
   }
 });
