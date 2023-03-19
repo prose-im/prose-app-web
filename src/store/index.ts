@@ -15,6 +15,7 @@ import { createPersistedState } from "pinia-plugin-persistedstate";
 
 // PROJECT: STORE
 import $account from "@/store/tables/account";
+import $avatar from "@/store/tables/avatar";
 import $inbox from "@/store/tables/inbox";
 
 /**************************************************************************
@@ -32,6 +33,7 @@ class Store {
   private readonly __store: Pinia;
 
   $account!: ReturnType<typeof $account>;
+  $avatar!: ReturnType<typeof $avatar>;
   $inbox!: ReturnType<typeof $inbox>;
 
   constructor() {
@@ -64,6 +66,7 @@ class Store {
 
   private __loadTables(): void {
     this.$account = $account(this.__store);
+    this.$avatar = $avatar(this.__store);
     this.$inbox = $inbox(this.__store);
   }
 }

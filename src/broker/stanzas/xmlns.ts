@@ -25,6 +25,9 @@ export const NS_PING = "urn:xmpp:ping";
 export const NS_REACTIONS = "urn:xmpp:reactions:0";
 export const NS_CARBONS = "urn:xmpp:carbons:2";
 export const NS_MAM = "urn:xmpp:mam:2";
+export const NS_AVATAR_DATA = "urn:xmpp:avatar:data";
+export const NS_AVATAR_METADATA = "urn:xmpp:avatar:metadata";
+export const NS_AVATAR_METADATA_NOTIFY = "urn:xmpp:avatar:metadata+notify";
 
 export const NS_MESSAGE_CORRECT = "urn:xmpp:message-correct:0";
 export const NS_MESSAGE_RETRACT = "urn:xmpp:message-retract:0";
