@@ -65,7 +65,7 @@
     "@typescript-eslint/eslint-plugin": "5.48.x",
     "typescript": "4.9.x",
     "sass": "1.57.x",
-    "vite": "4.0.x",
+    "vite": "4.2.x",
     "vite-plugin-pug-transformer": "1.0.x",
     "vite-plugin-static-copy": "0.13.x",
     "vite-plugin-svg-icons": "2.0.x",
