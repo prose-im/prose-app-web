@@ -9,7 +9,36 @@
  * ************************************************************************* */
 
 // NPM
+import { JID } from "@xmpp/jid";
 import { defineStore } from "pinia";
+
+/**************************************************************************
+ * TYPES
+ * ************************************************************************* */
+
+type InboxEntryMessage = {
+  id: string;
+  // TODO: add all fields
+};
+
+type InboxEntryProfile = {
+  firstName: string;
+  lastName: string;
+  // TODO: add all fields
+};
+
+/**************************************************************************
+ * INTERFACES
+ * ************************************************************************* */
+
+interface Inbox {
+  [jid: string]: InboxEntry;
+}
+
+interface InboxEntry {
+  messages: Array<InboxEntryMessage>;
+  profile?: InboxEntryProfile;
+}
 
 /**************************************************************************
  * TABLE
@@ -18,10 +47,22 @@ import { defineStore } from "pinia";
 const $inbox = defineStore("inbox", {
   persist: true,
 
-  state: () => {
-    return {
-      messages: {}
-    };
+  state: (): Inbox => {
+    return {};
+  },
+
+  getters: {
+    getMessages: (state: Inbox) => {
+      return (jid: JID): Array<InboxEntryMessage> | void => {
+        state[jid.toString()]?.messages || undefined;
+      };
+    },
+
+    getProfile: (state: Inbox) => {
+      return (jid: JID): InboxEntryProfile | void => {
+        state[jid.toString()]?.profile || undefined;
+      };
+    }
   }
 });
 
