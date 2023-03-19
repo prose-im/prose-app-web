@@ -56,7 +56,7 @@ const $avatar = defineStore("avatar", {
         // TODO: need to assert from there? (maybe?)
         // this.assertAvatar(jid);
 
-        state[jid.toString()] || null;
+        state[jid.toString()] || undefined;
       };
     }
   },
