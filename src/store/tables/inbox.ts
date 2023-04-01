@@ -22,9 +22,58 @@ type InboxEntryMessage = {
 };
 
 type InboxEntryProfile = {
-  firstName: string;
-  lastName: string;
-  // TODO: add all fields
+  name: InboxEntryProfileName;
+  role: string;
+  information: InboxEntryProfileInformation;
+  security: InboxEntryProfileSecurity;
+};
+
+type InboxEntryProfileName = {
+  first: string;
+  last: string;
+};
+
+type InboxEntryProfileInformation = {
+  contact: InboxEntryProfileInformationContact;
+  lastActive: InboxEntryProfileInformationLastActive | null;
+  location: InboxEntryProfileInformationLocation;
+  activity: InboxEntryProfileInformationActivity | null;
+};
+
+type InboxEntryProfileInformationContact = {
+  email: string | null;
+  phone: string | null;
+};
+
+type InboxEntryProfileInformationLastActive = {
+  timestamp: number | null;
+};
+
+type InboxEntryProfileInformationLocation = {
+  country: string | null;
+  timezone: string | null;
+};
+
+type InboxEntryProfileInformationActivity = {
+  icon: string | null;
+  text: string;
+};
+
+type InboxEntryProfileSecurity = {
+  verification: InboxEntryProfileSecurityVerification | null;
+  encryption: InboxEntryProfileSecurityEncryption | null;
+};
+
+type InboxEntryProfileSecurityVerification = {
+  fingerprint: string | null;
+  email: string | null;
+  phone: string | null;
+  identity: string | null;
+};
+
+type InboxEntryProfileSecurityEncryption = {
+  connectionProtocol: string;
+  messageEndToEndMethod: string;
 };
 
 /**************************************************************************
