@@ -53,6 +53,7 @@
 <script lang="ts">
 // NPM
 import { shallowRef } from "vue";
+import { jid } from "@xmpp/jid";
 import {
   Messaging as MessagingRuntime,
   Platform as MessagingPlatform,
@@ -73,6 +74,9 @@ import {
   Item as PopoverItem,
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 // TYPES
 type StatePopoverListeners = { [name: string]: (_: any) => void };
@@ -100,60 +104,6 @@ const FRAME_STYLE = {
 };
 
 const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
-
-const MESSAGE_FIXTURES = [
-  {
-    id: "b4d303b1-17c9-4863-81b7-bc5281f3590f",
-    type: "text",
-    date: "2022-06-22T19:15:03.000Z",
-    from: "valerian@prose.org",
-    content:
-      "Quick message just to confirm that I asked the designers for a new illustration.",
-
-    metas: {
-      encrypted: true,
-      edited: false
-    }
-  },
-
-  {
-    id: "2abc1d01-da43-45bd-8bdd-a1b37c072ff1",
-    type: "text",
-    date: "2022-06-22T19:15:04.000Z",
-    from: "valerian@prose.org",
-    content: "We need one more for the blog.",
-
-    metas: {
-      encrypted: true,
-      edited: false
-    }
-  },
-
-  {
-    id: "fe685272-2a23-4701-9e4e-a9605697b8c7",
-    type: "text",
-    date: "2022-06-24T19:15:05.000Z",
-    from: "valerian@prose.org",
-    content: "Might be done tomorrow 😀",
-
-    metas: {
-      encrypted: true,
-      edited: false
-    },
-
-    reactions: [
-      {
-        reaction: "🤠",
-        authors: ["valerian@prose.org", "baptiste@crisp.chat"]
-      },
-
-      {
-        reaction: "🚀",
-        authors: ["baptiste@crisp.chat"]
-      }
-    ]
-  }
-];
 
 export default {
   name: "InboxMessaging",
@@ -213,6 +163,7 @@ export default {
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
       runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
+      // TODO: from url:
       runtime.MessagingContext.setAccountJID("valerian@prose.org");
     },
 
@@ -239,20 +190,23 @@ export default {
     },
 
     setupStore(runtime: MessagingRuntime): void {
-      // TODO: those are fixtures
-      runtime.MessagingStore.loader("forwards", true);
+      // Identify as user
+      runtime.MessagingStore.identify("valerian@prose.org", {
+        name: "Valerian",
+        avatar:
+          "https://gravatar.com/avatar/b4cb8302ee37f985cc76190aaae1b40b?size=80"
+      });
 
-      setTimeout(() => {
-        runtime.MessagingStore.identify("valerian@prose.org", {
-          name: "Valerian",
-          avatar:
-            "https://gravatar.com/avatar/b4cb8302ee37f985cc76190aaae1b40b?size=80"
-        });
+      // Insert all messages (already-known)
+      // TODO: from url:
+      const messages = Store.$inbox.getMessages(jid("valerian@prose.org"));
 
-        runtime.MessagingStore.insert(...MESSAGE_FIXTURES);
-
+      if (!messages) {
+        runtime.MessagingStore.loader("forwards", true);
+      } else {
         runtime.MessagingStore.loader("forwards", false);
-      }, 500);
+        runtime.MessagingStore.insert(...messages);
+      }
     },
 
     setupListeners(runtime: MessagingRuntime): void {
