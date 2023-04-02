@@ -11,9 +11,10 @@
 <template lang="pug">
 .c-sidebar-main
   list-disclosure(
+    @toggle="onSpotlightToggle"
+    :expanded="layout.sidebar.sections.spotlight"
     :list-class="disclosureListClass"
     title="Spotlight"
-    expanded
   )
     sidebar-main-item-section(
       title="Unread stack"
@@ -36,9 +37,10 @@
     )
 
   list-disclosure(
+    @toggle="onFavoritesToggle"
+    :expanded="layout.sidebar.sections.favorites"
     :list-class="disclosureListClass"
     title="Favorites"
-    expanded
   )
     sidebar-main-item-user(
       jid="valerian@prose.org"
@@ -52,6 +54,8 @@
     )
 
   list-disclosure(
+    @toggle="onTeamMembersToggle"
+    :expanded="layout.sidebar.sections.teamMembers"
     :list-class="disclosureListClass"
     title="Team members"
     expanded
@@ -76,6 +80,8 @@
     )
 
   list-disclosure(
+    @toggle="onOtherContactsToggle"
+    :expanded="layout.sidebar.sections.otherContacts"
     :list-class="disclosureListClass"
     title="Other contacts"
   )
@@ -89,6 +95,8 @@
     )
 
   list-disclosure(
+    @toggle="onGroupsToggle"
+    :expanded="layout.sidebar.sections.groups"
     :list-class="disclosureListClass"
     title="Groups"
     expanded
@@ -119,6 +127,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: COMPONENTS
 import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
 import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
@@ -139,6 +150,36 @@ export default {
     disclosureListClass: {
       type: String,
       default: null
+    }
+  },
+
+  computed: {
+    layout(): typeof Store.$layout {
+      return Store.$layout;
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onSpotlightToggle(visible: boolean): void {
+      Store.$layout.setSidebarSectionSpotlight(visible);
+    },
+
+    onFavoritesToggle(visible: boolean): void {
+      Store.$layout.setSidebarSectionFavorites(visible);
+    },
+
+    onTeamMembersToggle(visible: boolean): void {
+      Store.$layout.setSidebarSectionTeamMembers(visible);
+    },
+
+    onOtherContactsToggle(visible: boolean): void {
+      Store.$layout.setSidebarSectionOtherContacts(visible);
+    },
+
+    onGroupsToggle(visible: boolean): void {
+      Store.$layout.setSidebarSectionGroups(visible);
     }
   }
 };

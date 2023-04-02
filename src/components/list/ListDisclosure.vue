@@ -83,6 +83,8 @@ export default {
     }
   },
 
+  emits: ["toggle"],
+
   data() {
     return {
       // --> STATE <--
@@ -117,6 +119,9 @@ export default {
     onHeaderClick(): void {
       // Toggle list visibility
       this.toggleListVisible(!this.isListVisible);
+
+      // Emit toggle visibility event
+      this.$emit("toggle", this.isListVisible);
     }
   }
 };

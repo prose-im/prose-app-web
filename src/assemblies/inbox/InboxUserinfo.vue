@@ -15,24 +15,24 @@
   )
 
   inbox-userinfo-information(
+    :expanded="layout.inbox.userinfo.sections.information"
     class="a-inbox-userinfo__block a-inbox-userinfo__block--information"
     header-class="a-inbox-userinfo__block-header"
     item-class="a-inbox-userinfo__block-item"
-    expanded
   )
 
   inbox-userinfo-security(
+    :expanded="layout.inbox.userinfo.sections.security"
     class="a-inbox-userinfo__block a-inbox-userinfo__block--security"
     header-class="a-inbox-userinfo__block-header"
     item-class="a-inbox-userinfo__block-item"
-    expanded
   )
 
   inbox-userinfo-actions(
+    :expanded="layout.inbox.userinfo.sections.actions"
     class="a-inbox-userinfo__block a-inbox-userinfo__block--actions"
     header-class="a-inbox-userinfo__block-header"
     item-class="a-inbox-userinfo__block-item"
-    expanded
   )
 </template>
 
@@ -41,6 +41,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: COMPONENTS
 import InboxUserinfoIdentity from "@/components/inbox/InboxUserinfoIdentity.vue";
 import InboxUserinfoInformation from "@/components/inbox/InboxUserinfoInformation.vue";
@@ -55,6 +58,12 @@ export default {
     InboxUserinfoInformation,
     InboxUserinfoSecurity,
     InboxUserinfoActions
+  },
+
+  computed: {
+    layout(): typeof Store.$layout {
+      return Store.$layout;
+    }
   }
 };
 </script>

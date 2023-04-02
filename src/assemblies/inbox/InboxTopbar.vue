@@ -88,7 +88,7 @@ layout-toolbar(
 
       base-action(
         @click="onActionUserinfoClick"
-        :active="layout.inbox.userinfo"
+        :active="layout.inbox.userinfo.visible"
         class="a-inbox-topbar__action"
         icon="info.circle"
         context="grey"
@@ -163,7 +163,7 @@ export default {
     },
 
     onActionUserinfoClick(): void {
-      Store.$layout.toggleInboxUserinfo();
+      Store.$layout.toggleInboxUserinfoVisible();
     }
   }
 };

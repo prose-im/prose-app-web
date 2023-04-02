@@ -10,6 +10,7 @@
 
 <template lang="pug">
 list-disclosure(
+  @toggle="onToggle"
   :header-class="headerClass"
   title="Actions"
   class="c-inbox-userinfo-actions"
@@ -49,6 +50,9 @@ list-disclosure(
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "InboxUserinfoActions",
 
@@ -89,6 +93,14 @@ export default {
           title: "Block contact"
         }
       ];
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onToggle(visible: boolean): void {
+      Store.$layout.setInboxUserinfoSectionActions(visible);
     }
   }
 };

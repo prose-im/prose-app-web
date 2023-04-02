@@ -10,6 +10,7 @@
 
 <template lang="pug">
 list-disclosure(
+  @toggle="onToggle"
   :header-class="headerClass"
   title="Information"
   class="c-inbox-userinfo-information"
@@ -47,6 +48,9 @@ list-disclosure(
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "InboxUserinfoInformation",
 
@@ -101,6 +105,14 @@ export default {
           emoji: "👨‍💻"
         }
       ];
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onToggle(visible: boolean): void {
+      Store.$layout.setInboxUserinfoSectionInformation(visible);
     }
   }
 };

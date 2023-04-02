@@ -25,7 +25,7 @@
       )
 
     inbox-userinfo(
-      v-if="layout.inbox.userinfo"
+      v-if="layout.inbox.userinfo.visible"
       class="v-app-inbox-base__userinfo"
     )
 </template>

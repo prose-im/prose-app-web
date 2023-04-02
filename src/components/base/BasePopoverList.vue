@@ -103,6 +103,7 @@ export interface Item {
   children?: Array<Item>;
   click?: (_: any) => void;
   emphasis?: boolean;
+  disabled?: boolean;
   color?: string;
   label?: string;
   icon?: string;

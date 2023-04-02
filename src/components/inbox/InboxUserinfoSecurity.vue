@@ -10,6 +10,7 @@
 
 <template lang="pug">
 list-disclosure(
+  @toggle="onToggle"
   :header-class="headerClass"
   title="Security"
   class="c-inbox-userinfo-security"
@@ -55,6 +56,9 @@ list-disclosure(
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "InboxUserinfoSecurity",
 
@@ -85,6 +89,14 @@ export default {
           icon: "lock.fill"
         }
       ];
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onToggle(visible: boolean): void {
+      Store.$layout.setInboxUserinfoSectionSecurity(visible);
     }
   }
 };

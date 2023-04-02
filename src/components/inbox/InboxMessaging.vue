@@ -135,7 +135,7 @@ export default {
       return Store.$session;
     },
 
-    messages(): ReturnType<Store.$inbox.getMessages> {
+    messages(): ReturnType<typeof Store.$inbox.getMessages> {
       // TODO: jid from url
       return Store.$inbox.getMessages(jid("valerian@valeriansaliou.name"));
     }
@@ -572,6 +572,7 @@ export default {
               icon: "pencil",
               label: "Edit message…",
               emphasis: true,
+              disabled: !this.session.connected,
               click: this.onPopoverActionsEditClick
             },
 
