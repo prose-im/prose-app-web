@@ -87,11 +87,12 @@ layout-toolbar(
       )
 
       base-action(
+        @click="onActionUserinfoClick"
+        :active="layout.inbox.userinfo"
         class="a-inbox-topbar__action"
         icon="info.circle"
         context="grey"
         size="18px"
-        active
       )
 
     base-separator(
@@ -112,6 +113,9 @@ layout-toolbar(
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: COMPONENTS
 import {
   Item as PopoverItem,
@@ -130,6 +134,10 @@ export default {
   },
 
   computed: {
+    layout(): typeof Store.$layout {
+      return Store.$layout;
+    },
+
     actionHistoryPopoverItems(): Array<PopoverItem> {
       return [
         {
@@ -152,6 +160,10 @@ export default {
     onActionHistoryPopoverClickAway(): void {
       // Close popover
       this.isActionHistoryPopoverVisible = false;
+    },
+
+    onActionUserinfoClick(): void {
+      Store.$layout.toggleInboxUserinfo();
     }
   }
 };

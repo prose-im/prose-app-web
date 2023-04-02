@@ -25,6 +25,7 @@
       )
 
     inbox-userinfo(
+      v-if="layout.inbox.userinfo"
       class="v-app-inbox-base__userinfo"
     )
 </template>
@@ -34,6 +35,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: COMPONENTS
 import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
 
@@ -45,7 +49,13 @@ import InboxForm from "@/assemblies/inbox/InboxForm.vue";
 export default {
   name: "AppInboxBase",
 
-  components: { InboxMessaging, InboxTopbar, InboxUserinfo, InboxForm }
+  components: { InboxMessaging, InboxTopbar, InboxUserinfo, InboxForm },
+
+  computed: {
+    layout(): typeof Store.$layout {
+      return Store.$layout;
+    }
+  }
 };
 </script>
 

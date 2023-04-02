@@ -15,6 +15,7 @@ import { createPersistedState } from "pinia-plugin-persistedstate";
 
 // PROJECT: STORE
 import $session from "@/store/tables/session";
+import $layout from "@/store/tables/layout";
 import $account from "@/store/tables/account";
 import $avatar from "@/store/tables/avatar";
 import $inbox from "@/store/tables/inbox";
@@ -37,6 +38,7 @@ class Store {
   $session!: ReturnType<typeof $session>;
 
   // Permanent stores
+  $layout!: ReturnType<typeof $layout>;
   $account!: ReturnType<typeof $account>;
   $avatar!: ReturnType<typeof $avatar>;
   $inbox!: ReturnType<typeof $inbox>;
@@ -74,6 +76,7 @@ class Store {
     this.$session = $session(this.__store);
 
     // #2. Permanent stores
+    this.$layout = $layout(this.__store);
     this.$account = $account(this.__store);
     this.$avatar = $avatar(this.__store);
     this.$inbox = $inbox(this.__store);
