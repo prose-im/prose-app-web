@@ -61,7 +61,7 @@ export default {
 $c: ".c-inbox-form-chatstate";
 
 .c-inbox-form-chatstate {
-  background-color: $color-white;
+  background: rgba($color-white, 0.875);
   color: lighten($color-base-grey-dark, 15%);
   border: 1px solid darken($color-base-grey-light, 4%);
   font-size: 12.5px;
@@ -69,10 +69,11 @@ $c: ".c-inbox-form-chatstate";
   opacity: 0;
   visibility: hidden;
   margin-block-end: -5px;
-  padding-inline: $size-form-field-large-padding-sides;
+  padding-inline: 12px;
   padding-block-end: 1px;
   border-radius: 16px;
   box-shadow: 0 1px 3px 0 rgba($color-black, 0.02);
+  backdrop-filter: blur(6px);
 
   // --> CHATSTATES <--
 

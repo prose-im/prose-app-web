@@ -284,6 +284,7 @@ $form-compose-send-button-size: (
     }
 
     #{$c}__compose-chatstate {
+      padding-inline: $size-form-field-large-padding-sides;
       position: absolute;
       inset-inline-start: 0;
       inset-block-end: 100%;
