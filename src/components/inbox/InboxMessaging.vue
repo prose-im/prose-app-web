@@ -130,6 +130,13 @@ export default {
     };
   },
 
+  computed: {
+    messages(): ReturnType<Store.$inbox.getMessages> {
+      // TODO: jid from url
+      return Store.$inbox.getMessages(jid("valerian@valeriansaliou.name"));
+    }
+  },
+
   methods: {
     // --> HELPERS <--
 
@@ -164,7 +171,7 @@ export default {
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
       runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
       // TODO: from url:
-      runtime.MessagingContext.setAccountJID("valerian@prose.org");
+      runtime.MessagingContext.setAccountJID("valerian@valeriansaliou.name");
     },
 
     setupEvents(runtime: MessagingRuntime): void {
@@ -190,23 +197,137 @@ export default {
     },
 
     setupStore(runtime: MessagingRuntime): void {
+      // TODO: set JID from URL
+      const accountJID = "valerian@valeriansaliou.name";
+
       // Identify as user
-      runtime.MessagingStore.identify("valerian@prose.org", {
+      runtime.MessagingStore.identify(accountJID, {
         name: "Valerian",
         avatar:
           "https://gravatar.com/avatar/b4cb8302ee37f985cc76190aaae1b40b?size=80"
       });
 
-      // Insert all messages (already-known)
-      // TODO: from url:
-      const messages = Store.$inbox.getMessages(jid("valerian@prose.org"));
+      // TODO: dummy set
+      Store.$inbox.setProfile(jid(accountJID), {
+        name: {
+          first: "Valerian",
+          last: "Saliou"
+        },
 
-      if (!messages) {
+        role: "CTO at Crisp",
+
+        information: {
+          contact: {
+            email: "valerian@valeriansaliou.name",
+            phone: "+33631210280"
+          },
+
+          lastActive: {
+            timestamp: 1680376033407
+          },
+
+          location: {
+            country: "FR",
+            timezone: "Europe/Lisbon"
+          },
+
+          activity: {
+            icon: "👨‍💻",
+            text: "Focusing on code"
+          }
+        },
+
+        security: {
+          verification: {
+            fingerprint: "C648A",
+            email: "valerian@valeriansaliou.name",
+            phone: "+33631210280",
+            identity: "Valerian Saliou"
+          },
+
+          encryption: {
+            connectionProtocol: "TLS 1.3",
+            messageEndToEndMethod: "OMEMO"
+          }
+        }
+      });
+
+      // TODO: dummy insert
+      Store.$inbox.insertMessages(jid(accountJID), [
+        {
+          id: "b4d303b1-17c9-4863-81b7-bc5281f3590f",
+          type: "text",
+          date: "2022-06-22T19:15:03.000Z",
+          from: "valerian@valeriansaliou.name",
+          content:
+            "Quick message just to confirm that I asked the designers for a new illustration.",
+
+          metas: {
+            encrypted: true,
+            edited: false
+          }
+        },
+
+        {
+          id: "2abc1d01-da43-45bd-8bdd-a1b37c072ff1",
+          type: "text",
+          date: "2022-06-22T19:15:04.000Z",
+          from: "valerian@valeriansaliou.name",
+          content: "We need one more for the blog.",
+
+          metas: {
+            encrypted: true,
+            edited: false
+          }
+        },
+
+        {
+          id: "fe685272-2a23-4701-9e4e-a9605697b8c7",
+          type: "text",
+          date: "2022-06-24T19:15:05.000Z",
+          from: "valerian@valeriansaliou.name",
+          content: "Might be done tomorrow 😀",
+
+          metas: {
+            encrypted: true,
+            edited: false
+          },
+
+          reactions: [
+            {
+              reaction: "🤠",
+              authors: ["valerian@valeriansaliou.name", "baptiste@crisp.chat"]
+            },
+
+            {
+              reaction: "🚀",
+              authors: ["baptiste@crisp.chat"]
+            }
+          ]
+        }
+      ]);
+
+      // Insert all messages (already-known)
+      if (!this.messages) {
         runtime.MessagingStore.loader("forwards", true);
+        // TODO: load from MAM
       } else {
-        runtime.MessagingStore.loader("forwards", false);
-        runtime.MessagingStore.insert(...messages);
+        runtime.MessagingStore.insert(...this.messages);
       }
+
+      // Subscribe to new messages
+      this.$watch(
+        "messages",
+
+        newMessages => {
+          // TODO: do not only pick last inserted message for insertion!
+          runtime.MessagingStore.insert(newMessages[newMessages.length - 1]);
+        },
+
+        {
+          deep: true
+        }
+      );
     },
 
     setupListeners(runtime: MessagingRuntime): void {

@@ -95,121 +95,52 @@ const $inbox = defineStore("inbox", {
   persist: true,
 
   state: (): Inbox => {
-    return {
-      // TODO: those are fixtures
-      "valerian@prose.org": {
-        messages: [
-          {
-            id: "b4d303b1-17c9-4863-81b7-bc5281f3590f",
-            type: "text",
-            date: "2022-06-22T19:15:03.000Z",
-            from: "valerian@prose.org",
-            content:
-              "Quick message just to confirm that I asked the designers for a new illustration.",
-
-            metas: {
-              encrypted: true,
-              edited: false
-            }
-          },
-
-          {
-            id: "2abc1d01-da43-45bd-8bdd-a1b37c072ff1",
-            type: "text",
-            date: "2022-06-22T19:15:04.000Z",
-            from: "valerian@prose.org",
-            content: "We need one more for the blog.",
-
-            metas: {
-              encrypted: true,
-              edited: false
-            }
-          },
-
-          {
-            id: "fe685272-2a23-4701-9e4e-a9605697b8c7",
-            type: "text",
-            date: "2022-06-24T19:15:05.000Z",
-            from: "valerian@prose.org",
-            content: "Might be done tomorrow 😀",
-
-            metas: {
-              encrypted: true,
-              edited: false
-            },
-
-            reactions: [
-              {
-                reaction: "🤠",
-                authors: ["valerian@prose.org", "baptiste@crisp.chat"]
-              },
-
-              {
-                reaction: "🚀",
-                authors: ["baptiste@crisp.chat"]
-              }
-            ]
-          }
-        ],
-
-        profile: {
-          name: {
-            first: "Valerian",
-            last: "Saliou"
-          },
-
-          role: "CTO at Crisp",
-
-          information: {
-            contact: {
-              email: "valerian@prose.org",
-              phone: "+33631210280"
-            },
-
-            lastActive: {
-              timestamp: 1680376033407
-            },
-
-            location: {
-              country: "FR",
-              timezone: "Europe/Lisbon"
-            },
-
-            activity: {
-              icon: "👨‍💻",
-              text: "Focusing on code"
-            }
-          },
-
-          security: {
-            verification: {
-              fingerprint: "C648A",
-              email: "valerian@prose.org",
-              phone: "+33631210280",
-              identity: "Valerian Saliou"
-            },
-
-            encryption: {
-              connectionProtocol: "TLS 1.3",
-              messageEndToEndMethod: "OMEMO"
-            }
-          }
-        }
-      }
-    };
+    return {};
   },
 
   getters: {
-    getMessages: (state: Inbox) => {
-      return (jid: JID): Array<InboxEntryMessage> | void => {
-        return state[jid.toString()]?.messages || undefined;
+    getMessages: function () {
+      return (jid: JID): Array<InboxEntryMessage> => {
+        return this.assertEntry(jid).messages;
       };
     },
 
-    getProfile: (state: Inbox) => {
+    getProfile: function () {
       return (jid: JID): InboxEntryProfile | void => {
-        state[jid.toString()]?.profile || undefined;
+        return this.assertEntry(jid).profile || undefined;
       };
+    }
+  },
+
+  actions: {
+    assertEntry(jid: JID): InboxEntry {
+      const jidString = jid.bare().toString();
+
+      // Assign new inbox entry?
+      if (!(jidString in this)) {
+        this.$patch(() => {
+          this[jidString] = {
+            messages: []
+          };
+        });
+      }
+
+      return this[jidString];
+    },
+
+    insertMessage(jid: JID, message: InboxEntryMessage) {
+      this.insertMessages(jid, [message]);
+    },
+
+    insertMessages(jid: JID, messages: Array<InboxEntryMessage>) {
+      // TODO: send IPC whenever a new message is inserted, eg. message:inserted
+      // TODO: also send IPC on update, eg. message:updated
+
+      this.assertEntry(jid).messages.push(...messages);
+    },
+
+    setProfile(jid: JID, profile: InboxEntryProfile) {
+      this.assertEntry(jid).profile = profile;
     }
   }
 });

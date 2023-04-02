@@ -11,7 +11,11 @@
 // NPM
 import { $msg, $iq } from "strophe.js";
 import xmppID from "@xmpp/id";
+import xmppTime from "@xmpp/time";
 import { JID } from "@xmpp/jid";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -52,11 +56,25 @@ class BrokerModuleMessage extends BrokerModule {
   sendMessage(to: JID, body: string, id?: MessageID): void {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#message
+
+    // Assign default value to identifier
+    id = id || xmppID();
+
+    // Emit message onto network
     this._client.emit(
-      $msg({ to: to.toString(), type: MessageType.Chat, id: id || xmppID() })
+      $msg({ to: to.toString(), type: MessageType.Chat, id: id })
         .c("body")
         .t(body)
     );
+
+    // Insert message into store
+    Store.$inbox.insertMessage(to, {
+      id,
+      type: "text",
+      date: xmppTime.datetime(),
+      from: this._client.jid?.bare().toString(),
+      content: body
+    });
 
     logger.info(`Sent message to: '${to}' with body:`, body);
   }

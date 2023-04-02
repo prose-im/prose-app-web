@@ -8,6 +8,11 @@
  * IMPORTS
  * ************************************************************************* */
 
+// NPM
+import { jid } from "@xmpp/jid";
+import xmppID from "@xmpp/id";
+import xmppTime from "@xmpp/time";
+
 // PROJECT: BROKER
 import BrokerEventIngestor from "@/broker/events/ingestor";
 import {
@@ -20,6 +25,9 @@ import {
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 /**************************************************************************
  * CLASS
@@ -36,9 +44,33 @@ class BrokerEventMessage extends BrokerEventIngestor {
   };
 
   private __any(stanza: Element): void {
-    logger.info(`Processing message from: '${stanza.getAttribute("from")}'`);
+    const from = stanza.getAttribute("from") || null,
+      bodyElement = (stanza.getElementsByTagName("body") || [])[0] || null;
 
-    // TODO
+    if (from !== null && bodyElement !== null) {
+      logger.info(`Processing message from: '${from || "?"}'`);
+
+      // Read body text
+      const fromJID = jid(from).bare(),
+        bodyText = bodyElement.textContent || "";
+
+      // TODO
+      console.error("==> stanza", stanza);
+
+      // Insert message in store
+      // TODO: read delayed delivery date, if any
+      Store.$inbox.insertMessage(fromJID, {
+        id: stanza.id || xmppID(),
+        type: "text",
+        date: xmppTime.datetime(),
+        from: fromJID.toString(),
+        content: bodyText
+      });
+    } else {
+      logger.warn(
+        "Cannot process message, as it does not have any 'from' or 'body' set"
+      );
+    }
   }
 
   private __chatState(stanza: Element, element?: Element): void {

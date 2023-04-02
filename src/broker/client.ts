@@ -10,7 +10,7 @@
 
 // NPM
 import { Strophe } from "strophe.js";
-import { JID } from "@xmpp/jid";
+import { JID, jid } from "@xmpp/jid";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -62,6 +62,8 @@ const REQUEST_TIMEOUT_DEFAULT = 10000; // 10 seconds
  * ************************************************************************* */
 
 class BrokerClient {
+  jid?: JID;
+
   private readonly __ingestors: BrokerEvent;
 
   private __connection?: Strophe.Connection;
@@ -209,11 +211,17 @@ class BrokerClient {
         this.__cancelPendingRequests();
         this.__raiseConnectLifecycle(new Error("Disconnected from server"));
 
+        // Clear context
+        this.jid = undefined;
+
         break;
       }
 
       case Strophe.Status.CONNECTED: {
         logger.info("Connected");
+
+        // Obtain context
+        this.jid = this.__connection ? jid(this.__connection.jid) : undefined;
 
         // Trigger connected hooks
         this.__bindReceivers();
