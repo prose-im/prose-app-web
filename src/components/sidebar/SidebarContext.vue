@@ -36,6 +36,7 @@
       v-slot:presence
     )
       base-presence(
+        v-if="this.session.connected"
         type="available"
         show="chat"
         size="small"
@@ -236,6 +237,10 @@ export default {
           label: "Connect account"
         }
       ];
+    },
+
+    session(): typeof Store.$session {
+      return Store.$session;
     }
   },
 
