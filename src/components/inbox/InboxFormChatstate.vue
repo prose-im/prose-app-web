@@ -9,25 +9,26 @@
      ********************************************************************** -->
 
 <template lang="pug">
-div(
-  :class=`[
-    "c-inbox-form-chatstate",
-    "c-inbox-form-chatstate--" + chatstate
-  ]`
+transition(
+  enter-active-class="animate animate--fade-in-up-small animate--fast"
+  leave-active-class="animate animate--fade-out-down-small animate--superfast"
 )
-  | Valerian
-
-  base-space
-
-  template(
-    v-if="chatstate === 'paused'"
+  .c-inbox-form-chatstate(
+    v-if="isVisible"
   )
-    | stopped typing.
+    | Valerian
 
-  template(
-    v-else
-  )
-    | is typing…
+    base-space
+
+    template(
+      v-if="chatstate === 'paused'"
+    )
+      | stopped typing.
+
+    template(
+      v-else
+    )
+      | is typing…
 </template>
 
 <!-- **********************************************************************
@@ -49,6 +50,21 @@ export default {
       type: String as PropType<MessageChatState>,
       default: MessageChatState.Inactive
     }
+  },
+
+  computed: {
+    isVisible(): boolean {
+      switch (this.chatstate) {
+        case MessageChatState.Composing:
+        case MessageChatState.Paused: {
+          return true;
+        }
+
+        default: {
+          return false;
+        }
+      }
+    }
   }
 };
 </script>
@@ -66,21 +82,10 @@ $c: ".c-inbox-form-chatstate";
   border: 1px solid darken($color-base-grey-light, 4%);
   font-size: 12.5px;
   line-height: 24px;
-  opacity: 0;
-  visibility: hidden;
-  margin-block-end: -5px;
   padding-inline: 12px;
   padding-block-end: 1px;
   border-radius: 16px;
   box-shadow: 0 1px 3px 0 rgba($color-black, 0.02);
   backdrop-filter: blur(6px);
-
-  // --> CHATSTATES <--
-
-  &--composing,
-  &--paused {
-    opacity: 1;
-    visibility: visible;
-  }
 }
 </style>

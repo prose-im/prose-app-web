@@ -292,7 +292,7 @@ $form-compose-send-button-size: (
       padding-inline: $size-form-field-large-padding-sides;
       position: absolute;
       inset-inline-start: 0;
-      inset-block-end: 100%;
+      inset-block-end: calc(100% - 5px);
       z-index: 1;
     }
   }
