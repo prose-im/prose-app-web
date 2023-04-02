@@ -24,6 +24,7 @@ div(
   textarea.c-form-field__inner.c-form-field__inner--textarea(
     v-if="type === 'textarea'"
     @keydown="onFieldKeyDown"
+    @keyup="onFieldKeyUp"
     @input="onFieldInput"
     @focus="onFieldFocus"
     @blur="onFieldBlur"
@@ -39,6 +40,7 @@ div(
   input.c-form-field__inner.c-form-field__inner--input(
     v-else
     @keydown="onFieldKeyDown"
+    @keyup="onFieldKeyUp"
     @input="onFieldInput"
     @focus="onFieldFocus"
     @blur="onFieldBlur"
@@ -132,7 +134,7 @@ export default {
     }
   },
 
-  emits: ["update:modelValue", "submit"],
+  emits: ["update:modelValue", "keystroke", "submit"],
 
   data() {
     return {
@@ -193,6 +195,11 @@ export default {
           this.$emit("submit");
         }
       }
+    },
+
+    onFieldKeyUp(event: KeyboardEvent): void {
+      // Propagate key event
+      this.$emit("keystroke", event.target.value);
     },
 
     onFieldInput(): void {

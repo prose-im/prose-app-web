@@ -61,10 +61,15 @@ class BrokerModuleMessage extends BrokerModule {
     id = id || xmppID();
 
     // Emit message onto network
+    // Notice: mark chat state as active whenever sending a message.
     this._client.emit(
       $msg({ to: to.toString(), type: MessageType.Chat, id: id })
         .c("body")
         .t(body)
+        .up()
+        .c(MessageChatState.Active, {
+          xmlns: NS_CHAT_STATES
+        })
     );
 
     // Insert message into store

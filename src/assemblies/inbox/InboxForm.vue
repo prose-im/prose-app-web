@@ -44,6 +44,7 @@ layout-toolbar(
       .a-inbox-form__compose-inner
         form-field(
           v-model="message"
+          @keystroke="onKeystroke"
           @submit="onSubmit"
           :disabled="!session.connected"
           class="a-inbox-form__compose-field"
@@ -117,6 +118,7 @@ import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
+import { MessageChatState } from "@/broker/stanzas/message";
 
 export default {
   name: "InboxForm",
@@ -128,6 +130,8 @@ export default {
       // --> STATE <--
 
       message: "",
+
+      lastChatState: MessageChatState.Active,
 
       isActionFormattingPopoverVisible: false,
       isActionEmojisPopoverVisible: false
@@ -179,12 +183,30 @@ export default {
       this.isActionEmojisPopoverVisible = false;
     },
 
+    onKeystroke(value: string): void {
+      // TODO: inject dynamic JID (from where?)
+      const to = jid("valerian@valeriansaliou.name");
+
+      const newChatState =
+        value.length > 0 ? MessageChatState.Composing : MessageChatState.Active;
+
+      if (newChatState !== this.lastChatState) {
+        this.lastChatState = newChatState;
+
+        // TODO: schedule pause timeout + cancel then
+        Broker.$chat.sendChatState(to, newChatState);
+      }
+    },
+
     onSubmit(): void {
       const message = this.message.trim();
 
       if (message) {
         // TODO: inject dynamic JID (from where?)
         const to = jid("valerian@valeriansaliou.name");
+
+        // Mark last chat state as implicitely 'active'
+        this.lastChatState = MessageChatState.Active;
 
         // Send message
         Broker.$chat.sendMessage(to, message);
