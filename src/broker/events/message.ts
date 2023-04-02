@@ -54,9 +54,6 @@ class BrokerEventMessage extends BrokerEventIngestor {
       const fromJID = jid(from).bare(),
         bodyText = bodyElement.textContent || "";
 
-      // TODO
-      console.error("==> stanza", stanza);
-
       // Insert message in store
       // TODO: read delayed delivery date, if any
       Store.$inbox.insertMessage(fromJID, {

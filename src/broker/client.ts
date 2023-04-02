@@ -276,12 +276,10 @@ class BrokerClient {
     Broker.$roster
       .loadRoster()
       .then((roster: Element) => {
-        // TODO
-        console.error("==> got roster = ", roster);
+        // TODO: handle roster
       })
       .catch((error: Error) => {
-        // TODO
-        console.error("==> error loading roster = ", error);
+        // TODO: handle error
       });
   }
 
