@@ -120,6 +120,9 @@ import Store from "@/store";
 import Broker from "@/broker";
 import { MessageChatState } from "@/broker/stanzas/message";
 
+// CONSTANTS
+const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
+
 export default {
   name: "InboxForm",
 
@@ -134,7 +137,9 @@ export default {
       lastChatState: MessageChatState.Active,
 
       isActionFormattingPopoverVisible: false,
-      isActionEmojisPopoverVisible: false
+      isActionEmojisPopoverVisible: false,
+
+      chatStateComposeTimeout: null as null | ReturnType<typeof setTimeout>
     };
   },
 
@@ -159,7 +164,44 @@ export default {
     }
   },
 
+  beforeUnmount() {
+    // Clear registered timeouts
+    this.unscheduleChatStateComposeTimeout();
+  },
+
   methods: {
+    // --> HELPERS <--
+
+    propagateChatState(chatState: MessageChatState): void {
+      // TODO: inject dynamic JID (from where?)
+      const to = jid("valerian@valeriansaliou.name");
+
+      // Propagate new chat state?
+      if (chatState !== this.lastChatState) {
+        this.lastChatState = chatState;
+
+        Broker.$chat.sendChatState(to, chatState);
+      }
+    },
+
+    scheduleChatStateComposeTimeout(): void {
+      // TODO: inject dynamic JID (from where?)
+      const to = jid("valerian@valeriansaliou.name");
+
+      this.chatStateComposeTimeout = setTimeout(() => {
+        // Propagate paused chat state
+        this.propagateChatState(MessageChatState.Paused);
+      }, CHATSTATE_COMPOSE_INACTIVE_DELAY);
+    },
+
+    unscheduleChatStateComposeTimeout(): void {
+      if (this.chatStateComposeTimeout !== null) {
+        clearTimeout(this.chatStateComposeTimeout);
+
+        this.chatStateComposeTimeout = null;
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onActionFormattingClick(): void {
@@ -184,17 +226,19 @@ export default {
     },
 
     onKeystroke(value: string): void {
-      // TODO: inject dynamic JID (from where?)
-      const to = jid("valerian@valeriansaliou.name");
+      // Clear compose chat state timeout (as needed)
+      this.unscheduleChatStateComposeTimeout();
 
+      // Acquire current chat state
       const newChatState =
         value.length > 0 ? MessageChatState.Composing : MessageChatState.Active;
 
-      if (newChatState !== this.lastChatState) {
-        this.lastChatState = newChatState;
+      // Propagate new chat state (as needed)
+      this.propagateChatState(newChatState);
 
-        // TODO: schedule pause timeout + cancel then
-        Broker.$chat.sendChatState(to, newChatState);
+      // Re-schedule compose timeout?
+      if (newChatState === MessageChatState.Composing) {
+        this.scheduleChatStateComposeTimeout();
       }
     },
 
@@ -205,7 +249,10 @@ export default {
         // TODO: inject dynamic JID (from where?)
         const to = jid("valerian@valeriansaliou.name");
 
-        // Mark last chat state as implicitely 'active'
+        // Clear compose chat state timeout (as needed)
+        this.unscheduleChatStateComposeTimeout();
+
+        // Force-mark last chat state as 'active' (implicit)
         this.lastChatState = MessageChatState.Active;
 
         // Send message
