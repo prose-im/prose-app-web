@@ -82,13 +82,5 @@ $c: ".c-inbox-form-chatstate";
     opacity: 1;
     visibility: visible;
   }
-
-  &--composing {
-    /* TODO */
-  }
-
-  &--paused {
-    /* TODO */
-  }
 }
 </style>

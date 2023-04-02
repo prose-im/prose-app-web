@@ -54,7 +54,7 @@ const $avatar = defineStore("avatar", {
     getAvatar: (state: Avatar) => {
       return (jid: JID): AvatarEntry | void => {
         // TODO: need to assert from there? (maybe?)
-        // this.assertAvatar(jid);
+        // this.assert(jid);
 
         state[jid.toString()] || undefined;
       };
@@ -62,7 +62,7 @@ const $avatar = defineStore("avatar", {
   },
 
   actions: {
-    async assertAvatar(jid: JID, reload = false): Promise<AvatarEntry | void> {
+    async assert(jid: JID, reload = false): Promise<AvatarEntry | void> {
       // Read cached avatar
       const avatar = this.getAvatar(jid);
 
@@ -80,7 +80,7 @@ const $avatar = defineStore("avatar", {
 
       // Reload avatar? (w/ updated metadata, only if avatar had been loaded)
       if (avatar && avatar.metadata.id !== id) {
-        return this.assertAvatar(jid, true);
+        return this.assert(jid, true);
       }
 
       return Promise.resolve(avatar);

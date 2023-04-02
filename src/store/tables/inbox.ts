@@ -13,11 +13,18 @@ import { JID } from "@xmpp/jid";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
 
+// PROJECT: BROKER
+import { MessageChatState } from "@/broker/stanzas/message";
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
 
 type InboxEntryMessage = MessagingStoreMessageData;
+
+type InboxEntryStates = {
+  chatstate: MessageChatState;
+};
 
 type InboxEntryProfile = {
   name: InboxEntryProfileName;
@@ -84,6 +91,7 @@ interface Inbox {
 
 interface InboxEntry {
   messages: Array<InboxEntryMessage>;
+  states: InboxEntryStates;
   profile?: InboxEntryProfile;
 }
 
@@ -101,26 +109,37 @@ const $inbox = defineStore("inbox", {
   getters: {
     getMessages: function () {
       return (jid: JID): Array<InboxEntryMessage> => {
-        return this.assertEntry(jid).messages;
+        return this.assert(jid).messages;
+      };
+    },
+
+    getStates: function () {
+      return (jid: JID): Array<InboxEntryStates> => {
+        return this.assert(jid).states;
       };
     },
 
     getProfile: function () {
       return (jid: JID): InboxEntryProfile | void => {
-        return this.assertEntry(jid).profile || undefined;
+        return this.assert(jid).profile || undefined;
       };
     }
   },
 
   actions: {
-    assertEntry(jid: JID): InboxEntry {
+    assert(jid: JID): InboxEntry {
       const jidString = jid.bare().toString();
 
       // Assign new inbox entry?
       if (!(jidString in this)) {
         this.$patch(() => {
+          // Insert with defaults
           this[jidString] = {
-            messages: []
+            messages: [],
+
+            states: {
+              chatstate: MessageChatState.Inactive
+            }
           };
         });
       }
@@ -136,11 +155,15 @@ const $inbox = defineStore("inbox", {
       // TODO: send IPC whenever a new message is inserted, eg. message:inserted
       // TODO: also send IPC on update, eg. message:updated
 
-      this.assertEntry(jid).messages.push(...messages);
+      this.assert(jid).messages.push(...messages);
+    },
+
+    setStatesChatstate(jid: JID, chatstate: MessageChatState) {
+      this.assert(jid).states.chatstate = chatstate;
     },
 
     setProfile(jid: JID, profile: InboxEntryProfile) {
-      this.assertEntry(jid).profile = profile;
+      this.assert(jid).profile = profile;
     }
   }
 });

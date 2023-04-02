@@ -15,6 +15,7 @@ import xmppTime from "@xmpp/time";
 
 // PROJECT: BROKER
 import BrokerEventIngestor from "@/broker/events/ingestor";
+import { MessageChatState } from "@/broker/stanzas/message";
 import {
   NS_CHAT_STATES,
   NS_REACTIONS,
@@ -71,7 +72,12 @@ class BrokerEventMessage extends BrokerEventIngestor {
   private __chatState(stanza: Element, element?: Element): void {
     // XEP-0085: Chat State Notifications
     // https://xmpp.org/extensions/xep-0085.html
-    // TODO: handle composing et al
+    const from = stanza.getAttribute("from") || null,
+      chatstate = (element?.tagName as MessageChatState) || null;
+
+    if (from !== null && chatstate !== null) {
+      Store.$inbox.setStatesChatstate(jid(from), chatstate);
+    }
   }
 
   private __reactions(stanza: Element, element?: Element): void {

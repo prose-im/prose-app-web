@@ -37,7 +37,7 @@ layout-toolbar(
       @submit.prevent="onSubmit"
     )
       inbox-form-chatstate(
-        :chatstate="'composing'"
+        :chatstate="states.chatstate"
         class="a-inbox-form__compose-chatstate"
       )
 
@@ -147,6 +147,11 @@ export default {
 
     session(): typeof Store.$session {
       return Store.$session;
+    },
+
+    states(): ReturnType<typeof Store.$inbox.getStates> {
+      // TODO: jid from url
+      return Store.$inbox.getStates(jid("valerian@valeriansaliou.name"));
     }
   },
 
