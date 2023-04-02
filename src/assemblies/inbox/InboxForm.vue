@@ -36,6 +36,11 @@ layout-toolbar(
     form.a-inbox-form__compose(
       @submit.prevent="onSubmit"
     )
+      inbox-form-chatstate(
+        :chatstate="'composing'"
+        class="a-inbox-form__compose-chatstate"
+      )
+
       .a-inbox-form__compose-inner
         form-field(
           v-model="message"
@@ -105,6 +110,7 @@ import {
   Item as PopoverItem,
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
+import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -114,6 +120,8 @@ import Broker from "@/broker";
 
 export default {
   name: "InboxForm",
+
+  components: { InboxFormChatstate },
 
   data() {
     return {
@@ -131,7 +139,7 @@ export default {
       return [
         {
           type: PopoverItemType.Button,
-          label: "Formatting items...",
+          label: "Formatting items…",
           color: "blue"
         }
       ];
@@ -227,6 +235,7 @@ $form-compose-send-button-size: (
   #{$c}__compose {
     margin-inline: 12px;
     padding-block: $form-compose-padding-block;
+    position: relative;
 
     #{$c}__compose-inner {
       position: relative;
@@ -272,6 +281,13 @@ $form-compose-send-button-size: (
         fill: $color-white;
         margin-inline-start: -2px;
       }
+    }
+
+    #{$c}__compose-chatstate {
+      position: absolute;
+      inset-inline-start: 0;
+      inset-block-end: 100%;
+      z-index: 1;
     }
   }
 }

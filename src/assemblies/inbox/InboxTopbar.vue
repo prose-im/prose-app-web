@@ -142,7 +142,7 @@ export default {
       return [
         {
           type: PopoverItemType.Button,
-          label: "History items...",
+          label: "History items…",
           color: "blue"
         }
       ];

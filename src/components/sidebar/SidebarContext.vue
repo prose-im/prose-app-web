@@ -168,7 +168,7 @@ export default {
 
             {
               type: PopoverItemType.Button,
-              label: "Custom..."
+              label: "Custom…"
             }
           ]
         },

@@ -195,13 +195,13 @@ class BrokerClient {
   private __onConnect(status: Strophe.Status): void {
     switch (status) {
       case Strophe.Status.CONNECTING: {
-        logger.debug("Connecting...");
+        logger.debug("Connecting…");
 
         break;
       }
 
       case Strophe.Status.DISCONNECTING: {
-        logger.debug("Disconnecting...");
+        logger.debug("Disconnecting…");
 
         break;
       }

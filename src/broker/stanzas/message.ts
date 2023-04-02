@@ -34,11 +34,11 @@ export enum MessageType {
 export enum MessageChatState {
   // User is actively participating in the chat session.
   Active = "active",
-  // User has not been actively participating in the chat session.
+  // User is composing a message.
   Composing = "composing",
   // User has effectively ended their participation in the chat session.
   Gone = "gone",
-  // User is composing a message.
+  // User has not been actively participating in the chat session.
   Inactive = "inactive",
   // User had been composing but now has stopped.
   Paused = "paused"

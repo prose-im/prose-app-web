@@ -47,6 +47,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
     const from = stanza.getAttribute("from") || null,
       bodyElement = (stanza.getElementsByTagName("body") || [])[0] || null;
 
+    // Handle message with body?
     if (from !== null && bodyElement !== null) {
       logger.info(`Processing message from: '${from || "?"}'`);
 
@@ -55,6 +56,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
         bodyText = bodyElement.textContent || "";
 
       // Insert message in store
+      // TODO: handle different message types
       // TODO: read delayed delivery date, if any
       Store.$inbox.insertMessage(fromJID, {
         id: stanza.id || xmppID(),
@@ -63,17 +65,13 @@ class BrokerEventMessage extends BrokerEventIngestor {
         from: fromJID.toString(),
         content: bodyText
       });
-    } else {
-      logger.warn(
-        "Cannot process message, as it does not have any 'from' or 'body' set"
-      );
     }
   }
 
   private __chatState(stanza: Element, element?: Element): void {
     // XEP-0085: Chat State Notifications
     // https://xmpp.org/extensions/xep-0085.html
-    // TODO
+    // TODO: handle composing et al
   }
 
   private __reactions(stanza: Element, element?: Element): void {

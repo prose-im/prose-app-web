@@ -226,13 +226,6 @@ export default {
 <style lang="scss">
 $c: ".c-form-field";
 
-// VARIABLES
-$size-medium-padding-sides: 10px;
-$size-mid-medium-padding-sides: 14px;
-$size-large-padding-sides: 18px;
-$size-mid-large-padding-sides: 22px;
-$size-ultra-large-padding-sides: 24px;
-
 .c-form-field {
   position: relative;
 
@@ -309,8 +302,8 @@ $size-ultra-large-padding-sides: 24px;
   &--medium {
     #{$c}__inner {
       font-size: 11px;
-      padding-inline-start: $size-medium-padding-sides;
-      padding-inline-end: $size-medium-padding-sides;
+      padding-inline-start: $size-form-field-medium-padding-sides;
+      padding-inline-end: $size-form-field-medium-padding-sides;
 
       &--input {
         line-height: 25px;
@@ -326,8 +319,8 @@ $size-ultra-large-padding-sides: 24px;
   &--mid-medium {
     #{$c}__inner {
       font-size: 13px;
-      padding-inline-start: $size-mid-medium-padding-sides;
-      padding-inline-end: $size-mid-medium-padding-sides;
+      padding-inline-start: $size-form-field-mid-medium-padding-sides;
+      padding-inline-end: $size-form-field-mid-medium-padding-sides;
 
       &--input {
         line-height: 32px;
@@ -343,8 +336,8 @@ $size-ultra-large-padding-sides: 24px;
   &--large {
     #{$c}__inner {
       font-size: 15px;
-      padding-inline-start: $size-large-padding-sides;
-      padding-inline-end: $size-large-padding-sides;
+      padding-inline-start: $size-form-field-large-padding-sides;
+      padding-inline-end: $size-form-field-large-padding-sides;
 
       &--input {
         line-height: 42px;
@@ -360,8 +353,8 @@ $size-ultra-large-padding-sides: 24px;
   &--mid-large {
     #{$c}__inner {
       font-size: 16px;
-      padding-inline-start: $size-mid-large-padding-sides;
-      padding-inline-end: $size-mid-large-padding-sides;
+      padding-inline-start: $size-form-field-mid-large-padding-sides;
+      padding-inline-end: $size-form-field-mid-large-padding-sides;
 
       &--input {
         line-height: 48px;
@@ -377,8 +370,8 @@ $size-ultra-large-padding-sides: 24px;
   &--ultra-large {
     #{$c}__inner {
       font-size: 17px;
-      padding-inline-start: $size-ultra-large-padding-sides;
-      padding-inline-end: $size-ultra-large-padding-sides;
+      padding-inline-start: $size-form-field-ultra-large-padding-sides;
+      padding-inline-end: $size-form-field-ultra-large-padding-sides;
 
       &--input {
         line-height: 58px;
