@@ -40,6 +40,7 @@ layout-toolbar(
         form-field(
           v-model="message"
           @submit="onSubmit"
+          :disabled="!session.connected"
           class="a-inbox-form__compose-field"
           type="textarea"
           name="message"
@@ -104,6 +105,9 @@ import {
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 
@@ -130,6 +134,10 @@ export default {
           color: "blue"
         }
       ];
+    },
+
+    session(): typeof Store.$session {
+      return Store.$session;
     }
   },
 

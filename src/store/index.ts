@@ -14,6 +14,7 @@ import { Pinia, createPinia } from "pinia";
 import { createPersistedState } from "pinia-plugin-persistedstate";
 
 // PROJECT: STORE
+import $session from "@/store/tables/session";
 import $account from "@/store/tables/account";
 import $avatar from "@/store/tables/avatar";
 import $inbox from "@/store/tables/inbox";
@@ -32,6 +33,10 @@ const STORE_PERSIST_REVISION = "v1";
 class Store {
   private readonly __store: Pinia;
 
+  // Transient stores
+  $session!: ReturnType<typeof $session>;
+
+  // Permanent stores
   $account!: ReturnType<typeof $account>;
   $avatar!: ReturnType<typeof $avatar>;
   $inbox!: ReturnType<typeof $inbox>;
@@ -65,6 +70,10 @@ class Store {
   }
 
   private __loadTables(): void {
+    // #1. Transient stores
+    this.$session = $session(this.__store);
+
+    // #2. Permanent stores
     this.$account = $account(this.__store);
     this.$avatar = $avatar(this.__store);
     this.$inbox = $inbox(this.__store);

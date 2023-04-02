@@ -17,6 +17,9 @@ import Broker from "@/broker";
 import BrokerEvent from "@/broker/events";
 import { IQType } from "@/broker/stanzas/iq";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 
@@ -212,7 +215,7 @@ class BrokerClient {
         this.__raiseConnectLifecycle(new Error("Disconnected from server"));
 
         // Clear context
-        this.jid = undefined;
+        this.__clearContext();
 
         break;
       }
@@ -220,8 +223,8 @@ class BrokerClient {
       case Strophe.Status.CONNECTED: {
         logger.info("Connected");
 
-        // Obtain context
-        this.jid = this.__connection ? jid(this.__connection.jid) : undefined;
+        // Setup context
+        this.__setupContext();
 
         // Trigger connected hooks
         this.__bindReceivers();
@@ -280,6 +283,18 @@ class BrokerClient {
         // TODO
         console.error("==> error loading roster = ", error);
       });
+  }
+
+  private __setupContext(): void {
+    this.jid = this.__connection ? jid(this.__connection.jid) : undefined;
+
+    Store.$session.setConnected(true);
+  }
+
+  private __clearContext(): void {
+    Store.$session.setConnected(false);
+
+    this.jid = undefined;
   }
 
   private __bindReceivers(): void {
