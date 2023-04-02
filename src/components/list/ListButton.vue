@@ -16,6 +16,7 @@ div(
     "c-list-button--color-" + color,
     {
       "c-list-button--active": active,
+      "c-list-button--disabled": disabled,
       "c-list-button--actionable": actionable,
       "c-list-button--important": important
     }
@@ -85,6 +86,11 @@ export default {
     },
 
     active: {
+      type: Boolean,
+      default: false
+    },
+
+    disabled: {
       type: Boolean,
       default: false
     },
@@ -246,6 +252,11 @@ $c: ".c-list-button";
     #{$c}__label {
       color: $color-white;
     }
+  }
+
+  &--disabled {
+    opacity: 0.45;
+    pointer-events: none;
   }
 
   &--important {

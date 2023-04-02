@@ -20,6 +20,7 @@ base-popover(
       @click="item.click ? item.click(context) : null"
       @mouseenter="onButtonMouseEnter(item, index)"
       @mouseleave="onButtonMouseLeave(index)"
+      :disabled="item.disabled"
       :emphasis="item.emphasis"
       :actionable="!childrenPopoverVisible[index]"
       :color="item.color"

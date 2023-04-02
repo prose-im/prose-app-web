@@ -51,6 +51,7 @@ layout-toolbar(
         )
 
         base-button(
+          :disabled="!session.connected"
           size="custom"
           type="submit"
           class="a-inbox-form__compose-send"

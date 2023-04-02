@@ -131,6 +131,10 @@ export default {
   },
 
   computed: {
+    session(): typeof Store.$session {
+      return Store.$session;
+    },
+
     messages(): ReturnType<Store.$inbox.getMessages> {
       // TODO: jid from url
       return Store.$inbox.getMessages(jid("valerian@valeriansaliou.name"));
@@ -577,6 +581,7 @@ export default {
               label: "Remove message",
               color: "red",
               emphasis: true,
+              disabled: !this.session.connected,
               click: this.onPopoverActionsRemoveClick
             }
           ],
