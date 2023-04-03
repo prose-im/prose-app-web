@@ -10,6 +10,7 @@
 
 // NPM
 import { JID } from "@xmpp/jid";
+import merge from "lodash.merge";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
 
@@ -19,6 +20,11 @@ import { MessageChatState } from "@/broker/stanzas/message";
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
+
+type InboxEntryMessages = {
+  list: Array<InboxEntryMessage>;
+  byId: { [id: string]: InboxEntryMessage };
+};
 
 type InboxEntryMessage = MessagingStoreMessageData;
 
@@ -90,7 +96,7 @@ interface Inbox {
 }
 
 interface InboxEntry {
-  messages: Array<InboxEntryMessage>;
+  messages: InboxEntryMessages;
   states: InboxEntryStates;
   profile?: InboxEntryProfile;
 }
@@ -109,7 +115,7 @@ const $inbox = defineStore("inbox", {
   getters: {
     getMessages: function () {
       return (jid: JID): Array<InboxEntryMessage> => {
-        return this.assert(jid).messages;
+        return this.assert(jid).messages.list;
       };
     },
 
@@ -135,7 +141,10 @@ const $inbox = defineStore("inbox", {
         this.$patch(() => {
           // Insert with defaults
           this[jidString] = {
-            messages: [],
+            messages: {
+              list: [],
+              byId: {}
+            },
 
             states: {
               chatstate: MessageChatState.Inactive
@@ -152,10 +161,27 @@ const $inbox = defineStore("inbox", {
     },
 
     insertMessages(jid: JID, messages: Array<InboxEntryMessage>) {
-      // TODO: send IPC whenever a new message is inserted, eg. message:inserted
-      // TODO: also send IPC on update, eg. message:updated
+      const container = this.assert(jid).messages;
 
-      this.assert(jid).messages.push(...messages);
+      messages.forEach(message => {
+        if (!message.id) {
+          throw new Error("Cannot insert a message with no identifier");
+        }
+
+        // Insert or update message
+        const existingMessage = container.byId[message.id] || null;
+
+        if (existingMessage !== null) {
+          merge(existingMessage, message);
+
+          // TODO: send IPC for update
+        } else {
+          container.byId[message.id] = message;
+          container.list.push(message);
+
+          // TODO: send IPC for insert
+        }
+      });
     },
 
     setStatesChatstate(jid: JID, chatstate: MessageChatState) {
