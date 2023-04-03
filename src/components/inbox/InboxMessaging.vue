@@ -122,6 +122,7 @@ export default {
       // --> STATE <--
 
       isFrameLoaded: false,
+      isMessageSyncStale: true,
 
       popover: {
         style: {
@@ -150,7 +151,18 @@ export default {
     }
   },
 
+  created() {
+    // Bind connected handler
+    Store.$session.events().on("connected", this.onStoreConnected);
+
+    // Synchronize messages eagerly
+    this.syncMessagesEager();
+  },
+
   beforeUnmount() {
+    // Unbind connected handler
+    Store.$session.events().off("connected", this.onStoreConnected);
+
     // Un-setup store
     this.unsetupStore();
   },
@@ -278,69 +290,13 @@ export default {
         }
       });
 
-      // Insert messages
-      // TODO: dummy insert (remove this)
-      Store.$inbox.insertMessages(jid(accountJID), [
-        {
-          id: "b4d303b1-17c9-4863-81b7-bc5281f3590f",
-          type: "text",
-          date: "2022-06-22T19:15:03.000Z",
-          from: "valerian@valeriansaliou.name",
-          content:
-            "Quick message just to confirm that I asked the designers for a new illustration.",
-
-          metas: {
-            encrypted: true,
-            edited: false
-          }
-        },
-
-        {
-          id: "2abc1d01-da43-45bd-8bdd-a1b37c072ff1",
-          type: "text",
-          date: "2022-06-22T19:15:04.000Z",
-          from: "valerian@valeriansaliou.name",
-          content: "We need one more for the blog.",
-
-          metas: {
-            encrypted: true,
-            edited: false
-          }
-        },
-
-        {
-          id: "fe685272-2a23-4701-9e4e-a9605697b8c7",
-          type: "text",
-          date: "2022-06-24T19:15:05.000Z",
-          from: "valerian@valeriansaliou.name",
-          content: "Might be done tomorrow 😀",
-
-          metas: {
-            encrypted: true,
-            edited: false
-          },
-
-          reactions: [
-            {
-              reaction: "🤠",
-              authors: ["valerian@valeriansaliou.name", "baptiste@crisp.chat"]
-            },
-
-            {
-              reaction: "🚀",
-              authors: ["baptiste@crisp.chat"]
-            }
-          ]
-        }
-      ]);
-
-      // Insert all messages (already-known)
-      if (!this.messages) {
+      // Mark as initializing?
+      if (this.isMessageSyncStale === true) {
         runtime.MessagingStore.loader("forwards", true);
-        // TODO: load from MAM
-      } else {
-        runtime.MessagingStore.insert(...this.messages);
       }
+
+      // Insert all messages already in store
+      runtime.MessagingStore.insert(...this.messages);
 
       // Subscribe to store events
       const storeEventBus = Store.$inbox.events();
@@ -433,6 +389,18 @@ export default {
       // Trigger ghost click event on container (so that eg. the click away \
       //   directive handles the click event accordingly)
       (this.$refs.container as HTMLElement).click();
+    },
+
+    syncMessagesEager(): void {
+      // Can synchronize now? (connected)
+      if (
+        this.isMessageSyncStale === true &&
+        Store.$session.connected === true
+      ) {
+        this.isMessageSyncStale = false;
+
+        Store.$inbox.loadMessages(jid("valerian@valeriansaliou.name"));
+      }
     },
 
     // --> EVENT LISTENERS <--
@@ -547,9 +515,26 @@ export default {
       // TODO: react to message
     },
 
+    onStoreConnected(connected: boolean): void {
+      if (connected === true) {
+        // Synchronize messages eagerly
+        this.syncMessagesEager();
+      } else {
+        // Mark synchronization as stale (will re-synchronize when connection \
+        //   is restored)
+        this.isMessageSyncStale = true;
+      }
+    },
+
     onStoreMessageInserted(message: InboxEntryMessage): void {
+      const frameRuntime = this.frame();
+
+      // Stop loading spinner
+      // TODO: only if message was restored from MAM
+      frameRuntime.MessagingStore.loader("forwards", false);
+
       // Insert into view
-      this.frame().MessagingStore.insert(message);
+      frameRuntime.MessagingStore.insert(message);
     },
 
     onStoreMessageUpdated(message: InboxEntryMessage): void {

@@ -9,7 +9,14 @@
  * ************************************************************************* */
 
 // NPM
+import mitt from "mitt";
 import { defineStore } from "pinia";
+
+/**************************************************************************
+ * INSTANCES
+ * ************************************************************************* */
+
+const EventBus = mitt();
 
 /**************************************************************************
  * TABLE
@@ -26,10 +33,24 @@ const $session = defineStore("session", {
   },
 
   actions: {
+    events(): ReturnType<typeof mitt> {
+      // Return event bus
+      return EventBus;
+    },
+
     setConnected(connected: boolean) {
-      this.$patch({
-        connected
-      });
+      // Check if will change
+      const willChange = this.connected !== connected ? true : false;
+
+      if (willChange === true) {
+        // Update value
+        this.$patch({
+          connected
+        });
+
+        // Broadcast connected state change
+        EventBus.emit("connected", connected);
+      }
     }
   }
 });

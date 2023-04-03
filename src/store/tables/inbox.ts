@@ -16,6 +16,7 @@ import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
 
 // PROJECT: BROKER
+import Broker from "@/broker";
 import { MessageChatState } from "@/broker/stanzas/message";
 
 /**************************************************************************
@@ -220,6 +221,10 @@ const $inbox = defineStore("inbox", {
         // Emit IPC retracted event
         EventBus.emit("message:retracted", existingMessage);
       }
+    },
+
+    loadMessages(jid: JID) {
+      Broker.$mam.loadMessages(jid);
     },
 
     setStatesChatstate(jid: JID, chatstate: MessageChatState) {

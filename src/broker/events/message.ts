@@ -45,28 +45,8 @@ class BrokerEventMessage extends BrokerEventIngestor {
   };
 
   private __any(stanza: Element): void {
-    const from = stanza.getAttribute("from") || null,
-      bodyElement = (stanza.getElementsByTagName("body") || [])[0] || null;
-
-    // Handle message with body?
-    if (from !== null && bodyElement !== null) {
-      logger.info(`Processing message from: '${from || "?"}'`);
-
-      // Read body text
-      const fromJID = jid(from).bare(),
-        bodyText = bodyElement.textContent || "";
-
-      // Insert message in store
-      // TODO: handle different message types
-      // TODO: read delayed delivery date, if any
-      Store.$inbox.insertMessage(fromJID, {
-        id: stanza.id || xmppID(),
-        type: "text",
-        date: xmppTime.datetime(),
-        from: fromJID.toString(),
-        content: bodyText
-      });
-    }
+    // Pass to generic message handler
+    this.__handleMessage(stanza);
   }
 
   private __chatState(stanza: Element, element?: Element): void {
@@ -102,6 +82,51 @@ class BrokerEventMessage extends BrokerEventIngestor {
     // XEP-0313: Message Archive Management
     // https://xmpp.org/extensions/xep-0313.html
     // TODO
+    console.error("==> mam received!", element);
+
+    if (element !== undefined) {
+      Strophe.forEachChild(element, "forwarded", (forwarded: Element) => {
+        const message =
+          (forwarded.getElementsByTagName("message") || [])[0] || null;
+
+        if (message !== null) {
+          // Read delayed delivery information
+          const delay =
+            (forwarded.getElementsByTagName("delay") || [])[0] || undefined;
+
+          // Pass to generic message handler
+          this.__handleMessage(message, delay);
+        }
+      });
+    }
+  }
+
+  private __handleMessage(message: Element, delay?: Element): void {
+    const from = message.getAttribute("from") || null,
+      bodyElement = (message.getElementsByTagName("body") || [])[0] || null;
+
+    // Handle message with body?
+    if (from !== null && bodyElement !== null) {
+      logger.info(`Processing message from: '${from || "?"}'`);
+
+      // Read body text
+      const fromJID = jid(from).bare(),
+        bodyText = bodyElement.textContent || "";
+
+      // Read date and time
+      const dateTime =
+        (delay ? delay.getAttribute("stamp") : null) || xmppTime.datetime();
+
+      // Insert message in store
+      // TODO: handle different message types
+      Store.$inbox.insertMessage(fromJID, {
+        id: message.id || xmppID(),
+        type: "text",
+        date: dateTime,
+        from: fromJID.toString(),
+        content: bodyText
+      });
+    }
   }
 }
 
