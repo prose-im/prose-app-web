@@ -81,9 +81,6 @@ class BrokerEventMessage extends BrokerEventIngestor {
   private __mam(stanza: Element, element?: Element): void {
     // XEP-0313: Message Archive Management
     // https://xmpp.org/extensions/xep-0313.html
-    // TODO
-    console.error("==> mam received!", element);
-
     if (element !== undefined) {
       Strophe.forEachChild(element, "forwarded", (forwarded: Element) => {
         const message =
