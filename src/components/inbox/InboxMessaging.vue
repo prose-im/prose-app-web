@@ -101,7 +101,8 @@ interface StatePopover {
 // CONSTANTS
 const FRAME_STYLE = {
   fontFamily: "Prose Outfit",
-  fontSize: "13.5px"
+  fontSize: "13.5px",
+  paddingBottom: "25px"
 };
 
 const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
@@ -183,6 +184,7 @@ export default {
         #app {
           font-family: "${FRAME_STYLE.fontFamily}";
           font-size: ${FRAME_STYLE.fontSize};
+          padding-bottom: ${FRAME_STYLE.paddingBottom};
         }
       `;
 
