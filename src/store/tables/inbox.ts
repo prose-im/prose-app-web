@@ -11,6 +11,7 @@
 // NPM
 import { JID } from "@xmpp/jid";
 import merge from "lodash.merge";
+import mitt from "mitt";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
 
@@ -102,6 +103,12 @@ interface InboxEntry {
 }
 
 /**************************************************************************
+ * INSTANCES
+ * ************************************************************************* */
+
+const EventBus = mitt();
+
+/**************************************************************************
  * TABLE
  * ************************************************************************* */
 
@@ -133,6 +140,11 @@ const $inbox = defineStore("inbox", {
   },
 
   actions: {
+    events(): ReturnType<typeof mitt> {
+      // Return event bus
+      return EventBus;
+    },
+
     assert(jid: JID): InboxEntry {
       const jidString = jid.bare().toString();
 
@@ -174,14 +186,40 @@ const $inbox = defineStore("inbox", {
         if (existingMessage !== null) {
           merge(existingMessage, message);
 
-          // TODO: send IPC for update
+          // Emit IPC updated event
+          EventBus.emit("message:updated", existingMessage);
         } else {
           container.byId[message.id] = message;
           container.list.push(message);
 
-          // TODO: send IPC for insert
+          // Emit IPC inserted event
+          EventBus.emit("message:inserted", message);
         }
       });
+    },
+
+    retractMessage(jid: JID, id: string) {
+      const container = this.assert(jid).messages;
+
+      // Acquire message from store
+      const existingMessage = container.byId[id] || null;
+
+      if (existingMessage !== null) {
+        // Remove from identifier map
+        delete container.byId[id];
+
+        // Remove from list
+        const listIndex = container.list.findIndex(message => {
+          return message.id === id ? true : false;
+        });
+
+        if (listIndex > -1) {
+          container.list.splice(listIndex, 1);
+        }
+
+        // Emit IPC retracted event
+        EventBus.emit("message:retracted", existingMessage);
+      }
     },
 
     setStatesChatstate(jid: JID, chatstate: MessageChatState) {
@@ -198,4 +236,5 @@ const $inbox = defineStore("inbox", {
  * EXPORTS
  * ************************************************************************* */
 
+export type { InboxEntryMessage };
 export default $inbox;

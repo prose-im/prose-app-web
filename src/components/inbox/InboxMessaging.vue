@@ -77,6 +77,7 @@ import {
 
 // PROJECT: STORES
 import Store from "@/store";
+import { InboxEntryMessage } from "@/store/tables/inbox";
 
 // TYPES
 type StatePopoverListeners = { [name: string]: (_: any) => void };
@@ -110,6 +111,14 @@ export default {
 
   data() {
     return {
+      // --> DATA <--
+
+      storeEvents: {
+        "message:inserted": this.onStoreMessageInserted,
+        "message:updated": this.onStoreMessageUpdated,
+        "message:retracted": this.onStoreMessageRetracted
+      },
+
       // --> STATE <--
 
       isFrameLoaded: false,
@@ -139,6 +148,11 @@ export default {
       // TODO: jid from url
       return Store.$inbox.getMessages(jid("valerian@valeriansaliou.name"));
     }
+  },
+
+  beforeUnmount() {
+    // Un-setup store
+    this.unsetupStore();
   },
 
   methods: {
@@ -204,14 +218,22 @@ export default {
       // TODO: set JID from URL
       const accountJID = "valerian@valeriansaliou.name";
 
-      // Identify as user
+      // Identify both parties
+      // TODO: dummy identities
+      runtime.MessagingStore.identify(jid("valerian@prose.org"), {
+        name: "Val",
+        avatar:
+          "https://gravatar.com/avatar/15bf80612ffed057af0ed8a579adb870?size=80"
+      });
+
       runtime.MessagingStore.identify(accountJID, {
         name: "Valerian",
         avatar:
           "https://gravatar.com/avatar/b4cb8302ee37f985cc76190aaae1b40b?size=80"
       });
 
-      // TODO: dummy set
+      // Set user profile
+      // TODO: dummy profile
       Store.$inbox.setProfile(jid(accountJID), {
         name: {
           first: "Valerian",
@@ -256,7 +278,8 @@ export default {
         }
       });
 
-      // TODO: dummy insert
+      // Insert messages
+      // TODO: dummy insert (remove this)
       Store.$inbox.insertMessages(jid(accountJID), [
         {
           id: "b4d303b1-17c9-4863-81b7-bc5281f3590f",
@@ -319,23 +342,24 @@ export default {
         runtime.MessagingStore.insert(...this.messages);
       }
 
-      // Subscribe to new messages
-      this.$watch(
-        "messages",
+      // Subscribe to store events
+      const storeEventBus = Store.$inbox.events();
 
-        newMessages => {
-          // TODO: do not only pick last inserted message for insertion!
-          runtime.MessagingStore.insert(newMessages[newMessages.length - 1]);
-        },
-
-        {
-          deep: true
-        }
-      );
+      for (let eventName in this.storeEvents) {
+        storeEventBus.on(eventName, this.storeEvents[eventName]);
+      }
     },
 
     setupListeners(runtime: MessagingRuntime): void {
       runtime.addEventListener("click", this.onFrameInnerClick);
+    },
+
+    unsetupStore(): void {
+      const storeEventBus = Store.$inbox.events();
+
+      for (let eventName in this.storeEvents) {
+        storeEventBus.off(eventName, this.storeEvents[eventName]);
+      }
     },
 
     showPopover({
@@ -521,6 +545,21 @@ export default {
       emoji: string;
     }): void {
       // TODO: react to message
+    },
+
+    onStoreMessageInserted(message: InboxEntryMessage): void {
+      // Insert into view
+      this.frame().MessagingStore.insert(message);
+    },
+
+    onStoreMessageUpdated(message: InboxEntryMessage): void {
+      // Update in view
+      this.frame().MessagingStore.update(message.id, message);
+    },
+
+    onStoreMessageRetracted(message: InboxEntryMessage): void {
+      // Retract from view
+      this.frame().MessagingStore.retract(message.id);
     },
 
     onEventMessageActionsView(event: EventMessageActionsView): void {
