@@ -134,11 +134,10 @@ export default {
 
       message: "",
 
-      lastChatState: MessageChatState.Active,
-
       isActionFormattingPopoverVisible: false,
       isActionEmojisPopoverVisible: false,
 
+      chatStateLast: MessageChatState.Active,
       chatStateComposeTimeout: null as null | ReturnType<typeof setTimeout>
     };
   },
@@ -177,8 +176,8 @@ export default {
       const to = jid("valerian@valeriansaliou.name");
 
       // Propagate new chat state?
-      if (chatState !== this.lastChatState) {
-        this.lastChatState = chatState;
+      if (chatState !== this.chatStateLast) {
+        this.chatStateLast = chatState;
 
         Broker.$chat.sendChatState(to, chatState);
       }
@@ -253,7 +252,7 @@ export default {
         this.unscheduleChatStateComposeTimeout();
 
         // Force-mark last chat state as 'active' (implicit)
-        this.lastChatState = MessageChatState.Active;
+        this.chatStateLast = MessageChatState.Active;
 
         // Send message
         Broker.$chat.sendMessage(to, message);
