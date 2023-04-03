@@ -79,6 +79,9 @@ import {
 import Store from "@/store";
 import { InboxEntryMessage } from "@/store/tables/inbox";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 // TYPES
 type StatePopoverListeners = { [name: string]: (_: any) => void };
 type StatePopoverInteraction = { id: string; action: string };
@@ -401,7 +404,7 @@ export default {
       ) {
         this.isMessageSyncStale = false;
 
-        Store.$inbox.loadMessages(jid("valerian@valeriansaliou.name"));
+        Broker.$mam.loadMessages(jid("valerian@valeriansaliou.name"));
       }
     },
 
