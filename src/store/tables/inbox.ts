@@ -17,7 +17,7 @@ import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/mess
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { MessageChatState } from "@/broker/stanzas/message";
+import { MessageChatState, MessageID } from "@/broker/stanzas/message";
 
 /**************************************************************************
  * TYPES
@@ -223,8 +223,8 @@ const $inbox = defineStore("inbox", {
       }
     },
 
-    loadMessages(jid: JID) {
-      Broker.$mam.loadMessages(jid);
+    loadMessages(jid: JID, beforeId?: MessageID) {
+      Broker.$mam.loadMessages(jid, beforeId);
     },
 
     setStatesChatstate(jid: JID, chatstate: MessageChatState) {
