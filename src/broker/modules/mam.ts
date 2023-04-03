@@ -75,10 +75,8 @@ class BrokerModuleMAM extends BrokerModule {
         stanzaQuery
           .c("set", { xmlns: NS_RSM })
           .c("max", {}, HISTORY_PAGE_SIZE.toString())
-          .c("before", {}, ""); // TODO: collides w/ before-id?
-
-        // Done, go back to root
-        stanzaQuery.up();
+          .c("before", {}, "")
+          .up();
       }
     }
 
