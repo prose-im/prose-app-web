@@ -108,7 +108,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     return true;
   }
 
-  private __version(stanza: Element, element?: Element): void {
+  private __version(stanza: Element, element: Element): void {
     // XEP-0092: Software Version
     // https://xmpp.org/extensions/xep-0092.html
 
@@ -125,7 +125,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __last(stanza: Element, element?: Element): void {
+  private __last(stanza: Element, element: Element): void {
     // XEP-0012: Last Activity
     // https://xmpp.org/extensions/xep-0012.html
 
@@ -138,7 +138,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __roster(stanza: Element, element?: Element): void {
+  private __roster(stanza: Element, element: Element): void {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
 
@@ -147,7 +147,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __discoInfo(stanza: Element, element?: Element): void {
+  private __discoInfo(stanza: Element, element: Element): void {
     // XEP-0030: Service Discovery
     // https://xmpp.org/extensions/xep-0030.html
 
@@ -167,7 +167,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __time(stanza: Element, element?: Element): void {
+  private __time(stanza: Element, element: Element): void {
     // XEP-0202: Entity Time
     // https://xmpp.org/extensions/xep-0202.html
 
@@ -182,7 +182,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __ping(stanza: Element, element?: Element): void {
+  private __ping(stanza: Element, element: Element): void {
     // XEP-0199: XMPP Ping
     // https://xmpp.org/extensions/xep-0199.html
 

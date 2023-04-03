@@ -22,7 +22,7 @@ abstract class BrokerEventIngestor {
   protected readonly _client: BrokerClient;
 
   protected abstract _handlers: {
-    [namespace: string]: (stanza: Element, element?: Element) => void | boolean;
+    [namespace: string]: (stanza: Element, element: Element) => void | boolean;
   };
 
   constructor(client: BrokerClient) {
@@ -33,7 +33,7 @@ abstract class BrokerEventIngestor {
     // Assert guard before handling? (if any)
     if (
       this._handlers.assert !== undefined &&
-      this._handlers.assert.bind(this)(stanza) !== true
+      this._handlers.assert.bind(this)(stanza, stanza) !== true
     ) {
       // Ignore stanza (assert guard returned false)
       return;
@@ -44,7 +44,7 @@ abstract class BrokerEventIngestor {
 
     // Ingest anything (if any)
     if (this._handlers.any !== undefined) {
-      this._handlers.any.bind(this)(stanza);
+      this._handlers.any.bind(this)(stanza, stanza);
 
       // Mark as handled
       _wasHandled = true;
@@ -69,7 +69,7 @@ abstract class BrokerEventIngestor {
 
     // Trigger other handler? (if any, and was not handled)
     if (_wasHandled !== true && this._handlers.other !== undefined) {
-      this._handlers.other.bind(this)(stanza);
+      this._handlers.other.bind(this)(stanza, stanza);
     }
   }
 }

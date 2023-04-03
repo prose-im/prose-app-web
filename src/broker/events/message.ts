@@ -49,53 +49,51 @@ class BrokerEventMessage extends BrokerEventIngestor {
     this.__handleMessage(stanza);
   }
 
-  private __chatState(stanza: Element, element?: Element): void {
+  private __chatState(stanza: Element, element: Element): void {
     // XEP-0085: Chat State Notifications
     // https://xmpp.org/extensions/xep-0085.html
     const from = stanza.getAttribute("from") || null,
-      chatstate = (element?.tagName as MessageChatState) || null;
+      chatstate = (element.tagName as MessageChatState) || null;
 
     if (from !== null && chatstate !== null) {
       Store.$inbox.setStatesChatstate(jid(from), chatstate);
     }
   }
 
-  private __reactions(stanza: Element, element?: Element): void {
+  private __reactions(stanza: Element, element: Element): void {
     // XEP-0444: Message Reactions
     // https://xmpp.org/extensions/xep-0444.html
     // TODO
   }
 
-  private __fasten(stanza: Element, element?: Element): void {
+  private __fasten(stanza: Element, element: Element): void {
     // XEP-0422: Message Fastening
     // https://xmpp.org/extensions/xep-0422.html
     // TODO
   }
 
-  private __carbons(stanza: Element, element?: Element): void {
+  private __carbons(stanza: Element, element: Element): void {
     // XEP-0280: Message Carbons
     // https://xmpp.org/extensions/xep-0280.html
     // TODO
   }
 
-  private __mam(stanza: Element, element?: Element): void {
+  private __mam(stanza: Element, element: Element): void {
     // XEP-0313: Message Archive Management
     // https://xmpp.org/extensions/xep-0313.html
-    if (element !== undefined) {
-      Strophe.forEachChild(element, "forwarded", (forwarded: Element) => {
-        const message =
-          (forwarded.getElementsByTagName("message") || [])[0] || null;
+    Strophe.forEachChild(element, "forwarded", (forwarded: Element) => {
+      const message =
+        (forwarded.getElementsByTagName("message") || [])[0] || null;
 
-        if (message !== null) {
-          // Read delayed delivery information
-          const delay =
-            (forwarded.getElementsByTagName("delay") || [])[0] || undefined;
+      if (message !== null) {
+        // Read delayed delivery information
+        const delay =
+          (forwarded.getElementsByTagName("delay") || [])[0] || undefined;
 
-          // Pass to generic message handler
-          this.__handleMessage(message, delay);
-        }
-      });
-    }
+        // Pass to generic message handler
+        this.__handleMessage(message, delay);
+      }
+    });
   }
 
   private __handleMessage(message: Element, delay?: Element): void {
