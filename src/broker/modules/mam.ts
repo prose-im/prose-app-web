@@ -39,28 +39,48 @@ class BrokerModuleMAM extends BrokerModule {
     const stanza = $iq({ type: IQType.Set, id: xmppID() });
 
     // Append query
-    const stanzaQuery = stanza.c("query", { xmlns: NS_MAM });
+    {
+      const stanzaQuery = stanza.c("query", { xmlns: NS_MAM });
 
-    // Append filters
-    const stanzaQueryData = stanzaQuery.c("x", {
-      xmlns: NS_DATA,
-      type: "submit"
-    });
+      // Append filters to query (<x> element)
+      {
+        const stanzaQueryData = stanzaQuery.c("x", {
+          xmlns: NS_DATA,
+          type: "submit"
+        });
 
-    stanzaQueryData
-      .c("field", { var: "FORM_TYPE", type: "hidden" })
-      .c("value", {}, NS_MAM);
+        stanzaQueryData
+          .c("field", { var: "FORM_TYPE", type: "hidden" })
+          .c("value", {}, NS_MAM)
+          .up();
 
-    stanzaQueryData.c("field", { var: "with" }).c("value", {}, jid.toString());
+        stanzaQueryData
+          .c("field", { var: "with" })
+          .c("value", {}, jid.toString())
+          .up();
 
-    if (beforeId) {
-      stanzaQueryData.c("field", { var: "before-id" }).c("value", {}, beforeId);
+        if (beforeId) {
+          stanzaQueryData
+            .c("field", { var: "before-id" })
+            .c("value", {}, beforeId)
+            .up();
+        }
+
+        // Done, go back to root
+        stanzaQueryData.up();
+      }
+
+      // Append RSM to query (Result Set Management — <set> element)
+      {
+        stanzaQuery
+          .c("set", { xmlns: NS_RSM })
+          .c("max", {}, HISTORY_PAGE_SIZE.toString())
+          .c("before", {}, ""); // TODO: collides w/ before-id?
+
+        // Done, go back to root
+        stanzaQuery.up();
+      }
     }
-
-    // Append RSM (Result Set Management)
-    stanzaQuery
-      .c("set", { xmlns: NS_RSM })
-      .c("max", {}, HISTORY_PAGE_SIZE.toString());
 
     logger.info(
       `Will load messages from history from: '${jid}' before #${
