@@ -270,6 +270,7 @@ export default {
           },
 
           location: {
+            city: "Nantes",
             country: "FR",
             timezone: "Europe/Lisbon"
           },

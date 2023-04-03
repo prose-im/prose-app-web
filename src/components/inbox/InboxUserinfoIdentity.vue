@@ -26,13 +26,27 @@
       )
 
       span.c-inbox-userinfo-identity__name-full.u-bold
-        | Valerian Saliou
+        template(
+          v-if="profile.name"
+        )
+          | {{ profile.name.first }} {{ profile.name.last }}
 
-    p.c-inbox-userinfo-identity__role
-      | CTO at Crisp
+        template(
+          v-else
+        )
+          | --
 
-  ul.c-inbox-userinfo-identity__actions
-    li.c-inbox-userinfo-identity__action
+    p.c-inbox-userinfo-identity__role(
+      v-if="profile.role"
+    )
+      | {{ profile.role }}
+
+  ul.c-inbox-userinfo-identity__actions(
+    v-if="profile.information && profile.information.contact"
+  )
+    li.c-inbox-userinfo-identity__action(
+      v-if="profile.information.contact.phone"
+    )
       base-button(
         class="c-inbox-userinfo-identity__action-button"
         icon="phone.fill"
@@ -41,7 +55,9 @@
       )
         | Phone
 
-    li.c-inbox-userinfo-identity__action
+    li.c-inbox-userinfo-identity__action(
+      v-if="profile.information.contact.email"
+    )
       base-button(
         class="c-inbox-userinfo-identity__action-button"
         icon="envelope.fill"
@@ -56,8 +72,21 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { jid } from "@xmpp/jid";
+
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
-  name: "InboxUserinfoIdentity"
+  name: "InboxUserinfoIdentity",
+
+  computed: {
+    profile(): ReturnType<typeof Store.$inbox.getProfile> {
+      // TODO: jid from url
+      return Store.$inbox.getProfile(jid("valerian@valeriansaliou.name"));
+    }
+  }
 };
 </script>
 

@@ -34,10 +34,10 @@ type InboxEntryStates = {
 };
 
 type InboxEntryProfile = {
-  name: InboxEntryProfileName;
-  role: string;
-  information: InboxEntryProfileInformation;
-  security: InboxEntryProfileSecurity;
+  name?: InboxEntryProfileName;
+  role?: string;
+  information?: InboxEntryProfileInformation;
+  security?: InboxEntryProfileSecurity;
 };
 
 type InboxEntryProfileName = {
@@ -62,6 +62,7 @@ type InboxEntryProfileInformationLastActive = {
 };
 
 type InboxEntryProfileInformationLocation = {
+  city: string | null;
   country: string | null;
   timezone: string | null;
 };
@@ -99,7 +100,7 @@ interface Inbox {
 interface InboxEntry {
   messages: InboxEntryMessages;
   states: InboxEntryStates;
-  profile?: InboxEntryProfile;
+  profile: InboxEntryProfile;
 }
 
 /**************************************************************************
@@ -133,8 +134,8 @@ const $inbox = defineStore("inbox", {
     },
 
     getProfile: function () {
-      return (jid: JID): InboxEntryProfile | void => {
-        return this.assert(jid).profile || undefined;
+      return (jid: JID): InboxEntryProfile => {
+        return this.assert(jid).profile;
       };
     }
   },
@@ -160,7 +161,9 @@ const $inbox = defineStore("inbox", {
 
             states: {
               chatstate: MessageChatState.Inactive
-            }
+            },
+
+            profile: {}
           };
         });
       }

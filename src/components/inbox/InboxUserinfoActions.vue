@@ -50,6 +50,9 @@ list-disclosure(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { jid } from "@xmpp/jid";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -93,6 +96,11 @@ export default {
           title: "Block contact"
         }
       ];
+    },
+
+    profile(): ReturnType<typeof Store.$inbox.getProfile> {
+      // TODO: jid from url
+      return Store.$inbox.getProfile(jid("valerian@valeriansaliou.name"));
     }
   },
 

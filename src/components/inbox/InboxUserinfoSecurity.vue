@@ -56,6 +56,9 @@ list-disclosure(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { jid } from "@xmpp/jid";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -76,19 +79,46 @@ export default {
 
   computed: {
     entries() {
-      return [
-        {
-          id: "identity",
-          title: "Identity verified",
-          icon: "checkmark.seal.fill"
-        },
+      const entries = [];
 
-        {
-          id: "encryption",
-          title: "Encrypted (C648A)",
-          icon: "lock.fill"
+      if (this.profile.security) {
+        if (this.profile.security.verification) {
+          entries.push({
+            id: "identity",
+            title: "Identity verified",
+            icon: "checkmark.seal.fill"
+          });
+        } else {
+          entries.push({
+            id: "identity",
+            title: "Identity unknown",
+            icon: "xmark.seal.fill"
+          });
         }
-      ];
+
+        if (this.profile.security.encryption) {
+          entries.push({
+            id: "encryption",
+            title:
+              `Encrypted ` +
+              `(${this.profile.security.encryption.messageEndToEndMethod})`,
+            icon: "lock.fill"
+          });
+        } else {
+          entries.push({
+            id: "encryption",
+            title: "Not encrypted",
+            icon: "lock.slash.fill"
+          });
+        }
+      }
+
+      return entries;
+    },
+
+    profile(): ReturnType<typeof Store.$inbox.getProfile> {
+      // TODO: jid from url
+      return Store.$inbox.getProfile(jid("valerian@valeriansaliou.name"));
     }
   },
 

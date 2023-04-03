@@ -48,6 +48,9 @@ list-disclosure(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { jid } from "@xmpp/jid";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -68,43 +71,76 @@ export default {
 
   computed: {
     entries() {
-      return [
-        {
-          id: "email",
-          title: "valerian@crisp.chat",
-          icon: "envelope.fill"
-        },
+      const entries = [];
 
-        {
-          id: "phone",
-          title: "+33631210280",
-          icon: "iphone"
-        },
+      if (this.profile.information) {
+        if (this.profile.information.contact) {
+          if (this.profile.information.contact.email) {
+            entries.push({
+              id: "email",
+              title: this.profile.information.contact.email,
+              icon: "envelope.fill"
+            });
+          }
 
-        {
-          id: "active",
-          title: "Active 1 min ago",
-          icon: "hand.wave.fill"
-        },
-
-        {
-          id: "timezone",
-          title: "5:03pm (UTC+1)",
-          icon: "clock.fill"
-        },
-
-        {
-          id: "location",
-          title: "Lisbon, Portugal",
-          icon: "location.fill"
-        },
-
-        {
-          id: "activity",
-          title: "Focusing on code",
-          emoji: "👨‍💻"
+          if (this.profile.information.contact.phone) {
+            entries.push({
+              id: "email",
+              title: this.profile.information.contact.phone,
+              icon: "envelope.fill"
+            });
+          }
         }
-      ];
+
+        if (this.profile.information.lastActive) {
+          entries.push({
+            id: "active",
+            title: `Active ${this.profile.information.lastActive.timestamp} ago`,
+            icon: "hand.wave.fill"
+          });
+        }
+
+        if (this.profile.information.location) {
+          if (this.profile.information.location.timezone) {
+            entries.push({
+              id: "timezone",
+              title: `0:00pm (${this.profile.information.location.timezone})`,
+              icon: "clock.fill"
+            });
+          }
+
+          if (this.profile.information.location.country) {
+            const locationParts = [];
+
+            if (this.profile.information.location.city) {
+              locationParts.push(this.profile.information.location.city);
+            }
+
+            locationParts.push(this.profile.information.location.country);
+
+            entries.push({
+              id: "location",
+              title: locationParts.join(", "),
+              icon: "location.fill"
+            });
+          }
+        }
+
+        if (this.profile.information.activity) {
+          entries.push({
+            id: "activity",
+            title: this.profile.information.activity.text,
+            emoji: this.profile.information.activity.icon
+          });
+        }
+      }
+
+      return entries;
+    },
+
+    profile(): ReturnType<typeof Store.$inbox.getProfile> {
+      // TODO: jid from url
+      return Store.$inbox.getProfile(jid("valerian@valeriansaliou.name"));
     }
   },
 
