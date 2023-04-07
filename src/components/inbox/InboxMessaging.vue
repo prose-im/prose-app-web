@@ -399,7 +399,7 @@ export default {
       (this.$refs.container as HTMLElement).click();
     },
 
-    syncMessagesEager(): void {
+    async syncMessagesEager(): void {
       // Can synchronize now? (connected)
       if (
         this.isMessageSyncStale === true &&
@@ -407,7 +407,13 @@ export default {
       ) {
         this.isMessageSyncStale = false;
 
-        Broker.$mam.loadMessages(this.jid);
+        // Load all messages
+        const result = await Broker.$mam.loadMessages(this.jid);
+
+        // Mark loading as complete?
+        if (result.complete === true) {
+          this.frame().MessagingStore.loader("forwards", false);
+        }
       }
     },
 
