@@ -98,15 +98,21 @@ class BrokerEventMessage extends BrokerEventIngestor {
 
   private __handleMessage(message: Element, delay?: Element): void {
     const from = message.getAttribute("from") || null,
+      to = message.getAttribute("to") || null,
       bodyElement = (message.getElementsByTagName("body") || [])[0] || null;
 
     // Handle message with body?
-    if (from !== null && bodyElement !== null) {
+    if (from !== null && to !== null && bodyElement !== null) {
       logger.info(`Processing message from: '${from || "?"}'`);
 
       // Read body text
       const fromJID = jid(from).bare(),
+        toJID = jid(to).bare(),
         bodyText = bodyElement.textContent || "";
+
+      // Acquire store target JID
+      const storeJID =
+        this._client.jid?.bare().equals(fromJID) === true ? toJID : fromJID;
 
       // Read date and time
       const dateTime =
@@ -114,7 +120,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
 
       // Insert message in store
       // TODO: handle different message types
-      Store.$inbox.insertMessage(fromJID, {
+      Store.$inbox.insertMessage(storeJID, {
         id: message.id || xmppID(),
         type: "text",
         date: dateTime,

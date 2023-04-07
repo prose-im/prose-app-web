@@ -161,6 +161,30 @@ export default {
     }
   },
 
+  watch: {
+    jid: {
+      immediate: true,
+
+      handler(newValue: JID, oldValue: JID) {
+        if (newValue !== oldValue) {
+          // Mark as stale
+          this.isMessageSyncStale = true;
+
+          // Re-setup store (if runtime is available)
+          const frameRuntime = this.frame();
+
+          if (frameRuntime !== null) {
+            this.setupStore(frameRuntime);
+          }
+
+          // Synchronize messages eagerly
+          // TODO: re-assert store (do not sync if store already set)
+          this.syncMessagesEager();
+        }
+      }
+    }
+  },
+
   created() {
     // Bind connected handler
     Store.$session.events().on("connected", this.onStoreConnected);
@@ -180,9 +204,13 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    frame(): MessagingRuntime {
-      return (this.$refs.frame as HTMLIFrameElement)
-        .contentWindow as MessagingRuntime;
+    frame(): MessagingRuntime | null {
+      if (this.$refs.frame) {
+        return (this.$refs.frame as HTMLIFrameElement)
+          .contentWindow as MessagingRuntime;
+      }
+
+      return null;
     },
 
     setupDocument(runtime: MessagingRuntime): void {
@@ -215,6 +243,7 @@ export default {
     },
 
     setupEvents(runtime: MessagingRuntime): void {
+      // Subscribe to messaging events
       runtime.MessagingEvent.on(
         "message:actions:view",
         this.onEventMessageActionsView
@@ -234,6 +263,13 @@ export default {
         "message:history:seek",
         this.onEventMessageHistorySeek
       );
+
+      // Subscribe to store events
+      const storeEventBus = Store.$inbox.events();
+
+      for (let eventName in this.storeEvents) {
+        storeEventBus.on(eventName, this.storeEvents[eventName]);
+      }
     },
 
     setupStore(runtime: MessagingRuntime): void {
@@ -303,15 +339,11 @@ export default {
         runtime.MessagingStore.loader("forwards", true);
       }
 
+      // Pre-flush the store
+      runtime.MessagingStore.flush();
+
       // Insert all messages already in store
       runtime.MessagingStore.insert(...this.messages);
-
-      // Subscribe to store events
-      const storeEventBus = Store.$inbox.events();
-
-      for (let eventName in this.storeEvents) {
-        storeEventBus.on(eventName, this.storeEvents[eventName]);
-      }
     },
 
     setupListeners(runtime: MessagingRuntime): void {
@@ -405,14 +437,20 @@ export default {
         this.isMessageSyncStale === true &&
         Store.$session.connected === true
       ) {
+        const frameRuntime = this.frame();
+
+        // Mark synchronization as non-stale
         this.isMessageSyncStale = false;
 
         // Load all messages
         const result = await Broker.$mam.loadMessages(this.jid);
 
-        // Mark loading as complete?
+        // Mark forwards loading as complete
+        frameRuntime.MessagingStore.loader("forwards", false);
+
+        // Mark backwards loading as complete?
         if (result.complete === true) {
-          this.frame().MessagingStore.loader("forwards", false);
+          frameRuntime.MessagingStore.loader("backwards", false);
         }
       }
     },
@@ -541,22 +579,22 @@ export default {
     },
 
     onStoreMessageInserted(message: InboxEntryMessage): void {
-      const frameRuntime = this.frame();
-
-      // Stop loading spinner
-      // TODO: only if message was restored from MAM
-      frameRuntime.MessagingStore.loader("forwards", false);
+      // TODO: filter by JID from/to matches current flow
 
       // Insert into view
-      frameRuntime.MessagingStore.insert(message);
+      this.frame().MessagingStore.insert(message);
     },
 
     onStoreMessageUpdated(message: InboxEntryMessage): void {
+      // TODO: filter by JID from/to matches current flow
+
       // Update in view
       this.frame().MessagingStore.update(message.id, message);
     },
 
     onStoreMessageRetracted(message: InboxEntryMessage): void {
+      // TODO: filter by JID from/to matches current flow
+
       // Retract from view
       this.frame().MessagingStore.retract(message.id);
     },

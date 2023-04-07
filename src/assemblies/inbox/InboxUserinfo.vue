@@ -79,6 +79,16 @@ export default {
     layout(): typeof Store.$layout {
       return Store.$layout;
     }
+  },
+
+  watch: {
+    jid: {
+      immediate: true,
+
+      handler(value: JID) {
+        // TODO: re-assert store
+      }
+    }
   }
 };
 </script>
