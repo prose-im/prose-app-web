@@ -31,6 +31,7 @@ list-button(
   )
     base-count(
       :count="unreadCount"
+      :color="countColor"
     )
 
   template(
@@ -75,6 +76,10 @@ export default {
   },
 
   computed: {
+    countColor() {
+      return this.active === true ? "white" : "blue";
+    },
+
     unreadCount() {
       // TODO: those are fixtures, this data should come somewhere from the \
       //   store, based on the user JID!

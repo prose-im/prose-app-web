@@ -43,14 +43,11 @@
     title="Favorites"
   )
     sidebar-main-item-user(
-      jid="valerian@prose.org"
-      name="Valerian"
-      active
-    )
-
-    sidebar-main-item-user(
-      jid="julien@prose.org"
-      name="Julien"
+      v-for="itemFavorite in itemFavorites"
+      :key="itemFavorite.jid"
+      :jid="itemFavorite.jid"
+      :name="itemFavorite.name"
+      :active="activeJID === itemFavorite.jid"
     )
 
   list-disclosure(
@@ -61,18 +58,11 @@
     expanded
   )
     sidebar-main-item-user(
-      jid="marc@prose.org"
-      name="Marc"
-    )
-
-    sidebar-main-item-user(
-      jid="saif@prose.org"
-      name="Saif"
-    )
-
-    sidebar-main-item-user(
-      jid="guillaume@prose.org"
-      name="Guillaume"
+      v-for="itemTeamMember in itemTeamMembers"
+      :key="itemTeamMember.jid"
+      :jid="itemTeamMember.jid"
+      :name="itemTeamMember.name"
+      :active="activeJID === itemTeamMember.jid"
     )
 
     sidebar-main-item-add(
@@ -86,8 +76,11 @@
     title="Other contacts"
   )
     sidebar-main-item-user(
-      jid="remi@prose.org"
-      name="Rémi"
+      v-for="itemOtherContact in itemOtherContacts"
+      :key="itemOtherContact.jid"
+      :jid="itemOtherContact.jid"
+      :name="itemOtherContact.name"
+      :active="activeJID === itemOtherContact.jid"
     )
 
     sidebar-main-item-add(
@@ -153,9 +146,74 @@ export default {
     }
   },
 
+  data() {
+    return {
+      // --> STATE <--
+
+      activeJID: null,
+
+      // --> DATA <--
+
+      itemFavorites: [
+        {
+          jid: "valerian@valeriansaliou.name",
+          name: "Valerian S."
+        },
+
+        {
+          jid: "valerian@prose.org",
+          name: "Valerian"
+        },
+
+        {
+          jid: "julien@prose.org",
+          name: "Julien"
+        }
+      ],
+
+      itemTeamMembers: [
+        {
+          jid: "marc@prose.org",
+          name: "Marc"
+        },
+
+        {
+          jid: "saif@prose.org",
+          name: "Saïf"
+        },
+
+        {
+          jid: "guillaume@prose.org",
+          name: "Guillaume"
+        }
+      ],
+
+      itemOtherContacts: [
+        {
+          jid: "remi@prose.org",
+          name: "Rémi"
+        }
+      ]
+    };
+  },
+
   computed: {
     layout(): typeof Store.$layout {
       return Store.$layout;
+    }
+  },
+
+  watch: {
+    $route: {
+      immediate: true,
+
+      handler(value) {
+        if (value.name && value.name.startsWith("app.inbox")) {
+          this.activeJID = value.params.jid;
+        } else {
+          this.activeJID = null;
+        }
+      }
     }
   },
 

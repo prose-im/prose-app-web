@@ -230,6 +230,11 @@ $c: ".c-list-button";
 
   // --> BOOLEANS <--
 
+  &--disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
   &--actionable {
     cursor: pointer;
 
@@ -254,26 +259,23 @@ $c: ".c-list-button";
     }
   }
 
-  &--disabled {
-    opacity: 0.45;
-    pointer-events: none;
-  }
-
   &--important {
-    &:nth-child(odd) {
-      background-color: darken($color-base-grey-light, 0.75%);
-    }
+    &:not(#{$c}--active) {
+      &:nth-child(odd) {
+        background-color: darken($color-base-grey-light, 0.75%);
+      }
 
-    &:nth-child(even) {
-      background-color: lighten($color-base-grey-light, 0.25%);
-    }
+      &:nth-child(even) {
+        background-color: lighten($color-base-grey-light, 0.25%);
+      }
 
-    &:hover {
-      background-color: darken($color-base-grey-light, 2.5%);
-    }
+      &:hover {
+        background-color: darken($color-base-grey-light, 2.5%);
+      }
 
-    &#{$c}--actionable:active {
-      background-color: darken($color-base-grey-light, 3.5%);
+      &#{$c}--actionable:active {
+        background-color: darken($color-base-grey-light, 3.5%);
+      }
     }
   }
 }
