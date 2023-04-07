@@ -17,15 +17,18 @@
   .v-app-inbox-base__content
     .v-app-inbox-base__messages
       inbox-messaging(
+        :jid="jid"
         class="v-app-inbox-base__timeline"
       )
 
       inbox-form(
+        :jid="jid"
         class="v-app-inbox-base__form"
       )
 
     inbox-userinfo(
       v-if="layout.inbox.userinfo.visible"
+      :jid="jid"
       class="v-app-inbox-base__userinfo"
     )
 </template>
@@ -35,6 +38,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { jid, JID } from "@xmpp/jid";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -52,6 +58,10 @@ export default {
   components: { InboxMessaging, InboxTopbar, InboxUserinfo, InboxForm },
 
   computed: {
+    jid(): JID {
+      return jid(this.$route.params.jid);
+    },
+
     layout(): typeof Store.$layout {
       return Store.$layout;
     }

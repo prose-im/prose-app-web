@@ -10,6 +10,7 @@
 
 <template lang="pug">
 list-button(
+  @click="onButtonClick"
   :active="active"
   :important="unreadCount > 0"
   class="c-sidebar-main-item-user"
@@ -106,6 +107,17 @@ export default {
         type: "unavailable",
         show: "none"
       };
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onButtonClick(): void {
+      this.$router.push({
+        name: "app.inbox",
+        params: { jid: this.jid }
+      });
     }
   }
 };

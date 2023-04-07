@@ -104,7 +104,8 @@ layout-toolbar(
 
 <script lang="ts">
 // NPM
-import { jid } from "@xmpp/jid";
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
 
 // PROJECT: COMPONENTS
 import {
@@ -127,6 +128,13 @@ export default {
   name: "InboxForm",
 
   components: { InboxFormChatstate },
+
+  props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    }
+  },
 
   data() {
     return {
@@ -158,8 +166,7 @@ export default {
     },
 
     states(): ReturnType<typeof Store.$inbox.getStates> {
-      // TODO: jid from url
-      return Store.$inbox.getStates(jid("valerian@valeriansaliou.name"));
+      return Store.$inbox.getStates(this.jid);
     }
   },
 
@@ -172,21 +179,15 @@ export default {
     // --> HELPERS <--
 
     propagateChatState(chatState: MessageChatState): void {
-      // TODO: inject dynamic JID (from where?)
-      const to = jid("valerian@valeriansaliou.name");
-
       // Propagate new chat state?
       if (chatState !== this.chatStateLast) {
         this.chatStateLast = chatState;
 
-        Broker.$chat.sendChatState(to, chatState);
+        Broker.$chat.sendChatState(this.jid, chatState);
       }
     },
 
     scheduleChatStateComposeTimeout(): void {
-      // TODO: inject dynamic JID (from where?)
-      const to = jid("valerian@valeriansaliou.name");
-
       this.chatStateComposeTimeout = setTimeout(() => {
         // Propagate paused chat state
         this.propagateChatState(MessageChatState.Paused);
@@ -245,9 +246,6 @@ export default {
       const message = this.message.trim();
 
       if (message) {
-        // TODO: inject dynamic JID (from where?)
-        const to = jid("valerian@valeriansaliou.name");
-
         // Clear compose chat state timeout (as needed)
         this.unscheduleChatStateComposeTimeout();
 
@@ -255,7 +253,7 @@ export default {
         this.chatStateLast = MessageChatState.Active;
 
         // Send message
-        Broker.$chat.sendMessage(to, message);
+        Broker.$chat.sendMessage(this.jid, message);
 
         // Clear message field
         this.message = "";

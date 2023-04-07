@@ -11,10 +11,12 @@
 <template lang="pug">
 .a-inbox-userinfo
   inbox-userinfo-identity(
+    :jid="jid"
     class="a-inbox-userinfo__identity"
   )
 
   inbox-userinfo-information(
+    :jid="jid"
     :expanded="layout.inbox.userinfo.sections.information"
     class="a-inbox-userinfo__block a-inbox-userinfo__block--information"
     header-class="a-inbox-userinfo__block-header"
@@ -22,6 +24,7 @@
   )
 
   inbox-userinfo-security(
+    :jid="jid"
     :expanded="layout.inbox.userinfo.sections.security"
     class="a-inbox-userinfo__block a-inbox-userinfo__block--security"
     header-class="a-inbox-userinfo__block-header"
@@ -29,6 +32,7 @@
   )
 
   inbox-userinfo-actions(
+    :jid="jid"
     :expanded="layout.inbox.userinfo.sections.actions"
     class="a-inbox-userinfo__block a-inbox-userinfo__block--actions"
     header-class="a-inbox-userinfo__block-header"
@@ -41,6 +45,10 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -58,6 +66,13 @@ export default {
     InboxUserinfoInformation,
     InboxUserinfoSecurity,
     InboxUserinfoActions
+  },
+
+  props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    }
   },
 
   computed: {

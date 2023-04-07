@@ -52,8 +52,8 @@
 
 <script lang="ts">
 // NPM
-import { shallowRef } from "vue";
-import { jid } from "@xmpp/jid";
+import { shallowRef, PropType } from "vue";
+import { jid, JID } from "@xmpp/jid";
 import {
   Messaging as MessagingRuntime,
   Platform as MessagingPlatform,
@@ -113,6 +113,13 @@ const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 export default {
   name: "InboxMessaging",
 
+  props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    }
+  },
+
   data() {
     return {
       // --> DATA <--
@@ -150,8 +157,7 @@ export default {
     },
 
     messages(): ReturnType<typeof Store.$inbox.getMessages> {
-      // TODO: jid from url
-      return Store.$inbox.getMessages(jid("valerian@valeriansaliou.name"));
+      return Store.$inbox.getMessages(this.jid);
     }
   },
 
@@ -205,8 +211,7 @@ export default {
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
       runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
-      // TODO: from url:
-      runtime.MessagingContext.setAccountJID("valerian@valeriansaliou.name");
+      runtime.MessagingContext.setAccountJID(this.jid.toString());
     },
 
     setupEvents(runtime: MessagingRuntime): void {
@@ -232,9 +237,6 @@ export default {
     },
 
     setupStore(runtime: MessagingRuntime): void {
-      // TODO: set JID from URL
-      const accountJID = "valerian@valeriansaliou.name";
-
       // Identify both parties
       // TODO: dummy identities
       runtime.MessagingStore.identify(jid("valerian@prose.org"), {
@@ -243,7 +245,7 @@ export default {
           "https://gravatar.com/avatar/15bf80612ffed057af0ed8a579adb870?size=80"
       });
 
-      runtime.MessagingStore.identify(accountJID, {
+      runtime.MessagingStore.identify(this.jid.toString(), {
         name: "Valerian",
         avatar:
           "https://gravatar.com/avatar/b4cb8302ee37f985cc76190aaae1b40b?size=80"
@@ -251,7 +253,7 @@ export default {
 
       // Set user profile
       // TODO: dummy profile
-      Store.$inbox.setProfile(jid(accountJID), {
+      Store.$inbox.setProfile(this.jid, {
         name: {
           first: "Valerian",
           last: "Saliou"
@@ -261,7 +263,7 @@ export default {
 
         information: {
           contact: {
-            email: "valerian@valeriansaliou.name",
+            email: this.jid.toString(),
             phone: "+33631210280"
           },
 
@@ -284,7 +286,7 @@ export default {
         security: {
           verification: {
             fingerprint: "C648A",
-            email: "valerian@valeriansaliou.name",
+            email: this.jid.toString(),
             phone: "+33631210280",
             identity: "Valerian Saliou"
           },
@@ -405,7 +407,7 @@ export default {
       ) {
         this.isMessageSyncStale = false;
 
-        Broker.$mam.loadMessages(jid("valerian@valeriansaliou.name"));
+        Broker.$mam.loadMessages(this.jid);
       }
     },
 

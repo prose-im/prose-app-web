@@ -73,7 +73,8 @@
 
 <script lang="ts">
 // NPM
-import { jid } from "@xmpp/jid";
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -81,10 +82,16 @@ import Store from "@/store";
 export default {
   name: "InboxUserinfoIdentity",
 
+  props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    }
+  },
+
   computed: {
     profile(): ReturnType<typeof Store.$inbox.getProfile> {
-      // TODO: jid from url
-      return Store.$inbox.getProfile(jid("valerian@valeriansaliou.name"));
+      return Store.$inbox.getProfile(this.jid);
     }
   }
 };

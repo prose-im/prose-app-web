@@ -49,7 +49,8 @@ list-disclosure(
 
 <script lang="ts">
 // NPM
-import { jid } from "@xmpp/jid";
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -58,6 +59,11 @@ export default {
   name: "InboxUserinfoInformation",
 
   props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    },
+
     headerClass: {
       type: String,
       default: null
@@ -140,7 +146,7 @@ export default {
 
     profile(): ReturnType<typeof Store.$inbox.getProfile> {
       // TODO: jid from url
-      return Store.$inbox.getProfile(jid("valerian@valeriansaliou.name"));
+      return Store.$inbox.getProfile(this.jid);
     }
   },
 
