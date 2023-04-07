@@ -9,6 +9,7 @@
  * ************************************************************************* */
 
 // NPM
+import { Cash } from "cash-dom";
 import { $iq } from "strophe.js";
 import xmppID from "@xmpp/id";
 import { JID } from "@xmpp/jid";
@@ -107,39 +108,29 @@ class BrokerModuleMAM extends BrokerModule {
     // Send request
     const response = await this._client.request(stanza);
 
+    return this.__respondLoadMessages(response);
+  }
+
+  private __respondLoadMessages(response: Cash): LoadMessagesResponse {
     // Parse request response
-    const finElement = (response.getElementsByTagName("fin") || [])[0] || null;
+    const finElement = response.find("fin").first();
 
-    if (finElement !== null) {
-      const responseData: LoadMessagesResponse = {
-        complete: finElement.getAttribute("complete") === "true" ? true : false
+    const responseData: LoadMessagesResponse = {
+      complete: finElement.attr("complete") === "true" ? true : false
+    };
+
+    // Append RSM information? (if any)
+    const rsmElement = finElement.find("set").first();
+
+    if (rsmElement.length > 0) {
+      responseData.rsm = {
+        count: parseInt(rsmElement.find("count").text() || "0") as number,
+        first: rsmElement.find("first").text(),
+        last: rsmElement.find("last").text()
       };
-
-      // Append RSM information? (if any)
-      const rsmElement =
-        (finElement.getElementsByTagName("set") || [])[0] || null;
-
-      if (rsmElement !== null) {
-        const rsmCountElement = (rsmElement.getElementsByTagName("count") ||
-            [])[0],
-          rsmFirstElement = (rsmElement.getElementsByTagName("first") || [])[0],
-          rsmLastElement = (rsmElement.getElementsByTagName("last") || [])[0];
-
-        responseData.rsm = {
-          count: (rsmCountElement ? rsmCountElement.textContent : 0) as number,
-          first: (rsmFirstElement
-            ? rsmFirstElement.textContent
-            : undefined) as string,
-          last: (rsmLastElement
-            ? rsmLastElement.textContent
-            : undefined) as string
-        };
-      }
-
-      return responseData;
     }
 
-    throw new Error("Malformed response stanza");
+    return responseData;
   }
 }
 

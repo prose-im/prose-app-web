@@ -9,6 +9,7 @@
  * ************************************************************************* */
 
 // NPM
+import { default as $, Cash } from "cash-dom";
 import { Strophe } from "strophe.js";
 import { JID, jid } from "@xmpp/jid";
 
@@ -44,7 +45,7 @@ interface ConnectLifecycle {
 
 interface PendingRequest {
   id: string;
-  success: (stanza: Element) => void;
+  success: (stanza: Cash) => void;
   failure: (error: Error) => void;
   timeout: ReturnType<typeof setTimeout>;
 }
@@ -150,7 +151,7 @@ class BrokerClient {
   async request(
     builder: Strophe.Builder,
     timeout: number = REQUEST_TIMEOUT_DEFAULT
-  ): Promise<Element> {
+  ): Promise<Cash> {
     return await new Promise((resolve, reject) => {
       const stanzaElement = builder.tree(),
         stanzaType = stanzaElement.getAttribute("type") || null,
@@ -275,7 +276,7 @@ class BrokerClient {
     // TODO: do not do this here!!
     Broker.$roster
       .loadRoster()
-      .then((roster: Element) => {
+      .then(roster => {
         // TODO: handle roster
       })
       .catch((error: Error) => {
@@ -361,7 +362,7 @@ class BrokerClient {
         );
 
         // Pass to success handler
-        request.success(stanza);
+        request.success($(stanza));
       } else if (stanza) {
         const errorText =
           stanza.querySelector("error text")?.textContent || "Failed";

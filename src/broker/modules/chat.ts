@@ -160,14 +160,14 @@ class BrokerModuleMessage extends BrokerModule {
     );
   }
 
-  async setMessageCarbonsEnabled(enabled: boolean): Promise<Element> {
+  async setMessageCarbonsEnabled(enabled: boolean): Promise<void> {
     // XEP-0280: Message Carbons
     // https://xmpp.org/extensions/xep-0280.html
     const state = enabled === true ? "enable" : "disable";
 
     logger.info(`Will toggle message carbons to state: ${state}`);
 
-    return this._client.request(
+    await this._client.request(
       $iq({ type: IQType.Set, id: xmppID() }).c(state, {
         xmlns: NS_CARBONS
       })

@@ -41,6 +41,7 @@
     "lodash.merge": "4.6.x",
     "keycode": "2.2.x",
     "strophe.js": "1.6.x",
+    "cash-dom": "8.1.x",
     "mitt": "3.0.x",
     "pinia": "2.0.x",
     "pinia-plugin-persistedstate": "3.0.x",
