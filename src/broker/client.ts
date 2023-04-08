@@ -271,17 +271,6 @@ class BrokerClient {
     // TODO: this should not be done here, some kind of event bus w/ a hook is \
     //   cleaner than that. This is a temporary solution.
     Broker.$connection.sendInitialPresence();
-
-    // Load roster
-    // TODO: do not do this here!!
-    Broker.$roster
-      .loadRoster()
-      .then(roster => {
-        // TODO: handle roster
-      })
-      .catch((error: Error) => {
-        // TODO: handle error
-      });
   }
 
   private __setupContext(): void {

@@ -11,8 +11,8 @@
 <template lang="pug">
 .c-inbox-userinfo-identity
   base-avatar(
+    :jid="jid"
     class="c-inbox-userinfo-identity__avatar"
-    jid="valerian@prose.org"
     size="100px"
   )
 

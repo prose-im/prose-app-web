@@ -19,7 +19,7 @@
     )
       base-avatar(
         @click="onAvatarImageClick"
-        jid="baptiste@crisp.chat"
+        :jid="userJID"
         size="32px"
         shadow="light"
         class="c-sidebar-context__avatar-image"
@@ -76,6 +76,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { jid } from "@xmpp/jid";
+
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import SidebarContextAccount from "@/components/sidebar/SidebarContextAccount.vue";
@@ -99,6 +102,11 @@ export default {
 
   data() {
     return {
+      // --> DATA <--
+
+      // TODO: replace w/ user JID
+      userJID: jid("baptiste@prose.org"),
+
       // --> STATE <--
 
       isAvatarPopoverVisible: false,

@@ -55,12 +55,16 @@ list-button(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
 export default {
   name: "SidebarMainItemUser",
 
   props: {
     jid: {
-      type: String,
+      type: Object as PropType<JID>,
       required: true
     },
 
@@ -83,11 +87,11 @@ export default {
     unreadCount() {
       // TODO: those are fixtures, this data should come somewhere from the \
       //   store, based on the user JID!
-      if (this.jid.startsWith("m") === true) {
+      if (this.jid.local.startsWith("m") === true) {
         return 8;
       }
 
-      if (this.jid.startsWith("s") === true) {
+      if (this.jid.local.startsWith("s") === true) {
         return 15;
       }
 
@@ -98,9 +102,9 @@ export default {
       // TODO: those are fixtures, this data should come somewhere from the \
       //   store, based on the user JID!
       if (
-        this.jid.startsWith("v") === true ||
-        this.jid.startsWith("m") === true ||
-        this.jid.startsWith("r") === true
+        this.jid.local.startsWith("v") === true ||
+        this.jid.local.startsWith("m") === true ||
+        this.jid.local.startsWith("r") === true
       ) {
         return {
           type: "available",
@@ -121,7 +125,7 @@ export default {
     onButtonClick(): void {
       this.$router.push({
         name: "app.inbox",
-        params: { jid: this.jid }
+        params: { jid: this.jid.toString() }
       });
     }
   }

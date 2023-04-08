@@ -12,7 +12,7 @@
 .c-sidebar-context-account
   base-avatar(
     v-if="type === 'user'"
-    :jid="address"
+    :jid="addressJID"
     size="32px"
     class="c-sidebar-context-account__avatar"
   )
@@ -46,6 +46,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { jid } from "@xmpp/jid";
+
 export default {
   name: "SidebarContextAccount",
 
@@ -67,6 +70,12 @@ export default {
     address: {
       type: String,
       required: true
+    }
+  },
+
+  computed: {
+    addressJID() {
+      return jid(this.address);
     }
   }
 };

@@ -28,6 +28,10 @@ div(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
 // CONSTANTS
 const SIZE_TO_BORDER_RADIUS_RATIO = 0.1;
 
@@ -36,7 +40,7 @@ export default {
 
   props: {
     jid: {
-      type: String,
+      type: Object as PropType<JID>,
       required: true
     },
 
@@ -59,11 +63,9 @@ export default {
     avatarImageUrl() {
       // TODO: acquire from cache using provided JID, this is only a temporary \
       //   fixture
-      const handle = this.jid.split("@")[0];
-
       return [
         "/src/assets/images/components/base/BaseAvatar",
-        `avatar-${handle}.webp`
+        `avatar-${this.jid.local}.webp`
       ].join("/");
     },
 

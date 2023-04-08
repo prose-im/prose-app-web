@@ -23,6 +23,19 @@ import { NS_ROSTER } from "@/broker/stanzas/xmlns";
 import logger from "@/utilities/logger";
 
 /**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
+
+enum RosterItemGroup {
+  // Favorites.
+  Favorite = "favorite",
+  // Team members.
+  Team = "team",
+  // Other contacts.
+  Other = "other"
+}
+
+/**************************************************************************
  * INTERFACES
  * ************************************************************************* */
 
@@ -32,6 +45,8 @@ interface LoadRosterResponse {
 
 interface LoadRosterResponseItem {
   jid: JID;
+  group: RosterItemGroup;
+  name?: string;
 }
 
 /**************************************************************************
@@ -56,12 +71,27 @@ class BrokerModuleRoster extends BrokerModule {
       items: []
     };
 
-    response.find("query item").each((_, itemElement) => {
-      const elementJID = $(itemElement).attr("jid") || null;
+    // List allowed roster item groups
+    const allowedRosterItemGroups = Object.values(RosterItemGroup);
+
+    response.find("query item").each((_, itemNode) => {
+      const itemElement = $(itemNode),
+        elementJID = itemElement.attr("jid") || null,
+        elementName = itemElement.attr("name") || null;
 
       if (elementJID !== null) {
+        const groupElement = itemElement.find("group").first();
+
+        // Parse group name
+        const groupName = groupElement.text() as RosterItemGroup;
+
+        // Append roster item
         responseData.items.push({
-          jid: jid(elementJID)
+          jid: jid(elementJID),
+          group: allowedRosterItemGroups.includes(groupName)
+            ? groupName
+            : RosterItemGroup.Other,
+          name: elementName || undefined
         });
       }
     });
@@ -74,4 +104,5 @@ class BrokerModuleRoster extends BrokerModule {
  * EXPORTS
  * ************************************************************************* */
 
+export { RosterItemGroup };
 export default BrokerModuleRoster;

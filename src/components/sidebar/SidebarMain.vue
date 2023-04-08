@@ -44,10 +44,9 @@
   )
     sidebar-main-item-user(
       v-for="itemFavorite in itemFavorites"
-      :key="itemFavorite.jid"
       :jid="itemFavorite.jid"
       :name="itemFavorite.name"
-      :active="activeJID === itemFavorite.jid"
+      :active="itemFavorite.jid.equals(activeJID)"
     )
 
   list-disclosure(
@@ -59,10 +58,9 @@
   )
     sidebar-main-item-user(
       v-for="itemTeamMember in itemTeamMembers"
-      :key="itemTeamMember.jid"
       :jid="itemTeamMember.jid"
       :name="itemTeamMember.name"
-      :active="activeJID === itemTeamMember.jid"
+      :active="itemTeamMember.jid.equals(activeJID)"
     )
 
     sidebar-main-item-add(
@@ -77,10 +75,9 @@
   )
     sidebar-main-item-user(
       v-for="itemOtherContact in itemOtherContacts"
-      :key="itemOtherContact.jid"
       :jid="itemOtherContact.jid"
       :name="itemOtherContact.name"
-      :active="activeJID === itemOtherContact.jid"
+      :active="itemOtherContact.jid.equals(activeJID)"
     )
 
     sidebar-main-item-add(
@@ -120,14 +117,27 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { jid, JID } from "@xmpp/jid";
+
 // PROJECT: STORES
 import Store from "@/store";
+import { RosterList } from "@/store/tables/roster";
 
 // PROJECT: COMPONENTS
 import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
 import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
 import SidebarMainItemSection from "@/components/sidebar/SidebarMainItemSection.vue";
 import SidebarMainItemAdd from "@/components/sidebar/SidebarMainItemAdd.vue";
+
+// PROJECT: BROKER
+import { RosterItemGroup } from "@/broker/modules/roster";
+
+// INTERFACES
+interface RosterDisplayItem {
+  jid: JID;
+  name: string;
+}
 
 export default {
   name: "SidebarMain",
@@ -152,54 +162,32 @@ export default {
 
       activeJID: null,
 
-      // --> DATA <--
-
-      itemFavorites: [
-        {
-          jid: "valerian@valeriansaliou.name",
-          name: "Valerian S."
-        },
-
-        {
-          jid: "valerian@prose.org",
-          name: "Valerian"
-        },
-
-        {
-          jid: "julien@prose.org",
-          name: "Julien"
-        }
-      ],
-
-      itemTeamMembers: [
-        {
-          jid: "marc@prose.org",
-          name: "Marc"
-        },
-
-        {
-          jid: "saif@prose.org",
-          name: "Saïf"
-        },
-
-        {
-          jid: "guillaume@prose.org",
-          name: "Guillaume"
-        }
-      ],
-
-      itemOtherContacts: [
-        {
-          jid: "remi@prose.org",
-          name: "Rémi"
-        }
-      ]
+      isRosterSyncStale: true,
+      isRosterLoading: false
     };
   },
 
   computed: {
     layout(): typeof Store.$layout {
       return Store.$layout;
+    },
+
+    itemFavorites(): RosterList {
+      return this.intoRosterDisplayItems(
+        Store.$roster.getList(RosterItemGroup.Favorite)
+      );
+    },
+
+    itemTeamMembers(): RosterList {
+      return this.intoRosterDisplayItems(
+        Store.$roster.getList(RosterItemGroup.Team)
+      );
+    },
+
+    itemOtherContacts(): RosterList {
+      return this.intoRosterDisplayItems(
+        Store.$roster.getList(RosterItemGroup.Other)
+      );
     }
   },
 
@@ -209,7 +197,7 @@ export default {
 
       handler(value) {
         if (value.name && value.name.startsWith("app.inbox")) {
-          this.activeJID = value.params.jid;
+          this.activeJID = jid(value.params.jid);
         } else {
           this.activeJID = null;
         }
@@ -217,7 +205,51 @@ export default {
     }
   },
 
+  created() {
+    // TODO: put this in a utility helper
+
+    // Bind connected handler
+    Store.$session.events().on("connected", this.onStoreConnected);
+
+    // Synchronize roster eagerly
+    this.syncRosterEager();
+  },
+
+  beforeUnmount() {
+    // Unbind connected handler
+    Store.$session.events().off("connected", this.onStoreConnected);
+  },
+
   methods: {
+    // --> HELPERS <--
+
+    async syncRosterEager(): void {
+      // Can synchronize now? (connected)
+      if (
+        this.isRosterSyncStale === true &&
+        Store.$session.connected === true
+      ) {
+        // Mark synchronization as non-stale
+        this.isRosterSyncStale = false;
+
+        // Load roster
+        this.isRosterLoading = true;
+
+        await Store.$roster.load();
+
+        this.isRosterLoading = false;
+      }
+    },
+
+    intoRosterDisplayItems(list: RosterList): Array<RosterDisplayItem> {
+      return list.map(item => {
+        return {
+          jid: jid(item.jid),
+          name: item.name
+        };
+      });
+    },
+
     // --> EVENT LISTENERS <--
 
     onSpotlightToggle(visible: boolean): void {
@@ -238,6 +270,17 @@ export default {
 
     onGroupsToggle(visible: boolean): void {
       Store.$layout.setSidebarSectionGroups(visible);
+    },
+
+    onStoreConnected(connected: boolean): void {
+      if (connected === true) {
+        // Synchronize roster eagerly
+        this.syncRosterEager();
+      } else {
+        // Mark synchronization as stale (will re-synchronize when connection \
+        //   is restored)
+        this.isRosterSyncStale = true;
+      }
     }
   }
 };

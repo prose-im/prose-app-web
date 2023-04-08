@@ -186,6 +186,8 @@ export default {
   },
 
   created() {
+    // TODO: put this in a utility helper
+
     // Bind connected handler
     Store.$session.events().on("connected", this.onStoreConnected);
 

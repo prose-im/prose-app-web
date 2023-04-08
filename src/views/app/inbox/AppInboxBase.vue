@@ -59,7 +59,7 @@ export default {
 
   computed: {
     jid(): JID {
-      return jid(this.$route.params.jid);
+      return jid(this.$route.params.jid as string);
     },
 
     layout(): typeof Store.$layout {
