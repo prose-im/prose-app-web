@@ -16,7 +16,7 @@ import xmppID from "@xmpp/id";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
-import { IQType } from "@/broker/stanzas/iq";
+import { IQType, IQRosterSubscription, IQRosterAsk } from "@/broker/stanzas/iq";
 import { NS_ROSTER } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
@@ -46,6 +46,8 @@ interface LoadRosterResponse {
 interface LoadRosterResponseItem {
   jid: JID;
   group: RosterItemGroup;
+  subscription: IQRosterSubscription;
+  ask?: IQRosterAsk;
   name?: string;
 }
 
@@ -76,8 +78,7 @@ class BrokerModuleRoster extends BrokerModule {
 
     response.find("query item").each((_, itemNode) => {
       const itemElement = $(itemNode),
-        elementJID = itemElement.attr("jid") || null,
-        elementName = itemElement.attr("name") || null;
+        elementJID = itemElement.attr("jid") || null;
 
       if (elementJID !== null) {
         const groupElement = itemElement.find("group").first();
@@ -91,7 +92,11 @@ class BrokerModuleRoster extends BrokerModule {
           group: allowedRosterItemGroups.includes(groupName)
             ? groupName
             : RosterItemGroup.Other,
-          name: elementName || undefined
+          subscription:
+            (itemElement.attr("subscription") as IQRosterSubscription) ||
+            IQRosterSubscription.None,
+          ask: (itemElement.attr("ask") as IQRosterAsk) || undefined,
+          name: itemElement.attr("name") || undefined
         });
       }
     });
