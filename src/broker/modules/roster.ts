@@ -52,6 +52,12 @@ interface LoadRosterResponseItem {
 }
 
 /**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const GROUP_NAME_FAVORITES = "Favorites";
+
+/**************************************************************************
  * CLASS
  * ************************************************************************* */
 
@@ -89,9 +95,7 @@ class BrokerModuleRoster extends BrokerModule {
         // Acquire group name
         let groupName;
 
-        if (
-          (groupElement.text() as RosterItemGroup) === RosterItemGroup.Favorite
-        ) {
+        if (groupElement.text() === GROUP_NAME_FAVORITES) {
           // Roster group name is set to 'favorite': consider as favorite
           groupName = RosterItemGroup.Favorite;
         } else if (itemJID.domain === this._client.jid?.domain) {
