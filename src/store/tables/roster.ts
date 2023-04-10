@@ -30,7 +30,6 @@ type RosterByGroup = {
  * ************************************************************************* */
 
 interface Roster {
-  loaded: boolean;
   list: RosterList;
   byGroup: RosterByGroup;
 }
@@ -42,6 +41,14 @@ interface RosterEntry {
 }
 
 /**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const LOCAL_STATES = {
+  loaded: false
+};
+
+/**************************************************************************
  * TABLE
  * ************************************************************************* */
 
@@ -50,7 +57,6 @@ const $roster = defineStore("roster", {
 
   state: (): Roster => {
     return {
-      loaded: false,
       list: [],
       byGroup: {}
     };
@@ -79,8 +85,8 @@ const $roster = defineStore("roster", {
   actions: {
     async assert(reload = false): Promise<RosterList> {
       // Load roster? (or reload)
-      if (this.loaded === false || reload === true) {
-        this.loaded = true;
+      if (LOCAL_STATES.loaded === false || reload === true) {
+        LOCAL_STATES.loaded = true;
 
         // Initialize entries
         const entries: RosterList = [],
