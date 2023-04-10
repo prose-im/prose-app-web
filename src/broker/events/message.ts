@@ -9,6 +9,7 @@
  * ************************************************************************* */
 
 // NPM
+import { default as $, Cash } from "cash-dom";
 import { jid } from "@xmpp/jid";
 import xmppID from "@xmpp/id";
 import xmppTime from "@xmpp/time";
@@ -44,71 +45,72 @@ class BrokerEventMessage extends BrokerEventIngestor {
     [NS_MAM]: this.__mam
   };
 
-  private __any(stanza: Element): void {
+  private __any(stanza: Cash): void {
     // Pass to generic message handler
     this.__handleMessage(stanza);
   }
 
-  private __chatState(stanza: Element, element: Element): void {
+  private __chatState(stanza: Cash, element: Cash): void {
     // XEP-0085: Chat State Notifications
     // https://xmpp.org/extensions/xep-0085.html
-    const from = stanza.getAttribute("from") || null,
-      chatstate = (element.tagName as MessageChatState) || null;
+    const from = stanza.attr("from") || null,
+      chatstate = (element.prop("tagName") as MessageChatState) || null;
 
     if (from !== null && chatstate !== null) {
       Store.$inbox.setStatesChatstate(jid(from), chatstate);
     }
   }
 
-  private __reactions(stanza: Element, element: Element): void {
+  private __reactions(stanza: Cash, element: Cash): void {
     // XEP-0444: Message Reactions
     // https://xmpp.org/extensions/xep-0444.html
     // TODO
   }
 
-  private __fasten(stanza: Element, element: Element): void {
+  private __fasten(stanza: Cash, element: Cash): void {
     // XEP-0422: Message Fastening
     // https://xmpp.org/extensions/xep-0422.html
     // TODO
   }
 
-  private __carbons(stanza: Element, element: Element): void {
+  private __carbons(stanza: Cash, element: Cash): void {
     // XEP-0280: Message Carbons
     // https://xmpp.org/extensions/xep-0280.html
     // TODO
   }
 
-  private __mam(stanza: Element, element: Element): void {
+  private __mam(stanza: Cash, element: Cash): void {
     // XEP-0313: Message Archive Management
     // https://xmpp.org/extensions/xep-0313.html
-    Strophe.forEachChild(element, "forwarded", (forwarded: Element) => {
-      const message =
-        (forwarded.getElementsByTagName("message") || [])[0] || null;
+    element.children("forwarded").each((_, forwardedNode: Element) => {
+      const forwarded = $(forwardedNode);
 
-      if (message !== null) {
+      // Acquire message child
+      const message = forwarded.find("message").first();
+
+      if (message.length > 0) {
         // Read delayed delivery information
-        const delay =
-          (forwarded.getElementsByTagName("delay") || [])[0] || undefined;
+        const delay = forwarded.find("delay").first();
 
         // Pass to generic message handler
-        this.__handleMessage(message, delay);
+        this.__handleMessage(message, delay.length > 0 ? delay : undefined);
       }
     });
   }
 
-  private __handleMessage(message: Element, delay?: Element): void {
-    const from = message.getAttribute("from") || null,
-      to = message.getAttribute("to") || null,
-      bodyElement = (message.getElementsByTagName("body") || [])[0] || null;
+  private __handleMessage(message: Cash, delay?: Cash): void {
+    const from = message.attr("from") || null,
+      to = message.attr("to") || null,
+      bodyElement = message.find("body").first();
 
     // Handle message with body?
-    if (from !== null && to !== null && bodyElement !== null) {
+    if (from !== null && to !== null && bodyElement.length > 0) {
       logger.info(`Processing message from: '${from || "?"}'`);
 
       // Read body text
       const fromJID = jid(from).bare(),
         toJID = jid(to).bare(),
-        bodyText = bodyElement.textContent || "";
+        bodyText = bodyElement.text();
 
       // Acquire store target JID
       const storeJID =
@@ -116,12 +118,12 @@ class BrokerEventMessage extends BrokerEventIngestor {
 
       // Read date and time
       const dateTime =
-        (delay ? delay.getAttribute("stamp") : null) || xmppTime.datetime();
+        (delay ? delay.attr("stamp") : null) || xmppTime.datetime();
 
       // Insert message in store
       // TODO: handle different message types
       Store.$inbox.insertMessage(storeJID, {
-        id: message.id || xmppID(),
+        id: message.attr("id") || xmppID(),
         type: "text",
         date: dateTime,
         from: fromJID.toString(),

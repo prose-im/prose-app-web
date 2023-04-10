@@ -8,6 +8,9 @@
  * IMPORTS
  * ************************************************************************* */
 
+// NPM
+import { Cash } from "cash-dom";
+
 // PROJECT: BROKER
 import BrokerEventIngestor from "@/broker/events/ingestor";
 import { NS_CAPS } from "@/broker/stanzas/xmlns";
@@ -25,13 +28,14 @@ class BrokerEventPresence extends BrokerEventIngestor {
     [NS_CAPS]: this.__caps
   };
 
-  private __any(stanza: Element): void {
-    logger.info(`Processing presence from: '${stanza.getAttribute("from")}'`);
+  private __any(stanza: Cash): void {
+    logger.info(`Processing presence from: '${stanza.attr("from")}'`);
 
     // TODO
+    console.error("==> stanza", stanza[0]);
   }
 
-  private __caps(stanza: Element, element: Element): void {
+  private __caps(stanza: Cash, element: Cash): void {
     // XEP-0115: Entity Capabilities
     // https://xmpp.org/extensions/xep-0115.html
     // TODO

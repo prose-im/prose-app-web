@@ -9,6 +9,7 @@
  * ************************************************************************* */
 
 // NPM
+import { Cash } from "cash-dom";
 import { Strophe } from "strophe.js";
 import xmppTime from "@xmpp/time";
 
@@ -74,17 +75,15 @@ class BrokerEventIQ extends BrokerEventIngestor {
     other: this.__other
   };
 
-  private __assert(stanza: Element): boolean {
+  private __assert(stanza: Cash): boolean {
     // Do not handle non-request IQs
-    const kind = stanza.getAttribute("type");
+    const kind = stanza.attr("type");
 
     if (kind === IQType.Error) {
       // Log error
       logger.warn(
-        `Received error IQ from: '${
-          stanza.getAttribute("from") || ""
-        }' with text:`,
-        stanza.querySelector("error text")?.textContent
+        `Received error IQ from: '${stanza.attr("from") || ""}' with text:`,
+        stanza.find("error text").text()
       );
 
       // Do not route
@@ -94,7 +93,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     if (kind !== IQType.Get && kind !== IQType.Set) {
       logger.info(
         `Ignoring IQ from: '${
-          stanza.getAttribute("from") || ""
+          stanza.attr("from") || ""
         }' as it is not 'get' or 'set'`
       );
 
@@ -102,13 +101,13 @@ class BrokerEventIQ extends BrokerEventIngestor {
       return false;
     }
 
-    logger.info(`Processing IQ from: '${stanza.getAttribute("from") || ""}'`);
+    logger.info(`Processing IQ from: '${stanza.attr("from") || ""}'`);
 
     // Do route
     return true;
   }
 
-  private __version(stanza: Element, element: Element): void {
+  private __version(stanza: Cash, element: Cash): void {
     // XEP-0092: Software Version
     // https://xmpp.org/extensions/xep-0092.html
 
@@ -125,7 +124,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __last(stanza: Element, element: Element): void {
+  private __last(stanza: Cash, element: Cash): void {
     // XEP-0012: Last Activity
     // https://xmpp.org/extensions/xep-0012.html
 
@@ -138,7 +137,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __roster(stanza: Element, element: Element): void {
+  private __roster(stanza: Cash, element: Cash): void {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-push
 
@@ -147,7 +146,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __discoInfo(stanza: Element, element: Element): void {
+  private __discoInfo(stanza: Cash, element: Cash): void {
     // XEP-0030: Service Discovery
     // https://xmpp.org/extensions/xep-0030.html
 
@@ -167,7 +166,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __time(stanza: Element, element: Element): void {
+  private __time(stanza: Cash, element: Cash): void {
     // XEP-0202: Entity Time
     // https://xmpp.org/extensions/xep-0202.html
 
@@ -182,7 +181,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __ping(stanza: Element, element: Element): void {
+  private __ping(stanza: Cash, element: Cash): void {
     // XEP-0199: XMPP Ping
     // https://xmpp.org/extensions/xep-0199.html
 
@@ -191,13 +190,13 @@ class BrokerEventIQ extends BrokerEventIngestor {
     });
   }
 
-  private __other(stanza: Element): void {
+  private __other(stanza: Cash): void {
     this.__respondTo(
       stanza,
 
       response => {
         // Append original stanza content
-        Strophe.forEachChild(stanza, "", (element: Element) => {
+        stanza.children().each((_, element: Element) => {
           response.cnode(Strophe.copyElement(element));
         });
 
@@ -209,9 +208,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
           .c("text", { xmlns: NS_STANZAS }, ERROR_FEATURE_NOT_IMPLEMENTED_TEXT);
 
         logger.warn(
-          `Sending unsupported IQ error to: '${
-            stanza.getAttribute("from") || ""
-          }'`
+          `Sending unsupported IQ error to: '${stanza.attr("from") || ""}'`
         );
       },
 
@@ -220,7 +217,7 @@ class BrokerEventIQ extends BrokerEventIngestor {
   }
 
   private __respondTo(
-    stanza: Element,
+    stanza: Cash,
     respondFn?: (response: Strophe.Builder) => void,
     kind: IQType = IQType.Result
   ): void {
@@ -229,8 +226,8 @@ class BrokerEventIQ extends BrokerEventIngestor {
     // Craft response IQ
     const response = $iq({
       type: kind,
-      id: stanza.getAttribute("id") || "",
-      to: stanza.getAttribute("from") || ""
+      id: stanza.attr("id") || "",
+      to: stanza.attr("from") || ""
     });
 
     // Pass builder to respond function? (if any)

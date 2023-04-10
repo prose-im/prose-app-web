@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { Strophe } from "strophe.js";
+import { default as $, Cash } from "cash-dom";
 
 // PROJECT: BROKER
 import BrokerClient from "@/broker/client";
@@ -22,14 +22,14 @@ abstract class BrokerEventIngestor {
   protected readonly _client: BrokerClient;
 
   protected abstract _handlers: {
-    [namespace: string]: (stanza: Element, element: Element) => void | boolean;
+    [namespace: string]: (stanza: Cash, element: Cash) => void | boolean;
   };
 
   constructor(client: BrokerClient) {
     this._client = client;
   }
 
-  ingest(stanza: Element): void {
+  ingest(stanza: Cash): void {
     // Assert guard before handling? (if any)
     if (
       this._handlers.assert !== undefined &&
@@ -51,7 +51,7 @@ abstract class BrokerEventIngestor {
     }
 
     // Ingest each child
-    Strophe.forEachChild(stanza, "", (element: Element) => {
+    stanza.children().each((_, element: Element) => {
       const namespace = element.getAttribute("xmlns") || null;
 
       if (namespace !== null) {
@@ -59,7 +59,7 @@ abstract class BrokerEventIngestor {
 
         // Execute handler for namespace?
         if (childHandlerFn !== undefined) {
-          childHandlerFn.bind(this)(stanza, element);
+          childHandlerFn.bind(this)(stanza, $(element));
 
           // Mark as handled
           _wasHandled = true;

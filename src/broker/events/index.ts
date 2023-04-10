@@ -8,6 +8,9 @@
  * IMPORTS
  * ************************************************************************* */
 
+// NPM
+import { default as $ } from "cash-dom";
+
 // PROJECT: BROKER
 import BrokerClient from "@/broker/client";
 import BrokerEventPresence from "@/broker/events/presence";
@@ -31,17 +34,17 @@ class BrokerEvent {
 
   presence(stanza: Element): void {
     // Ingest presence stanza in event broker
-    return this.__presence.ingest(stanza);
+    return this.__presence.ingest($(stanza));
   }
 
   message(stanza: Element): void {
     // Ingest message stanza in event broker
-    return this.__message.ingest(stanza);
+    return this.__message.ingest($(stanza));
   }
 
   iq(stanza: Element): void {
     // Ingest IQ stanza in event broker
-    return this.__iq.ingest(stanza);
+    return this.__iq.ingest($(stanza));
   }
 }
 
