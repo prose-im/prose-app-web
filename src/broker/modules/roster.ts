@@ -83,15 +83,29 @@ class BrokerModuleRoster extends BrokerModule {
       if (elementJID !== null) {
         const groupElement = itemElement.find("group").first();
 
-        // Parse group name
-        const groupName = groupElement.text() as RosterItemGroup;
+        // Acquire item JID
+        const itemJID = jid(elementJID);
+
+        // Acquire group name
+        let groupName;
+
+        if (
+          (groupElement.text() as RosterItemGroup) === RosterItemGroup.Favorite
+        ) {
+          // Roster group name is set to 'favorite': consider as favorite
+          groupName = RosterItemGroup.Favorite;
+        } else if (itemJID.domain === this._client.jid?.domain) {
+          // Item JID is using the same domain as ours: consider as team
+          groupName = RosterItemGroup.Team;
+        } else {
+          // Otherwise: consider as other
+          groupName = RosterItemGroup.Other;
+        }
 
         // Append roster item
         responseData.items.push({
-          jid: jid(elementJID),
-          group: allowedRosterItemGroups.includes(groupName)
-            ? groupName
-            : RosterItemGroup.Other,
+          jid: itemJID,
+          group: groupName,
           subscription:
             (itemElement.attr("subscription") as IQRosterSubscription) ||
             IQRosterSubscription.None,
