@@ -10,9 +10,11 @@
 
 // NPM
 import { Cash } from "cash-dom";
+import { jid } from "@xmpp/jid";
 
 // PROJECT: BROKER
 import BrokerEventIngestor from "@/broker/events/ingestor";
+import { PresenceType, PresenceShow } from "@/broker/stanzas/presence";
 import { NS_CAPS } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
@@ -29,10 +31,28 @@ class BrokerEventPresence extends BrokerEventIngestor {
   };
 
   private __any(stanza: Cash): void {
+    // XMPP: Instant Messaging and Presence
+    // https://xmpp.org/rfcs/rfc6121.html#presence
+
     logger.info(`Processing presence from: '${stanza.attr("from")}'`);
 
-    // TODO
-    console.error("==> stanza", stanza[0]);
+    const from = stanza.attr("from") || null,
+      type = (stanza.attr("type") as PresenceType) || null,
+      show = (stanza.attr("show") as PresenceShow) || null,
+      status = stanza.attr("status") || null,
+      priority = parseInt(stanza.attr("priority") || "0");
+
+    if (from !== null) {
+      const fromJID = jid(from);
+
+      // TODO: (separately) implement support for 'probe' presences
+
+      // TODO: store each presence on JID + resource
+      // TODO: provide a store method to get highest-priority presence
+      // TODO: when reconnected, invalidate all store presences
+
+      console.error("==> presence : " + from, type);
+    }
   }
 
   private __caps(stanza: Cash, element: Cash): void {

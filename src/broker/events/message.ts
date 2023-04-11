@@ -53,6 +53,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
   private __chatState(stanza: Cash, element: Cash): void {
     // XEP-0085: Chat State Notifications
     // https://xmpp.org/extensions/xep-0085.html
+
     const from = stanza.attr("from") || null,
       chatstate = (element.prop("tagName") as MessageChatState) || null;
 
@@ -82,6 +83,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
   private __mam(stanza: Cash, element: Cash): void {
     // XEP-0313: Message Archive Management
     // https://xmpp.org/extensions/xep-0313.html
+
     element.children("forwarded").each((_, forwardedNode: Element) => {
       const forwarded = $(forwardedNode);
 
