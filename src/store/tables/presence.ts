@@ -50,6 +50,43 @@ const $presence = defineStore("presence", {
       return (fullJID: JID): PresenceResource => {
         return this.assert(fullJID);
       };
+    },
+
+    getHighest: function () {
+      return (bareJID: JID): PresenceResource | void => {
+        const bareJIDString = bareJID.bare().toString();
+
+        // Acquire presence with the highest-priority
+        if (bareJIDString in this) {
+          const resources = this[bareJIDString];
+
+          // Find highest priority resource
+          let highestPriorityResource: PresenceResource | void = undefined;
+
+          for (const resourceName in resources) {
+            const resource = resources[resourceName];
+
+            if (
+              highestPriorityResource === undefined ||
+              resource.priority >= highestPriorityResource.priority
+            ) {
+              highestPriorityResource = resource;
+            }
+          }
+
+          // Return found highest priority resource?
+          if (highestPriorityResource !== undefined) {
+            return highestPriorityResource;
+          }
+        }
+
+        // No presence for JID, or no highest priority resource found (return \
+        //   default offline)
+        return {
+          priority: 0,
+          type: PresenceType.Unavailable
+        };
+      };
     }
   },
 
