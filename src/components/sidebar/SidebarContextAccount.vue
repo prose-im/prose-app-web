@@ -28,8 +28,7 @@
     p.c-sidebar-context-account__identity-main
       base-presence(
         v-if="type === 'user'"
-        type="available"
-        show="chat"
+        :jid="addressJID"
         size="small"
         class="c-sidebar-context-account__identity-presence"
       )

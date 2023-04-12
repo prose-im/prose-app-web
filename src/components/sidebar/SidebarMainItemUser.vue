@@ -41,12 +41,11 @@ list-button(
       | {{ name }}
 
     base-presence(
-      v-if="presence.type === 'available'"
-      :type="presence.type",
-      :show="presence.show",
+      :jid="jid"
       :active="active"
       size="small"
       class="c-sidebar-main-item-user__presence"
+      available-only
     )
 </template>
 
@@ -96,26 +95,6 @@ export default {
       }
 
       return 0;
-    },
-
-    presence() {
-      // TODO: those are fixtures, this data should come somewhere from the \
-      //   store, based on the user JID!
-      if (
-        this.jid.local.startsWith("v") === true ||
-        this.jid.local.startsWith("m") === true ||
-        this.jid.local.startsWith("r") === true
-      ) {
-        return {
-          type: "available",
-          show: "chat"
-        };
-      }
-
-      return {
-        type: "unavailable",
-        show: "none"
-      };
     }
   },
 

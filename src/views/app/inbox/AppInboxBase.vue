@@ -11,6 +11,7 @@
 <template lang="pug">
 .v-app-inbox-base
   inbox-topbar(
+    :jid="jid"
     class="v-app-inbox-base__topbar"
   )
 

@@ -52,9 +52,8 @@ layout-toolbar(
   )
     span.a-inbox-topbar__identity.a-inbox-topbar__identity--name
       base-presence(
+        :jid="jid"
         class="a-inbox-topbar__identity-badge"
-        type="available"
-        show="chat"
         size="medium"
       )
 
@@ -113,6 +112,10 @@ layout-toolbar(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -124,6 +127,13 @@ import {
 
 export default {
   name: "InboxTopbar",
+
+  props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    }
+  },
 
   data() {
     return {

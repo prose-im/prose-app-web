@@ -37,8 +37,7 @@
     )
       base-presence(
         v-if="this.session.connected"
-        type="available"
-        show="chat"
+        :jid="userJID"
         size="small"
       )
 

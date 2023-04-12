@@ -20,8 +20,7 @@
     p.c-inbox-userinfo-identity__name
       base-presence(
         class="c-inbox-userinfo-identity__name-presence"
-        type="available"
-        show="chat"
+        :jid="jid"
         size="small"
       )
 

@@ -16,7 +16,8 @@ span(
     "c-base-presence--" + type,
     "c-base-presence--" + show,
     {
-      "c-base-presence--active": active
+      "c-base-presence--active": active,
+      "c-base-presence--available-only": availableOnly
     }
   ]`
 )
@@ -27,35 +28,24 @@ span(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
+// PROJECT: STORES
+import Store from "@/store";
+
+// CONSTANTS
+const TYPE_DEFAULT = "available";
+const SHOW_DEFAULT = "none";
+
 export default {
   name: "BasePresence",
 
   props: {
-    type: {
-      type: String,
-      required: true,
-
-      validator(x: string) {
-        return [
-          "available",
-          "unavailable",
-          "error",
-          "probe",
-          "subscribe",
-          "subscribed",
-          "unsubscribe",
-          "unsubscribed"
-        ].includes(x);
-      }
-    },
-
-    show: {
-      type: String,
-      required: true,
-
-      validator(x: string) {
-        return ["none", "away", "chat", "dnd", "xa"].includes(x);
-      }
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
     },
 
     size: {
@@ -70,6 +60,25 @@ export default {
     active: {
       type: Boolean,
       default: false
+    },
+
+    availableOnly: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  computed: {
+    type(): string {
+      return (this.highest.type as string) || TYPE_DEFAULT;
+    },
+
+    show(): string {
+      return (this.highest.show as string) || SHOW_DEFAULT;
+    },
+
+    highest(): ReturnType<typeof Store.$presence.getHighest> {
+      return Store.$presence.getHighest(this.jid);
     }
   }
 };
@@ -91,6 +100,7 @@ $sizes: (
 
 $type-shows: (
   "available": (
+    "none": $color-base-green-normal,
     "chat": $color-base-green-normal,
     "away": $color-base-orange-normal,
     "xa": $color-base-grey-normal,
@@ -137,6 +147,12 @@ $type-shows: (
 
   &--active {
     border-color: $color-white;
+  }
+
+  &--available-only {
+    &:not(#{$c}--available) {
+      display: none;
+    }
   }
 }
 </style>
