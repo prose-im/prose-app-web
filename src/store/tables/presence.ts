@@ -165,7 +165,7 @@ const $presence = defineStore("presence", {
           // Available: update presence data for resource
           const resource = this.assert(fullJID);
 
-          this.setResource(resource, {
+          this.assignResource(resource, {
             priority,
             type,
             show,
@@ -220,7 +220,7 @@ const $presence = defineStore("presence", {
         }
 
         // Update stored default resource
-        this.setResource(entry.highest, {
+        this.assignResource(entry.highest, {
           priority: highestPriorityResource.priority,
           type: highestPriorityResource.type,
           show: highestPriorityResource.show,
@@ -229,7 +229,7 @@ const $presence = defineStore("presence", {
       }
     },
 
-    setResource(
+    assignResource(
       resource: PresenceEntryResource,
       {
         priority,
