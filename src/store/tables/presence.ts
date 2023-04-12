@@ -36,6 +36,10 @@ type PresenceEntryResource = {
  * ************************************************************************* */
 
 interface Presence {
+  entries: PresenceEntries;
+}
+
+interface PresenceEntries {
   [jid: string]: PresenceEntry;
 }
 
@@ -59,7 +63,9 @@ const $presence = defineStore("presence", {
   persist: true,
 
   state: (): Presence => {
-    return {};
+    return {
+      entries: {}
+    };
   },
 
   getters: {
@@ -73,13 +79,14 @@ const $presence = defineStore("presence", {
   actions: {
     assert(fullJID: JID, highest = false): PresenceEntryResource {
       const bareJIDString = fullJID.bare().toString(),
-        fullJIDResource = fullJID.resource;
+        fullJIDResource = fullJID.resource,
+        entries = this.entries;
 
       // Assign new presence JID?
-      if (!(bareJIDString in this)) {
+      if (!(bareJIDString in entries)) {
         this.$patch(() => {
           // Insert with defaults
-          this[bareJIDString] = {
+          entries[bareJIDString] = {
             highest: {
               priority: PRIORITY_DEFAULT,
               type: TYPE_DEFAULT
@@ -91,10 +98,10 @@ const $presence = defineStore("presence", {
       }
 
       // Assign new presence resource for JID?
-      if (!(fullJIDResource in this[bareJIDString].resources)) {
+      if (!(fullJIDResource in entries[bareJIDString].resources)) {
         this.$patch(() => {
           // Insert with defaults
-          this[bareJIDString].resources[fullJIDResource] = {
+          entries[bareJIDString].resources[fullJIDResource] = {
             priority: PRIORITY_DEFAULT,
             type: TYPE_DEFAULT
           };
@@ -103,20 +110,21 @@ const $presence = defineStore("presence", {
 
       // Return highest resource, or target resource?
       if (highest === true) {
-        return this[bareJIDString].highest;
+        return entries[bareJIDString].highest;
       }
 
-      return this[bareJIDString].resources[fullJIDResource];
+      return entries[bareJIDString].resources[fullJIDResource];
     },
 
     unassert(fullJID: JID): number {
       const bareJIDString = fullJID.bare().toString(),
-        fullJIDResource = fullJID.resource;
+        fullJIDResource = fullJID.resource,
+        entries = this.entries;
 
       // Obtain number of resources for JID
       let resourceCount =
-        bareJIDString in this
-          ? Object.keys(this[bareJIDString].resources).length
+        bareJIDString in entries
+          ? Object.keys(entries[bareJIDString].resources).length
           : 0;
 
       // Unassign presence resource from JID?
@@ -125,22 +133,22 @@ const $presence = defineStore("presence", {
           // No resource given, nuke all resources
           this.$patch(() => {
             // Nuke all resources
-            this[bareJIDString].resources = {};
+            entries[bareJIDString].resources = {};
           });
 
           // Set resource count to zero (as we nuked the whole JID)
           resourceCount = 0;
-        } else if (fullJIDResource in this[bareJIDString].resources) {
+        } else if (fullJIDResource in entries[bareJIDString].resources) {
           // Unassign all JID resources? (as only current resource left)
           if (resourceCount === 1) {
             this.$patch(() => {
               // Nuke all resources
-              this[bareJIDString].resources = {};
+              entries[bareJIDString].resources = {};
             });
           } else {
             this.$patch(() => {
               // Nuke existing resource for JID
-              delete this[bareJIDString].resources[fullJIDResource];
+              delete entries[bareJIDString].resources[fullJIDResource];
             });
           }
 
@@ -195,13 +203,14 @@ const $presence = defineStore("presence", {
     },
 
     computeHighest(fullJID: JID): void {
-      const bareJIDString = fullJID.bare().toString();
+      const bareJIDString = fullJID.bare().toString(),
+        entries = this.entries;
 
       // Acquire presence with the highest-priority
       let highestPriorityResource: PresenceEntryResource | void = undefined;
 
-      if (bareJIDString in this) {
-        const entry = this[bareJIDString];
+      if (bareJIDString in entries) {
+        const entry = entries[bareJIDString];
 
         // Find highest priority resource
         for (const resourceName in entry.resources) {

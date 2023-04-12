@@ -94,6 +94,10 @@ type InboxEntryProfileSecurityEncryption = {
  * ************************************************************************* */
 
 interface Inbox {
+  entries: InboxEntries;
+}
+
+interface InboxEntries {
   [jid: string]: InboxEntry;
 }
 
@@ -117,7 +121,9 @@ const $inbox = defineStore("inbox", {
   persist: true,
 
   state: (): Inbox => {
-    return {};
+    return {
+      entries: {}
+    };
   },
 
   getters: {
@@ -147,13 +153,14 @@ const $inbox = defineStore("inbox", {
     },
 
     assert(jid: JID): InboxEntry {
-      const jidString = jid.bare().toString();
+      const jidString = jid.bare().toString(),
+        entries = this.entries;
 
       // Assign new inbox entry?
-      if (!(jidString in this)) {
+      if (!(jidString in entries)) {
         this.$patch(() => {
           // Insert with defaults
-          this[jidString] = {
+          entries[jidString] = {
             messages: {
               list: [],
               byId: {}
@@ -168,7 +175,7 @@ const $inbox = defineStore("inbox", {
         });
       }
 
-      return this[jidString];
+      return entries[jidString];
     },
 
     insertMessage(jid: JID, message: InboxEntryMessage) {
