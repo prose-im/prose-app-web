@@ -32,6 +32,7 @@ interface PresenceResource {
   type: PresenceType | null;
   show?: PresenceShow;
   status?: string;
+  updatedAt?: number;
 }
 
 /**************************************************************************
@@ -182,6 +183,7 @@ const $presence = defineStore("presence", {
             resource.type = type;
             resource.show = show;
             resource.status = status;
+            resource.updatedAt = Date.now();
           });
 
           break;
