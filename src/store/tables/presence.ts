@@ -16,23 +16,32 @@ import { defineStore } from "pinia";
 import { PresenceType, PresenceShow } from "@/broker/stanzas/presence";
 
 /**************************************************************************
- * INTERFACES
+ * TYPES
  * ************************************************************************* */
 
-interface Presence {
-  [jid: string]: PresenceResources;
+interface PresenceEntryResources {
+  [resource: string]: PresenceEntryResource;
 }
 
-interface PresenceResources {
-  [resource: string]: PresenceResource;
-}
-
-interface PresenceResource {
+type PresenceEntryResource = {
   priority: number;
   type: PresenceType | null;
   show?: PresenceShow;
   status?: string;
   updatedAt?: number;
+};
+
+/**************************************************************************
+ * INTERFACES
+ * ************************************************************************* */
+
+interface Presence {
+  [jid: string]: PresenceEntry;
+}
+
+interface PresenceEntry {
+  highest: PresenceEntryResource;
+  resources: PresenceEntryResources;
 }
 
 /**************************************************************************
@@ -48,24 +57,24 @@ const $presence = defineStore("presence", {
 
   getters: {
     getResource: function () {
-      return (fullJID: JID): PresenceResource => {
+      return (fullJID: JID): PresenceEntryResource => {
         return this.assert(fullJID);
       };
     },
 
     getHighest: function () {
-      return (bareJID: JID): PresenceResource | void => {
+      return (bareJID: JID): PresenceEntryResource | void => {
         const bareJIDString = bareJID.bare().toString();
 
         // Acquire presence with the highest-priority
         if (bareJIDString in this) {
-          const resources = this[bareJIDString];
+          const entry = this[bareJIDString];
 
           // Find highest priority resource
-          let highestPriorityResource: PresenceResource | void = undefined;
+          let highestPriorityResource: PresenceEntryResource | void = undefined;
 
-          for (const resourceName in resources) {
-            const resource = resources[resourceName];
+          for (const resourceName in entry.resources) {
+            const resource = entry.resources[resourceName];
 
             if (
               highestPriorityResource === undefined ||
@@ -83,6 +92,7 @@ const $presence = defineStore("presence", {
 
         // No presence for JID, or no highest priority resource found (return \
         //   default offline)
+        // TODO: move this to assert
         return {
           priority: 0,
           type: PresenceType.Unavailable
@@ -92,7 +102,7 @@ const $presence = defineStore("presence", {
   },
 
   actions: {
-    assert(fullJID: JID): PresenceResource {
+    assert(fullJID: JID): PresenceEntryResource {
       const bareJIDString = fullJID.bare().toString(),
         fullJIDResource = fullJID.resource;
 
@@ -100,31 +110,42 @@ const $presence = defineStore("presence", {
       if (!(bareJIDString in this)) {
         this.$patch(() => {
           // Insert with defaults
-          this[bareJIDString] = {};
+          this[bareJIDString] = {
+            highest: {
+              priority: 0,
+              type: PresenceType.Unavailable
+            },
+
+            resources: {}
+          };
         });
       }
 
       // Assign new presence resource for JID?
-      if (!(fullJIDResource in this[bareJIDString])) {
+      if (!(fullJIDResource in this[bareJIDString].resources)) {
         this.$patch(() => {
           // Insert with defaults
-          this[bareJIDString][fullJIDResource] = {
+          this[bareJIDString].resources[fullJIDResource] = {
             priority: 0,
             type: null
           };
         });
       }
 
-      return this[bareJIDString][fullJIDResource];
+      return this[bareJIDString].resources[fullJIDResource];
     },
 
     unassert(fullJID: JID): number {
+      // TODO: never remove highest! only remove resources!
+
       const bareJIDString = fullJID.bare().toString(),
         fullJIDResource = fullJID.resource;
 
       // Obtain number of resources for JID
       let resourceCount =
-        bareJIDString in this ? Object.keys(this[bareJIDString]).length : 0;
+        bareJIDString in this
+          ? Object.keys(this[bareJIDString].resources).length
+          : 0;
 
       // Unassign presence resource from JID?
       if (resourceCount > 0) {
@@ -137,7 +158,7 @@ const $presence = defineStore("presence", {
 
           // Set resource count to zero (as we nuked the whole JID)
           resourceCount = 0;
-        } else if (fullJIDResource in this[bareJIDString]) {
+        } else if (fullJIDResource in this[bareJIDString].resources) {
           // Unassign JID whole presence? (as only current resource left)
           if (resourceCount === 1) {
             this.$patch(() => {
@@ -147,7 +168,7 @@ const $presence = defineStore("presence", {
           } else {
             this.$patch(() => {
               // Nuke existing resource for JID
-              delete this[bareJIDString][fullJIDResource];
+              delete this[bareJIDString].resources[fullJIDResource];
             });
           }
 
