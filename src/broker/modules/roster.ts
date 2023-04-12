@@ -80,8 +80,6 @@ class BrokerModuleRoster extends BrokerModule {
     };
 
     // List allowed roster item groups
-    const allowedRosterItemGroups = Object.values(RosterItemGroup);
-
     response.find("query item").each((_, itemNode: Element) => {
       const itemElement = $(itemNode),
         elementJID = itemElement.attr("jid") || null;
