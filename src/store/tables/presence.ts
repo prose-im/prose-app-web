@@ -45,6 +45,13 @@ interface PresenceEntry {
 }
 
 /**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const PRIORITY_DEFAULT = 0;
+const TYPE_DEFAULT = PresenceType.Unavailable;
+
+/**************************************************************************
  * TABLE
  * ************************************************************************* */
 
@@ -74,9 +81,8 @@ const $presence = defineStore("presence", {
           // Insert with defaults
           this[bareJIDString] = {
             highest: {
-              // TODO: commonize defaults
-              priority: 0,
-              type: PresenceType.Unavailable
+              priority: PRIORITY_DEFAULT,
+              type: TYPE_DEFAULT
             },
 
             resources: {}
@@ -89,8 +95,8 @@ const $presence = defineStore("presence", {
         this.$patch(() => {
           // Insert with defaults
           this[bareJIDString].resources[fullJIDResource] = {
-            priority: 0,
-            type: null
+            priority: PRIORITY_DEFAULT,
+            type: TYPE_DEFAULT
           };
         });
       }
@@ -119,7 +125,7 @@ const $presence = defineStore("presence", {
           // No resource given, nuke all resources
           this.$patch(() => {
             // Nuke all resources
-            // TODO
+            this[bareJIDString].resources = {};
           });
 
           // Set resource count to zero (as we nuked the whole JID)
@@ -129,7 +135,7 @@ const $presence = defineStore("presence", {
           if (resourceCount === 1) {
             this.$patch(() => {
               // Nuke all resources
-              // TODO
+              this[bareJIDString].resources = {};
             });
           } else {
             this.$patch(() => {
@@ -213,9 +219,8 @@ const $presence = defineStore("presence", {
         //   to offline)
         if (highestPriorityResource === undefined) {
           highestPriorityResource = {
-            // TODO: commonize defaults
-            priority: 0,
-            type: PresenceType.Unavailable
+            priority: PRIORITY_DEFAULT,
+            type: TYPE_DEFAULT
           };
         }
 

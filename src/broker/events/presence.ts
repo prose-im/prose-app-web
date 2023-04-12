@@ -41,9 +41,9 @@ class BrokerEventPresence extends BrokerEventIngestor {
 
     const from = stanza.attr("from") || null,
       type = (stanza.attr("type") as PresenceType) || null,
-      show = (stanza.attr("show") as PresenceShow) || null,
-      status = stanza.attr("status") || null,
-      priority = parseInt(stanza.attr("priority") || "0");
+      show = (stanza.find("show").text() as PresenceShow) || null,
+      status = stanza.find("status").text() || null,
+      priority = parseInt(stanza.find("priority").text() || "0");
 
     if (from !== null) {
       // TODO: (separately) implement support for 'probe' presences
