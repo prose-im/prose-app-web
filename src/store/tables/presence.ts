@@ -56,53 +56,15 @@ const $presence = defineStore("presence", {
   },
 
   getters: {
-    getResource: function () {
-      return (fullJID: JID): PresenceEntryResource => {
-        return this.assert(fullJID);
-      };
-    },
-
     getHighest: function () {
-      return (bareJID: JID): PresenceEntryResource | void => {
-        const bareJIDString = bareJID.bare().toString();
-
-        // Acquire presence with the highest-priority
-        if (bareJIDString in this) {
-          const entry = this[bareJIDString];
-
-          // Find highest priority resource
-          let highestPriorityResource: PresenceEntryResource | void = undefined;
-
-          for (const resourceName in entry.resources) {
-            const resource = entry.resources[resourceName];
-
-            if (
-              highestPriorityResource === undefined ||
-              resource.priority >= highestPriorityResource.priority
-            ) {
-              highestPriorityResource = resource;
-            }
-          }
-
-          // Return found highest priority resource?
-          if (highestPriorityResource !== undefined) {
-            return highestPriorityResource;
-          }
-        }
-
-        // No presence for JID, or no highest priority resource found (return \
-        //   default offline)
-        // TODO: move this to assert
-        return {
-          priority: 0,
-          type: PresenceType.Unavailable
-        };
+      return (bareJID: JID): PresenceEntryResource => {
+        return this.assert(bareJID, true);
       };
     }
   },
 
   actions: {
-    assert(fullJID: JID): PresenceEntryResource {
+    assert(fullJID: JID, highest = false): PresenceEntryResource {
       const bareJIDString = fullJID.bare().toString(),
         fullJIDResource = fullJID.resource;
 
@@ -112,6 +74,7 @@ const $presence = defineStore("presence", {
           // Insert with defaults
           this[bareJIDString] = {
             highest: {
+              // TODO: commonize defaults
               priority: 0,
               type: PresenceType.Unavailable
             },
@@ -132,12 +95,15 @@ const $presence = defineStore("presence", {
         });
       }
 
+      // Return highest resource, or target resource?
+      if (highest === true) {
+        return this[bareJIDString].highest;
+      }
+
       return this[bareJIDString].resources[fullJIDResource];
     },
 
     unassert(fullJID: JID): number {
-      // TODO: never remove highest! only remove resources!
-
       const bareJIDString = fullJID.bare().toString(),
         fullJIDResource = fullJID.resource;
 
@@ -150,20 +116,20 @@ const $presence = defineStore("presence", {
       // Unassign presence resource from JID?
       if (resourceCount > 0) {
         if (!fullJIDResource) {
-          // No resource given, nuke whole JID
+          // No resource given, nuke all resources
           this.$patch(() => {
-            // Nuke whole JID
-            delete this[bareJIDString];
+            // Nuke all resources
+            // TODO
           });
 
           // Set resource count to zero (as we nuked the whole JID)
           resourceCount = 0;
         } else if (fullJIDResource in this[bareJIDString].resources) {
-          // Unassign JID whole presence? (as only current resource left)
+          // Unassign all JID resources? (as only current resource left)
           if (resourceCount === 1) {
             this.$patch(() => {
-              // Nuke whole JID
-              delete this[bareJIDString];
+              // Nuke all resources
+              // TODO
             });
           } else {
             this.$patch(() => {
@@ -199,12 +165,12 @@ const $presence = defineStore("presence", {
           // Available: update presence data for resource
           const resource = this.assert(fullJID);
 
-          this.$patch(() => {
-            resource.priority = priority;
-            resource.type = type;
-            resource.show = show;
-            resource.status = status;
-            resource.updatedAt = Date.now();
+          this.setResource(resource, {
+            priority,
+            type,
+            show,
+            status,
+            updatedAt: Date.now()
           });
 
           break;
@@ -217,6 +183,78 @@ const $presence = defineStore("presence", {
           break;
         }
       }
+
+      // Recompute highest resource
+      this.computeHighest(fullJID);
+    },
+
+    computeHighest(fullJID: JID): void {
+      const bareJIDString = fullJID.bare().toString();
+
+      // Acquire presence with the highest-priority
+      let highestPriorityResource: PresenceEntryResource | void = undefined;
+
+      if (bareJIDString in this) {
+        const entry = this[bareJIDString];
+
+        // Find highest priority resource
+        for (const resourceName in entry.resources) {
+          const resource = entry.resources[resourceName];
+
+          if (
+            highestPriorityResource === undefined ||
+            resource.priority >= highestPriorityResource.priority
+          ) {
+            highestPriorityResource = resource;
+          }
+        }
+
+        // No presence for JID, or no highest priority resource found? (default \
+        //   to offline)
+        if (highestPriorityResource === undefined) {
+          highestPriorityResource = {
+            // TODO: commonize defaults
+            priority: 0,
+            type: PresenceType.Unavailable
+          };
+        }
+
+        // Update stored default resource
+        this.setResource(entry.highest, {
+          priority: highestPriorityResource.priority,
+          type: highestPriorityResource.type,
+          show: highestPriorityResource.show,
+          status: highestPriorityResource.status
+        });
+      }
+    },
+
+    setResource(
+      resource: PresenceEntryResource,
+      {
+        priority,
+        type,
+        show,
+        status,
+        updatedAt
+      }: {
+        priority: number;
+        type: PresenceType | null;
+        show?: PresenceShow;
+        status?: string;
+        updatedAt?: number;
+      }
+    ): void {
+      this.$patch(() => {
+        resource.priority = priority;
+        resource.type = type;
+        resource.show = show;
+        resource.status = status;
+
+        if (updatedAt !== undefined) {
+          resource.updatedAt = updatedAt;
+        }
+      });
     }
   }
 });
