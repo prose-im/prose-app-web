@@ -276,7 +276,6 @@ class BrokerClient {
   private __setupContext(): void {
     this.jid = this.__connection ? jid(this.__connection.jid) : undefined;
 
-    // TODO
     Store.$session.setConnected(true);
   }
 

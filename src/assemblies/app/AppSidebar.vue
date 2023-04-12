@@ -26,6 +26,8 @@
   )
 
   sidebar-context(
+    v-if="jid"
+    :jid="jid"
     class="a-app-sidebar__context"
     avatar-presence-class="a-app-sidebar__context-presence"
   )
@@ -36,10 +38,16 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { jid, JID } from "@xmpp/jid";
+
 // PROJECT: COMPONENTS
 import SidebarHeader from "@/components/sidebar/SidebarHeader.vue";
 import SidebarMain from "@/components/sidebar/SidebarMain.vue";
 import SidebarContext from "@/components/sidebar/SidebarContext.vue";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 // CONSTANTS
 const MAIN_SCROLLED_THRESHOLD_VERTICAL = 16;
@@ -55,6 +63,20 @@ export default {
 
       isHeaderFloating: false
     };
+  },
+
+  computed: {
+    account(): typeof Store.$account {
+      return Store.$account;
+    },
+
+    jid(): JID | null {
+      if (this.account.credentials.jid) {
+        return jid(this.account.credentials.jid);
+      }
+
+      return null;
+    }
   },
 
   methods: {

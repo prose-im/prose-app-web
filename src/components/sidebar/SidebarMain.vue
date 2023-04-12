@@ -46,7 +46,7 @@
       v-for="itemFavorite in itemFavorites"
       :jid="itemFavorite.jid"
       :name="itemFavorite.name"
-      :active="itemFavorite.jid.equals(activeJID)"
+      :active="activeJID && itemFavorite.jid.equals(activeJID)"
     )
 
   list-disclosure(
@@ -60,7 +60,7 @@
       v-for="itemTeamMember in itemTeamMembers"
       :jid="itemTeamMember.jid"
       :name="itemTeamMember.name"
-      :active="itemTeamMember.jid.equals(activeJID)"
+      :active="activeJID && itemTeamMember.jid.equals(activeJID)"
     )
 
     sidebar-main-item-add(
@@ -77,7 +77,7 @@
       v-for="itemOtherContact in itemOtherContacts"
       :jid="itemOtherContact.jid"
       :name="itemOtherContact.name"
-      :active="itemOtherContact.jid.equals(activeJID)"
+      :active="activeJID && itemOtherContact.jid.equals(activeJID)"
     )
 
     sidebar-main-item-add(

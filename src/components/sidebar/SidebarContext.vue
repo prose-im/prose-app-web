@@ -19,7 +19,7 @@
     )
       base-avatar(
         @click="onAvatarImageClick"
-        :jid="userJID"
+        :jid="jid"
         size="32px"
         shadow="light"
         class="c-sidebar-context__avatar-image"
@@ -37,7 +37,7 @@
     )
       base-presence(
         v-if="this.session.connected"
-        :jid="userJID"
+        :jid="jid"
         size="small"
       )
 
@@ -76,7 +76,8 @@
 
 <script lang="ts">
 // NPM
-import { jid } from "@xmpp/jid";
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -93,6 +94,11 @@ export default {
   name: "SidebarContext",
 
   props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    },
+
     avatarPresenceClass: {
       type: String,
       default: null
@@ -101,11 +107,6 @@ export default {
 
   data() {
     return {
-      // --> DATA <--
-
-      // TODO: replace w/ user JID
-      userJID: jid("baptiste@prose.org"),
-
       // --> STATE <--
 
       isAvatarPopoverVisible: false,
@@ -123,7 +124,7 @@ export default {
           properties: {
             type: "user",
             name: "Baptiste Jamin",
-            address: "baptiste@crisp.chat"
+            address: this.jid.toString()
           }
         },
 
