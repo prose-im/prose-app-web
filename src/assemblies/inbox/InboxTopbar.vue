@@ -71,7 +71,7 @@ layout-toolbar(
       )
 
       span.u-regular
-        | valerian@crisp.chat
+        | {{ jid }}
 
     base-separator(
       class="a-inbox-topbar__separator"
