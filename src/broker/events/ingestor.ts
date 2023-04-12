@@ -40,14 +40,14 @@ abstract class BrokerEventIngestor {
     }
 
     // Proceed with handling stanza
-    let _wasHandled = false;
+    let wasHandled = false;
 
     // Ingest anything (if any)
     if (this._handlers.any !== undefined) {
       this._handlers.any.bind(this)(stanza, stanza);
 
       // Mark as handled
-      _wasHandled = true;
+      wasHandled = true;
     }
 
     // Ingest each child
@@ -62,13 +62,13 @@ abstract class BrokerEventIngestor {
           childHandlerFn.bind(this)(stanza, $(element));
 
           // Mark as handled
-          _wasHandled = true;
+          wasHandled = true;
         }
       }
     });
 
     // Trigger other handler? (if any, and was not handled)
-    if (_wasHandled !== true && this._handlers.other !== undefined) {
+    if (wasHandled !== true && this._handlers.other !== undefined) {
       this._handlers.other.bind(this)(stanza, stanza);
     }
   }
