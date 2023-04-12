@@ -20,6 +20,7 @@ import $account from "@/store/tables/account";
 import $avatar from "@/store/tables/avatar";
 import $inbox from "@/store/tables/inbox";
 import $roster from "@/store/tables/roster";
+import $presence from "@/store/tables/presence";
 
 /**************************************************************************
  * CONSTANTS
@@ -44,6 +45,7 @@ class Store {
   $avatar!: ReturnType<typeof $avatar>;
   $inbox!: ReturnType<typeof $inbox>;
   $roster!: ReturnType<typeof $roster>;
+  $presence!: ReturnType<typeof $presence>;
 
   constructor() {
     this.__store = createPinia();
@@ -83,6 +85,7 @@ class Store {
     this.$avatar = $avatar(this.__store);
     this.$inbox = $inbox(this.__store);
     this.$roster = $roster(this.__store);
+    this.$presence = $presence(this.__store);
   }
 }
 

@@ -17,6 +17,9 @@ import BrokerEventIngestor from "@/broker/events/ingestor";
 import { PresenceType, PresenceShow } from "@/broker/stanzas/presence";
 import { NS_CAPS } from "@/broker/stanzas/xmlns";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 
@@ -43,15 +46,13 @@ class BrokerEventPresence extends BrokerEventIngestor {
       priority = parseInt(stanza.attr("priority") || "0");
 
     if (from !== null) {
-      const fromJID = jid(from);
-
       // TODO: (separately) implement support for 'probe' presences
-
-      // TODO: store each presence on JID + resource
-      // TODO: provide a store method to get highest-priority presence
-      // TODO: when reconnected, invalidate all store presences
-
-      console.error("==> presence : " + from, type);
+      Store.$presence.update(jid(from), {
+        priority,
+        type,
+        show: show || undefined,
+        status: status || undefined
+      });
     }
   }
 
