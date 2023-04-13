@@ -31,6 +31,10 @@ type AvatarEntryMetadata = {
  * ************************************************************************* */
 
 interface Avatar {
+  entries: AvatarEntries;
+}
+
+interface AvatarEntries {
   [jid: string]: AvatarEntry;
 }
 
@@ -47,7 +51,9 @@ const $avatar = defineStore("avatar", {
   persist: true,
 
   state: (): Avatar => {
-    return {};
+    return {
+      entries: {}
+    };
   },
 
   getters: {
@@ -56,7 +62,7 @@ const $avatar = defineStore("avatar", {
         // TODO: need to assert from there? (maybe?)
         // this.assert(jid);
 
-        state[jid.toString()] || undefined;
+        state.entries[jid.toString()] || undefined;
       };
     }
   },
