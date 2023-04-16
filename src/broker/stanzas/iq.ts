@@ -68,7 +68,7 @@ export const DISCO_FEATURES = Object.entries(xmlns)
 export const DISCO_CATEGORY = "client";
 export const DISCO_TYPE = "web";
 export const DISCO_NAME = "Prose";
-export const DISCO_XML_LANG = "en";
+export const DISCO_XML_LANG = undefined;
 
 export const VERSION_NAME = DISCO_NAME;
 export const VERSION_SYSTEM = "Web";
