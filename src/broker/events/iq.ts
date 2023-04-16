@@ -146,15 +146,17 @@ class BrokerEventIQ extends BrokerEventIngestor {
       // Append query response
       const responseQuery = response.c("query", { xmlns: NS_DISCO_INFO });
 
-      responseQuery.c("identity", {
-        category: DISCO_CATEGORY,
-        type: DISCO_TYPE,
-        name: DISCO_NAME,
-        "xml:lang": DISCO_XML_LANG
-      });
+      responseQuery
+        .c("identity", {
+          category: DISCO_CATEGORY,
+          type: DISCO_TYPE,
+          name: DISCO_NAME,
+          "xml:lang": DISCO_XML_LANG
+        })
+        .up();
 
       DISCO_FEATURES.forEach(featureNamespace => {
-        responseQuery.c("feature", { var: featureNamespace });
+        responseQuery.c("feature", { var: featureNamespace }).up();
       });
     });
   }

@@ -31,14 +31,19 @@ class BrokerModuleConnection extends BrokerModule {
     const stanza = $pres();
 
     // Append entity capabilities
-    const capsAttributes = BrokerBuilderCaps.attributes();
+    {
+      const capsAttributes = BrokerBuilderCaps.attributes();
 
-    stanza.c("c", {
-      xmlns: NS_CAPS,
-      hash: capsAttributes.hash,
-      node: capsAttributes.node,
-      ver: capsAttributes.verification
-    });
+      stanza.c("c", {
+        xmlns: NS_CAPS,
+        hash: capsAttributes.hash,
+        node: capsAttributes.node,
+        ver: capsAttributes.verification
+      });
+
+      // Done, go back to root
+      stanza.up();
+    }
 
     this._client.emit(stanza);
 

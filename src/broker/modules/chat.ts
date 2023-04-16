@@ -143,14 +143,21 @@ class BrokerModuleMessage extends BrokerModule {
     const stanza = $msg({ to: to.toString(), type: MessageType.Chat });
 
     // Append reactions
-    const stanzaReactions = stanza.c("reactions", { xmlns: NS_REACTIONS });
+    {
+      const stanzaReactions = stanza.c("reactions", { xmlns: NS_REACTIONS });
 
-    reactions.forEach(reaction => {
-      stanzaReactions.c("reaction", {}, reaction);
-    });
+      reactions.forEach(reaction => {
+        stanzaReactions.c("reaction", {}, reaction);
+      });
+
+      // Done, go back to root
+      stanzaReactions.up();
+    }
 
     // Append hints
-    stanza.c("store", { xmlns: NS_HINTS });
+    {
+      stanza.c("store", { xmlns: NS_HINTS }).up();
+    }
 
     this._client.emit(stanza);
 
