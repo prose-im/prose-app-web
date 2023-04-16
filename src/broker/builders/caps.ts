@@ -9,7 +9,8 @@
  * ************************************************************************* */
 
 // NPM
-import sha1 from "sha1";
+import sha1 from "crypto-js/sha1";
+import Base64 from "crypto-js/enc-base64";
 import { firstBy } from "thenby";
 
 // PROJECT: BROKER
@@ -64,27 +65,35 @@ class BrokerBuilderCaps {
       hash: "sha-1",
       node: CAPS_NODE,
 
-      verification: sha1(
-        this.__verificationString(
-          this.__localIdentities(),
-          this.__localFeatures(),
-          this.__localDataForms()
-        )
+      verification: this.__verificationHash(
+        this.__localIdentities(),
+        this.__localFeatures(),
+        this.__localDataForms()
       )
     };
+  }
+
+  private __verificationHash(
+    identities: CapsIdentities,
+    features: CapsFeatures,
+    dataForms: CapsDataForms
+  ): string {
+    return Base64.stringify(
+      sha1(this.__verificationString(identities, features, dataForms))
+    );
   }
 
   private __verificationString(
     identities: CapsIdentities,
     features: CapsFeatures,
-    dataforms: CapsDataForms
+    dataForms: CapsDataForms
   ): string {
     const parts: Array<string> = [];
 
     // Sort input data
     identities.sort(firstBy("category").thenBy("type").thenBy("xml:lang"));
     features.sort();
-    dataforms.sort(firstBy("formType"));
+    dataForms.sort(firstBy("formType"));
 
     // Append identities
     identities.forEach(identity => {
