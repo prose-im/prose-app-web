@@ -44,6 +44,12 @@ interface CapsIdentity {
 
 interface CapsDataForm {
   formType: string;
+  fields: Array<CapsDataFormField>;
+}
+
+interface CapsDataFormField {
+  variable: string;
+  values: Array<string>;
 }
 
 interface CapsAttributes {
@@ -90,12 +96,9 @@ class BrokerBuilderCaps {
   ): string {
     const parts: Array<string> = [];
 
-    // Sort input data
-    identities.sort(firstBy("category").thenBy("type").thenBy("xml:lang"));
-    features.sort();
-    dataForms.sort(firstBy("formType"));
-
     // Append identities
+    identities.sort(firstBy("category").thenBy("type").thenBy("xml:lang"));
+
     identities.forEach(identity => {
       parts.push(
         [
@@ -108,15 +111,34 @@ class BrokerBuilderCaps {
     });
 
     // Append features
+    features.sort();
+
     features.forEach(feature => {
       parts.push(feature);
     });
 
     // Append data forms
-    // TODO: needs to be implemented please
+    dataForms.sort(firstBy("formType"));
 
-    // TODO
-    console.error("==> parts = ", parts);
+    dataForms.forEach(dataForm => {
+      // Append form type
+      parts.push(dataForm.formType);
+
+      // Append form fields
+      dataForm.fields.sort(firstBy("variable"));
+
+      dataForm.fields.forEach(field => {
+        // Append field variable
+        parts.push(field.variable);
+
+        // Append field values
+        field.values.sort();
+
+        field.values.forEach(value => {
+          parts.push(value);
+        });
+      });
+    });
 
     // Close parts
     parts.push("");
@@ -124,10 +146,6 @@ class BrokerBuilderCaps {
     // Generate capabilities string
     const caps = parts.join("<");
 
-    // TODO
-    console.error("==> caps = ", caps);
-
-    // TODO: fix wrong caps being generated (apparently)
     return caps;
   }
 
