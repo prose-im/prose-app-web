@@ -38,6 +38,24 @@ interface LoadVCardResponseAddress {
   country?: string;
 }
 
+interface LoadAvatarResponse {
+  meta: LoadAvatarResponseMeta;
+  data: LoadAvatarResponseData;
+}
+
+interface LoadAvatarResponseMeta {
+  id: string;
+  type: string;
+  bytes: number;
+  height: number;
+  width: number;
+}
+
+interface LoadAvatarResponseData {
+  encoding: string;
+  data: string;
+}
+
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
@@ -55,6 +73,39 @@ class BrokerModuleProfile extends BrokerModule {
     );
 
     return this.__respondLoadVCard(response);
+  }
+
+  async loadAvatar(jid: JID): Promise<LoadAvatarResponse> {
+    // XEP-0084: User Avatar
+    // https://xmpp.org/extensions/xep-0084.html
+    logger.info(`Will load avatar for: '${jid}'`);
+
+    // const response = await this._client.request;
+    // $iq({ to: jid, type: IQType.Get, id: xmppID() })();
+
+    // TODO
+    return this.__respondLoadAvatar($());
+  }
+
+  private __respondLoadAvatar(response: Cash): LoadAvatarResponse {
+    const responseData: LoadAvatarResponse = {
+      meta: {
+        id: "",
+        type: "",
+        bytes: 0,
+        height: 0,
+        width: 0
+      },
+
+      data: {
+        encoding: "",
+        data: ""
+      }
+    };
+
+    // TODO: implement PEP avatars hybrid aside vcard
+
+    return responseData;
   }
 
   private __respondLoadVCard(response: Cash): LoadVCardResponse {
@@ -100,4 +151,5 @@ class BrokerModuleProfile extends BrokerModule {
  * EXPORTS
  * ************************************************************************* */
 
+export type { LoadAvatarResponse };
 export default BrokerModuleProfile;

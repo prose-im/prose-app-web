@@ -83,7 +83,7 @@ const $roster = defineStore("roster", {
   },
 
   actions: {
-    async assert(reload = false): Promise<RosterList> {
+    async load(reload = true): Promise<RosterList> {
       // Load roster? (or reload)
       if (LOCAL_STATES.loaded === false || reload === true) {
         LOCAL_STATES.loaded = true;
@@ -121,11 +121,6 @@ const $roster = defineStore("roster", {
       }
 
       return Promise.resolve(this.list);
-    },
-
-    async load(): Promise<void> {
-      // Assert roster and forcibly reload it
-      await this.assert(true);
     }
   }
 });

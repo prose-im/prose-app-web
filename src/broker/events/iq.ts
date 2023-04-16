@@ -18,7 +18,17 @@ import * as projectPackage from "@/../package.json";
 
 // PROJECT: BROKER
 import BrokerEventIngestor from "@/broker/events/ingestor";
-import { IQType } from "@/broker/stanzas/iq";
+import {
+  IQType,
+  DISCO_FEATURES,
+  DISCO_CATEGORY,
+  DISCO_TYPE,
+  DISCO_NAME,
+  DISCO_XML_LANG,
+  VERSION_NAME,
+  VERSION_SYSTEM,
+  VERSION_REVISION_FALLBACK
+} from "@/broker/stanzas/iq";
 import {
   NS_CLIENT,
   NS_STANZAS,
@@ -29,7 +39,6 @@ import {
   NS_TIME,
   NS_PING
 } from "@/broker/stanzas/xmlns";
-import * as xmlns from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -37,23 +46,6 @@ import logger from "@/utilities/logger";
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
-
-const DISCO_FEATURES = Object.entries(xmlns)
-  .filter(([namespaceName]) => {
-    return namespaceName.startsWith("NS_");
-  })
-  .map(([, namespaceValue]) => {
-    return namespaceValue;
-  })
-  .sort();
-
-const DISCO_CATEGORY = "client";
-const DISCO_TYPE = "web";
-const DISCO_NAME = "Prose";
-
-const VERSION_NAME = DISCO_NAME;
-const VERSION_SYSTEM = "Web";
-const VERSION_REVISION_FALLBACK = "0.0.0";
 
 const ERROR_FEATURE_NOT_IMPLEMENTED_TEXT =
   "The feature requested is not implemented by the recipient or server and " +
@@ -157,7 +149,8 @@ class BrokerEventIQ extends BrokerEventIngestor {
       responseQuery.c("identity", {
         category: DISCO_CATEGORY,
         type: DISCO_TYPE,
-        name: DISCO_NAME
+        name: DISCO_NAME,
+        "xml:lang": DISCO_XML_LANG
       });
 
       DISCO_FEATURES.forEach(featureNamespace => {

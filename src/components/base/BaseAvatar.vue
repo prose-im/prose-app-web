@@ -32,6 +32,9 @@ div(
 import { PropType } from "vue";
 import { JID } from "@xmpp/jid";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 // CONSTANTS
 const SIZE_TO_BORDER_RADIUS_RATIO = 0.1;
 
@@ -59,18 +62,24 @@ export default {
     }
   },
 
-  computed: {
-    avatarImageUrl() {
-      // TODO: acquire from cache using provided JID, this is only a temporary \
-      //   fixture
-      return [
-        "/src/assets/images/components/base/BaseAvatar",
-        `avatar-${this.jid.local}.webp`
-      ].join("/");
-    },
+  data() {
+    return {
+      // --> STATE <--
 
+      lastJID: null
+    };
+  },
+
+  computed: {
     backgroundImage() {
-      return `url("${this.avatarImageUrl}")`;
+      const avatar = Store.$avatar.getAvatar(this.jid);
+
+      // Generate avatar URL from avatar data?
+      if (avatar !== undefined) {
+        return `url(${avatar.meta.type};${avatar.data.encoding},${avatar.data.data})`;
+      }
+
+      return null;
     },
 
     borderRadius() {
@@ -84,6 +93,50 @@ export default {
 
       // Return pixel-sized border radius
       return `${borderRadiusNumeric}px`;
+    }
+  },
+
+  watch: {
+    jid: {
+      immediate: true,
+
+      handler(newValue: JID, oldValue: JID) {
+        if (newValue !== oldValue) {
+          if (Store.$session.connected === true) {
+            this.lastJID = newValue;
+
+            // Load new avatar
+            // TODO: delay stanzas when client is disconnected
+            Store.$avatar.load(newValue);
+          }
+        }
+      }
+    }
+  },
+
+  created() {
+    // TODO: put this in a utility helper
+
+    // Bind connected handler
+    Store.$session.events().on("connected", this.onStoreConnected);
+  },
+
+  beforeUnmount() {
+    // Unbind connected handler
+    Store.$session.events().off("connected", this.onStoreConnected);
+  },
+
+  methods: {
+    onStoreConnected(connected: boolean): void {
+      if (
+        connected === true &&
+        (this.lastJID === null || this.jid.equals(this.lastJID) === false)
+      ) {
+        this.lastJID = this.jid;
+
+        // Load new avatar
+        Store.$avatar.load(this.jid);
+      }
     }
   }
 };

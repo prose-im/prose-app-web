@@ -5,6 +5,13 @@
  */
 
 /**************************************************************************
+ * IMPORTS
+ * ************************************************************************* */
+
+// PROJECT: BROKER
+import * as xmlns from "@/broker/stanzas/xmlns";
+
+/**************************************************************************
  * ENUMERATIONS
  * ************************************************************************* */
 
@@ -44,3 +51,25 @@ export enum IQRosterAsk {
   //   is used to signal various subscription sub-states.
   Subscribe = "subscribe"
 }
+
+/**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+export const DISCO_FEATURES = Object.entries(xmlns)
+  .filter(([namespaceName]) => {
+    return namespaceName.startsWith("NS_");
+  })
+  .map(([, namespaceValue]) => {
+    return namespaceValue;
+  })
+  .sort();
+
+export const DISCO_CATEGORY = "client";
+export const DISCO_TYPE = "web";
+export const DISCO_NAME = "Prose";
+export const DISCO_XML_LANG = "en";
+
+export const VERSION_NAME = DISCO_NAME;
+export const VERSION_SYSTEM = "Web";
+export const VERSION_REVISION_FALLBACK = "0.0.0";

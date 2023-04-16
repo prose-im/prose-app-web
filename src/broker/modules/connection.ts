@@ -13,8 +13,9 @@ import { $pres } from "strophe.js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
+import BrokerBuilderCaps from "@/broker/builders/caps";
 import { IQType } from "@/broker/stanzas/iq";
-import { NS_PING } from "@/broker/stanzas/xmlns";
+import { NS_PING, NS_CAPS } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -27,7 +28,19 @@ class BrokerModuleConnection extends BrokerModule {
   sendInitialPresence(): void {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#presence
-    this._client.emit($pres());
+    const stanza = $pres();
+
+    // Append entity capabilities
+    const capsAttributes = BrokerBuilderCaps.attributes();
+
+    stanza.c("c", {
+      xmlns: NS_CAPS,
+      hash: capsAttributes.hash,
+      node: capsAttributes.node,
+      ver: capsAttributes.verification
+    });
+
+    this._client.emit(stanza);
 
     logger.info("Sent initial presence to server");
   }
