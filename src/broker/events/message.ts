@@ -10,7 +10,7 @@
 
 // NPM
 import { default as $, Cash } from "cash-dom";
-import { jid } from "@xmpp/jid";
+import { jid, JID } from "@xmpp/jid";
 import xmppID from "@xmpp/id";
 import xmppTime from "@xmpp/time";
 
@@ -22,7 +22,9 @@ import {
   NS_REACTIONS,
   NS_FASTEN,
   NS_CARBONS,
-  NS_MAM
+  NS_MAM,
+  NS_PUBSUB_EVENT,
+  NS_AVATAR_METADATA
 } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
@@ -42,7 +44,8 @@ class BrokerEventMessage extends BrokerEventIngestor {
     [NS_REACTIONS]: this.__reactions,
     [NS_FASTEN]: this.__fasten,
     [NS_CARBONS]: this.__carbons,
-    [NS_MAM]: this.__mam
+    [NS_MAM]: this.__mam,
+    [NS_PUBSUB_EVENT]: this.__pubsubEvent
   };
 
   private __any(stanza: Cash): void {
@@ -100,6 +103,38 @@ class BrokerEventMessage extends BrokerEventIngestor {
     });
   }
 
+  private __pubsubEvent(stanza: Cash, element: Cash): void {
+    // XEP-0060: Publish-Subscribe
+    // https://xmpp.org/extensions/xep-0060.html
+
+    const from = stanza.attr("from") || null;
+
+    if (from !== null) {
+      const fromJID = jid(from);
+
+      element.children("items").each((_, itemsNode: Element) => {
+        const items = $(itemsNode),
+          node = items.attr("node");
+
+        switch (node) {
+          case NS_AVATAR_METADATA: {
+            // Pass to avatar metadata handler
+            this.__handlePubsubEventAvatarMetadata(fromJID, items);
+
+            break;
+          }
+
+          default: {
+            logger.debug(
+              `Ignoring unhandled pubsub event from: '${fromJID}' with ` +
+                `node: '${node}'`
+            );
+          }
+        }
+      });
+    }
+  }
+
   private __handleMessage(message: Cash, delay?: Cash): void {
     const from = message.attr("from") || null,
       to = message.attr("to") || null,
@@ -131,6 +166,53 @@ class BrokerEventMessage extends BrokerEventIngestor {
         from: fromJID.toString(),
         content: bodyText
       });
+    }
+  }
+
+  private __handlePubsubEventAvatarMetadata(fromJID: JID, items: Cash): void {
+    const itemElement = items.find("item").first(),
+      metadataElement = itemElement.find("metadata").first();
+
+    if (metadataElement.length > 0) {
+      // Acquire item identifier
+      const itemID = itemElement.attr("id") || null;
+
+      if (itemID === null) {
+        // TODO: handle remove avatar
+      } else {
+        const infoElement = metadataElement.find("info").first();
+
+        // Acquire metadata information (required attributes)
+        const identifier = infoElement.attr("id") || null,
+          type = infoElement.attr("type") || null,
+          bytesString = infoElement.attr("bytes") || null;
+
+        if (
+          itemID === identifier &&
+          identifier !== null &&
+          type !== null &&
+          bytesString !== null
+        ) {
+          // Acquire more metadata information (optional attributes)
+          const heightString = infoElement.attr("height") || undefined,
+            widthString = infoElement.attr("width") || undefined;
+
+          // TODO
+          console.error(
+            "==> avatar : item.id = " +
+              fromJID.bare().toString() +
+              " | " +
+              (itemID || "?")
+          );
+
+          // TODO: handle set avatar
+        } else {
+          logger.warn(
+            `Dropping incomplete or invalid avatar metadata from: ` +
+              `'${fromJID}' with ID: '${itemID}'`
+          );
+        }
+      }
     }
   }
 }
