@@ -178,7 +178,8 @@ class BrokerEventMessage extends BrokerEventIngestor {
       const itemID = itemElement.attr("id") || null;
 
       if (itemID === null) {
-        // TODO: handle remove avatar
+        // Remove avatar metadata from store
+        Store.$avatar.updateMetadata(fromJID, null);
       } else {
         const infoElement = metadataElement.find("info").first();
 
@@ -197,15 +198,18 @@ class BrokerEventMessage extends BrokerEventIngestor {
           const heightString = infoElement.attr("height") || undefined,
             widthString = infoElement.attr("width") || undefined;
 
-          // TODO
-          console.error(
-            "==> avatar : item.id = " +
-              fromJID.bare().toString() +
-              " | " +
-              (itemID || "?")
-          );
+          // Convert data into numbers
+          const bytes = parseInt(bytesString),
+            height = heightString ? parseInt(heightString) : undefined,
+            width = widthString ? parseInt(widthString) : undefined;
 
-          // TODO: handle set avatar
+          // Update avatar metadata in store
+          Store.$avatar.updateMetadata(fromJID, itemID, {
+            type,
+            bytes,
+            height,
+            width
+          });
         } else {
           logger.warn(
             `Dropping incomplete or invalid avatar metadata from: ` +

@@ -14,7 +14,7 @@ import { defineStore } from "pinia";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { LoadAvatarResponse } from "@/broker/modules/profile";
+import { LoadAvatarDataResponse } from "@/broker/modules/profile";
 
 /**************************************************************************
  * TYPES
@@ -23,6 +23,9 @@ import { LoadAvatarResponse } from "@/broker/modules/profile";
 type AvatarEntryMeta = {
   id: string;
   type: string;
+  bytes: number;
+  height?: number;
+  width?: number;
 };
 
 type AvatarEntryData = {
@@ -43,8 +46,8 @@ interface AvatarEntries {
 }
 
 interface AvatarEntry {
-  meta: AvatarEntryMeta;
-  data: AvatarEntryData;
+  meta?: AvatarEntryMeta;
+  data?: AvatarEntryData;
 }
 
 /**************************************************************************
@@ -52,7 +55,7 @@ interface AvatarEntry {
  * ************************************************************************* */
 
 const LOCAL_STATES = {
-  loading: {} as { [jid: string]: boolean }
+  loading: {} as { [jid: string]: Array<(value: AvatarEntry) => void> }
 };
 
 /**************************************************************************
@@ -69,95 +72,173 @@ const $avatar = defineStore("avatar", {
   },
 
   getters: {
-    getAvatar: (state: Avatar) => {
-      return (jid: JID): AvatarEntry | void => {
-        const bareJIDString = jid.bare().toString();
-
-        return state.entries[bareJIDString] || undefined;
+    getAvatar: function () {
+      return (jid: JID): AvatarEntry => {
+        return this.assert(jid);
       };
     }
   },
 
   actions: {
-    async load(jid: JID, reload = false): Promise<AvatarEntry | void> {
-      // Read cached avatar
-      let avatar = this.getAvatar(jid);
+    assert(jid: JID): AvatarEntry {
+      const bareJIDString = jid.bare().toString();
 
-      // TODO
-      console.error(`==> store.$avatar.load(${jid.toString()}) : check`);
+      // Assign new avatar entry for JID?
+      if (!(bareJIDString in this.entries)) {
+        this.$patch(() => {
+          // Insert empty data
+          this.entries[bareJIDString] = {};
+        });
+      }
 
-      // Load avatar? (or reload)
-      if (avatar === undefined || reload === true) {
-        // TODO
-        console.error(`==> store.$avatar.load(${jid.toString()}) : proceed`);
+      return this.entries[bareJIDString];
+    },
 
-        const bareJIDString = jid.bare().toString();
+    async load(jid: JID): Promise<AvatarEntry> {
+      // Assert avatar data
+      const avatar = this.assert(jid);
 
-        // Not already loading? Load now.
-        if (LOCAL_STATES.loading[bareJIDString] !== true) {
-          // Mark as loading
-          LOCAL_STATES.loading[bareJIDString] = true;
-
-          // TODO
-          // TODO: once loaded, unstack state
-
-          const avatarResponse = await Broker.$profile.loadAvatar(jid);
-
-          // Store avatar
-          avatar = this.setAvatar(jid, avatarResponse);
-
-          // TODO
-          console.error(
-            "==> avatar/loaded : " + bareJIDString,
-            JSON.stringify(avatar)
-          );
-
-          // Remove loading marker
-          delete LOCAL_STATES.loading[bareJIDString];
-        } else {
-          // TODO: return stacked return promise
-        }
-      } else {
-        // TODO
-        console.error(
-          "==> avatar/cached : " + jid.bare().toString(),
-          JSON.stringify(avatar)
+      // Ensure that meta are set with an identifier
+      if (!avatar.meta || !avatar.meta.id) {
+        throw new Error(
+          `Cannot load avatar data for: '${jid}', as meta are not set!`
         );
       }
 
-      return Promise.resolve(avatar);
+      const bareJIDString = jid.bare().toString();
+
+      // Not already loading? Load now.
+      if (!LOCAL_STATES.loading[bareJIDString]) {
+        // Mark as loading
+        LOCAL_STATES.loading[bareJIDString] = [];
+
+        // Load avatar data
+        const avatarResponse = await Broker.$profile.loadAvatarData(
+          jid,
+          avatar.meta.id
+        );
+
+        // Store avatar data?
+        if (avatarResponse !== undefined) {
+          this.setAvatarData(jid, avatar.meta.id, avatarResponse);
+        }
+
+        // Fire all stacked promises
+        let pendingResolve;
+
+        while ((pendingResolve = LOCAL_STATES.loading[bareJIDString].pop())) {
+          pendingResolve(avatar);
+        }
+
+        // Remove loading marker
+        delete LOCAL_STATES.loading[bareJIDString];
+
+        return Promise.resolve(avatar);
+      }
+
+      return new Promise(resolve => {
+        LOCAL_STATES.loading[bareJIDString].push(resolve);
+      });
     },
 
-    async updateMetadata(jid: JID, id: string): Promise<AvatarEntry | void> {
-      // Read cached avatar
-      const avatar = this.getAvatar(jid);
+    async updateMetadata(
+      jid: JID,
+      id: string | null,
+      attributes?: {
+        type: string;
+        bytes: number;
+        height?: number;
+        width?: number;
+      }
+    ): Promise<AvatarEntry> {
+      // Assert avatar data
+      const avatar = this.assert(jid);
+
+      // Check if should reload (before metas are updated; only if identifier \
+      //   is set)
+      const shouldReload =
+        id && ((avatar.meta && avatar.meta.id !== id) || !avatar.meta)
+          ? true
+          : false;
+
+      // Update stored avatar metadata
+      this.setAvatarMeta(jid, id, attributes);
 
       // Reload avatar? (w/ updated metadata, only if avatar had been loaded)
-      if (avatar && avatar.meta.id !== id) {
-        return this.load(jid, true);
+      if (shouldReload === true) {
+        // Notice: if this fires, then avatar is definitely set.
+        // TODO: only load if avatar is shown on screen please (lazy load)
+        return this.load(jid);
       }
 
       return Promise.resolve(avatar);
     },
 
-    setAvatar(jid: JID, avatarResponse: LoadAvatarResponse): AvatarEntry {
-      const bareJIDString = jid.bare().toString();
+    setAvatarMeta(
+      jid: JID,
+      id: string | null,
+      attributes?: {
+        type: string;
+        bytes: number;
+        height?: number;
+        width?: number;
+      }
+    ): AvatarEntry {
+      // Assert avatar data
+      const avatar = this.assert(jid);
+
+      // Check if identifier has changed
+      const hasIdChanged =
+        id && avatar.meta && avatar.meta.id !== id ? true : false;
 
       this.$patch(() => {
-        this.entries[bareJIDString] = {
-          meta: {
-            id: avatarResponse.meta.id,
-            type: avatarResponse.meta.type
-          },
+        if (id !== null && attributes !== undefined) {
+          avatar.meta = {
+            id,
+            type: attributes.type,
+            bytes: attributes.bytes,
+            height: attributes.height,
+            width: attributes.width
+          };
 
-          data: {
-            encoding: avatarResponse.data.encoding,
-            data: avatarResponse.data.data
+          // Flush orphan data (due to ID mismatch)
+          if (hasIdChanged === true) {
+            delete avatar.data;
           }
-        } as AvatarEntry;
+        } else {
+          delete avatar.meta;
+          delete avatar.data;
+        }
       });
 
-      return this.entries[bareJIDString];
+      return avatar;
+    },
+
+    setAvatarData(
+      jid: JID,
+      id: string,
+      avatarDataResponse: LoadAvatarDataResponse
+    ): AvatarEntry {
+      // Assert avatar data
+      const avatar = this.assert(jid);
+
+      // No meta set? (this is unexpected)
+      if (!avatar.meta || avatar.meta.id !== id) {
+        throw new Error(
+          `Cannot set avatar data for: '${jid}', as meta are not set or ` +
+            `identifiers do not match!`
+        );
+      }
+
+      // Set avatar data
+      this.$patch(() => {
+        avatar.data = {
+          encoding: avatarDataResponse.encoding,
+          data: avatarDataResponse.data
+        };
+      });
+
+      return avatar;
     }
   }
 });

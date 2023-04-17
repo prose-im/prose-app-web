@@ -276,21 +276,20 @@ export default {
 
     setupStore(runtime: MessagingRuntime): void {
       // Identify both parties
+      // TODO: JID from conn
       // TODO: dummy identities
       runtime.MessagingStore.identify(jid("valerian@prose.org"), {
-        name: "Val",
-        avatar:
-          "https://gravatar.com/avatar/15bf80612ffed057af0ed8a579adb870?size=80"
+        name: "vsa", // TODO: name from profile
+        avatar: null // TODO: from getavatar
       });
 
       runtime.MessagingStore.identify(this.jid.toString(), {
-        name: "Valerian",
-        avatar:
-          "https://gravatar.com/avatar/b4cb8302ee37f985cc76190aaae1b40b?size=80"
+        name: "Valerian", // TODO: name from profile
+        avatar: null // TODO: from getavatar
       });
 
       // Set user profile
-      // TODO: dummy profile
+      // TODO: from profile data
       Store.$inbox.setProfile(this.jid, {
         name: {
           first: "Valerian",

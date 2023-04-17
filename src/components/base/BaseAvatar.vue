@@ -62,21 +62,16 @@ export default {
     }
   },
 
-  data() {
-    return {
-      // --> STATE <--
-
-      lastJID: null
-    };
-  },
-
   computed: {
     backgroundImage() {
       const avatar = Store.$avatar.getAvatar(this.jid);
 
       // Generate avatar URL from avatar data?
-      if (avatar !== undefined) {
-        return `url(${avatar.meta.type};${avatar.data.encoding},${avatar.data.data})`;
+      if (avatar.data !== undefined) {
+        const meta = avatar.meta,
+          data = avatar.data;
+
+        return `url(data:${meta.type};${data.encoding},${data.data})`;
       }
 
       return null;
@@ -93,50 +88,6 @@ export default {
 
       // Return pixel-sized border radius
       return `${borderRadiusNumeric}px`;
-    }
-  },
-
-  watch: {
-    jid: {
-      immediate: true,
-
-      handler(newValue: JID, oldValue: JID) {
-        if (newValue !== oldValue) {
-          if (Store.$session.connected === true) {
-            this.lastJID = newValue;
-
-            // Load new avatar
-            // TODO: delay stanzas when client is disconnected
-            Store.$avatar.load(newValue);
-          }
-        }
-      }
-    }
-  },
-
-  created() {
-    // TODO: put this in a utility helper
-
-    // Bind connected handler
-    Store.$session.events().on("connected", this.onStoreConnected);
-  },
-
-  beforeUnmount() {
-    // Unbind connected handler
-    Store.$session.events().off("connected", this.onStoreConnected);
-  },
-
-  methods: {
-    onStoreConnected(connected: boolean): void {
-      if (
-        connected === true &&
-        (this.lastJID === null || this.jid.equals(this.lastJID) === false)
-      ) {
-        this.lastJID = this.jid;
-
-        // Load new avatar
-        Store.$avatar.load(this.jid);
-      }
     }
   }
 };

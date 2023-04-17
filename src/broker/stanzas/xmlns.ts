@@ -37,4 +37,5 @@ export const NS_RSM = "http://jabber.org/protocol/rsm";
 export const NS_CAPS = "http://jabber.org/protocol/caps";
 export const NS_DISCO_INFO = "http://jabber.org/protocol/disco#info";
 
+export const NS_PUBSUB = "http://jabber.org/protocol/pubsub";
 export const NS_PUBSUB_EVENT = "http://jabber.org/protocol/pubsub#event";

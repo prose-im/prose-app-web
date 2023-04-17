@@ -17,7 +17,7 @@ import { JID } from "@xmpp/jid";
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
 import { IQType } from "@/broker/stanzas/iq";
-import { NS_VCARD4 } from "@/broker/stanzas/xmlns";
+import { NS_VCARD4, NS_AVATAR_DATA, NS_PUBSUB } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -38,20 +38,7 @@ interface LoadVCardResponseAddress {
   country?: string;
 }
 
-interface LoadAvatarResponse {
-  meta: LoadAvatarResponseMeta;
-  data: LoadAvatarResponseData;
-}
-
-interface LoadAvatarResponseMeta {
-  id: string;
-  type: string;
-  bytes: number;
-  height: number;
-  width: number;
-}
-
-interface LoadAvatarResponseData {
+interface LoadAvatarDataResponse {
   encoding: string;
   data: string;
 }
@@ -75,37 +62,22 @@ class BrokerModuleProfile extends BrokerModule {
     return this.__respondLoadVCard(response);
   }
 
-  async loadAvatar(jid: JID): Promise<LoadAvatarResponse> {
+  async loadAvatarData(
+    jid: JID,
+    id: string
+  ): Promise<LoadAvatarDataResponse | void> {
     // XEP-0084: User Avatar
     // https://xmpp.org/extensions/xep-0084.html
     logger.info(`Will load avatar for: '${jid}'`);
 
-    // const response = await this._client.request;
-    // $iq({ to: jid, type: IQType.Get, id: xmppID() })();
+    const response = await this._client.request(
+      $iq({ to: jid, type: IQType.Get, id: xmppID() })
+        .c("pubsub", { xmlns: NS_PUBSUB })
+        .c("items", { node: NS_AVATAR_DATA })
+        .c("item", { id })
+    );
 
-    // TODO
-    return this.__respondLoadAvatar($());
-  }
-
-  private __respondLoadAvatar(response: Cash): LoadAvatarResponse {
-    const responseData: LoadAvatarResponse = {
-      meta: {
-        id: "",
-        type: "",
-        bytes: 0,
-        height: 0,
-        width: 0
-      },
-
-      data: {
-        encoding: "",
-        data: ""
-      }
-    };
-
-    // TODO: implement PEP avatars hybrid aside vcard
-
-    return responseData;
+    return this.__respondLoadAvatarData(response);
   }
 
   private __respondLoadVCard(response: Cash): LoadVCardResponse {
@@ -145,11 +117,26 @@ class BrokerModuleProfile extends BrokerModule {
 
     return responseData;
   }
+
+  private __respondLoadAvatarData(
+    response: Cash
+  ): LoadAvatarDataResponse | void {
+    const dataElement = response.find("pubsub items item data").first();
+
+    if (dataElement.length > 0) {
+      return {
+        encoding: "base64",
+        data: dataElement.text()
+      };
+    }
+
+    return undefined;
+  }
 }
 
 /**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
-export type { LoadAvatarResponse };
+export type { LoadAvatarDataResponse };
 export default BrokerModuleProfile;
