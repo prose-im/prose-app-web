@@ -16,6 +16,7 @@
   )
 
   inbox-userinfo-information(
+    v-if="profile.information"
     :jid="jid"
     :expanded="layout.inbox.userinfo.sections.information"
     class="a-inbox-userinfo__block a-inbox-userinfo__block--information"
@@ -24,6 +25,7 @@
   )
 
   inbox-userinfo-security(
+    v-if="profile.security"
     :jid="jid"
     :expanded="layout.inbox.userinfo.sections.security"
     class="a-inbox-userinfo__block a-inbox-userinfo__block--security"
@@ -75,9 +77,21 @@ export default {
     }
   },
 
+  data() {
+    return {
+      // --> STATE <--
+
+      isVCardSyncStale: true
+    };
+  },
+
   computed: {
     layout(): typeof Store.$layout {
       return Store.$layout;
+    },
+
+    profile(): ReturnType<typeof Store.$profile.getProfile> {
+      return Store.$profile.getProfile(this.jid);
     }
   },
 
@@ -85,8 +99,56 @@ export default {
     jid: {
       immediate: true,
 
-      handler(value: JID) {
-        // TODO: re-assert store
+      handler(newValue: JID, oldValue: JID) {
+        // Make sure vCard data is loaded?
+        if (newValue && (!oldValue || newValue.equals(oldValue) === false)) {
+          // Mark as stale
+          this.isVCardSyncStale = true;
+
+          // Synchronize vCard eagerly
+          this.syncVCardEager();
+        }
+      }
+    }
+  },
+
+  created() {
+    // TODO: put this in a utility helper
+    // TODO: or maybe add ability to stack pending requests once connected (w/ \
+    //   a timeout if not connected in due time)
+
+    // Bind connected handler
+    Store.$session.events().on("connected", this.onStoreConnected);
+
+    // Synchronize vCard eagerly
+    this.syncVCardEager();
+  },
+
+  beforeUnmount() {
+    // Unbind connected handler
+    Store.$session.events().off("connected", this.onStoreConnected);
+  },
+
+  methods: {
+    // --> HELPERS <--
+
+    async syncVCardEager(): void {
+      // Can synchronize now? (connected)
+      if (this.isVCardSyncStale === true && Store.$session.connected === true) {
+        // Mark synchronization as non-stale
+        this.isVCardSyncStale = false;
+
+        // Load profile
+        await Store.$profile.load(this.jid);
+      }
+    },
+
+    // --> EVENT LISTENERS <--
+
+    onStoreConnected(connected: boolean): void {
+      if (connected === true) {
+        // Synchronize vCard eagerly (if stale)
+        this.syncVCardEager();
       }
     }
   }

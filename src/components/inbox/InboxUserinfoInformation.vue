@@ -144,9 +144,8 @@ export default {
       return entries;
     },
 
-    profile(): ReturnType<typeof Store.$inbox.getProfile> {
-      // TODO: jid from url
-      return Store.$inbox.getProfile(this.jid);
+    profile(): ReturnType<typeof Store.$profile.getProfile> {
+      return Store.$profile.getProfile(this.jid);
     }
   },
 

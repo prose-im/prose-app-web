@@ -18,6 +18,7 @@ import $session from "@/store/tables/session";
 import $layout from "@/store/tables/layout";
 import $account from "@/store/tables/account";
 import $avatar from "@/store/tables/avatar";
+import $profile from "@/store/tables/profile";
 import $inbox from "@/store/tables/inbox";
 import $roster from "@/store/tables/roster";
 import $presence from "@/store/tables/presence";
@@ -43,6 +44,7 @@ class Store {
   $layout!: ReturnType<typeof $layout>;
   $account!: ReturnType<typeof $account>;
   $avatar!: ReturnType<typeof $avatar>;
+  $profile!: ReturnType<typeof $profile>;
   $inbox!: ReturnType<typeof $inbox>;
   $roster!: ReturnType<typeof $roster>;
   $presence!: ReturnType<typeof $presence>;
@@ -83,6 +85,7 @@ class Store {
     this.$layout = $layout(this.__store);
     this.$account = $account(this.__store);
     this.$avatar = $avatar(this.__store);
+    this.$profile = $profile(this.__store);
     this.$inbox = $inbox(this.__store);
     this.$roster = $roster(this.__store);
     this.$presence = $presence(this.__store);

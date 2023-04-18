@@ -27,66 +27,8 @@ type InboxEntryMessages = {
   byId: { [id: string]: InboxEntryMessage };
 };
 
-type InboxEntryMessage = MessagingStoreMessageData;
-
 type InboxEntryStates = {
   chatstate: MessageChatState;
-};
-
-type InboxEntryProfile = {
-  name?: InboxEntryProfileName;
-  role?: string;
-  information?: InboxEntryProfileInformation;
-  security?: InboxEntryProfileSecurity;
-};
-
-type InboxEntryProfileName = {
-  first: string;
-  last: string;
-};
-
-type InboxEntryProfileInformation = {
-  contact: InboxEntryProfileInformationContact;
-  lastActive: InboxEntryProfileInformationLastActive | null;
-  location: InboxEntryProfileInformationLocation;
-  activity: InboxEntryProfileInformationActivity | null;
-};
-
-type InboxEntryProfileInformationContact = {
-  email: string | null;
-  phone: string | null;
-};
-
-type InboxEntryProfileInformationLastActive = {
-  timestamp: number | null;
-};
-
-type InboxEntryProfileInformationLocation = {
-  city: string | null;
-  country: string | null;
-  timezone: string | null;
-};
-
-type InboxEntryProfileInformationActivity = {
-  icon: string | null;
-  text: string;
-};
-
-type InboxEntryProfileSecurity = {
-  verification: InboxEntryProfileSecurityVerification | null;
-  encryption: InboxEntryProfileSecurityEncryption | null;
-};
-
-type InboxEntryProfileSecurityVerification = {
-  fingerprint: string | null;
-  email: string | null;
-  phone: string | null;
-  identity: string | null;
-};
-
-type InboxEntryProfileSecurityEncryption = {
-  connectionProtocol: string;
-  messageEndToEndMethod: string;
 };
 
 /**************************************************************************
@@ -104,7 +46,10 @@ interface InboxEntries {
 interface InboxEntry {
   messages: InboxEntryMessages;
   states: InboxEntryStates;
-  profile: InboxEntryProfile;
+}
+
+interface InboxEntryMessage extends MessagingStoreMessageData {
+  archiveId?: string;
 }
 
 /**************************************************************************
@@ -137,12 +82,6 @@ const $inbox = defineStore("inbox", {
       return (jid: JID): Array<InboxEntryStates> => {
         return this.assert(jid).states;
       };
-    },
-
-    getProfile: function () {
-      return (jid: JID): InboxEntryProfile => {
-        return this.assert(jid).profile;
-      };
     }
   },
 
@@ -163,14 +102,15 @@ const $inbox = defineStore("inbox", {
           entries[jidString] = {
             messages: {
               list: [],
-              byId: {}
+
+              // TODO: do not store this in persistance layer
+              byId: {} // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
             },
 
             states: {
+              // TODO: do not store this in persistance layer
               chatstate: MessageChatState.Inactive
-            },
-
-            profile: {}
+            }
           };
         });
       }
@@ -194,13 +134,27 @@ const $inbox = defineStore("inbox", {
         const existingMessage = container.byId[message.id] || null;
 
         if (existingMessage !== null) {
-          merge(existingMessage, message);
+          this.$patch(() => {
+            merge(existingMessage, message);
+
+            // TODO: remove temporary fix of lost reference when store is \
+            //   restored
+            const foundListMessage = container.list.find(listMessage => {
+              return listMessage.id === existingMessage.id;
+            });
+
+            if (foundListMessage) {
+              merge(foundListMessage, message);
+            }
+          });
 
           // Emit IPC updated event
           EventBus.emit("message:updated", existingMessage);
         } else {
-          container.byId[message.id] = message;
-          container.list.push(message);
+          this.$patch(() => {
+            container.byId[message.id] = message;
+            container.list.push(message);
+          });
 
           // Emit IPC inserted event
           EventBus.emit("message:inserted", message);
@@ -216,7 +170,9 @@ const $inbox = defineStore("inbox", {
 
       if (existingMessage !== null) {
         // Remove from identifier map
-        delete container.byId[id];
+        this.$patch(() => {
+          delete container.byId[id];
+        });
 
         // Remove from list
         const listIndex = container.list.findIndex(message => {
@@ -224,7 +180,9 @@ const $inbox = defineStore("inbox", {
         });
 
         if (listIndex > -1) {
-          container.list.splice(listIndex, 1);
+          this.$patch(() => {
+            container.list.splice(listIndex, 1);
+          });
         }
 
         // Emit IPC retracted event
@@ -234,10 +192,6 @@ const $inbox = defineStore("inbox", {
 
     setStatesChatstate(jid: JID, chatstate: MessageChatState) {
       this.assert(jid).states.chatstate = chatstate;
-    },
-
-    setProfile(jid: JID, profile: InboxEntryProfile) {
-      this.assert(jid).profile = profile;
     }
   }
 });

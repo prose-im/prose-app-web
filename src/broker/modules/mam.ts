@@ -51,7 +51,15 @@ const HISTORY_PAGE_SIZE = 40;
 class BrokerModuleMAM extends BrokerModule {
   async loadMessages(
     jid: JID,
-    beforeId?: MessageID
+    {
+      beforeId,
+      afterId,
+      ids
+    }: {
+      beforeId?: MessageID;
+      afterId?: MessageID;
+      ids?: Array<MessageID>;
+    } = {}
   ): Promise<LoadMessagesResponse> {
     // XEP-0313: Message Archive Management
     // https://xmpp.org/extensions/xep-0313.html
@@ -68,6 +76,7 @@ class BrokerModuleMAM extends BrokerModule {
           type: "submit"
         });
 
+        // Add form fields
         stanzaQueryData
           .c("field", { var: "FORM_TYPE", type: "hidden" })
           .c("value", {}, NS_MAM)
@@ -78,11 +87,32 @@ class BrokerModuleMAM extends BrokerModule {
           .c("value", {}, jid.toString())
           .up();
 
+        // Add paging parameters (before/after)
+        // Notice: they can be combined together.
         if (beforeId) {
           stanzaQueryData
             .c("field", { var: "before-id" })
             .c("value", {}, beforeId)
             .up();
+        }
+
+        if (afterId) {
+          stanzaQueryData
+            .c("field", { var: "after-id" })
+            .c("value", {}, afterId)
+            .up();
+        }
+
+        if (ids && ids.length > 0) {
+          const stanzaQueryDataField = stanzaQueryData.c("field", {
+            var: "ids"
+          });
+
+          ids.forEach(id => {
+            stanzaQueryDataField.c("value", {}, id);
+          });
+
+          stanzaQueryDataField.up();
         }
 
         // Done, go back to root
@@ -100,9 +130,8 @@ class BrokerModuleMAM extends BrokerModule {
     }
 
     logger.info(
-      `Will load messages from history from: '${jid}' before #${
-        beforeId || "--"
-      }`
+      `Will load messages from history from: '${jid}' before: ` +
+        `#${beforeId || "--"}, after: #${afterId || "--"}`
     );
 
     // Send request

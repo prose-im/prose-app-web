@@ -166,7 +166,7 @@ export default {
       immediate: true,
 
       handler(newValue: JID, oldValue: JID) {
-        if (newValue !== oldValue) {
+        if (newValue && (!oldValue || newValue.equals(oldValue) === false)) {
           // Mark as stale
           this.isMessageSyncStale = true;
 
@@ -288,53 +288,6 @@ export default {
         avatar: null // TODO: from getavatar
       });
 
-      // Set user profile
-      // TODO: from profile data
-      Store.$inbox.setProfile(this.jid, {
-        name: {
-          first: "Valerian",
-          last: "Saliou"
-        },
-
-        role: "CTO at Crisp",
-
-        information: {
-          contact: {
-            email: this.jid.toString(),
-            phone: "+33631210280"
-          },
-
-          lastActive: {
-            timestamp: 1680376033407
-          },
-
-          location: {
-            city: "Nantes",
-            country: "FR",
-            timezone: "Europe/Lisbon"
-          },
-
-          activity: {
-            icon: "👨‍💻",
-            text: "Focusing on code"
-          }
-        },
-
-        security: {
-          verification: {
-            fingerprint: "C648A",
-            email: this.jid.toString(),
-            phone: "+33631210280",
-            identity: "Valerian Saliou"
-          },
-
-          encryption: {
-            connectionProtocol: "TLS 1.3",
-            messageEndToEndMethod: "OMEMO"
-          }
-        }
-      });
-
       // Mark as initializing?
       if (this.isMessageSyncStale === true) {
         runtime.MessagingStore.loader("forwards", true);
@@ -443,8 +396,27 @@ export default {
         // Mark synchronization as non-stale
         this.isMessageSyncStale = false;
 
+        // Find last message with an archive identifier
+        let lastResultIdFromArchive = undefined;
+
+        if (this.messages.length > 0) {
+          for (let i = this.messages.length - 1; i >= 0; i--) {
+            const archiveId = this.messages[i].archiveId || undefined;
+
+            if (archiveId !== undefined) {
+              lastResultIdFromArchive = archiveId;
+
+              // Stop as soon as last archive identifier was found
+              break;
+            }
+          }
+        }
+
         // Load all messages
-        const result = await Broker.$mam.loadMessages(this.jid);
+        // Notice: only load messages after last loaded identifier
+        const result = await Broker.$mam.loadMessages(this.jid, {
+          afterId: lastResultIdFromArchive
+        });
 
         // Mark forwards loading as complete
         frameRuntime.MessagingStore.loader("forwards", false);

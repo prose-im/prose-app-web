@@ -97,8 +97,15 @@ class BrokerEventMessage extends BrokerEventIngestor {
         // Read delayed delivery information
         const delay = forwarded.find("delay").first();
 
+        // Read archive identifier
+        const archiveId = element.attr("id") || undefined;
+
         // Pass to generic message handler
-        this.__handleMessage(message, delay.length > 0 ? delay : undefined);
+        this.__handleMessage(
+          message,
+          delay.length > 0 ? delay : undefined,
+          archiveId
+        );
       }
     });
   }
@@ -135,7 +142,11 @@ class BrokerEventMessage extends BrokerEventIngestor {
     }
   }
 
-  private __handleMessage(message: Cash, delay?: Cash): void {
+  private __handleMessage(
+    message: Cash,
+    delay?: Cash,
+    archiveId?: string
+  ): void {
     const from = message.attr("from") || null,
       to = message.attr("to") || null,
       bodyElement = message.find("body").first();
@@ -161,6 +172,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
       // TODO: handle different message types
       Store.$inbox.insertMessage(storeJID, {
         id: message.attr("id") || xmppID(),
+        archiveId: archiveId,
         type: "text",
         date: dateTime,
         from: fromJID.toString(),

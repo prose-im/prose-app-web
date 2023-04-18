@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { default as $, Cash } from "cash-dom";
+import { Cash } from "cash-dom";
 import { $iq } from "strophe.js";
 import xmppID from "@xmpp/id";
 import { JID } from "@xmpp/jid";
@@ -28,9 +28,19 @@ import logger from "@/utilities/logger";
 
 interface LoadVCardResponse {
   fullName?: string;
+  firstName?: string;
+  lastName?: string;
   url?: string;
   email?: string;
-  address: LoadVCardResponseAddress;
+  phone?: string;
+  job?: LoadVCardResponseJob;
+  address?: LoadVCardResponseAddress;
+}
+
+interface LoadVCardResponseJob {
+  title?: string;
+  role?: string;
+  organization?: string;
 }
 
 interface LoadVCardResponseAddress {
@@ -42,6 +52,12 @@ interface LoadAvatarDataResponse {
   encoding: string;
   data: string;
 }
+
+/**************************************************************************
+ * INSTANCES
+ * ************************************************************************* */
+
+const PHONE_URI_REGEX = /^tel:(.+)$/;
 
 /**************************************************************************
  * CLASS
@@ -81,25 +97,41 @@ class BrokerModuleProfile extends BrokerModule {
   }
 
   private __respondLoadVCard(response: Cash): LoadVCardResponse {
-    const responseData: LoadVCardResponse = {
-      address: {}
-    };
+    const responseData: LoadVCardResponse = {};
 
     const vCardElement = response.find("vcard").first();
 
-    // Append base data
-    const fullName = vCardElement.find("fn text").text(),
-      url = vCardElement.find("url uri").text(),
-      email = vCardElement.find("email text").text();
+    // Append name data
+    responseData.fullName = vCardElement.find("fn text").text() || undefined;
+    responseData.firstName = vCardElement.find("n given").text() || undefined;
+    responseData.lastName = vCardElement.find("n surname").text() || undefined;
 
-    if (fullName) {
-      responseData.fullName = fullName;
+    // Append contact data
+    responseData.url = vCardElement.find("url uri").text() || undefined;
+    responseData.email = vCardElement.find("email text").text() || undefined;
+
+    // Acquire phone URI
+    const phoneURI = vCardElement.find("tel uri").text();
+
+    if (phoneURI) {
+      const phoneURIMatch = phoneURI.match(PHONE_URI_REGEX);
+
+      if (phoneURIMatch && phoneURIMatch[1]) {
+        responseData.phone = phoneURIMatch[1];
+      }
     }
-    if (url) {
-      responseData.url = url;
-    }
-    if (email) {
-      responseData.email = email;
+
+    // Append job data
+    const jobTitle = vCardElement.find("title text").text(),
+      jobRole = vCardElement.find("role text").text(),
+      jobOrganization = vCardElement.find("org text").text();
+
+    if (jobTitle || jobRole || jobOrganization) {
+      responseData.job = {
+        title: jobTitle || undefined,
+        role: jobRole || undefined,
+        organization: jobOrganization || undefined
+      };
     }
 
     // Append address data
@@ -108,11 +140,11 @@ class BrokerModuleProfile extends BrokerModule {
     const addressLocality = vCardAddressElement.find("locality").text(),
       addressCountry = vCardAddressElement.find("country").text();
 
-    if (addressLocality) {
-      responseData.address.city = addressLocality;
-    }
-    if (addressCountry) {
-      responseData.address.country = addressCountry;
+    if (addressLocality || addressCountry) {
+      responseData.address = {
+        city: addressLocality || undefined,
+        country: addressCountry || undefined
+      };
     }
 
     return responseData;
@@ -138,5 +170,5 @@ class BrokerModuleProfile extends BrokerModule {
  * EXPORTS
  * ************************************************************************* */
 
-export type { LoadAvatarDataResponse };
+export type { LoadVCardResponse, LoadAvatarDataResponse };
 export default BrokerModuleProfile;

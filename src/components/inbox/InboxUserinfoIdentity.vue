@@ -89,8 +89,8 @@ export default {
   },
 
   computed: {
-    profile(): ReturnType<typeof Store.$inbox.getProfile> {
-      return Store.$inbox.getProfile(this.jid);
+    profile(): ReturnType<typeof Store.$profile.getProfile> {
+      return Store.$profile.getProfile(this.jid);
     }
   }
 };

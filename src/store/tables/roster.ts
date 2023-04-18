@@ -58,7 +58,9 @@ const $roster = defineStore("roster", {
   state: (): Roster => {
     return {
       list: [],
-      byGroup: {}
+
+      // TODO: do not store this in persistance layer
+      byGroup: {} // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
     };
   },
 
