@@ -58,7 +58,15 @@ layout-toolbar(
       )
 
       span.u-bold
-        | Valerian Saliou
+        template(
+          v-if="rosterEntry && rosterEntry.name"
+        )
+          | {{ rosterEntry.name }}
+
+        template(
+          v-else
+        )
+          | {{ jid.local }}
 
   template(
     v-slot:right
@@ -146,6 +154,10 @@ export default {
   computed: {
     layout(): typeof Store.$layout {
       return Store.$layout;
+    },
+
+    rosterEntry(): ReturnType<typeof Store.$roster.getJID> {
+      return Store.$roster.getJID(this.jid);
     },
 
     actionHistoryPopoverItems(): Array<PopoverItem> {

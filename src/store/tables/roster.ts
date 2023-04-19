@@ -10,6 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
+import { JID } from "@xmpp/jid";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -25,6 +26,10 @@ type RosterByGroup = {
   [group in RosterItemGroup]?: RosterList;
 };
 
+type RosterByJID = {
+  [jid: string]: RosterEntry;
+};
+
 /**************************************************************************
  * INTERFACES
  * ************************************************************************* */
@@ -32,6 +37,7 @@ type RosterByGroup = {
 interface Roster {
   list: RosterList;
   byGroup: RosterByGroup;
+  byJID: RosterByJID;
 }
 
 interface RosterEntry {
@@ -60,7 +66,8 @@ const $roster = defineStore("roster", {
       list: [],
 
       // TODO: do not store this in persistance layer
-      byGroup: {} // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
+      byGroup: {}, // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
+      byJID: {} // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
     };
   },
 
@@ -81,6 +88,14 @@ const $roster = defineStore("roster", {
       return (): RosterByGroup => {
         return this.byGroup;
       };
+    },
+
+    getJID: function () {
+      return (jid: JID): RosterEntry | void => {
+        const bareJIDString = jid.bare().toString();
+
+        return this.byJID[bareJIDString] || undefined;
+      };
     }
   },
 
@@ -92,7 +107,8 @@ const $roster = defineStore("roster", {
 
         // Initialize entries
         const entries: RosterList = [],
-          byGroup: RosterByGroup = {};
+          byGroup: RosterByGroup = {},
+          byJID: RosterByJID = {};
 
         // Load roster
         const roster = await Broker.$roster.loadRoster();
@@ -114,11 +130,15 @@ const $roster = defineStore("roster", {
           byGroupEntries.push(entry);
 
           byGroup[rosterItem.group] = byGroupEntries;
+
+          // Append entry to per-JID storage
+          byJID[entry.jid] = entry;
         });
 
         this.$patch(state => {
           state.list = entries;
           state.byGroup = byGroup;
+          state.byJID = byJID;
         });
       }
 
