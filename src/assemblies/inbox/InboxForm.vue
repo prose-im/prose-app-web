@@ -38,6 +38,7 @@ layout-toolbar(
       @submit.prevent="onSubmit"
     )
       inbox-form-chatstate(
+        :jid="jid"
         :chatstate="states.chatstate"
         class="a-inbox-form__compose-chatstate"
       )
@@ -48,10 +49,10 @@ layout-toolbar(
           @keystroke="onKeystroke"
           @submit="onSubmit"
           :disabled="!session.connected"
+          :placeholder="fieldComposePlaceholder"
           class="a-inbox-form__compose-field"
           type="textarea"
           name="message"
-          placeholder="Message Valerian"
           size="large"
           submittable
           autogrow
@@ -163,12 +164,20 @@ export default {
       ];
     },
 
+    fieldComposePlaceholder(): string {
+      return `Message ${this.rosterEntry?.name || this.jid.local}`;
+    },
+
     session(): typeof Store.$session {
       return Store.$session;
     },
 
     states(): ReturnType<typeof Store.$inbox.getStates> {
       return Store.$inbox.getStates(this.jid);
+    },
+
+    rosterEntry(): ReturnType<typeof Store.$roster.getJID> {
+      return Store.$roster.getJID(this.jid);
     }
   },
 
