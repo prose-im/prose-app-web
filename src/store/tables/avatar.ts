@@ -11,6 +11,7 @@
 // NPM
 import { JID } from "@xmpp/jid";
 import { defineStore } from "pinia";
+import mitt from "mitt";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -51,6 +52,12 @@ interface AvatarEntry {
 }
 
 /**************************************************************************
+ * INSTANCES
+ * ************************************************************************* */
+
+const EventBus = mitt();
+
+/**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
@@ -80,6 +87,11 @@ const $avatar = defineStore("avatar", {
   },
 
   actions: {
+    events(): ReturnType<typeof mitt> {
+      // Return event bus
+      return EventBus;
+    },
+
     assert(jid: JID): AvatarEntry {
       const bareJIDString = jid.bare().toString();
 
@@ -206,6 +218,11 @@ const $avatar = defineStore("avatar", {
             delete avatar.data;
           }
         } else {
+          // Emit IPC flushed event? (if there previously was avatar data)
+          if (avatar.data) {
+            EventBus.emit("avatar:flushed", { jid });
+          }
+
           delete avatar.meta;
           delete avatar.data;
         }
@@ -237,6 +254,9 @@ const $avatar = defineStore("avatar", {
           data: avatarDataResponse.data
         };
       });
+
+      // Emit IPC changed event
+      EventBus.emit("avatar:changed", { jid, id });
 
       return avatar;
     }
