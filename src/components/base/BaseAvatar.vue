@@ -64,17 +64,13 @@ export default {
 
   computed: {
     backgroundImage() {
-      const avatar = Store.$avatar.getAvatar(this.jid);
+      const avatarDataUrl = Store.$avatar.getAvatarDataUrl(this.jid);
 
-      // Generate avatar URL from avatar data?
-      if (avatar.data !== undefined) {
-        const meta = avatar.meta,
-          data = avatar.data;
-
-        return `url(data:${meta.type};${data.encoding},${data.data})`;
+      if (avatarDataUrl) {
+        return `url(${avatarDataUrl})`;
       }
 
-      return null;
+      return undefined;
     },
 
     borderRadius() {

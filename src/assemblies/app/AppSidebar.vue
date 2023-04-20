@@ -26,8 +26,8 @@
   )
 
   sidebar-context(
-    v-if="jid"
-    :jid="jid"
+    v-if="selfJID"
+    :jid="selfJID"
     class="a-app-sidebar__context"
     avatar-presence-class="a-app-sidebar__context-presence"
   )
@@ -70,7 +70,7 @@ export default {
       return Store.$account;
     },
 
-    jid(): JID | null {
+    selfJID(): JID | null {
       if (this.account.credentials.jid) {
         return jid(this.account.credentials.jid);
       }

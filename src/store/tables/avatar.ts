@@ -83,6 +83,22 @@ const $avatar = defineStore("avatar", {
       return (jid: JID): AvatarEntry => {
         return this.assert(jid);
       };
+    },
+
+    getAvatarDataUrl: function () {
+      return (jid: JID): string | void => {
+        const avatar = this.getAvatar(jid);
+
+        // Generate avatar URL from avatar data?
+        if (avatar.meta !== undefined && avatar.data !== undefined) {
+          return (
+            `data:${avatar.meta.type};` +
+            `${avatar.data.encoding},${avatar.data.data}`
+          );
+        }
+
+        return undefined;
+      };
     }
   },
 

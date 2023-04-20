@@ -90,11 +90,17 @@ const $roster = defineStore("roster", {
       };
     },
 
-    getJID: function () {
+    getEntry: function () {
       return (jid: JID): RosterEntry | void => {
         const bareJIDString = jid.bare().toString();
 
         return this.byJID[bareJIDString] || undefined;
+      };
+    },
+
+    getEntryName: function () {
+      return (jid: JID): string => {
+        return this.getEntry(jid)?.name || jid.local;
       };
     }
   },

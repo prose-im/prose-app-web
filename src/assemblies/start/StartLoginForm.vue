@@ -25,7 +25,7 @@
       class="a-start-login-form__field"
       type="email"
       name="jid"
-      placeholder="Enter your @crisp.chat address…"
+      placeholder="Enter your Prose address…"
       size="ultra-large"
     )
 

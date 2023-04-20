@@ -60,7 +60,7 @@ layout-toolbar(
       )
 
       span.u-bold
-        | {{ rosterEntry?.name || jid.local }}
+        | {{ rosterName }}
 
   template(
     v-slot:right
@@ -152,8 +152,8 @@ export default {
       return Store.$layout;
     },
 
-    rosterEntry(): ReturnType<typeof Store.$roster.getJID> {
-      return Store.$roster.getJID(this.jid);
+    rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
+      return Store.$roster.getEntryName(this.jid);
     },
 
     actionHistoryPopoverItems(): Array<PopoverItem> {

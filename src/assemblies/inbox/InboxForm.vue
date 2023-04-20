@@ -165,7 +165,7 @@ export default {
     },
 
     fieldComposePlaceholder(): string {
-      return `Message ${this.rosterEntry?.name || this.jid.local}`;
+      return `Message ${this.rosterName}`;
     },
 
     session(): typeof Store.$session {
@@ -176,8 +176,8 @@ export default {
       return Store.$inbox.getStates(this.jid);
     },
 
-    rosterEntry(): ReturnType<typeof Store.$roster.getJID> {
-      return Store.$roster.getJID(this.jid);
+    rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
+      return Store.$roster.getEntryName(this.jid);
     }
   },
 

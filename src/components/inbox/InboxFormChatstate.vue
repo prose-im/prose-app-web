@@ -16,7 +16,7 @@ transition(
   .c-inbox-form-chatstate(
     v-if="isVisible"
   )
-    | {{ rosterEntry?.name || jid.local }}
+    | {{ rosterName }}
 
     base-space
 
@@ -75,8 +75,8 @@ export default {
       }
     },
 
-    rosterEntry(): ReturnType<typeof Store.$roster.getJID> {
-      return Store.$roster.getJID(this.jid);
+    rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
+      return Store.$roster.getEntryName(this.jid);
     }
   }
 };

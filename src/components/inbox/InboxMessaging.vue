@@ -152,6 +152,18 @@ export default {
   },
 
   computed: {
+    selfJID(): JID | null {
+      if (this.account.credentials.jid) {
+        return jid(this.account.credentials.jid);
+      }
+
+      return null;
+    },
+
+    account(): typeof Store.$account {
+      return Store.$account;
+    },
+
     session(): typeof Store.$session {
       return Store.$session;
     },
@@ -241,7 +253,10 @@ export default {
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
       runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
-      runtime.MessagingContext.setAccountJID(this.jid.toString());
+
+      if (this.selfJID !== null) {
+        runtime.MessagingContext.setAccountJID(this.selfJID.bare().toString());
+      }
     },
 
     setupEvents(runtime: MessagingRuntime): void {
@@ -275,17 +290,20 @@ export default {
     },
 
     setupStore(runtime: MessagingRuntime): void {
-      // Identify both parties
-      // TODO: JID from conn
-      // TODO: dummy identities
-      runtime.MessagingStore.identify(jid("valerian@prose.org"), {
-        name: "vsa", // TODO: name from profile
-        avatar: null // TODO: from getavatar
-      });
+      // TODO: subscribe to name changed event + avatar changed event
 
-      runtime.MessagingStore.identify(this.jid.toString(), {
+      // Identify local party
+      if (this.selfJID !== null) {
+        runtime.MessagingStore.identify(this.selfJID, {
+          name: "vsa", // TODO: name from profile
+          avatar: Store.$avatar.getAvatarDataUrl(this.selfJID)
+        });
+      }
+
+      // Identify remote party
+      runtime.MessagingStore.identify(this.jid.bare().toString(), {
         name: "Valerian", // TODO: name from profile
-        avatar: null // TODO: from getavatar
+        avatar: Store.$avatar.getAvatarDataUrl(this.jid)
       });
 
       // Mark as initializing?
