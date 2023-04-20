@@ -19,21 +19,25 @@
     sidebar-main-item-section(
       title="Unread stack"
       icon="tray.2"
+      disabled
     )
 
     sidebar-main-item-section(
       title="Replies"
       icon="arrowshape.turn.up.left.2"
+      disabled
     )
 
     sidebar-main-item-section(
       title="Direct messages"
       icon="message"
+      disabled
     )
 
     sidebar-main-item-section(
       title="People & groups"
       icon="text.book.closed"
+      disabled
     )
 
   list-disclosure(
@@ -65,6 +69,7 @@
 
     sidebar-main-item-add(
       title="Add a member"
+      disabled
     )
 
   list-disclosure(
@@ -82,6 +87,7 @@
 
     sidebar-main-item-add(
       title="Connect with someone"
+      disabled
     )
 
   list-disclosure(
@@ -93,22 +99,27 @@
   )
     sidebar-main-item-channel(
       name="bugs"
+      disabled
     )
 
     sidebar-main-item-channel(
       name="constellation"
+      disabled
     )
 
     sidebar-main-item-channel(
       name="general"
+      disabled
     )
 
     sidebar-main-item-channel(
       name="support"
+      disabled
     )
 
     sidebar-main-item-add(
       title="Add a group"
+      disabled
     )
 </template>
 

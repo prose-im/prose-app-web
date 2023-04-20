@@ -32,12 +32,14 @@
       class="c-sidebar-header__action"
       icon="phone.bubble.left"
       size="18px"
+      disabled
     )
 
     base-action(
       class="c-sidebar-header__action"
       icon="square.and.pencil"
       size="18px"
+      disabled
     )
 </template>
 

@@ -21,6 +21,7 @@ layout-toolbar(
         icon="chevron.left"
         context="grey"
         size="14px"
+        disabled
       )
 
       base-action(
@@ -39,6 +40,7 @@ layout-toolbar(
         context="grey"
         size="18px"
         dropdown
+        disabled
       )
         base-popover-list(
           v-if="isActionHistoryPopoverVisible"
@@ -91,6 +93,7 @@ layout-toolbar(
         icon="video"
         context="grey"
         size="20px"
+        disabled
       )
 
       base-action(
@@ -112,6 +115,7 @@ layout-toolbar(
         icon="magnifyingglass"
         context="grey"
         size="17px"
+        disabled
       )
 </template>
 

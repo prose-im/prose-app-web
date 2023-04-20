@@ -28,6 +28,7 @@ list-disclosure(
     size="small"
     color="lighter"
     emphasis
+    disabled
   )
     template(
       v-slot:default

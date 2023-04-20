@@ -22,6 +22,7 @@ layout-toolbar(
         class="a-inbox-form__action"
         icon="textformat.alt"
         size="18px"
+        disabled
       )
         base-popover-list(
           v-if="isActionFormattingPopoverVisible"
@@ -81,6 +82,7 @@ layout-toolbar(
         class="a-inbox-form__action"
         icon="paperclip"
         size="18px"
+        disabled
       )
 
       base-action(

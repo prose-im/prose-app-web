@@ -11,6 +11,7 @@
 <template lang="pug">
 list-button(
   :active="active"
+  :disabled="disabled"
   class="c-sidebar-main-item-section"
 )
   template(
@@ -48,6 +49,11 @@ export default {
     },
 
     active: {
+      type: Boolean,
+      default: false
+    },
+
+    disabled: {
       type: Boolean,
       default: false
     }
