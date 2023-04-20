@@ -127,7 +127,9 @@ export default {
       storeEvents: {
         "message:inserted": [Store.$inbox, this.onStoreMessageInserted],
         "message:updated": [Store.$inbox, this.onStoreMessageUpdated],
-        "message:retracted": [Store.$inbox, this.onStoreMessageRetracted]
+        "message:retracted": [Store.$inbox, this.onStoreMessageRetracted],
+        "avatar:changed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed],
+        "avatar:flushed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed]
       },
 
       // --> STATE <--
@@ -245,11 +247,10 @@ export default {
     },
 
     setupContext(runtime: MessagingRuntime): void {
-      // TODO: from dynamic context
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
       runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
-      runtime.MessagingContext.setAccountJID(this.selfJID.bare().toString());
+      runtime.MessagingContext.setAccountJID(this.selfJID.toString());
     },
 
     setupEvents(runtime: MessagingRuntime): void {
@@ -281,20 +282,9 @@ export default {
     },
 
     setupStore(runtime: MessagingRuntime): void {
-      // TODO: subscribe to name changed event + avatar changed event, and \
-      //   re-identify as needed.
-
-      // Identify local party
-      runtime.MessagingStore.identify(this.selfJID, {
-        name: Store.$roster.getEntryName(this.selfJID),
-        avatar: Store.$avatar.getAvatarDataUrl(this.selfJID)
-      });
-
-      // Identify remote party
-      runtime.MessagingStore.identify(this.jid.bare().toString(), {
-        name: Store.$roster.getEntryName(this.jid),
-        avatar: Store.$avatar.getAvatarDataUrl(this.jid)
-      });
+      // Identify both parties
+      this.identifyPartyLocal(runtime);
+      this.identifyPartyRemote(runtime);
 
       // Mark as initializing?
       if (this.isMessageSyncStale === true) {
@@ -316,6 +306,22 @@ export default {
       for (let [eventName, eventPath] of Object.entries(this.storeEvents)) {
         eventPath[0].events().off(eventName, eventPath[1]);
       }
+    },
+
+    identifyPartyLocal(runtime: MessagingRuntime): void {
+      // Identify local party
+      runtime.MessagingStore.identify(this.selfJID.toString(), {
+        name: Store.$roster.getEntryName(this.selfJID),
+        avatar: Store.$avatar.getAvatarDataUrl(this.selfJID)
+      });
+    },
+
+    identifyPartyRemote(runtime: MessagingRuntime): void {
+      // Identify remote party
+      runtime.MessagingStore.identify(this.jid.bare().toString(), {
+        name: Store.$roster.getEntryName(this.jid),
+        avatar: Store.$avatar.getAvatarDataUrl(this.jid)
+      });
     },
 
     showPopover({
@@ -578,11 +584,31 @@ export default {
       }
     },
 
+    onStoreAvatarChangedOrFlushed({ jid }: { jid: JID }): void {
+      // Check if should re-identify (if runtime is available)
+      const frameRuntime = this.frame();
+
+      if (frameRuntime !== null) {
+        // Re-identify remote party?
+        if (this.jid.equals(jid) === true) {
+          this.identifyPartyRemote(frameRuntime);
+        }
+
+        // Re-identify local party?
+        if (this.selfJID.equals(jid) === true) {
+          this.identifyPartyLocal(frameRuntime);
+        }
+      }
+    },
+
     onEventMessageActionsView(event: EventMessageActionsView): void {
       this.$log.debug("Got message actions view", event);
 
       // Show popover with actions? (if any origin set)
       if (event.origin) {
+        // Acquire message contents
+        const messageData = this.frame().MessagingStore.resolve(event.id);
+
         // Build context
         const context = {
           messageId: event.id
@@ -597,51 +623,59 @@ export default {
               }
             : undefined;
 
+        // Build popover items
+        const items = [
+          {
+            type: PopoverItemType.Button,
+            icon: "doc.on.clipboard",
+            label: "Copy text",
+            click: this.onPopoverActionsCopyClick
+          }
+        ];
+
+        if (messageData) {
+          // Message exists for sure? Append more actions.
+          items.push({
+            type: PopoverItemType.Button,
+            icon: "face.smiling",
+            label: "Add reaction…",
+            click: this.onPopoverActionsReactionClick
+          });
+
+          // Message from self? Append private actions.
+          if (this.selfJID.equals(jid(messageData.from)) === true) {
+            items.push(
+              {
+                type: PopoverItemType.Divider
+              },
+
+              {
+                type: PopoverItemType.Button,
+                icon: "pencil",
+                label: "Edit message…",
+                emphasis: true,
+                disabled: !this.session.connected,
+                click: this.onPopoverActionsEditClick
+              },
+
+              {
+                type: PopoverItemType.Button,
+                icon: "trash",
+                label: "Remove message",
+                color: "red",
+                emphasis: true,
+                disabled: !this.session.connected,
+                click: this.onPopoverActionsRemoveClick
+              }
+            );
+          }
+        }
+
         // Show popover
         this.showPopover({
           anchor: event.origin.parent || event.origin.anchor,
 
-          items: [
-            // TODO: dynamically insert second part if message is from self
-
-            {
-              type: PopoverItemType.Button,
-              icon: "doc.on.clipboard",
-              label: "Copy text",
-              click: this.onPopoverActionsCopyClick
-            },
-
-            {
-              type: PopoverItemType.Button,
-              icon: "face.smiling",
-              label: "Add reaction…",
-              click: this.onPopoverActionsReactionClick
-            },
-
-            {
-              type: PopoverItemType.Divider
-            },
-
-            {
-              type: PopoverItemType.Button,
-              icon: "pencil",
-              label: "Edit message…",
-              emphasis: true,
-              disabled: !this.session.connected,
-              click: this.onPopoverActionsEditClick
-            },
-
-            {
-              type: PopoverItemType.Button,
-              icon: "trash",
-              label: "Remove message",
-              color: "red",
-              emphasis: true,
-              disabled: !this.session.connected,
-              click: this.onPopoverActionsRemoveClick
-            }
-          ],
-
+          items,
           context,
           interaction
         });
