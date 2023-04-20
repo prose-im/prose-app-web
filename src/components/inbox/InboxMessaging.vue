@@ -125,9 +125,9 @@ export default {
       // --> DATA <--
 
       storeEvents: {
-        "message:inserted": this.onStoreMessageInserted,
-        "message:updated": this.onStoreMessageUpdated,
-        "message:retracted": this.onStoreMessageRetracted
+        "message:inserted": [Store.$inbox, this.onStoreMessageInserted],
+        "message:updated": [Store.$inbox, this.onStoreMessageUpdated],
+        "message:retracted": [Store.$inbox, this.onStoreMessageRetracted]
       },
 
       // --> STATE <--
@@ -275,10 +275,8 @@ export default {
       );
 
       // Subscribe to store events
-      const storeEventBus = Store.$inbox.events();
-
-      for (let eventName in this.storeEvents) {
-        storeEventBus.on(eventName, this.storeEvents[eventName]);
+      for (let [eventName, eventPath] of Object.entries(this.storeEvents)) {
+        eventPath[0].events().on(eventName, eventPath[1]);
       }
     },
 
@@ -315,10 +313,8 @@ export default {
     },
 
     unsetupStore(): void {
-      const storeEventBus = Store.$inbox.events();
-
-      for (let eventName in this.storeEvents) {
-        storeEventBus.off(eventName, this.storeEvents[eventName]);
+      for (let [eventName, eventPath] of Object.entries(this.storeEvents)) {
+        eventPath[0].events().off(eventName, eventPath[1]);
       }
     },
 
@@ -562,24 +558,24 @@ export default {
     },
 
     onStoreMessageInserted(message: InboxEntryMessage): void {
-      // TODO: filter by JID from/to matches current flow
-
-      // Insert into view
-      this.frame().MessagingStore.insert(message);
+      if (this.jid.equals(jid(message.from)) === true) {
+        // Insert into view
+        this.frame().MessagingStore.insert(message);
+      }
     },
 
     onStoreMessageUpdated(message: InboxEntryMessage): void {
-      // TODO: filter by JID from/to matches current flow
-
-      // Update in view
-      this.frame().MessagingStore.update(message.id, message);
+      if (this.jid.equals(jid(message.from)) === true) {
+        // Update in view
+        this.frame().MessagingStore.update(message.id, message);
+      }
     },
 
     onStoreMessageRetracted(message: InboxEntryMessage): void {
-      // TODO: filter by JID from/to matches current flow
-
-      // Retract from view
-      this.frame().MessagingStore.retract(message.id);
+      if (this.jid.equals(jid(message.from)) === true) {
+        // Retract from view
+        this.frame().MessagingStore.retract(message.id);
+      }
     },
 
     onEventMessageActionsView(event: EventMessageActionsView): void {
