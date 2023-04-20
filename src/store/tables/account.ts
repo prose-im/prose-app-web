@@ -10,7 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { jid } from "@xmpp/jid";
+import { jid, JID } from "@xmpp/jid";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -29,6 +29,20 @@ const $account = defineStore("account", {
         password: "" // TODO: password is stored in the clear, this is insecure
       }
     };
+  },
+
+  getters: {
+    getLocalJID: function () {
+      return (): JID => {
+        if (!this.credentials.jid) {
+          throw new Error(
+            "No JID defined in credentials (this should never happen)"
+          );
+        }
+
+        return jid(this.credentials.jid);
+      };
+    }
   },
 
   actions: {

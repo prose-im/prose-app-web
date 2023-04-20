@@ -152,12 +152,8 @@ export default {
   },
 
   computed: {
-    selfJID(): JID | null {
-      if (this.account.credentials.jid) {
-        return jid(this.account.credentials.jid);
-      }
-
-      return null;
+    selfJID(): JID {
+      return this.account.getLocalJID();
     },
 
     account(): typeof Store.$account {
@@ -253,10 +249,7 @@ export default {
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
       runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
-
-      if (this.selfJID !== null) {
-        runtime.MessagingContext.setAccountJID(this.selfJID.bare().toString());
-      }
+      runtime.MessagingContext.setAccountJID(this.selfJID.bare().toString());
     },
 
     setupEvents(runtime: MessagingRuntime): void {
@@ -290,19 +283,18 @@ export default {
     },
 
     setupStore(runtime: MessagingRuntime): void {
-      // TODO: subscribe to name changed event + avatar changed event
+      // TODO: subscribe to name changed event + avatar changed event, and \
+      //   re-identify as needed.
 
       // Identify local party
-      if (this.selfJID !== null) {
-        runtime.MessagingStore.identify(this.selfJID, {
-          name: "vsa", // TODO: name from profile
-          avatar: Store.$avatar.getAvatarDataUrl(this.selfJID)
-        });
-      }
+      runtime.MessagingStore.identify(this.selfJID, {
+        name: Store.$roster.getEntryName(this.selfJID),
+        avatar: Store.$avatar.getAvatarDataUrl(this.selfJID)
+      });
 
       // Identify remote party
       runtime.MessagingStore.identify(this.jid.bare().toString(), {
-        name: "Valerian", // TODO: name from profile
+        name: Store.$roster.getEntryName(this.jid),
         avatar: Store.$avatar.getAvatarDataUrl(this.jid)
       });
 

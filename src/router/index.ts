@@ -113,11 +113,13 @@ class Router {
     // Authenticate to broker client
     const credentials = Store.$account.credentials;
 
-    Broker.client
-      .authenticate(jid(credentials.jid), credentials.password)
-      .catch(() => {
-        // Ignore authentication errors here
-      });
+    if (credentials.jid) {
+      Broker.client
+        .authenticate(jid(credentials.jid), credentials.password)
+        .catch(() => {
+          // Ignore authentication errors here
+        });
+    }
   }
 }
 
