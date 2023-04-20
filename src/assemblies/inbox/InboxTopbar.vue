@@ -60,15 +60,7 @@ layout-toolbar(
       )
 
       span.u-bold
-        template(
-          v-if="rosterEntry && rosterEntry.name"
-        )
-          | {{ rosterEntry.name }}
-
-        template(
-          v-else
-        )
-          | {{ jid.local }}
+        | {{ rosterEntry?.name || jid.local }}
 
   template(
     v-slot:right
