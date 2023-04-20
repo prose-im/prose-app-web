@@ -16,7 +16,7 @@ transition(
   .c-inbox-form-chatstate(
     v-if="isVisible"
   )
-    | Valerian
+    | {{ rosterEntry?.name || jid.local }}
 
     base-space
 
@@ -38,6 +38,10 @@ transition(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 // PROJECT: BROKER
 import { MessageChatState } from "@/broker/stanzas/message";
@@ -46,6 +50,11 @@ export default {
   name: "InboxFormChatstate",
 
   props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    },
+
     chatstate: {
       type: String as PropType<MessageChatState>,
       default: MessageChatState.Inactive
@@ -64,6 +73,10 @@ export default {
           return false;
         }
       }
+    },
+
+    rosterEntry(): ReturnType<typeof Store.$roster.getJID> {
+      return Store.$roster.getJID(this.jid);
     }
   }
 };
