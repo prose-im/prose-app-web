@@ -38,7 +38,7 @@
 
 <script lang="ts">
 // NPM
-import { jid, JID } from "@xmpp/jid";
+import { JID } from "@xmpp/jid";
 
 // PROJECT: COMPONENTS
 import SidebarHeader from "@/components/sidebar/SidebarHeader.vue";
