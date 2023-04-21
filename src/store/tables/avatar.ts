@@ -34,6 +34,11 @@ type AvatarEntryData = {
   data: string;
 };
 
+type EventAvatarGeneric = {
+  jid: JID;
+  id?: string;
+};
+
 /**************************************************************************
  * INTERFACES
  * ************************************************************************* */
@@ -236,7 +241,7 @@ const $avatar = defineStore("avatar", {
         } else {
           // Emit IPC flushed event? (if there previously was avatar data)
           if (avatar.data) {
-            EventBus.emit("avatar:flushed", { jid });
+            EventBus.emit("avatar:flushed", { jid } as EventAvatarGeneric);
           }
 
           delete avatar.meta;
@@ -272,7 +277,7 @@ const $avatar = defineStore("avatar", {
       });
 
       // Emit IPC changed event
-      EventBus.emit("avatar:changed", { jid, id });
+      EventBus.emit("avatar:changed", { jid, id } as EventAvatarGeneric);
 
       return avatar;
     }
@@ -283,4 +288,5 @@ const $avatar = defineStore("avatar", {
  * EXPORTS
  * ************************************************************************* */
 
+export type { EventAvatarGeneric };
 export default $avatar;
