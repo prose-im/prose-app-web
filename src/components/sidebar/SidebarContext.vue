@@ -266,7 +266,11 @@ export default {
     },
 
     async onAvatarPopoverSignOutClick(): Promise<void> {
+      // Logout from account
       await Store.$account.logout();
+
+      // Reset all stores
+      Store.reset();
 
       // Show confirm alert
       BaseAlert.info("Signed out", "Successfully signed out");

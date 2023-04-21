@@ -30,6 +30,9 @@ import $presence from "@/store/tables/presence";
 const STORE_PERSIST_PREFIX = "prose";
 const STORE_PERSIST_REVISION = "v1";
 
+const STORE_KEY_PREFIX = "$";
+const STORE_RESET_IGNORES = ["account", "layout"];
+
 /**************************************************************************
  * STORE
  * ************************************************************************* */
@@ -66,6 +69,20 @@ class Store {
 
     // #3. Load all tables
     this.__loadTables();
+  }
+
+  reset(): void {
+    // Reset all stores
+    for (const [storeName, storeInstance] of Object.entries(this)) {
+      if (storeName.startsWith(STORE_KEY_PREFIX) === true) {
+        const storeNameNoPrefix = storeName.substring(STORE_KEY_PREFIX.length);
+
+        // Store not ignored? Can reset.
+        if (STORE_RESET_IGNORES.includes(storeNameNoPrefix) === false) {
+          storeInstance.$reset();
+        }
+      }
+    }
   }
 
   private __applyPlugins(): void {
