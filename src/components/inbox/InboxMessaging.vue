@@ -577,21 +577,21 @@ export default {
     },
 
     onStoreMessageInserted(message: InboxEntryMessage): void {
-      if (this.jid.equals(jid(message.from)) === true) {
+      if (this.jid.equals(message.jid) === true) {
         // Insert into view
         this.frame().MessagingStore.insert(message);
       }
     },
 
     onStoreMessageUpdated(message: InboxEntryMessage): void {
-      if (this.jid.equals(jid(message.from)) === true) {
+      if (this.jid.equals(message.jid) === true) {
         // Update in view
         this.frame().MessagingStore.update(message.id, message);
       }
     },
 
     onStoreMessageRetracted(message: InboxEntryMessage): void {
-      if (this.jid.equals(jid(message.from)) === true) {
+      if (this.jid.equals(message.jid) === true) {
         // Retract from view
         this.frame().MessagingStore.retract(message.id);
       }

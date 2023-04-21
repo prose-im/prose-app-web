@@ -149,7 +149,10 @@ const $inbox = defineStore("inbox", {
           });
 
           // Emit IPC updated event
-          EventBus.emit("message:updated", existingMessage);
+          EventBus.emit("message:updated", {
+            jid,
+            ...existingMessage
+          });
         } else {
           this.$patch(() => {
             container.byId[message.id] = message;
@@ -157,7 +160,10 @@ const $inbox = defineStore("inbox", {
           });
 
           // Emit IPC inserted event
-          EventBus.emit("message:inserted", message);
+          EventBus.emit("message:inserted", {
+            jid,
+            ...message
+          });
         }
       });
     },
@@ -186,7 +192,10 @@ const $inbox = defineStore("inbox", {
         }
 
         // Emit IPC retracted event
-        EventBus.emit("message:retracted", existingMessage);
+        EventBus.emit("message:retracted", {
+          jid,
+          ...existingMessage
+        });
       }
     },
 
