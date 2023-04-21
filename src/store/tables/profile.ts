@@ -123,9 +123,9 @@ const $profile = defineStore("profile", {
 
       // Assign new profile entry for JID?
       if (!(bareJIDString in this.entries)) {
-        this.$patch(() => {
+        this.$patch(state => {
           // Insert empty data
-          this.entries[bareJIDString] = {};
+          state.entries[bareJIDString] = {};
         });
       }
 
