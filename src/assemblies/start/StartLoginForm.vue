@@ -107,7 +107,7 @@ export default {
 
   created() {
     // Populate initial values
-    this.form.jid = Store.$account.credentials.jid || "";
+    this.form.jid = Store.$account.last.jid || "";
   },
 
   methods: {

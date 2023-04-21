@@ -27,6 +27,11 @@ const $account = defineStore("account", {
       credentials: {
         jid: "",
         password: "" // TODO: password is stored in the clear, this is insecure
+      },
+
+      last: {
+        jid: "",
+        timestamp: -1
       }
     };
   },
@@ -57,8 +62,13 @@ const $account = defineStore("account", {
       // Store credentials? (if success)
       if (remember === true) {
         this.$patch(state => {
+          // Assign account credentials
           state.credentials.jid = rawJid;
           state.credentials.password = password;
+
+          // Assign last account marker
+          state.last.jid = rawJid;
+          state.last.timestamp = Date.now();
         });
       }
     },
@@ -67,6 +77,7 @@ const $account = defineStore("account", {
       // TODO: disconnect from broker
 
       // Clear stored credentials
+      // Notice: retain last JID for later quick-login
       this.$patch(state => {
         state.credentials.jid = "";
         state.credentials.password = "";
