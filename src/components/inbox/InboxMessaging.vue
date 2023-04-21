@@ -77,7 +77,8 @@ import {
 
 // PROJECT: STORES
 import Store from "@/store";
-import { InboxEntryMessage } from "@/store/tables/inbox";
+import { InboxEntryMessage, EventMessageGeneric } from "@/store/tables/inbox";
+import { EventAvatarGeneric } from "@/store/tables/avatar";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -576,28 +577,28 @@ export default {
       }
     },
 
-    onStoreMessageInserted(message: InboxEntryMessage): void {
-      if (this.jid.equals(message.jid) === true) {
+    onStoreMessageInserted(event: EventMessageGeneric): void {
+      if (this.jid.equals(event.jid) === true) {
         // Insert into view
-        this.frame().MessagingStore.insert(message);
+        this.frame().MessagingStore.insert(event.message);
       }
     },
 
-    onStoreMessageUpdated(message: InboxEntryMessage): void {
-      if (this.jid.equals(message.jid) === true) {
+    onStoreMessageUpdated(event: EventMessageGeneric): void {
+      if (this.jid.equals(event.jid) === true) {
         // Update in view
-        this.frame().MessagingStore.update(message.id, message);
+        this.frame().MessagingStore.update(event.message.id, event.message);
       }
     },
 
-    onStoreMessageRetracted(message: InboxEntryMessage): void {
-      if (this.jid.equals(message.jid) === true) {
+    onStoreMessageRetracted(event: EventMessageGeneric): void {
+      if (this.jid.equals(event.jid) === true) {
         // Retract from view
-        this.frame().MessagingStore.retract(message.id);
+        this.frame().MessagingStore.retract(event.message.id);
       }
     },
 
-    onStoreAvatarChangedOrFlushed({ jid }: { jid: JID }): void {
+    onStoreAvatarChangedOrFlushed({ jid }: EventAvatarGeneric): void {
       // Check if should re-identify (if runtime is available)
       const frameRuntime = this.frame();
 
