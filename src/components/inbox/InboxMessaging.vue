@@ -188,7 +188,8 @@ export default {
           }
 
           // Synchronize messages eagerly
-          // TODO: re-assert store (do not sync if store already set)
+          // TODO: re-assert store (do not sync if store already set, as we \
+          //   are already connected and synced up)
           this.syncMessagesEager();
         }
       }
@@ -218,8 +219,13 @@ export default {
 
     frame(): MessagingRuntime | null {
       if (this.$refs.frame) {
-        return (this.$refs.frame as HTMLIFrameElement)
+        const frameWindow = (this.$refs.frame as HTMLIFrameElement)
           .contentWindow as MessagingRuntime;
+
+        // Return when ready only
+        if (frameWindow && frameWindow.MessagingContext !== undefined) {
+          return frameWindow;
+        }
       }
 
       return null;
@@ -403,8 +409,6 @@ export default {
         this.isMessageSyncStale === true &&
         Store.$session.connected === true
       ) {
-        const frameRuntime = this.frame();
-
         // Mark synchronization as non-stale
         this.isMessageSyncStale = false;
 
@@ -430,12 +434,21 @@ export default {
           afterId: lastResultIdFromArchive
         });
 
-        // Mark forwards loading as complete
-        frameRuntime.MessagingStore.loader("forwards", false);
+        const frameRuntime = this.frame();
 
-        // Mark backwards loading as complete?
-        if (result.complete === true) {
-          frameRuntime.MessagingStore.loader("backwards", false);
+        if (frameRuntime !== null) {
+          // Mark forwards loading as complete
+          frameRuntime.MessagingStore.loader("forwards", false);
+
+          // Mark backwards loading as complete?
+          if (result.complete === true) {
+            frameRuntime.MessagingStore.loader("backwards", false);
+          }
+        } else {
+          this.$log.warn(
+            `Could not show loaders in message frame runtime upon eagerly ` +
+              `synchronizing messages, as it is not ready yet for: ${this.jid}`
+          );
         }
       }
     },
