@@ -31,6 +31,11 @@ type InboxEntryStates = {
   chatstate: MessageChatState;
 };
 
+type EventMessageGeneric = {
+  jid: JID;
+  message: InboxEntryMessage;
+};
+
 /**************************************************************************
  * INTERFACES
  * ************************************************************************* */
@@ -151,8 +156,8 @@ const $inbox = defineStore("inbox", {
           // Emit IPC updated event
           EventBus.emit("message:updated", {
             jid,
-            ...existingMessage
-          });
+            message: existingMessage
+          } as EventMessageGeneric);
         } else {
           this.$patch(() => {
             container.byId[message.id] = message;
@@ -162,8 +167,8 @@ const $inbox = defineStore("inbox", {
           // Emit IPC inserted event
           EventBus.emit("message:inserted", {
             jid,
-            ...message
-          });
+            message
+          } as EventMessageGeneric);
         }
       });
     },
@@ -194,8 +199,8 @@ const $inbox = defineStore("inbox", {
         // Emit IPC retracted event
         EventBus.emit("message:retracted", {
           jid,
-          ...existingMessage
-        });
+          message: existingMessage
+        } as EventMessageGeneric);
       }
     },
 
@@ -209,5 +214,5 @@ const $inbox = defineStore("inbox", {
  * EXPORTS
  * ************************************************************************* */
 
-export type { InboxEntryMessage };
+export type { InboxEntryMessage, EventMessageGeneric };
 export default $inbox;
