@@ -133,6 +133,13 @@ export default {
         "avatar:flushed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed]
       },
 
+      messagingEvents: {
+        "message:actions:view": this.onMessagingMessageActionsView,
+        "message:reactions:view": this.onMessagingMessageReactionsView,
+        "message:reactions:react": this.onMessagingMessageReactionsReact,
+        "message:history:seek": this.onMessagingMessageHistorySeek
+      },
+
       // --> STATE <--
 
       isFrameLoaded: false,
@@ -262,25 +269,11 @@ export default {
 
     setupEvents(runtime: MessagingRuntime): void {
       // Subscribe to messaging events
-      runtime.MessagingEvent.on(
-        "message:actions:view",
-        this.onEventMessageActionsView
-      );
-
-      runtime.MessagingEvent.on(
-        "message:reactions:view",
-        this.onEventMessageReactionsView
-      );
-
-      runtime.MessagingEvent.on(
-        "message:reactions:react",
-        this.onEventMessageReactionsReact
-      );
-
-      runtime.MessagingEvent.on(
-        "message:history:seek",
-        this.onEventMessageHistorySeek
-      );
+      for (let [eventName, eventHandler] of Object.entries(
+        this.messagingEvents
+      )) {
+        runtime.MessagingEvent.on(eventName, eventHandler);
+      }
 
       // Subscribe to store events
       for (let [eventName, eventPath] of Object.entries(this.storeEvents)) {
@@ -615,7 +608,7 @@ export default {
       }
     },
 
-    onEventMessageActionsView(event: EventMessageActionsView): void {
+    onMessagingMessageActionsView(event: EventMessageActionsView): void {
       this.$log.debug("Got message actions view", event);
 
       // Show popover with actions? (if any origin set)
@@ -699,7 +692,7 @@ export default {
       }
     },
 
-    onEventMessageReactionsView(event: EventMessageReactionsView): void {
+    onMessagingMessageReactionsView(event: EventMessageReactionsView): void {
       this.$log.debug("Got message reactions view", event);
 
       // Show popover with actions? (if any origin set)
@@ -733,13 +726,13 @@ export default {
       }
     },
 
-    onEventMessageReactionsReact(event: EventMessageReactionsReact): void {
+    onMessagingMessageReactionsReact(event: EventMessageReactionsReact): void {
       this.$log.debug("Got message reactions react", event);
 
       // TODO: add/retract reaction to message
     },
 
-    onEventMessageHistorySeek(event: EventMessageHistorySeek): void {
+    onMessagingMessageHistorySeek(event: EventMessageHistorySeek): void {
       this.$log.debug("Got message history seek", event);
 
       // TODO: load messages from history
