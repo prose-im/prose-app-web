@@ -472,6 +472,7 @@ export default {
 
           frameRuntime.MessagingStore.loader("backwards", true);
 
+          // TODO: this one is not working
           await Broker.$mam.loadMessages(this.jid, {
             beforeId: firstResultIdFromArchive
           });
