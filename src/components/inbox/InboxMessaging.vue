@@ -44,6 +44,13 @@
       v-on="popover.listeners"
       :is="popover.component"
     )
+
+  remove-message(
+    v-if="modals.removeMessage.visible"
+    @remove="onModalRemoveMessageRemove"
+    @close="onModalRemoveMessageClose"
+    :context="modals.removeMessage.context"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -76,9 +83,12 @@ import {
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
 
+// PROJECT: MODALS
+import RemoveMessage from "@/modals/inbox/RemoveMessage.vue";
+
 // PROJECT: STORES
 import Store from "@/store";
-import { InboxEntryMessage, EventMessageGeneric } from "@/store/tables/inbox";
+import { EventMessageGeneric } from "@/store/tables/inbox";
 import { EventAvatarGeneric } from "@/store/tables/avatar";
 
 // PROJECT: BROKER
@@ -115,6 +125,8 @@ const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 export default {
   name: "InboxMessaging",
 
+  components: { RemoveMessage },
+
   props: {
     jid: {
       type: Object as PropType<JID>,
@@ -146,6 +158,13 @@ export default {
       isFrameLoaded: false,
       isMessageSyncStale: true,
       isMessageSyncMoreLoading: false,
+
+      modals: {
+        removeMessage: {
+          visible: false,
+          context: {}
+        }
+      },
 
       popover: {
         style: {
@@ -511,6 +530,35 @@ export default {
       this.triggerContainerClick();
     },
 
+    onModalRemoveMessageRemove({ messageId }: { messageId: string }): void {
+      // Remove from view
+      // TODO: move this to a store/factory? (w/ a message:retracted event)
+      const wasRemoved = this.frame().MessagingStore.retract(messageId);
+
+      // TODO: remove from store
+      // TODO: send removal order to protocol
+
+      // Acknowledge removal
+      if (wasRemoved === true) {
+        BaseAlert.info("Message removed", "The message has been deleted");
+
+        // Hide popover
+        this.hidePopover();
+      } else {
+        BaseAlert.error(
+          "Cannot remove message",
+          "The message could not be deleted"
+        );
+      }
+
+      // Close modal
+      this.modals.removeMessage.visible = false;
+    },
+
+    onModalRemoveMessageClose(): void {
+      this.modals.removeMessage.visible = false;
+    },
+
     onPopoverClickAway(): void {
       // Hide popover (if any opened)
       this.hidePopover();
@@ -572,24 +620,9 @@ export default {
     },
 
     onPopoverActionsRemoveClick({ messageId }: { messageId: string }): void {
-      // Remove from store
-      // TODO: move this to a store/factory?
-      const wasRemoved = this.frame().MessagingStore.retract(messageId);
-
-      // TODO: send removal order to protocol
-
-      // Acknowledge removal
-      if (wasRemoved === true) {
-        BaseAlert.info("Message removed", "The message has been deleted");
-
-        // Hide popover
-        this.hidePopover();
-      } else {
-        BaseAlert.error(
-          "Cannot remove message",
-          "The message could not be deleted"
-        );
-      }
+      // Show confirm modal
+      this.modals.removeMessage.context.messageId = messageId;
+      this.modals.removeMessage.visible = true;
     },
 
     onPopoverReactionsPick({
