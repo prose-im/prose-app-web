@@ -58,6 +58,7 @@ import {
   Messaging as MessagingRuntime,
   Platform as MessagingPlatform,
   Theme as MessagingTheme,
+  SeekDirection as MessagingSeekDirection,
   EventMessageActionsView,
   EventMessageReactionsView,
   EventMessageReactionsReact,
@@ -144,6 +145,7 @@ export default {
 
       isFrameLoaded: false,
       isMessageSyncStale: true,
+      isMessageSyncMoreLoading: false,
 
       popover: {
         style: {
@@ -447,6 +449,46 @@ export default {
       }
     },
 
+    async seekMoreMessages(): void {
+      // Can seek now? (connected and not stale)
+      if (
+        Store.$session.connected === true &&
+        this.isMessageSyncStale !== true &&
+        this.isMessageSyncMoreLoading !== true
+      ) {
+        const frameRuntime = this.frame();
+
+        // Find first message with an archive identifier
+        let firstResultIdFromArchive =
+          this.messages.find(message => {
+            return message.archiveId !== undefined ? true : false;
+          })?.archiveId || undefined;
+
+        // Load previous messages?
+        // Notice: only load messages after first loaded identifier
+        if (firstResultIdFromArchive !== undefined && frameRuntime !== null) {
+          // Mark backwards as loading
+          this.isMessageSyncMoreLoading = true;
+
+          frameRuntime.MessagingStore.loader("backwards", true);
+
+          await Broker.$mam.loadMessages(this.jid, {
+            beforeId: firstResultIdFromArchive
+          });
+
+          // Mark backwards loading as complete
+          frameRuntime.MessagingStore.loader("backwards", false);
+
+          this.isMessageSyncMoreLoading = false;
+        } else {
+          this.$log.warn(
+            `Could not seek previous messages, as there is no first ` +
+              `message from archives or frame is not ready yet for: ${this.jid}`
+          );
+        }
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onFrameLoad(): void {
@@ -735,7 +777,21 @@ export default {
     onMessagingMessageHistorySeek(event: EventMessageHistorySeek): void {
       this.$log.debug("Got message history seek", event);
 
-      // TODO: load messages from history
+      // Handle seek direction
+      switch (event.direction) {
+        case MessagingSeekDirection.Backwards: {
+          // Seek more messages from history
+          this.seekMoreMessages();
+
+          break;
+        }
+
+        case MessagingSeekDirection.Forwards: {
+          // Nothing done here.
+
+          break;
+        }
+      }
     }
   }
 };

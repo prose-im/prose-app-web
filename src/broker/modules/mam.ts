@@ -120,6 +120,8 @@ class BrokerModuleMAM extends BrokerModule {
       }
 
       // Append RSM to query (Result Set Management — <set> element)
+      // Notice: use an empty 'before' RSM element to indicate that we want to \
+      //   return messages in backwards order.
       {
         stanzaQuery
           .c("set", { xmlns: NS_RSM })
