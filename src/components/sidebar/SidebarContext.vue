@@ -283,6 +283,9 @@ export default {
     },
 
     onAvatarPopoverSignOutClick(): Promise<void> {
+      // Hide avatar popover
+      this.isAvatarPopoverVisible = false;
+
       // Show sign out confirm modal
       this.modals.signOut.visible = true;
     },
