@@ -12,11 +12,15 @@
 base-modal(
   @close="$emit('close')"
   @confirm="$emit('remove', context)"
-  confirm-label="Remove"
+  confirm-label="Remove Message"
   class="m-remove-message"
   destructive
 )
-  | Are you sure you want to remove this message?
+  p.u-regular
+    | The message will disappear from your inbox. We will also try to remove it on your recipient end, although removal is not guaranteed.
+
+  p.u-medium
+    | Are you sure you want to remove this message?
 </template>
 
 <!-- **********************************************************************
