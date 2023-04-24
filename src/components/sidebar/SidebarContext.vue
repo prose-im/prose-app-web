@@ -68,6 +68,12 @@
       :items="actionsPopoverItems"
       class="c-sidebar-context__actions-popover"
     )
+
+  sign-out(
+    v-if="modals.signOut.visible"
+    @proceed="onModalSignOutProceed"
+    @close="onModalSignOutClose"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -87,11 +93,16 @@ import {
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
 
+// PROJECT: MODALS
+import SignOut from "@/modals/sidebar/SignOut.vue";
+
 // PROJECT: STORES
 import Store from "@/store";
 
 export default {
   name: "SidebarContext",
+
+  components: { SignOut },
 
   props: {
     jid: {
@@ -110,7 +121,13 @@ export default {
       // --> STATE <--
 
       isAvatarPopoverVisible: false,
-      isActionsPopoverVisible: false
+      isActionsPopoverVisible: false,
+
+      modals: {
+        signOut: {
+          visible: false
+        }
+      }
     };
   },
 
@@ -265,20 +282,9 @@ export default {
       this.isAvatarPopoverVisible = false;
     },
 
-    async onAvatarPopoverSignOutClick(): Promise<void> {
-      // Logout from account
-      await Store.$account.logout();
-
-      // Reset all stores
-      Store.reset();
-
-      // Show confirm alert
-      BaseAlert.info("Signed out", "Successfully signed out");
-
-      // Redirect to login
-      this.$router.push({
-        name: "start.login"
-      });
+    onAvatarPopoverSignOutClick(): Promise<void> {
+      // Show sign out confirm modal
+      this.modals.signOut.visible = true;
     },
 
     onActionsClick(): void {
@@ -289,6 +295,29 @@ export default {
     onActionsPopoverClickAway(): void {
       // Close popover
       this.isActionsPopoverVisible = false;
+    },
+
+    async onModalSignOutProceed(): void {
+      // Logout from account
+      await Store.$account.logout();
+
+      // Reset all stores
+      Store.reset();
+
+      // Show confirm alert
+      BaseAlert.info("Signed out", "Successfully signed out");
+
+      // Close modal
+      this.modals.signOut.visible = false;
+
+      // Redirect to login
+      this.$router.push({
+        name: "start.login"
+      });
+    },
+
+    onModalSignOutClose(): void {
+      this.modals.signOut.visible = false;
     }
   }
 };
