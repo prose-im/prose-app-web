@@ -9,29 +9,32 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-base-modal(
-  v-hotkey="hotkeys"
+teleport(
+  to="#app"
 )
-  .c-base-modal__popup.animate.animate--fast.animate--fade-in-up-small
-    .c-base-modal__content
-      slot
+  .c-base-modal(
+    v-hotkey="hotkeys"
+  )
+    .c-base-modal__popup.animate.animate--superfast.animate--fade-in-up-small
+      .c-base-modal__content
+        slot
 
-    .c-base-modal__actions
-      base-button(
-        @click="onClose"
-        tint="light"
-        size="mid-medium"
-        class="c-base-modal__action"
-      )
-        | {{ closeLabel }}
+      .c-base-modal__actions
+        base-button(
+          @click="onClose"
+          tint="light"
+          size="mid-medium"
+          class="c-base-modal__action"
+        )
+          | {{ closeLabel }}
 
-      base-button(
-        @click="onConfirm"
-        :tint="destructive ? 'red' : 'dark'"
-        size="mid-medium"
-        class="c-base-modal__action"
-      )
-        | {{ confirmLabel }}
+        base-button(
+          @click="onConfirm"
+          :tint="destructive ? 'red' : 'dark'"
+          size="mid-medium"
+          class="c-base-modal__action"
+        )
+          | {{ confirmLabel }}
 </template>
 
 <!-- **********************************************************************
