@@ -126,6 +126,7 @@ $popup-padding-sides: 24px;
 
   #{$c}__content {
     font-size: 14.5px;
+    line-height: 17px;
   }
 
   #{$c}__actions {
