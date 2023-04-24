@@ -106,7 +106,7 @@ $c: ".c-base-modal";
 
 // VARIABLES
 $popup-max-width: 500px;
-$popup-padding-sides: 24px;
+$popup-padding-sides: 25px;
 
 .c-base-modal {
   background-color: rgba($color-base-grey-dark, 0.35);
@@ -122,14 +122,26 @@ $popup-padding-sides: 24px;
     min-width: 350px;
     max-width: $popup-max-width;
     padding-inline: $popup-padding-sides;
-    padding-block: 20px;
+    padding-block: 19px;
     border-radius: 7px;
     box-shadow: 0 4px 14px 0 rgba($color-black, 0.075);
   }
 
   #{$c}__content {
     font-size: 14.5px;
-    line-height: 17px;
+    line-height: 18px;
+
+    > p {
+      margin-block: 10px;
+
+      &:first-child {
+        margin-block-start: 0;
+      }
+
+      &:last-child {
+        margin-block-end: 0;
+      }
+    }
   }
 
   #{$c}__actions {
