@@ -620,6 +620,9 @@ export default {
     },
 
     onPopoverActionsRemoveClick({ messageId }: { messageId: string }): void {
+      // Hide popover
+      this.hidePopover();
+
       // Show confirm modal
       this.modals.removeMessage.context.messageId = messageId;
       this.modals.removeMessage.visible = true;
