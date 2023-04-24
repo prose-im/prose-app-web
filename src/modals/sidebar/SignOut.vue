@@ -15,7 +15,11 @@ base-modal(
   confirm-label="Sign Out"
   destructive
 )
-  | You will be signed out of your account and will need to login back again to access your inbox.
+  p.u-regular
+    | You will be signed out of your account and will need to login back again to access your inbox. You will not receive new message notifications anymore.
+
+  p.u-medium
+    | Do you really want to sign out?
 </template>
 
 <!-- **********************************************************************
