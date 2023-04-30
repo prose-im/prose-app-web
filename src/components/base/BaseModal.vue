@@ -14,6 +14,7 @@ teleport(
 )
   .c-base-modal(
     v-hotkey="hotkeys"
+    v-bind="$attrs"
   )
     .c-base-modal__popup.animate.animate--superfast.animate--fade-in-up-small
       .c-base-modal__content
