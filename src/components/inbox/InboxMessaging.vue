@@ -65,6 +65,7 @@ import {
   Messaging as MessagingRuntime,
   Platform as MessagingPlatform,
   Theme as MessagingTheme,
+  Modifier as MessagingModifier,
   SeekDirection as MessagingSeekDirection,
   EventMessageActionsView,
   EventMessageReactionsView,
@@ -360,8 +361,11 @@ export default {
       listeners?: StatePopoverListeners;
       interaction?: StatePopoverInteraction;
     }): void {
+      const frameRuntime = this.frame();
+
       // Clear any previously-shown popover
-      this.hidePopover();
+      // Notice: mark hider as 'will show'
+      this.hidePopover(true);
 
       // Compute popover position relative to anchor
       const positionX = anchor.x || 0;
@@ -387,28 +391,45 @@ export default {
       if (interaction) {
         this.popover.interaction = interaction;
 
-        this.frame().MessagingStore.interact(
+        frameRuntime.MessagingStore.interact(
           interaction.id,
           interaction.action,
           true
         );
       }
+
+      // Lock scroll
+      frameRuntime.MessagingContext.setStyleModifier(
+        MessagingModifier.Scroll,
+        false
+      );
     },
 
-    hidePopover(): void {
+    hidePopover(willShow = false): void {
+      const frameRuntime = this.frame();
+
       // Empty items + component (will hide popover)
       this.popover.items = [];
       this.popover.component = null;
 
       // Any interaction to hide?
       if (this.popover.interaction) {
-        this.frame().MessagingStore.interact(
+        frameRuntime.MessagingStore.interact(
           this.popover.interaction.id,
           this.popover.interaction.action,
           false
         );
 
         this.popover.interaction = null;
+      }
+
+      // Unlock scroll? (if will not show next)
+      // Notice: this avoids setting style modifiers twice
+      if (willShow !== true) {
+        frameRuntime.MessagingContext.setStyleModifier(
+          MessagingModifier.Scroll,
+          true
+        );
       }
     },
 
