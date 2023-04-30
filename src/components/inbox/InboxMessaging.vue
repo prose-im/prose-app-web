@@ -568,12 +568,12 @@ export default {
       // Acquire message contents
       const messageData = this.frame().MessagingStore.resolve(messageId);
 
-      if (messageData && messageData.type === "text" && messageData.text) {
+      if (messageData && messageData.type === "text" && messageData.content) {
         // Copy to clipboard
         navigator.clipboard
-          .writeText(messageData.text)
+          .writeText(messageData.content)
           .then(() => {
-            this.$log.info(`Copied message text: ${messageData.text}`);
+            this.$log.info(`Copied message text: ${messageData.content}`);
 
             BaseAlert.success(
               "Text copied",
@@ -585,7 +585,7 @@ export default {
           })
           .catch(error => {
             this.$log.info(
-              `Could not copy message text: ${messageData.text}`,
+              `Could not copy message text: ${messageData.content}`,
               error
             );
 
