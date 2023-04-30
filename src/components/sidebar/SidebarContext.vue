@@ -140,7 +140,7 @@ export default {
 
           properties: {
             type: "user",
-            name: "Baptiste Jamin",
+            name: this.jid.local,
             address: this.jid.toString()
           }
         },
@@ -248,11 +248,6 @@ export default {
             {
               type: PopoverItemType.Button,
               label: "Crisp – crisp.chat"
-            },
-
-            {
-              type: PopoverItemType.Button,
-              label: "MakAir – makair.life"
             }
           ]
         },
