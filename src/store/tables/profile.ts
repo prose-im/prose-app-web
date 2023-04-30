@@ -53,8 +53,8 @@ type ProfileEntryInformationActivity = {
 };
 
 type ProfileEntrySecurity = {
-  verification: ProfileEntrySecurityVerification | null;
-  encryption: ProfileEntrySecurityEncryption | null;
+  verification?: ProfileEntrySecurityVerification;
+  encryption?: ProfileEntrySecurityEncryption;
 };
 
 type ProfileEntrySecurityVerification = {
@@ -149,19 +149,50 @@ const $profile = defineStore("profile", {
 
         // TODO: load last active time
         // TODO: load timezone
+        // TODO: load geolocation (from PEP notify event)
         // TODO: load activity
         // TODO: load verification status
         // TODO: load encryption status
 
         // Set local profile vCard data
         this.setProfileVCard(jid, profileResponse);
+
+        // Set local profile last active time
+        // TODO: from server data
+        this.setProfileLast(jid, Date.now());
+
+        // Set local profile location and time
+        // TODO: from server data
+        this.setProfileGeolocation(jid, "Portugal", "Lisbon");
+        this.setProfileTime(jid, "Europe/Lisbon");
+
+        // Set local profile activity
+        // TODO: from server data
+        this.setProfileActivity(jid, "Focusing on code", "👨‍💻");
+
+        // Set local profile verification status
+        // TODO: from server data
+        this.setProfileVerification(jid, {
+          fingerprint: "0000",
+          email: jid.toString(),
+          phone: null,
+          identity: null
+        });
+
+        // Set local profile encryption status
+        // TODO: from server data
+        this.setProfileEncryption(jid, {
+          connectionProtocol: "TLS1.3",
+          messageEndToEndMethod: "OMEMO"
+        });
       }
 
       return Promise.resolve(profile);
     },
 
     setProfileVCard(jid: JID, vCardResponse: LoadVCardResponse): ProfileEntry {
-      const profile = this.assert(jid);
+      const profile = this.assert(jid),
+        information = this.ensureProfileInformation(profile);
 
       // Update data in store
       this.$patch(() => {
@@ -202,7 +233,128 @@ const $profile = defineStore("profile", {
         }
 
         // #3. Store information
-        profile.information = profile.information || {
+        information.contact.email = vCardResponse.email || null;
+        information.contact.phone = vCardResponse.phone || null;
+
+        information.location.city = vCardResponse.address?.city || null;
+        information.location.country = vCardResponse.address?.country || null;
+      });
+
+      return profile;
+    },
+
+    setProfileLast(jid: JID, timestamp: number): ProfileEntry {
+      const profile = this.assert(jid),
+        information = this.ensureProfileInformation(profile);
+
+      // Update data in store
+      this.$patch(() => {
+        information.lastActive = {
+          timestamp: timestamp
+        };
+      });
+
+      return profile;
+    },
+
+    setProfileGeolocation(
+      jid: JID,
+      country: string | null,
+      city: string | null
+    ): ProfileEntry {
+      const profile = this.assert(jid),
+        information = this.ensureProfileInformation(profile),
+        location = this.ensureProfileInformationLocation(information);
+
+      // Update data in store
+      this.$patch(() => {
+        location.country = country;
+        location.city = city;
+      });
+
+      return profile;
+    },
+
+    setProfileTime(jid: JID, timezone: string | null): ProfileEntry {
+      const profile = this.assert(jid),
+        information = this.ensureProfileInformation(profile),
+        location = this.ensureProfileInformationLocation(information);
+
+      // Update data in store
+      this.$patch(() => {
+        location.timezone = timezone;
+      });
+
+      return profile;
+    },
+
+    setProfileActivity(
+      jid: JID,
+      text: string,
+      icon: string | null
+    ): ProfileEntry {
+      const profile = this.assert(jid),
+        information = this.ensureProfileInformation(profile);
+
+      // Update data in store
+      this.$patch(() => {
+        information.activity = information.activity || {
+          icon: null,
+          text: ""
+        };
+
+        // TODO: set icon from activity text
+        information.activity.icon = icon;
+        information.activity.text = text;
+      });
+
+      return profile;
+    },
+
+    setProfileVerification(
+      jid: JID,
+      verification: ProfileEntrySecurityVerification
+    ): ProfileEntry {
+      const profile = this.assert(jid);
+
+      // Update data in store
+      this.$patch(() => {
+        profile.security = profile.security || {};
+
+        profile.security.verification = {
+          fingerprint: verification.fingerprint,
+          email: verification.email,
+          phone: verification.phone,
+          identity: verification.identity
+        };
+      });
+
+      return profile;
+    },
+
+    setProfileEncryption(
+      jid: JID,
+      encryption: ProfileEntrySecurityEncryption
+    ): ProfileEntry {
+      const profile = this.assert(jid);
+
+      // Update data in store
+      this.$patch(() => {
+        profile.security = profile.security || {};
+
+        profile.security.encryption = {
+          connectionProtocol: encryption.connectionProtocol,
+          messageEndToEndMethod: encryption.messageEndToEndMethod
+        };
+      });
+
+      return profile;
+    },
+
+    ensureProfileInformation(profile: ProfileEntry): ProfileEntryInformation {
+      // Initialize empty profile information?
+      if (!profile.information) {
+        profile.information = {
           contact: {
             email: null,
             phone: null
@@ -217,16 +369,24 @@ const $profile = defineStore("profile", {
           lastActive: null,
           activity: null
         };
+      }
 
-        profile.information.contact.email = vCardResponse.email || null;
-        profile.information.contact.phone = vCardResponse.phone || null;
+      return profile.information;
+    },
 
-        profile.information.location.city = vCardResponse.address?.city || null;
-        profile.information.location.country =
-          vCardResponse.address?.country || null;
-      });
+    ensureProfileInformationLocation(
+      information: ProfileEntryInformation
+    ): ProfileEntryInformationLocation {
+      // Initialize empty profile information location?
+      if (!information.location) {
+        information.location = {
+          city: null,
+          country: null,
+          timezone: null
+        };
+      }
 
-      return profile;
+      return information.location;
     }
   }
 });
