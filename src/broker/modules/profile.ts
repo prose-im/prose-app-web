@@ -246,6 +246,7 @@ class BrokerModuleProfile extends BrokerModule {
 export type {
   LoadVCardResponse,
   LoadLastActivityResponse,
+  LoadEntityTimeResponse,
   LoadAvatarDataResponse
 };
 export default BrokerModuleProfile;

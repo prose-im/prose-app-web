@@ -99,18 +99,32 @@ export default {
         }
 
         if (this.profile.information.lastActive) {
+          const activePrefix =
+            this.highestPresence.type === null ? "Active" : "Last seen";
+
           entries.push({
             id: "active",
-            title: `Active ${this.profile.information.lastActive.timestamp} ago`,
+            title: `${activePrefix} ${this.$filters.date.timeAgo(
+              this.profile.information.lastActive.timestamp,
+              true
+            )}`,
             icon: "hand.wave.fill"
           });
         }
 
         if (this.profile.information.location) {
-          if (this.profile.information.location.timezone) {
+          const userTimezone =
+            this.profile.information.location.timezone || null;
+
+          if (userTimezone !== null) {
+            const nowDate = new Date();
+
             entries.push({
               id: "timezone",
-              title: `0:00pm (${this.profile.information.location.timezone})`,
+              title: `${this.$filters.date.localTime(
+                nowDate,
+                userTimezone.offset
+              )} (${userTimezone.name})`,
               icon: "clock.fill"
             });
           }
@@ -146,6 +160,10 @@ export default {
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
+    },
+
+    highestPresence(): ReturnType<typeof Store.$presence.getHighest> {
+      return Store.$presence.getHighest(this.jid);
     }
   },
 

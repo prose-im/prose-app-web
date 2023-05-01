@@ -16,8 +16,12 @@ import { defineStore } from "pinia";
 import Broker from "@/broker";
 import {
   LoadVCardResponse,
-  LoadLastActivityResponse
+  LoadLastActivityResponse,
+  LoadEntityTimeResponse
 } from "@/broker/modules/profile";
+
+// PROJECT: FILTERS
+import dateFilters from "@/filters/date";
 
 /**************************************************************************
  * TYPES
@@ -47,7 +51,12 @@ type ProfileEntryInformationLastActive = {
 type ProfileEntryInformationLocation = {
   city: string | null;
   country: string | null;
-  timezone: string | null;
+  timezone: ProfileEntryInformationLocationTimezone | null;
+};
+
+type ProfileEntryInformationLocationTimezone = {
+  name: string;
+  offset: number;
 };
 
 type ProfileEntryInformationActivity = {
@@ -187,7 +196,7 @@ const $profile = defineStore("profile", {
       );
 
       // Set local profile time
-      this.setProfileTime(bareJID, entityTimeResponse.tzo);
+      this.setProfileTime(bareJID, entityTimeResponse);
     },
 
     async loadProfileActivity(
@@ -293,15 +302,24 @@ const $profile = defineStore("profile", {
       return profile;
     },
 
-    setProfileTime(jid: JID, tzo: string | null): ProfileEntry {
+    setProfileTime(
+      jid: JID,
+      entityTimeResponse: LoadEntityTimeResponse
+    ): ProfileEntry {
       const profile = this.assert(jid),
         information = this.ensureProfileInformation(profile),
         location = this.ensureProfileInformationLocation(information);
 
       // Update data in store
       this.$patch(() => {
-        // TODO: also assign converted offset
-        location.timezone = tzo !== null ? `UTC${tzo}` : null;
+        if (entityTimeResponse.tzo !== null) {
+          location.timezone = {
+            name: `UTC${entityTimeResponse.tzo}`,
+            offset: dateFilters.tzoToOffset(entityTimeResponse.tzo)
+          };
+        } else {
+          location.timezone = null;
+        }
       });
 
       return profile;
