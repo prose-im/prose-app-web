@@ -92,6 +92,12 @@ export default {
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
+    },
+
+    fullJIDHighestOnline(): ReturnType<
+      typeof Store.$presence.getHighestOnlineJID
+    > {
+      return Store.$presence.getHighestOnlineJID(this.jid);
     }
   },
 
@@ -139,7 +145,8 @@ export default {
         this.isVCardSyncStale = false;
 
         // Load profile
-        await Store.$profile.load(this.jid);
+        // TODO: refresh transient values every now and then
+        await Store.$profile.load(this.fullJIDHighestOnline);
       }
     },
 

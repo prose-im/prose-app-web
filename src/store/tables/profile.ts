@@ -14,7 +14,10 @@ import { defineStore } from "pinia";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { LoadVCardResponse } from "@/broker/modules/profile";
+import {
+  LoadVCardResponse,
+  LoadLastActivityResponse
+} from "@/broker/modules/profile";
 
 /**************************************************************************
  * TYPES
@@ -132,62 +135,92 @@ const $profile = defineStore("profile", {
       return this.entries[bareJIDString];
     },
 
-    async load(jid: JID, reload = false): Promise<ProfileEntry> {
+    async load(fullJIDHighest: JID, reload = false): Promise<ProfileEntry> {
       // Assert profile data
-      const profile = this.assert(jid);
+      const profile = this.assert(fullJIDHighest);
 
-      const bareJIDString = jid.bare().toString();
+      const bareJID = fullJIDHighest.bare(),
+        bareJIDString = bareJID.toString();
 
       // Load profile? (or reload)
       if (LOCAL_STATES.loaded[bareJIDString] !== true || reload === true) {
         LOCAL_STATES.loaded[bareJIDString] = true;
 
-        // Load profile for JID
-        // TODO: do all of them at once (as a race between all promises, set \
-        //   data in store asap it is received on the network)
-        const profileResponse = await Broker.$profile.loadVCard(jid);
-
-        // TODO: load last active time
-        // TODO: load timezone
-        // TODO: load geolocation (from PEP notify event)
-        // TODO: load activity
-        // TODO: load verification status
-        // TODO: load encryption status
-
-        // Set local profile vCard data
-        this.setProfileVCard(jid, profileResponse);
-
-        // Set local profile last active time
-        // TODO: from server data
-        this.setProfileLast(jid, Date.now());
-
-        // Set local profile location and time
-        // TODO: from server data
-        this.setProfileGeolocation(jid, "Portugal", "Lisbon");
-        this.setProfileTime(jid, "Europe/Lisbon");
-
-        // Set local profile activity
-        // TODO: from server data
-        this.setProfileActivity(jid, "Focusing on code", "👨‍💻");
-
-        // Set local profile verification status
-        // TODO: from server data
-        this.setProfileVerification(jid, {
-          fingerprint: "0000",
-          email: jid.toString(),
-          phone: null,
-          identity: null
-        });
-
-        // Set local profile encryption status
-        // TODO: from server data
-        this.setProfileEncryption(jid, {
-          connectionProtocol: "TLS1.3",
-          messageEndToEndMethod: "OMEMO"
-        });
+        // Load all profile parts at once
+        await Promise.all([
+          this.loadProfileVCard(bareJID),
+          this.loadProfileLast(bareJID, fullJIDHighest),
+          this.loadProfileTime(bareJID, fullJIDHighest),
+          this.loadProfileActivity(bareJID, fullJIDHighest),
+          this.loadProfileVerification(bareJID),
+          this.loadProfileEncryption(bareJID)
+        ]);
       }
 
       return Promise.resolve(profile);
+    },
+
+    async loadProfileVCard(bareJID: JID): Promise<void> {
+      // Load vCard data for JID
+      const profileResponse = await Broker.$profile.loadVCard(bareJID);
+
+      // Set local profile vCard data
+      this.setProfileVCard(bareJID, profileResponse);
+    },
+
+    async loadProfileLast(bareJID: JID, fullJIDHighest: JID): Promise<void> {
+      // Load last activity time
+      // TODO: only if remote client supports it (w/ CAPS)
+      const lastActivityResponse = await Broker.$profile.loadLastActivity(
+        fullJIDHighest
+      );
+
+      // Set local profile last active time
+      this.setProfileLast(bareJID, lastActivityResponse);
+    },
+
+    async loadProfileTime(bareJID: JID, fullJIDHighest: JID): Promise<void> {
+      // Load user timezone
+      // TODO: only if remote client supports it (w/ CAPS)
+      const entityTimeResponse = await Broker.$profile.loadEntityTime(
+        fullJIDHighest
+      );
+
+      // Set local profile time
+      this.setProfileTime(bareJID, entityTimeResponse.tzo);
+    },
+
+    async loadProfileActivity(
+      bareJID: JID,
+      fullJIDHighest: JID
+    ): Promise<void> {
+      // Load user activity
+      // TODO: only if remote client supports it (w/ CAPS)
+      // TODO: load activity on fullJIDHighest (??)
+
+      // Set local profile activity
+      // TODO: from server data
+      this.setProfileActivity(bareJID, "Focusing on code", "👨‍💻");
+    },
+
+    async loadProfileVerification(bareJID: JID): Promise<void> {
+      // Set local profile verification status
+      // TODO: from server data
+      this.setProfileVerification(bareJID, {
+        fingerprint: "0000",
+        email: bareJID.toString(),
+        phone: null,
+        identity: null
+      });
+    },
+
+    async loadProfileEncryption(bareJID: JID): Promise<void> {
+      // Set local profile encryption status
+      // TODO: from server data
+      this.setProfileEncryption(bareJID, {
+        connectionProtocol: "TLS1.3",
+        messageEndToEndMethod: "OMEMO"
+      });
     },
 
     setProfileVCard(jid: JID, vCardResponse: LoadVCardResponse): ProfileEntry {
@@ -243,46 +276,32 @@ const $profile = defineStore("profile", {
       return profile;
     },
 
-    setProfileLast(jid: JID, timestamp: number): ProfileEntry {
+    setProfileLast(
+      jid: JID,
+      lastActivityResponse: LoadLastActivityResponse
+    ): ProfileEntry {
       const profile = this.assert(jid),
         information = this.ensureProfileInformation(profile);
 
       // Update data in store
       this.$patch(() => {
         information.lastActive = {
-          timestamp: timestamp
+          timestamp: lastActivityResponse.timestamp
         };
       });
 
       return profile;
     },
 
-    setProfileGeolocation(
-      jid: JID,
-      country: string | null,
-      city: string | null
-    ): ProfileEntry {
+    setProfileTime(jid: JID, tzo: string | null): ProfileEntry {
       const profile = this.assert(jid),
         information = this.ensureProfileInformation(profile),
         location = this.ensureProfileInformationLocation(information);
 
       // Update data in store
       this.$patch(() => {
-        location.country = country;
-        location.city = city;
-      });
-
-      return profile;
-    },
-
-    setProfileTime(jid: JID, timezone: string | null): ProfileEntry {
-      const profile = this.assert(jid),
-        information = this.ensureProfileInformation(profile),
-        location = this.ensureProfileInformationLocation(information);
-
-      // Update data in store
-      this.$patch(() => {
-        location.timezone = timezone;
+        // TODO: also assign converted offset
+        location.timezone = tzo !== null ? `UTC${tzo}` : null;
       });
 
       return profile;

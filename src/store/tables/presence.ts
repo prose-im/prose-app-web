@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@xmpp/jid";
+import { jid, JID } from "@xmpp/jid";
 import { defineStore } from "pinia";
 
 // PROJECT: BROKER
@@ -24,6 +24,7 @@ interface PresenceEntryResources {
 }
 
 type PresenceEntryResource = {
+  resource: string;
   priority: number;
   type: PresenceType | null;
   show?: PresenceShow;
@@ -52,6 +53,7 @@ interface PresenceEntry {
  * CONSTANTS
  * ************************************************************************* */
 
+const RESOURCE_DEFAULT = "";
 const PRIORITY_DEFAULT = 0;
 const TYPE_DEFAULT = PresenceType.Unavailable;
 
@@ -73,6 +75,21 @@ const $presence = defineStore("presence", {
       return (bareJID: JID): PresenceEntryResource => {
         return this.assert(bareJID, true);
       };
+    },
+
+    getHighestOnlineJID: function () {
+      return (bareJID: JID): JID => {
+        const highest = this.getHighest(bareJID);
+
+        // Highest JID is online? Return full JID.
+        if (highest.type === null && highest.resource) {
+          // Build JID in the form of: '[local]@[domain]/[resource]'
+          return jid(bareJID.local, bareJID.domain, highest.resource);
+        }
+
+        // Return bare JID, as none is online (identity function)
+        return bareJID;
+      };
     }
   },
 
@@ -88,6 +105,7 @@ const $presence = defineStore("presence", {
           // Insert with defaults
           entries[bareJIDString] = {
             highest: {
+              resource: RESOURCE_DEFAULT,
               priority: PRIORITY_DEFAULT,
               type: TYPE_DEFAULT
             },
@@ -102,6 +120,7 @@ const $presence = defineStore("presence", {
         this.$patch(() => {
           // Insert with defaults
           entries[bareJIDString].resources[fullJIDResource] = {
+            resource: fullJIDResource,
             priority: PRIORITY_DEFAULT,
             type: TYPE_DEFAULT
           };
@@ -177,9 +196,9 @@ const $presence = defineStore("presence", {
       switch (type) {
         case null: {
           // Available: update presence data for resource
-          const resource = this.assert(fullJID);
+          const entry = this.assert(fullJID);
 
-          this.assignResource(resource, {
+          this.assignResource(entry, {
             priority,
             type,
             show,
@@ -228,6 +247,7 @@ const $presence = defineStore("presence", {
         //   to offline)
         if (highestPriorityResource === undefined) {
           highestPriorityResource = {
+            resource: RESOURCE_DEFAULT,
             priority: PRIORITY_DEFAULT,
             type: TYPE_DEFAULT
           };
@@ -235,6 +255,7 @@ const $presence = defineStore("presence", {
 
         // Update stored default resource
         this.assignResource(entry.highest, {
+          resource: highestPriorityResource.resource,
           priority: highestPriorityResource.priority,
           type: highestPriorityResource.type,
           show: highestPriorityResource.show,
@@ -244,29 +265,36 @@ const $presence = defineStore("presence", {
     },
 
     assignResource(
-      resource: PresenceEntryResource,
+      entry: PresenceEntryResource,
       {
         priority,
         type,
         show,
         status,
+        resource,
         updatedAt
       }: {
         priority: number;
         type: PresenceType | null;
         show?: PresenceShow;
         status?: string;
+        resource?: string;
         updatedAt?: number;
       }
     ): void {
       this.$patch(() => {
-        resource.priority = priority;
-        resource.type = type;
-        resource.show = show;
-        resource.status = status;
+        // Update required values
+        entry.priority = priority;
+        entry.type = type;
+        entry.show = show;
+        entry.status = status;
 
+        // Update optional values?
+        if (resource !== undefined) {
+          entry.resource = resource;
+        }
         if (updatedAt !== undefined) {
-          resource.updatedAt = updatedAt;
+          entry.updatedAt = updatedAt;
         }
       });
     }
