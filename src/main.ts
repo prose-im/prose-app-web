@@ -23,6 +23,7 @@ import Store from "@/store";
 import "@/bootstrap/icons";
 
 import BootstrapConfig from "@/bootstrap/config";
+import BootstrapFilters from "@/bootstrap/filters";
 import BootstrapComponents from "@/bootstrap/components";
 import BootstrapPlugins from "@/bootstrap/plugins";
 
@@ -44,6 +45,7 @@ Router.bind(app);
  * ************************************************************************* */
 
 BootstrapConfig.init(app);
+BootstrapFilters.init(app);
 BootstrapComponents.init(app);
 BootstrapPlugins.init(app);
 
