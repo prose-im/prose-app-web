@@ -32,7 +32,6 @@ div(
     :name="name"
     :value="value"
     :placeholder="placeholder"
-    :autofocus="autofocus"
     :disabled="disabled"
     :class=`[
       "c-form-field__inner",
@@ -57,7 +56,6 @@ div(
     :name="name"
     :value="value"
     :placeholder="placeholder"
-    :autofocus="autofocus"
     :disabled="disabled"
     :class=`[
       "c-form-field__inner",
@@ -188,10 +186,23 @@ export default {
   mounted() {
     // Refresh auto-grow (if enabled)
     this.refreshAutogrow();
+
+    // Apply auto-focus?
+    if (this.autofocus === true) {
+      this.focusField();
+    }
   },
 
   methods: {
     // --> HELPERS <--
+
+    focusField(): void {
+      const field = (this.$refs.field as HTMLElement) || null;
+
+      if (field !== null) {
+        field.focus();
+      }
+    },
 
     refreshAutogrow(): void {
       if (this.autogrow === true) {
