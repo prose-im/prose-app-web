@@ -27,6 +27,7 @@
       name="jid"
       placeholder="Enter your Prose address…"
       size="ultra-large"
+      autofocus
     )
 
     form-field(
