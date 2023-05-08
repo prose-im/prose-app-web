@@ -21,7 +21,7 @@ div(
     }
   ]`
 )
-  textarea.c-form-field__inner.c-form-field__inner--textarea(
+  textarea(
     v-if="type === 'textarea'"
     @keydown="onFieldKeyDown"
     @keyup="onFieldKeyUp"
@@ -32,12 +32,20 @@ div(
     :name="name"
     :value="value"
     :placeholder="placeholder"
+    :autofocus="autofocus"
     :disabled="disabled"
+    :class=`[
+      "c-form-field__inner",
+      "c-form-field__inner--textarea",
+      {
+        [fieldClass]: fieldClass
+      }
+    ]`
     rows="1"
     ref="field"
   )
 
-  input.c-form-field__inner.c-form-field__inner--input(
+  input(
     v-else
     @keydown="onFieldKeyDown"
     @keyup="onFieldKeyUp"
@@ -49,7 +57,15 @@ div(
     :name="name"
     :value="value"
     :placeholder="placeholder"
+    :autofocus="autofocus"
     :disabled="disabled"
+    :class=`[
+      "c-form-field__inner",
+      "c-form-field__inner--input",
+      {
+        [fieldClass]: fieldClass
+      }
+    ]`
     ref="field"
   )
 </template>
@@ -123,6 +139,11 @@ export default {
       default: false
     },
 
+    autofocus: {
+      type: Boolean,
+      default: false
+    },
+
     disabled: {
       type: Boolean,
       default: false
@@ -131,6 +152,11 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+
+    fieldClass: {
+      type: String,
+      default: null
     }
   },
 
