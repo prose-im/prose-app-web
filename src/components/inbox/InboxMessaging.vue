@@ -45,6 +45,14 @@
       :is="popover.component"
     )
 
+  edit-message(
+    v-if="modals.editMessage.visible"
+    @edit="onModalEditMessageEdit"
+    @close="onModalEditMessageClose"
+    :context="modals.editMessage.context"
+    :original-text="modals.editMessage.originalText"
+  )
+
   remove-message(
     v-if="modals.removeMessage.visible"
     @remove="onModalRemoveMessageRemove"
@@ -85,6 +93,7 @@ import {
 } from "@/components/base/BasePopoverList.vue";
 
 // PROJECT: MODALS
+import EditMessage from "@/modals/inbox/EditMessage.vue";
 import RemoveMessage from "@/modals/inbox/RemoveMessage.vue";
 
 // PROJECT: STORES
@@ -126,7 +135,7 @@ const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 export default {
   name: "InboxMessaging",
 
-  components: { RemoveMessage },
+  components: { EditMessage, RemoveMessage },
 
   props: {
     jid: {
@@ -164,6 +173,12 @@ export default {
         removeMessage: {
           visible: false,
           context: {}
+        },
+
+        editMessage: {
+          visible: false,
+          context: {},
+          originalText: ""
         }
       },
 
@@ -551,6 +566,38 @@ export default {
       this.triggerContainerClick();
     },
 
+    onModalEditMessageEdit(
+      { messageId, messageType }: { messageId: string; messageType: string },
+      text: string
+    ): void {
+      // Edit in view
+      // TODO: move this to a store/factory? (w/ a message:edited event)
+      const wasUpdated = this.frame().MessagingStore.update(messageId, {
+        type: messageType,
+        content: text
+      });
+
+      // TODO: edit from store
+      // TODO: send edit order to protocol
+
+      // Acknowledge edition
+      if (wasUpdated === true) {
+        BaseAlert.info("Message edited", "The message has been updated");
+      } else {
+        BaseAlert.error(
+          "Cannot edit message",
+          "The message could not be updated"
+        );
+      }
+
+      // Close modal
+      this.modals.editMessage.visible = false;
+    },
+
+    onModalEditMessageClose(): void {
+      this.modals.editMessage.visible = false;
+    },
+
     onModalRemoveMessageRemove({ messageId }: { messageId: string }): void {
       // Remove from view
       // TODO: move this to a store/factory? (w/ a message:retracted event)
@@ -562,9 +609,6 @@ export default {
       // Acknowledge removal
       if (wasRemoved === true) {
         BaseAlert.info("Message removed", "The message has been deleted");
-
-        // Hide popover
-        this.hidePopover();
       } else {
         BaseAlert.error(
           "Cannot remove message",
@@ -631,13 +675,33 @@ export default {
     },
 
     onPopoverActionsEditClick({ messageId }: { messageId: string }): void {
-      // Highlight message to edit
-      this.frame().MessagingStore.highlight(messageId);
+      const frameRuntime = this.frame();
 
-      // TODO: enter edit mode
+      if (frameRuntime !== null) {
+        // Acquire message contents
+        const messageData = frameRuntime.MessagingStore.resolve(messageId);
 
-      // Hide popover
-      this.hidePopover();
+        if (messageData && messageData.type === "text" && messageData.content) {
+          // Hide popover
+          this.hidePopover();
+
+          // Highlight message to edit
+          frameRuntime.MessagingStore.highlight(messageId);
+
+          // Show edit modal
+          this.modals.editMessage.context.messageId = messageId;
+          this.modals.editMessage.context.messageType = messageData.type;
+
+          this.modals.editMessage.originalText = messageData.content;
+
+          this.modals.editMessage.visible = true;
+        } else {
+          BaseAlert.warning(
+            "No text to edit",
+            "This message does not contain any text to edit"
+          );
+        }
+      }
     },
 
     onPopoverActionsRemoveClick({ messageId }: { messageId: string }): void {
