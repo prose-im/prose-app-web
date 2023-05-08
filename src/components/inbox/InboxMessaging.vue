@@ -406,7 +406,7 @@ export default {
       if (interaction) {
         this.popover.interaction = interaction;
 
-        frameRuntime.MessagingStore.interact(
+        frameRuntime?.MessagingStore.interact(
           interaction.id,
           interaction.action,
           true
@@ -414,7 +414,7 @@ export default {
       }
 
       // Lock scroll
-      frameRuntime.MessagingContext.setStyleModifier(
+      frameRuntime?.MessagingContext.setStyleModifier(
         MessagingModifier.Scroll,
         false
       );
@@ -429,7 +429,7 @@ export default {
 
       // Any interaction to hide?
       if (this.popover.interaction) {
-        frameRuntime.MessagingStore.interact(
+        frameRuntime?.MessagingStore.interact(
           this.popover.interaction.id,
           this.popover.interaction.action,
           false
@@ -441,7 +441,7 @@ export default {
       // Unlock scroll? (if will not show next)
       // Notice: this avoids setting style modifiers twice
       if (willShow !== true) {
-        frameRuntime.MessagingContext.setStyleModifier(
+        frameRuntime?.MessagingContext.setStyleModifier(
           MessagingModifier.Scroll,
           true
         );
@@ -550,12 +550,14 @@ export default {
     onFrameLoad(): void {
       const frameRuntime = this.frame();
 
-      // Setup frame
-      this.setupDocument(frameRuntime);
-      this.setupContext(frameRuntime);
-      this.setupEvents(frameRuntime);
-      this.setupStore(frameRuntime);
-      this.setupListeners(frameRuntime);
+      // Setup frame?
+      if (frameRuntime !== null) {
+        this.setupDocument(frameRuntime);
+        this.setupContext(frameRuntime);
+        this.setupEvents(frameRuntime);
+        this.setupStore(frameRuntime);
+        this.setupListeners(frameRuntime);
+      }
 
       // Mark frame as loaded
       this.isFrameLoaded = true;
@@ -570,9 +572,11 @@ export default {
       { messageId, messageType }: { messageId: string; messageType: string },
       text: string
     ): void {
+      const frameRuntime = this.frame();
+
       // Edit in view
       // TODO: move this to a store/factory? (w/ a message:edited event)
-      const wasUpdated = this.frame().MessagingStore.update(messageId, {
+      const wasUpdated = frameRuntime?.MessagingStore.update(messageId, {
         type: messageType,
         content: text
       });
@@ -592,16 +596,22 @@ export default {
 
       // Close modal
       this.modals.editMessage.visible = false;
+
+      // Un-highlight edited message
+      frameRuntime?.MessagingStore.highlight(null);
     },
 
     onModalEditMessageClose(): void {
       this.modals.editMessage.visible = false;
+
+      // Un-highlight message to edit
+      this.frame()?.MessagingStore.highlight(null);
     },
 
     onModalRemoveMessageRemove({ messageId }: { messageId: string }): void {
       // Remove from view
       // TODO: move this to a store/factory? (w/ a message:retracted event)
-      const wasRemoved = this.frame().MessagingStore.retract(messageId);
+      const wasRemoved = this.frame()?.MessagingStore.retract(messageId);
 
       // TODO: remove from store
       // TODO: send removal order to protocol
@@ -631,7 +641,7 @@ export default {
 
     onPopoverActionsCopyClick({ messageId }: { messageId: string }): void {
       // Acquire message contents
-      const messageData = this.frame().MessagingStore.resolve(messageId);
+      const messageData = this.frame()?.MessagingStore.resolve(messageId);
 
       if (messageData && messageData.type === "text" && messageData.content) {
         // Copy to clipboard
@@ -737,21 +747,21 @@ export default {
     onStoreMessageInserted(event: EventMessageGeneric): void {
       if (this.jid.equals(event.jid) === true) {
         // Insert into view
-        this.frame().MessagingStore.insert(event.message);
+        this.frame()?.MessagingStore.insert(event.message);
       }
     },
 
     onStoreMessageUpdated(event: EventMessageGeneric): void {
       if (this.jid.equals(event.jid) === true) {
         // Update in view
-        this.frame().MessagingStore.update(event.message.id, event.message);
+        this.frame()?.MessagingStore.update(event.message.id, event.message);
       }
     },
 
     onStoreMessageRetracted(event: EventMessageGeneric): void {
       if (this.jid.equals(event.jid) === true) {
         // Retract from view
-        this.frame().MessagingStore.retract(event.message.id);
+        this.frame()?.MessagingStore.retract(event.message.id);
       }
     },
 
@@ -778,7 +788,7 @@ export default {
       // Show popover with actions? (if any origin set)
       if (event.origin) {
         // Acquire message contents
-        const messageData = this.frame().MessagingStore.resolve(event.id);
+        const messageData = this.frame()?.MessagingStore.resolve(event.id);
 
         // Build context
         const context = {
