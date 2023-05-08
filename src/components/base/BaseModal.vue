@@ -12,9 +12,13 @@
 teleport(
   to="#app"
 )
-  .c-base-modal(
+  div(
     v-hotkey="hotkeys"
     v-bind="$attrs"
+    :class=`[
+      "c-base-modal",
+      "c-base-modal--" + size
+    ]`
   )
     .c-base-modal__popup.animate.animate--superfast.animate--fade-in-up-small
       .c-base-modal__content
@@ -55,6 +59,15 @@ export default {
     closeLabel: {
       type: String,
       default: "Cancel"
+    },
+
+    size: {
+      type: String,
+      default: "medium",
+
+      validator(x: string) {
+        return ["medium", "large"].includes(x);
+      }
     },
 
     destructive: {
@@ -106,6 +119,8 @@ export default {
 $c: ".c-base-modal";
 
 // VARIABLES
+$popup-min-width-medium: 350px;
+$popup-min-width-large: 440px;
 $popup-max-width: 500px;
 $popup-padding-sides: 25px;
 
@@ -120,7 +135,6 @@ $popup-padding-sides: 25px;
 
   #{$c}__popup {
     background-color: $color-white;
-    min-width: 350px;
     max-width: $popup-max-width;
     padding-inline: $popup-padding-sides;
     padding-block: 19px;
@@ -160,6 +174,20 @@ $popup-padding-sides: 25px;
       &:last-child {
         margin-inline-end: 0;
       }
+    }
+  }
+
+  // --> SIZES <--
+
+  &--medium {
+    #{$c}__popup {
+      min-width: $popup-min-width-medium;
+    }
+  }
+
+  &--large {
+    #{$c}__popup {
+      min-width: $popup-min-width-large;
     }
   }
 }
