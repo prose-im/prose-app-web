@@ -32,12 +32,13 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-core-views": "0.21.0",
+    "@prose-im/prose-core-views": "0.22.0",
     "@xmpp/id": "0.13.x",
     "@xmpp/jid": "0.13.x",
     "@xmpp/time": "0.13.x",
     "lodash.camelcase": "4.3.x",
     "lodash.upperfirst": "4.3.x",
+    "lodash.clonedeep": "4.5.x",
     "lodash.merge": "4.6.x",
     "thenby": "1.3.x",
     "keycode": "2.2.x",
@@ -62,6 +63,7 @@
     "@types/xmpp__time": "0.13.x",
     "@types/lodash.camelcase": "4.3.x",
     "@types/lodash.upperfirst": "4.3.x",
+    "@types/lodash.clonedeep": "4.5.x",
     "@types/lodash.merge": "4.6.x",
     "@types/crypto-js": "4.1.x",
     "@types/get-installed-path": "4.0.x",

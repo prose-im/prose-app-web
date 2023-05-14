@@ -761,13 +761,15 @@ export default {
 
     onStoreMessageUpdated(event: EventMessageGeneric): void {
       if (this.jid.equals(event.jid) === true) {
-        // TODO
-        console.error(
-          `==> update message for: ${event.jid} w/ content: ${event.message.content}`
-        );
-
         // Update in view
-        this.frame()?.MessagingStore.update(event.message.id, event.message);
+        // Notice: use identifier from original message as reference, if any, \
+        //   otherwise fallback on the actual message. This is done as the \
+        //   message identifier must (should?) be migrated to a new one upon \
+        //   update.
+        this.frame()?.MessagingStore.update(
+          (event.original || event.message).id,
+          event.message
+        );
       }
     },
 

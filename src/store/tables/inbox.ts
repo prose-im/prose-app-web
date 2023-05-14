@@ -11,6 +11,7 @@
 // NPM
 import { JID } from "@xmpp/jid";
 import merge from "lodash.merge";
+import cloneDeep from "lodash.clonedeep";
 import mitt from "mitt";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
@@ -34,6 +35,7 @@ type InboxEntryStates = {
 type EventMessageGeneric = {
   jid: JID;
   message: InboxEntryMessage;
+  original?: InboxEntryMessage;
 };
 
 /**************************************************************************
@@ -165,6 +167,9 @@ const $inbox = defineStore("inbox", {
       const existingMessage = container.byId[id] || null;
 
       if (existingMessage !== null) {
+        // Duplicate existing message (before it gets mutated)
+        const originalMessage = cloneDeep(existingMessage);
+
         this.$patch(() => {
           // Delete existing message at previous identifier
           delete container.byId[id];
@@ -192,11 +197,10 @@ const $inbox = defineStore("inbox", {
         });
 
         // Emit IPC updated event
-        // TODO: wrong ID given now, update spec here. (need to update how \
-        //   views handle that)
         EventBus.emit("message:updated", {
           jid,
-          message: existingMessage
+          message: existingMessage,
+          original: originalMessage
         } as EventMessageGeneric);
 
         // Mark as updated
