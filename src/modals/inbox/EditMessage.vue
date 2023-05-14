@@ -11,7 +11,7 @@
 <template lang="pug">
 base-modal(
   @close="$emit('close')"
-  @confirm="$emit('edit', context, editedText)"
+  @confirm="onConfirm"
   confirm-label="Edit Message"
   class="m-edit-message"
   size="large"
@@ -64,6 +64,22 @@ export default {
   created() {
     // Assign initial model value
     this.editedText = this.originalText;
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onConfirm(): void {
+      if (this.editedText) {
+        if (this.editedText !== this.originalText) {
+          // Messages are different, therefore consider as edition
+          this.$emit("edit", this.context, this.editedText);
+        } else {
+          // Messages are the same, therefore consider as close
+          this.$emit("close");
+        }
+      }
+    }
   }
 };
 </script>
