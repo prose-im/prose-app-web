@@ -574,14 +574,13 @@ export default {
     ): void {
       const frameRuntime = this.frame();
 
-      // Edit in view
-      // TODO: move this to a store/factory? (w/ a message:edited event)
-      const wasUpdated = frameRuntime?.MessagingStore.update(messageId, {
+      // Update in store
+      const wasUpdated = Store.$inbox.updateMessage(this.jid, {
+        id: messageId,
         type: messageType,
         content: text
       });
 
-      // TODO: edit from store
       // TODO: send edit order to protocol
 
       // Acknowledge edition
@@ -609,11 +608,9 @@ export default {
     },
 
     onModalRemoveMessageRemove({ messageId }: { messageId: string }): void {
-      // Remove from view
-      // TODO: move this to a store/factory? (w/ a message:retracted event)
-      const wasRemoved = this.frame()?.MessagingStore.retract(messageId);
+      // Remove from store
+      const wasRemoved = Store.$inbox.retractMessage(this.jid, messageId);
 
-      // TODO: remove from store
       // TODO: send removal order to protocol
 
       // Acknowledge removal

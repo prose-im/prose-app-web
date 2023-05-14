@@ -135,30 +135,11 @@ const $inbox = defineStore("inbox", {
           throw new Error("Cannot insert a message with no identifier");
         }
 
-        // Insert or update message
-        const existingMessage = container.byId[message.id] || null;
+        // Attempt to update first?
+        const wasUpdated = this.updateMessage(jid, message);
 
-        if (existingMessage !== null) {
-          this.$patch(() => {
-            merge(existingMessage, message);
-
-            // TODO: remove temporary fix of lost reference when store is \
-            //   restored
-            const foundListMessage = container.list.find(listMessage => {
-              return listMessage.id === existingMessage.id;
-            });
-
-            if (foundListMessage) {
-              merge(foundListMessage, message);
-            }
-          });
-
-          // Emit IPC updated event
-          EventBus.emit("message:updated", {
-            jid,
-            message: existingMessage
-          } as EventMessageGeneric);
-        } else {
+        // Should insert message? (does not exist)
+        if (wasUpdated !== true) {
           this.$patch(() => {
             container.byId[message.id] = message;
             container.list.push(message);
@@ -173,7 +154,46 @@ const $inbox = defineStore("inbox", {
       });
     },
 
-    retractMessage(jid: JID, id: string) {
+    updateMessage(jid: JID, message: InboxEntryMessage): boolean {
+      const container = this.assert(jid).messages;
+
+      if (!message.id) {
+        throw new Error("Cannot update a message with no identifier");
+      }
+
+      // Acquire message from store
+      const existingMessage = container.byId[message.id] || null;
+
+      if (existingMessage !== null) {
+        this.$patch(() => {
+          merge(existingMessage, message);
+
+          // TODO: remove temporary fix of lost reference when store is \
+          //   restored
+          const foundListMessage = container.list.find(listMessage => {
+            return listMessage.id === existingMessage.id;
+          });
+
+          if (foundListMessage) {
+            merge(foundListMessage, message);
+          }
+        });
+
+        // Emit IPC updated event
+        EventBus.emit("message:updated", {
+          jid,
+          message: existingMessage
+        } as EventMessageGeneric);
+
+        // Mark as updated
+        return true;
+      }
+
+      // Mark as non-updated
+      return false;
+    },
+
+    retractMessage(jid: JID, id: string): boolean {
       const container = this.assert(jid).messages;
 
       // Acquire message from store
@@ -201,7 +221,13 @@ const $inbox = defineStore("inbox", {
           jid,
           message: existingMessage
         } as EventMessageGeneric);
+
+        // Mark as retracted
+        return true;
       }
+
+      // Mark as non-retracted
+      return false;
     },
 
     setStatesChatstate(jid: JID, chatstate: MessageChatState) {
