@@ -53,6 +53,7 @@ class BrokerModuleConnection extends BrokerModule {
   sendPing(): void {
     // XEP-0199: XMPP Ping
     // https://xmpp.org/extensions/xep-0199.html
+
     this._client.emit($iq({ type: IQType.Get }).c("ping", { xmlns: NS_PING }));
 
     logger.info("Sent ping to server");

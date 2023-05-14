@@ -63,6 +63,7 @@ class BrokerModuleMAM extends BrokerModule {
   ): Promise<LoadMessagesResponse> {
     // XEP-0313: Message Archive Management
     // https://xmpp.org/extensions/xep-0313.html
+
     const stanza = $iq({ type: IQType.Set, id: xmppID() });
 
     // Append query

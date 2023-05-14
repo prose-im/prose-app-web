@@ -91,6 +91,7 @@ class BrokerModuleMessage extends BrokerModule {
   ): void {
     // XEP-0308: Last Message Correction
     // https://xmpp.org/extensions/xep-0308.html
+
     this._client.emit(
       $msg({ id: ids.replacement || xmppID(), to: to.toString() })
         .c("body")
@@ -108,6 +109,7 @@ class BrokerModuleMessage extends BrokerModule {
   retractMessage(id: MessageID, to: JID): void {
     // XEP-0424: Message Retraction
     // https://xmpp.org/extensions/xep-0424.html
+
     this._client.emit(
       $msg({ to: to.toString(), type: MessageType.Chat })
         .c("body")
@@ -128,6 +130,7 @@ class BrokerModuleMessage extends BrokerModule {
   sendChatState(to: JID, state: MessageChatState): void {
     // XEP-0085: Chat State Notifications
     // https://xmpp.org/extensions/xep-0085.html
+
     this._client.emit(
       $msg({ to: to.toString(), type: MessageType.Chat }).c(state, {
         xmlns: NS_CHAT_STATES
@@ -140,6 +143,7 @@ class BrokerModuleMessage extends BrokerModule {
   sendReactions(id: MessageID, to: JID, reactions: Set<MessageReaction>): void {
     // XEP-0444: Message Reactions
     // https://xmpp.org/extensions/xep-0444.html
+
     const stanza = $msg({ to: to.toString(), type: MessageType.Chat });
 
     // Append reactions
@@ -170,6 +174,7 @@ class BrokerModuleMessage extends BrokerModule {
   async setMessageCarbonsEnabled(enabled: boolean): Promise<void> {
     // XEP-0280: Message Carbons
     // https://xmpp.org/extensions/xep-0280.html
+
     const state = enabled === true ? "enable" : "disable";
 
     logger.info(`Will toggle message carbons to state: ${state}`);

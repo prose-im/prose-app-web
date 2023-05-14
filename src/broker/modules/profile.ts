@@ -90,6 +90,7 @@ class BrokerModuleProfile extends BrokerModule {
   async loadVCard(jid: JID): Promise<LoadVCardResponse> {
     // XEP-0292: vCard4 Over XMPP
     // https://xmpp.org/extensions/xep-0292.html
+
     logger.info(`Will load vCard profile for: '${jid}'`);
 
     const response = await this._client.request(
@@ -104,6 +105,7 @@ class BrokerModuleProfile extends BrokerModule {
   async loadLastActivity(fullJID: JID): Promise<LoadLastActivityResponse> {
     // XEP-0012: Last Activity
     // https://xmpp.org/extensions/xep-0012.html
+
     logger.info(`Will load last activity for: '${fullJID}'`);
 
     const response = await this._client.request(
@@ -118,6 +120,7 @@ class BrokerModuleProfile extends BrokerModule {
   async loadEntityTime(fullJID: JID): Promise<LoadEntityTimeResponse> {
     // XEP-0202: Entity Time
     // https://xmpp.org/extensions/xep-0202.html
+
     logger.info(`Will load entity time for: '${fullJID}'`);
 
     const response = await this._client.request(
@@ -135,6 +138,7 @@ class BrokerModuleProfile extends BrokerModule {
   ): Promise<LoadAvatarDataResponse | void> {
     // XEP-0084: User Avatar
     // https://xmpp.org/extensions/xep-0084.html
+
     logger.info(`Will load avatar for: '${jid}'`);
 
     const response = await this._client.request(
