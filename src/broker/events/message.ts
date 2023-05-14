@@ -21,6 +21,7 @@ import {
   NS_CHAT_STATES,
   NS_REACTIONS,
   NS_FASTEN,
+  NS_MESSAGE_CORRECT,
   NS_CARBONS,
   NS_MAM,
   NS_PUBSUB_EVENT,
@@ -43,6 +44,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
     [NS_CHAT_STATES]: this.__chatState,
     [NS_REACTIONS]: this.__reactions,
     [NS_FASTEN]: this.__fasten,
+    [NS_MESSAGE_CORRECT]: this.__messageCorrect,
     [NS_CARBONS]: this.__carbons,
     [NS_MAM]: this.__mam,
     [NS_PUBSUB_EVENT]: this.__pubsubEvent
@@ -85,6 +87,29 @@ class BrokerEventMessage extends BrokerEventIngestor {
       if (element.has("retract").length > 0) {
         this.__handleFastenRetract(fromJID, id);
       }
+    }
+  }
+
+  private __messageCorrect(stanza: Cash, element: Cash): void {
+    // XEP-0308: Last Message Correction
+    // https://xmpp.org/extensions/xep-0308.html
+
+    const from = stanza.attr("from") || null,
+      replaceId = element.attr("id") || null,
+      bodyText = stanza.find("body").first().text() || "";
+
+    if (from !== null && replaceId !== null && bodyText) {
+      logger.info(`Correcting message #${replaceId} from: '${from || "?"}'`);
+
+      // Read body text
+      const fromJID = jid(from).bare();
+
+      // Update message in store
+      // TODO: handle different message types
+      Store.$inbox.updateMessage(fromJID, replaceId, {
+        id: stanza.attr("id") || xmppID(),
+        content: bodyText
+      });
     }
   }
 
@@ -160,26 +185,21 @@ class BrokerEventMessage extends BrokerEventIngestor {
   ): void {
     const from = message.attr("from") || null,
       to = message.attr("to") || null,
-      bodyElement = message.find("body").first();
+      bodyText = message.find("body").first().text() || "";
 
     // Check if message should be ignored
     // Conditions:
     //  - Retraction message
-    const shouldIgnore = message.has("retract").length > 0 ? true : false;
+    const shouldIgnore =
+      message.has("retract, replace").length > 0 ? true : false;
 
     // Handle message with body?
-    if (
-      from !== null &&
-      to !== null &&
-      bodyElement.length > 0 &&
-      shouldIgnore !== true
-    ) {
-      logger.info(`Processing message from: '${from || "?"}'`);
+    if (from !== null && to !== null && bodyText && shouldIgnore !== true) {
+      logger.info(`Inserting message from: '${from || "?"}'`);
 
       // Read body text
       const fromJID = jid(from).bare(),
-        toJID = jid(to).bare(),
-        bodyText = bodyElement.text();
+        toJID = jid(to).bare();
 
       // Acquire store target JID
       const storeJID =
