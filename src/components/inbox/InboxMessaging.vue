@@ -611,10 +611,12 @@ export default {
       // Remove from store
       const wasRemoved = Store.$inbox.retractMessage(this.jid, messageId);
 
-      // TODO: send removal order to protocol
-
-      // Acknowledge removal
+      // Message removed in store? Proceed actual network removal & acknowledge.
       if (wasRemoved === true) {
+        // Send removal to network
+        Broker.$chat.retractMessage(messageId, this.jid);
+
+        // Acknowledge removal
         BaseAlert.info("Message removed", "The message has been deleted");
       } else {
         BaseAlert.error(
