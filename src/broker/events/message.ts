@@ -74,7 +74,18 @@ class BrokerEventMessage extends BrokerEventIngestor {
   private __fasten(stanza: Cash, element: Cash): void {
     // XEP-0422: Message Fastening
     // https://xmpp.org/extensions/xep-0422.html
-    // TODO
+
+    const from = stanza.attr("from") || null,
+      id = element.attr("id") || null;
+
+    if (from !== null && id !== null) {
+      const fromJID = jid(from).bare();
+
+      // Check if should retract message?
+      if (element.has("retract").length > 0) {
+        this.__handleFastenRetract(fromJID, id);
+      }
+    }
   }
 
   private __carbons(stanza: Cash, element: Cash): void {
@@ -151,8 +162,18 @@ class BrokerEventMessage extends BrokerEventIngestor {
       to = message.attr("to") || null,
       bodyElement = message.find("body").first();
 
+    // Check if message should be ignored
+    // Conditions:
+    //  - Retraction message
+    const shouldIgnore = message.has("retract").length > 0 ? true : false;
+
     // Handle message with body?
-    if (from !== null && to !== null && bodyElement.length > 0) {
+    if (
+      from !== null &&
+      to !== null &&
+      bodyElement.length > 0 &&
+      shouldIgnore !== true
+    ) {
       logger.info(`Processing message from: '${from || "?"}'`);
 
       // Read body text
@@ -178,6 +199,23 @@ class BrokerEventMessage extends BrokerEventIngestor {
         from: fromJID.toString(),
         content: bodyText
       });
+    }
+  }
+
+  private __handleFastenRetract(fromJID: JID, messageId: string): void {
+    // XEP-0424: Message Retraction
+    // https://xmpp.org/extensions/xep-0424.html
+
+    // Retract message from store
+    const wasRemoved = Store.$inbox.retractMessage(fromJID, messageId);
+
+    if (wasRemoved === true) {
+      logger.info(`Removed message #${messageId} from: '${fromJID || "?"}'`);
+    } else {
+      logger.warn(
+        `Did not remove message #${messageId} from: '${fromJID || "?"}', ` +
+          `as it does not exist in store (at this point in time?)`
+      );
     }
   }
 
