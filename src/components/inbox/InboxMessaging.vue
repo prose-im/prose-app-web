@@ -68,6 +68,7 @@
 <script lang="ts">
 // NPM
 import { shallowRef, PropType } from "vue";
+import xmppID from "@xmpp/id";
 import { jid, JID } from "@xmpp/jid";
 import {
   Messaging as MessagingRuntime,
@@ -574,17 +575,25 @@ export default {
     ): void {
       const frameRuntime = this.frame();
 
+      // Generate new message ID
+      const updatedMessageId = xmppID();
+
       // Update in store
-      const wasUpdated = Store.$inbox.updateMessage(this.jid, {
-        id: messageId,
+      const wasUpdated = Store.$inbox.updateMessage(this.jid, messageId, {
+        id: updatedMessageId,
         type: messageType,
         content: text
       });
 
-      // TODO: send edit order to protocol
-
-      // Acknowledge edition
+      // Message updated in store? Proceed actual network edit & acknowledge
       if (wasUpdated === true) {
+        // Send update to network
+        Broker.$chat.updateMessage(this.jid, text, {
+          original: messageId,
+          replacement: updatedMessageId
+        });
+
+        // Acknowledge update
         BaseAlert.info("Message edited", "The message has been updated");
       } else {
         BaseAlert.error(
@@ -611,7 +620,7 @@ export default {
       // Remove from store
       const wasRemoved = Store.$inbox.retractMessage(this.jid, messageId);
 
-      // Message removed in store? Proceed actual network removal & acknowledge.
+      // Message removed in store? Proceed actual network removal & acknowledge
       if (wasRemoved === true) {
         // Send removal to network
         Broker.$chat.retractMessage(messageId, this.jid);
@@ -752,6 +761,11 @@ export default {
 
     onStoreMessageUpdated(event: EventMessageGeneric): void {
       if (this.jid.equals(event.jid) === true) {
+        // TODO
+        console.error(
+          `==> update message for: ${event.jid} w/ content: ${event.message.content}`
+        );
+
         // Update in view
         this.frame()?.MessagingStore.update(event.message.id, event.message);
       }

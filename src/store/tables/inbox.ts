@@ -136,7 +136,7 @@ const $inbox = defineStore("inbox", {
         }
 
         // Attempt to update first?
-        const wasUpdated = this.updateMessage(jid, message);
+        const wasUpdated = this.updateMessage(jid, message.id, message);
 
         // Should insert message? (does not exist)
         if (wasUpdated !== true) {
@@ -154,7 +154,7 @@ const $inbox = defineStore("inbox", {
       });
     },
 
-    updateMessage(jid: JID, message: InboxEntryMessage): boolean {
+    updateMessage(jid: JID, id: string, message: InboxEntryMessage): boolean {
       const container = this.assert(jid).messages;
 
       if (!message.id) {
@@ -162,11 +162,20 @@ const $inbox = defineStore("inbox", {
       }
 
       // Acquire message from store
-      const existingMessage = container.byId[message.id] || null;
+      const existingMessage = container.byId[id] || null;
 
       if (existingMessage !== null) {
         this.$patch(() => {
+          // Delete existing message at previous identifier
+          delete container.byId[id];
+
           merge(existingMessage, message);
+
+          // Update existing message identifier (w/ replacement identifier)
+          existingMessage.id = message.id;
+
+          // Store existing message at new identifier
+          container.byId[message.id] = existingMessage;
 
           // TODO: remove temporary fix of lost reference when store is \
           //   restored
@@ -176,10 +185,15 @@ const $inbox = defineStore("inbox", {
 
           if (foundListMessage) {
             merge(foundListMessage, message);
+
+            // Update found list message identifier (w/ replacement identifier)
+            foundListMessage.id = message.id;
           }
         });
 
         // Emit IPC updated event
+        // TODO: wrong ID given now, update spec here. (need to update how \
+        //   views handle that)
         EventBus.emit("message:updated", {
           jid,
           message: existingMessage
