@@ -19,10 +19,10 @@ layout-toolbar(
       base-action(
         @click="onActionFormattingClick"
         :active="isActionFormattingPopoverVisible"
+        :disabled="true || isFormDisabled"
         class="a-inbox-form__action"
         icon="textformat.alt"
         size="18px"
-        disabled
       )
         base-popover-list(
           v-if="isActionFormattingPopoverVisible"
@@ -48,18 +48,19 @@ layout-toolbar(
           v-model="message"
           @keystroke="onKeystroke"
           @submit="onSubmit"
-          :disabled="!session.connected"
+          :disabled="isFormDisabled"
           :placeholder="fieldComposePlaceholder"
           class="a-inbox-form__compose-field"
           type="textarea"
           name="message"
           size="large"
+          ref="message"
           submittable
           autogrow
         )
 
         base-button(
-          :disabled="!session.connected"
+          :disabled="isFormDisabled"
           size="custom"
           type="submit"
           class="a-inbox-form__compose-send"
@@ -80,15 +81,16 @@ layout-toolbar(
   )
     layout-actions
       base-action(
+        :disabled="true || isFormDisabled"
         class="a-inbox-form__action"
         icon="paperclip"
         size="18px"
-        disabled
       )
 
       base-action(
         @click="onActionEmojisClick"
         :active="isActionEmojisPopoverVisible"
+        :disabled="isFormDisabled"
         class="a-inbox-form__action"
         icon="face.smiling"
         size="18px"
@@ -98,7 +100,9 @@ layout-toolbar(
           v-click-away="onActionEmojisPopoverClickAway"
           class="a-inbox-form__action-popover a-inbox-form__action-popover--right"
         )
-          tool-emoji-picker
+          tool-emoji-picker(
+            @pick="onEmojiPick"
+          )
 </template>
 
 <!-- **********************************************************************
@@ -116,6 +120,7 @@ import {
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
 import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
+import FormField from "@/components/form/FormField.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -166,6 +171,10 @@ export default {
 
     fieldComposePlaceholder(): string {
       return `Message ${this.rosterName}`;
+    },
+
+    isFormDisabled(): boolean {
+      return !this.session.connected ? true : false;
     },
 
     session(): typeof Store.$session {
@@ -234,6 +243,22 @@ export default {
     onActionEmojisPopoverClickAway(): void {
       // Close popover
       this.isActionEmojisPopoverVisible = false;
+    },
+
+    onEmojiPick(glyph: string): void {
+      // Insert emoji glyph into message field
+      // Notice: prefix with a separator space if field is non-empty.
+      if (this.message && this.message[this.message.length - 1] !== " ") {
+        this.message += " ";
+      }
+
+      this.message += glyph;
+
+      // Close emoji popover
+      this.isActionEmojisPopoverVisible = false;
+
+      // Focus on input
+      (this.$refs.message as typeof FormField).focusField();
     },
 
     onKeystroke(value: string): void {
