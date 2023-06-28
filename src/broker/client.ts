@@ -61,6 +61,8 @@ interface ConnectionWithConnected extends Strophe.Connection {
 
 const REQUEST_TIMEOUT_DEFAULT = 10000; // 10 seconds
 
+const RECONNECT_INTERVAL = 5000; // 5 seconds
+
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
@@ -72,6 +74,7 @@ class BrokerClient {
 
   private __connection?: Strophe.Connection;
   private __connectLifecycle?: ConnectLifecycle;
+  private __credentials?: { jid: JID; password: string };
   private __boundReceivers: Array<StropheHandler> = [];
   private __pendingRequests: { [id: string]: PendingRequest } = {};
 
@@ -109,31 +112,14 @@ class BrokerClient {
       throw new Error("Another connection already exist");
     }
 
-    // Create connection
-    this.__connection = new Strophe.Connection(relayHost, {
-      protocol: "wss"
-    });
+    // Store credentials
+    this.__credentials = {
+      jid,
+      password
+    };
 
-    // Bind handlers
-    this.__connection.rawInput = this.__onInput.bind(this);
-    this.__connection.rawOutput = this.__onOutput.bind(this);
-
-    await new Promise((resolve, reject) => {
-      // Assign lifecycle handlers
-      this.__connectLifecycle = {
-        success: resolve,
-        failure: reject
-      };
-
-      // Connect to server
-      this.__connection?.connect(
-        jid.toString(),
-        password,
-        this.__onConnect.bind(this)
-      );
-    }).catch(error => {
-      throw error;
-    });
+    // Connect to account
+    await this.__connect(relayHost, jid, password);
   }
 
   emit(builder: Strophe.Builder) {
@@ -218,9 +204,32 @@ class BrokerClient {
         this.__cancelPendingRequests();
         this.__raiseConnectLifecycle(new Error("Disconnected from server"));
 
-        // Clear context & clean connection
-        this.__clearContext();
+        // Clear connection
         this.__clearConnection();
+
+        // Disconnect for good? (was not connected before)
+        if (this.__credentials === undefined) {
+          // Clear context
+          this.__clearContext();
+        } else {
+          logger.debug("Reconnecting in a few moments…");
+
+          // Pause context
+          this.__pauseContext();
+
+          // Schedule reconnect
+          const credentials = this.__credentials;
+
+          setTimeout(() => {
+            logger.debug("Reconnecting now…");
+
+            this.__connect(
+              CONFIG.hosts.websocket,
+              credentials.jid,
+              credentials.password
+            );
+          }, RECONNECT_INTERVAL);
+        }
 
         break;
       }
@@ -322,10 +331,52 @@ class BrokerClient {
     Store.$session.setConnected(true);
   }
 
+  private __pauseContext(): void {
+    // Mark as disconnected (this might be temporary)
+    Store.$session.setConnected(false);
+  }
+
   private __clearContext(): void {
+    // Mark as disconnected (this is permanent)
     Store.$session.setConnected(false);
 
+    // Unassign JID
     this.jid = undefined;
+
+    // Void stored credentials
+    this.__credentials = undefined;
+  }
+
+  private async __connect(
+    relayHost: string,
+    jid: JID,
+    password: string
+  ): Promise<void> {
+    // Create connection
+    this.__connection = new Strophe.Connection(relayHost, {
+      protocol: "wss"
+    });
+
+    // Bind handlers
+    this.__connection.rawInput = this.__onInput.bind(this);
+    this.__connection.rawOutput = this.__onOutput.bind(this);
+
+    await new Promise((resolve, reject) => {
+      // Assign lifecycle handlers
+      this.__connectLifecycle = {
+        success: resolve,
+        failure: reject
+      };
+
+      // Connect to server
+      this.__connection?.connect(
+        jid.toString(),
+        password,
+        this.__onConnect.bind(this)
+      );
+    }).catch(error => {
+      throw error;
+    });
   }
 
   private __bindReceivers(): void {
@@ -364,7 +415,7 @@ class BrokerClient {
 
   private __unbindReceivers(): void {
     // Anything bound? Unbind all receivers
-    if (this.__boundReceivers.length === 0) {
+    if (this.__boundReceivers.length > 0) {
       // Unbind all receivers
       while (this.__boundReceivers.length > 0) {
         this.__connection?.deleteHandler(this.__boundReceivers.pop());
