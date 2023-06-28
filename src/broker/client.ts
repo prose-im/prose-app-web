@@ -218,8 +218,9 @@ class BrokerClient {
         this.__cancelPendingRequests();
         this.__raiseConnectLifecycle(new Error("Disconnected from server"));
 
-        // Clear context
+        // Clear context & clean connection
         this.__clearContext();
+        this.__clearConnection();
 
         break;
       }
@@ -246,6 +247,9 @@ class BrokerClient {
         // Trigger connection failure hooks
         this.__raiseConnectLifecycle(new Error("Failed to authenticate"));
 
+        // Clean connection
+        this.__clearConnection();
+
         break;
       }
 
@@ -256,6 +260,9 @@ class BrokerClient {
         // Trigger connection failure hooks
         this.__raiseConnectLifecycle(new Error("Failed to connect"));
 
+        // Clean connection
+        this.__clearConnection();
+
         break;
       }
 
@@ -265,6 +272,9 @@ class BrokerClient {
 
         // Trigger connection failure hooks
         this.__raiseConnectLifecycle(new Error("Connection timed out"));
+
+        // Clean connection
+        this.__clearConnection();
 
         break;
       }
@@ -296,6 +306,14 @@ class BrokerClient {
     // TODO: this should not be done here, some kind of event bus w/ a hook is \
     //   cleaner than that. This is a temporary solution.
     Broker.$connection.sendInitialPresence();
+  }
+
+  private __clearConnection(): void {
+    if (this.__connection) {
+      this.__connection.disconnect("closed");
+
+      this.__connection = undefined;
+    }
   }
 
   private __setupContext(): void {
