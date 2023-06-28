@@ -77,6 +77,7 @@ class BrokerClient {
   private __credentials?: { jid: JID; password: string };
   private __boundReceivers: Array<StropheHandler> = [];
   private __pendingRequests: { [id: string]: PendingRequest } = {};
+  private __reconnectTimeout?: ReturnType<typeof setTimeout>;
 
   constructor() {
     // Initialize event ingestors
@@ -120,6 +121,10 @@ class BrokerClient {
 
     // Connect to account
     await this.__connect(relayHost, jid, password);
+  }
+
+  logout(): void {
+    this.__connection?.disconnect("logout");
   }
 
   emit(builder: Strophe.Builder) {
@@ -220,14 +225,19 @@ class BrokerClient {
           // Schedule reconnect
           const credentials = this.__credentials;
 
-          setTimeout(() => {
+          this.__reconnectTimeout = setTimeout(() => {
+            delete this.__reconnectTimeout;
+
             logger.debug("Reconnecting now…");
 
-            this.__connect(
-              CONFIG.hosts.websocket,
-              credentials.jid,
-              credentials.password
-            );
+            // TODO: implement another way, cause it looks like a bug in \
+            //   Strophe.js is triggering a flood of DISCONNECTED event on the \
+            //   second reconnect attempt, and subsequent ones.
+            // this.__connect(
+            //   CONFIG.hosts.websocket,
+            //   credentials.jid,
+            //   credentials.password
+            // );
           }, RECONNECT_INTERVAL);
         }
 
@@ -318,6 +328,10 @@ class BrokerClient {
   }
 
   private __clearConnection(): void {
+    // Cancel timers (that may re-create a connection)
+    this.__cancelScheduledReconnectTimer();
+
+    // Disconnect and void the connection
     if (this.__connection) {
       this.__connection.disconnect("closed");
 
@@ -479,6 +493,12 @@ class BrokerClient {
     // Cancel all pending requests
     for (const id in this.__pendingRequests) {
       this.__handlePendingRequest(id);
+    }
+  }
+
+  private __cancelScheduledReconnectTimer(): void {
+    if (this.__reconnectTimeout !== undefined) {
+      clearTimeout(this.__reconnectTimeout);
     }
   }
 }
