@@ -74,7 +74,8 @@ const $account = defineStore("account", {
     },
 
     async logout() {
-      // TODO: disconnect from broker
+      // Disconnect from server
+      Broker.client.logout();
 
       // Clear stored credentials
       // Notice: retain last JID for later quick-login
