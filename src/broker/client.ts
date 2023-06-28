@@ -195,18 +195,21 @@ class BrokerClient {
 
   private __onConnect(status: Strophe.Status): void {
     switch (status) {
+      // [CONNECTING] The connection is currently being made
       case Strophe.Status.CONNECTING: {
         logger.debug("Connecting…");
 
         break;
       }
 
+      // [DISCONNECTING] The connection is currently being terminated
       case Strophe.Status.DISCONNECTING: {
         logger.debug("Disconnecting…");
 
         break;
       }
 
+      // [DISCONNECTED] The connection has been terminated
       case Strophe.Status.DISCONNECTED: {
         logger.warn("Disconnected");
 
@@ -221,6 +224,7 @@ class BrokerClient {
         break;
       }
 
+      // [CONNECTED] The connection has succeeded
       case Strophe.Status.CONNECTED: {
         logger.info("Connected");
 
@@ -235,11 +239,32 @@ class BrokerClient {
         break;
       }
 
+      // [AUTHFAIL] The authentication attempt failed
+      case Strophe.Status.AUTHFAIL: {
+        logger.error("Authentication failure");
+
+        // Trigger connection failure hooks
+        this.__raiseConnectLifecycle(new Error("Failed to authenticate"));
+
+        break;
+      }
+
+      // [CONNFAIL] The connection attempt failed
       case Strophe.Status.CONNFAIL: {
         logger.error("Connection failure");
 
         // Trigger connection failure hooks
-        this.__raiseConnectLifecycle(new Error("Failed to authenticate"));
+        this.__raiseConnectLifecycle(new Error("Failed to connect"));
+
+        break;
+      }
+
+      // [CONNTIMEOUT] The connection has timed out
+      case Strophe.Status.CONNTIMEOUT: {
+        logger.error("Connection timed out");
+
+        // Trigger connection failure hooks
+        this.__raiseConnectLifecycle(new Error("Connection timed out"));
 
         break;
       }
