@@ -29,13 +29,28 @@ import Store from "@/store";
 import Broker from "@/broker";
 
 /**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
+
+enum NavigateState {
+  // Forwards direction.
+  Forwards = "forwards",
+  // Backwards direction.
+  Backwards = "backwards"
+}
+
+/**************************************************************************
  * ROUTER
  * ************************************************************************* */
 
 class Router {
   private readonly __router: VueRouter;
 
+  private __lastNavigateStatePosition = 0;
+  private __pendingNavigateState: NavigateState | null = null;
+
   constructor() {
+    // Create router
     this.__router = createRouter({
       history: createWebHistory(),
 
@@ -84,6 +99,9 @@ class Router {
         { path: "/:path(.*)*", redirect: "/" }
       ]
     });
+
+    // Bind router events
+    this.__bindEvents(this.__router);
   }
 
   bind(app: App): void {
@@ -120,6 +138,77 @@ class Router {
           // Ignore authentication errors here
         });
     }
+  }
+
+  private __bindEvents(router: VueRouter) {
+    // Initialize initial navigation position
+    if (history.state !== null) {
+      this.__lastNavigateStatePosition = history.state.position;
+    }
+
+    // Bind to window history events
+    window.addEventListener("popstate", event => {
+      if (event.state !== null) {
+        // Reset pending navigation state first
+        this.__pendingNavigateState = null;
+
+        // Assign pending navigation state (as needed)
+        if (event.state.position < this.__lastNavigateStatePosition) {
+          this.__pendingNavigateState = NavigateState.Backwards;
+        } else if (event.state.position > this.__lastNavigateStatePosition) {
+          this.__pendingNavigateState = NavigateState.Forwards;
+        }
+
+        // Handle history change straight away
+        // Notice: this cannot be done in 'router.afterEach' due to the the \
+        //   'popstate' event firing AFTER 'router.afterEach' fires, therefore \
+        //   the marker has no time to be set.
+        switch (this.__pendingNavigateState) {
+          case NavigateState.Backwards: {
+            // Move to previous in history
+            Store.$history.movePrevious();
+
+            break;
+          }
+
+          case NavigateState.Forwards: {
+            // Move to next in history
+            Store.$history.moveNext();
+
+            break;
+          }
+        }
+
+        // Assign new position in state
+        this.__lastNavigateStatePosition = event.state.position;
+      }
+    });
+
+    history.pushState = new Proxy(history.pushState, {
+      apply: (target, self, data: any) => {
+        // Update navigation state (always reset, as we are navigating)
+        this.__pendingNavigateState = null;
+        this.__lastNavigateStatePosition = data[0].position;
+
+        // Trigger original 'pushState'
+        return target.apply(self, data);
+      }
+    });
+
+    // Bind to router events
+    router.afterEach(to => {
+      // Update current history?
+      if (to && to.name) {
+        // No navigation state pending, meaning the route changes by pushing \
+        //   the state.
+        if (this.__pendingNavigateState === null) {
+          Store.$history.setCurrent(to.name as string, to.params);
+        }
+      }
+
+      // Reset pending navigation state
+      this.__pendingNavigateState = null;
+    });
   }
 }
 

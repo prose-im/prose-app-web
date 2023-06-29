@@ -15,6 +15,7 @@ import { createPersistedState } from "pinia-plugin-persistedstate";
 
 // PROJECT: STORE
 import $session from "@/store/tables/session";
+import $history from "@/store/tables/history";
 import $layout from "@/store/tables/layout";
 import $account from "@/store/tables/account";
 import $avatar from "@/store/tables/avatar";
@@ -42,6 +43,7 @@ class Store {
 
   // Transient stores
   $session!: ReturnType<typeof $session>;
+  $history!: ReturnType<typeof $history>;
 
   // Permanent stores
   $layout!: ReturnType<typeof $layout>;
@@ -97,6 +99,7 @@ class Store {
   private __loadTables(): void {
     // #1. Transient stores
     this.$session = $session(this.__store);
+    this.$history = $history(this.__store);
 
     // #2. Permanent stores
     this.$layout = $layout(this.__store);

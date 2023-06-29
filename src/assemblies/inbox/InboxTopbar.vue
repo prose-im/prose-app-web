@@ -36,7 +36,7 @@ layout-toolbar(
 
       base-action(
         @click="onActionHistoryDropdownClick"
-        :disabled="!hasActionHistoryPrevious"
+        :disabled="!hasActionHistoryDropdown"
         :active="isActionHistoryPopoverVisible"
         class="a-inbox-topbar__action"
         icon="clock"
@@ -154,16 +154,24 @@ export default {
       return Store.$layout;
     },
 
+    history(): typeof Store.$history {
+      return Store.$history;
+    },
+
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
       return Store.$roster.getEntryName(this.jid);
     },
 
     hasActionHistoryPrevious(): boolean {
-      return window.history.length > 0 ? true : false;
+      return this.history.adjacent.previous.length > 0;
     },
 
     hasActionHistoryNext(): boolean {
-      return window.history.state.forward ? true : false;
+      return this.history.adjacent.next.length > 0;
+    },
+
+    hasActionHistoryDropdown(): boolean {
+      return this.hasActionHistoryPrevious || this.hasActionHistoryNext;
     },
 
     actionHistoryPopoverItems(): Array<PopoverItem> {
