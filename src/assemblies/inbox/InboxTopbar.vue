@@ -201,7 +201,7 @@ export default {
       }
 
       // Build popover items
-      return Array.from(historyRawJIDs)
+      const items: Array<PopoverItem> = Array.from(historyRawJIDs)
         .map(historyRawJID => jid(historyRawJID))
         .map(historyJID => {
           return {
@@ -213,6 +213,18 @@ export default {
             }
           };
         });
+
+      if (items.length === 0) {
+        // Append empty indicator?
+        items.push({
+          type: PopoverItemType.Button,
+          label: "No history",
+          color: "lighter",
+          disabled: true
+        });
+      }
+
+      return items;
     }
   },
 
