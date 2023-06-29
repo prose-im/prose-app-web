@@ -17,30 +17,32 @@ layout-toolbar(
   )
     layout-actions
       base-action(
+        @click="onActionHistoryPreviousClick"
+        :disabled="!hasActionHistoryPrevious"
         class="a-inbox-topbar__action"
         icon="chevron.left"
         context="grey"
         size="14px"
-        disabled
       )
 
       base-action(
+        @click="onActionHistoryNextClick"
+        :disabled="!hasActionHistoryNext"
         class="a-inbox-topbar__action"
         icon="chevron.right"
         context="grey"
         size="14px"
-        disabled
       )
 
       base-action(
-        @click="onActionHistoryClick"
+        @click="onActionHistoryDropdownClick"
+        :disabled="!hasActionHistoryPrevious"
         :active="isActionHistoryPopoverVisible"
         class="a-inbox-topbar__action"
         icon="clock"
         context="grey"
         size="18px"
         dropdown
-        disabled
       )
         base-popover-list(
           v-if="isActionHistoryPopoverVisible"
@@ -156,6 +158,14 @@ export default {
       return Store.$roster.getEntryName(this.jid);
     },
 
+    hasActionHistoryPrevious(): boolean {
+      return window.history.length > 0 ? true : false;
+    },
+
+    hasActionHistoryNext(): boolean {
+      return window.history.state.forward ? true : false;
+    },
+
     actionHistoryPopoverItems(): Array<PopoverItem> {
       return [
         {
@@ -170,11 +180,6 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onActionHistoryClick(): void {
-      // Toggle popover
-      this.isActionHistoryPopoverVisible = !this.isActionHistoryPopoverVisible;
-    },
-
     onActionHistoryPopoverClickAway(): void {
       // Close popover
       this.isActionHistoryPopoverVisible = false;
@@ -182,6 +187,19 @@ export default {
 
     onActionUserinfoClick(): void {
       Store.$layout.toggleInboxUserinfoVisible();
+    },
+
+    onActionHistoryPreviousClick(): void {
+      this.$router.go(-1);
+    },
+
+    onActionHistoryNextClick(): void {
+      this.$router.go(1);
+    },
+
+    onActionHistoryDropdownClick(): void {
+      // Toggle popover
+      this.isActionHistoryPopoverVisible = !this.isActionHistoryPopoverVisible;
     }
   }
 };
