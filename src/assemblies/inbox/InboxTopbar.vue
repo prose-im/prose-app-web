@@ -206,6 +206,7 @@ export default {
         .map(historyJID => {
           return {
             type: PopoverItemType.Button,
+            icon: "clock",
             label: Store.$roster.getEntryName(historyJID),
 
             click: () => {
