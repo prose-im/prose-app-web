@@ -120,7 +120,7 @@ layout-toolbar(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@xmpp/jid";
+import { jid, JID } from "@xmpp/jid";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -130,6 +130,9 @@ import {
   Item as PopoverItem,
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
+
+// PROJECT: STORES
+import { HistoryRoute } from "@/store/tables/history";
 
 export default {
   name: "InboxTopbar",
@@ -175,13 +178,42 @@ export default {
     },
 
     actionHistoryPopoverItems(): Array<PopoverItem> {
-      return [
-        {
-          type: PopoverItemType.Button,
-          label: "History items…",
-          color: "blue"
+      // Acquire inbox JIDs
+      const historyJIDs: Set<string> = new Set([]),
+        currentRoute = this.history.current;
+
+      for (const adjacency in this.history.adjacent) {
+        const adjacentRoutes = this.history.adjacent[adjacency];
+
+        for (let i in adjacentRoutes) {
+          const adjacentRoute = adjacentRoutes[i];
+
+          if (
+            adjacentRoute.name.startsWith("app.inbox") &&
+            adjacentRoute.params.jid
+          ) {
+            // Make sure not to push current route JID
+            if (
+              !currentRoute.name.startsWith("app.inbox") ||
+              currentRoute.params.jid !== adjacentRoute.params.jid
+            ) {
+              historyJIDs.add(adjacentRoute.params.jid);
+            }
+          }
         }
-      ];
+      }
+
+      // Build popover items
+      return Array.from(historyJIDs).map(historyJID => {
+        return {
+          type: PopoverItemType.Button,
+          label: historyJID,
+
+          click: () => {
+            this.onActionHistoryPopoverEntryClick(jid(historyJID));
+          }
+        };
+      });
     }
   },
 
@@ -191,6 +223,16 @@ export default {
     onActionHistoryPopoverClickAway(): void {
       // Close popover
       this.isActionHistoryPopoverVisible = false;
+    },
+
+    onActionHistoryPopoverEntryClick(jid: JID): void {
+      this.$router.push({
+        name: "app.inbox",
+
+        params: {
+          jid: jid.toString()
+        }
+      });
     },
 
     onActionUserinfoClick(): void {
