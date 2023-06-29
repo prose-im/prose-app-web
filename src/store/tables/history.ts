@@ -189,5 +189,4 @@ const $history = defineStore("history", {
  * EXPORTS
  * ************************************************************************* */
 
-export type { HistoryRoute };
 export default $history;

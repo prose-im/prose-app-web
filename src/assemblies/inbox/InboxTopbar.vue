@@ -131,9 +131,6 @@ import {
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
 
-// PROJECT: STORES
-import { HistoryRoute } from "@/store/tables/history";
-
 export default {
   name: "InboxTopbar",
 
@@ -179,7 +176,7 @@ export default {
 
     actionHistoryPopoverItems(): Array<PopoverItem> {
       // Acquire inbox JIDs
-      const historyJIDs: Set<string> = new Set([]),
+      const historyRawJIDs: Set<string> = new Set([]),
         currentRoute = this.history.current;
 
       for (const adjacency in this.history.adjacent) {
@@ -197,23 +194,25 @@ export default {
               !currentRoute.name.startsWith("app.inbox") ||
               currentRoute.params.jid !== adjacentRoute.params.jid
             ) {
-              historyJIDs.add(adjacentRoute.params.jid);
+              historyRawJIDs.add(adjacentRoute.params.jid);
             }
           }
         }
       }
 
       // Build popover items
-      return Array.from(historyJIDs).map(historyJID => {
-        return {
-          type: PopoverItemType.Button,
-          label: historyJID,
+      return Array.from(historyRawJIDs)
+        .map(historyRawJID => jid(historyRawJID))
+        .map(historyJID => {
+          return {
+            type: PopoverItemType.Button,
+            label: Store.$roster.getEntryName(historyJID),
 
-          click: () => {
-            this.onActionHistoryPopoverEntryClick(jid(historyJID));
-          }
-        };
-      });
+            click: () => {
+              this.onActionHistoryPopoverEntryClick(historyJID);
+            }
+          };
+        });
     }
   },
 
@@ -226,6 +225,7 @@ export default {
     },
 
     onActionHistoryPopoverEntryClick(jid: JID): void {
+      // Go to conversation
       this.$router.push({
         name: "app.inbox",
 
@@ -233,6 +233,9 @@ export default {
           jid: jid.toString()
         }
       });
+
+      // Close popover
+      this.isActionHistoryPopoverVisible = false;
     },
 
     onActionUserinfoClick(): void {
