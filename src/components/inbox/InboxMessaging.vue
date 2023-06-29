@@ -759,6 +759,9 @@ export default {
       messageId: string;
       emoji: string;
     }): void {
+      // Hide popover
+      this.hidePopover();
+
       // Generate list of reactions
       // TODO: concatenate previous w/ new reactions
       const reactions = new Set(emoji as MessageReaction);
