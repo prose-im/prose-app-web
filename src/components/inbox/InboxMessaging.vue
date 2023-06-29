@@ -104,6 +104,7 @@ import { EventAvatarGeneric } from "@/store/tables/avatar";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
+import { MessageReaction } from "@/broker/stanzas/message";
 
 // TYPES
 type StatePopoverAnchor = { x: number; y: number; height?: number };
@@ -758,8 +759,12 @@ export default {
       messageId: string;
       emoji: string;
     }): void {
-      // TODO: react to message
-      console.error("==> pick reaction for messageId = " + messageId, emoji);
+      // Generate list of reactions
+      // TODO: concatenate previous w/ new reactions
+      const reactions = new Set(emoji as MessageReaction);
+
+      // Send reaction to network
+      Broker.$chat.sendReactions(messageId, this.jid, reactions);
     },
 
     onStoreConnected(connected: boolean): void {
