@@ -106,6 +106,7 @@ import { EventAvatarGeneric } from "@/store/tables/avatar";
 import Broker from "@/broker";
 
 // TYPES
+type StatePopoverAnchor = { x: number; y: number; height?: number };
 type StatePopoverListeners = { [name: string]: (_: any) => void };
 type StatePopoverInteraction = { id: string; action: string };
 
@@ -370,7 +371,7 @@ export default {
       listeners,
       interaction
     }: {
-      anchor: { x: number; y: number; height?: number };
+      anchor: StatePopoverAnchor;
       items?: Array<PopoverItem>;
       component?: object;
       context?: object;
@@ -685,11 +686,30 @@ export default {
       }
     },
 
-    onPopoverActionsReactionClick({ messageId }: { messageId: string }): void {
-      // TODO: open reaction popover at same position as reaction button
+    onPopoverActionsReactionClick({
+      anchor,
+      interaction,
+      context
+    }: {
+      anchor: StatePopoverAnchor;
+      interaction?: StatePopoverInteraction;
+      context: { messageId: string };
+    }): void {
+      // Build listeners
+      const listeners = {
+        pick: (emoji: string) => {
+          this.onPopoverReactionsPick({ messageId: context.messageId, emoji });
+        }
+      };
 
-      // TODO: temporary alert
-      BaseAlert.warning("Not implemented");
+      // Show popover
+      this.showPopover({
+        anchor,
+        component: shallowRef(ToolEmojiPicker),
+        context,
+        listeners,
+        interaction
+      });
     },
 
     onPopoverActionsEditClick({ messageId }: { messageId: string }): void {
@@ -739,6 +759,7 @@ export default {
       emoji: string;
     }): void {
       // TODO: react to message
+      console.error("==> pick reaction for messageId = " + messageId, emoji);
     },
 
     onStoreConnected(connected: boolean): void {
@@ -810,6 +831,9 @@ export default {
           messageId: event.id
         };
 
+        // Acquire anchor
+        const anchor = event.origin.parent || event.origin.anchor;
+
         // Build popover interaction (if button origin)
         const interaction =
           event.origin.type === "button"
@@ -835,7 +859,14 @@ export default {
             type: PopoverItemType.Button,
             icon: "face.smiling",
             label: "Add reaction…",
-            click: this.onPopoverActionsReactionClick
+
+            click: () => {
+              this.onPopoverActionsReactionClick({
+                anchor,
+                interaction,
+                context
+              });
+            }
           });
 
           // Message from self? Append private actions.
@@ -869,8 +900,7 @@ export default {
 
         // Show popover
         this.showPopover({
-          anchor: event.origin.parent || event.origin.anchor,
-
+          anchor,
           items,
           context,
           interaction
