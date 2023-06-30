@@ -19,6 +19,7 @@ import Store from "@/store";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
+import BrokerBuilderReactions from "@/broker/builders/reactions";
 import {
   MessageID,
   MessageChatState,
@@ -174,6 +175,23 @@ class BrokerModuleMessage extends BrokerModule {
     }
 
     this._client.emit(stanza);
+
+    // Update reactions in store?
+    const from = this._client.jid?.bare() || null;
+
+    if (from !== null) {
+      const reactionEmojis = BrokerBuilderReactions.reduce({
+        to,
+        from,
+        messageId: id,
+        reactions: Array.from(reactions)
+      });
+
+      Store.$inbox.updateMessage(to, id, {
+        id,
+        reactions: reactionEmojis
+      });
+    }
 
     logger.info(
       `Reacted to message #${id} sent to: '${to}' with reactions:`,

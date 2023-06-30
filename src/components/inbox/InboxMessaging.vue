@@ -106,6 +106,14 @@ import { EventAvatarGeneric } from "@/store/tables/avatar";
 import Broker from "@/broker";
 import { MessageReaction } from "@/broker/stanzas/message";
 
+// ENUMERATIONS
+export enum MessageReactionMode {
+  // Add reaction.
+  Add = "add",
+  // Retract reaction.
+  Retract = "retract"
+}
+
 // TYPES
 type StatePopoverAnchor = { x: number; y: number; height?: number };
 type StatePopoverListeners = { [name: string]: (_: any) => void };
@@ -548,6 +556,65 @@ export default {
       }
     },
 
+    sendMessageReaction(
+      mode: MessageReactionMode,
+      messageId: string,
+      reaction: MessageReaction
+    ): void {
+      // Generate list of reactions
+      const reactions: Set<MessageReaction> = new Set(),
+        existingMessage = Store.$inbox.getMessage(this.jid, messageId);
+
+      if (
+        existingMessage !== undefined &&
+        existingMessage.reactions !== undefined &&
+        existingMessage.reactions.length > 0
+      ) {
+        const selfJIDRaw = this.selfJID.toString();
+
+        existingMessage.reactions.forEach(
+          (reaction: { reaction: string; authors: string[] }) => {
+            if (reaction.authors.includes(selfJIDRaw) === true) {
+              reactions.add(reaction.reaction as MessageReaction);
+            }
+          }
+        );
+      }
+
+      // Add or retract reaction? (as needed)
+      let shouldPropagate = false;
+
+      switch (mode) {
+        case MessageReactionMode.Add: {
+          if (reactions.has(reaction) === false) {
+            reactions.add(reaction);
+
+            shouldPropagate = true;
+          }
+
+          break;
+        }
+
+        case MessageReactionMode.Retract: {
+          if (reactions.has(reaction) === true) {
+            reactions.delete(reaction);
+
+            shouldPropagate = true;
+          }
+
+          break;
+        }
+      }
+
+      // Apply reaction changes?
+      if (shouldPropagate === true) {
+        // TODO: update store
+
+        // Send reaction to network
+        Broker.$chat.sendReactions(messageId, this.jid, reactions);
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onFrameLoad(): void {
@@ -762,12 +829,12 @@ export default {
       // Hide popover
       this.hidePopover();
 
-      // Generate list of reactions
-      // TODO: concatenate previous w/ new reactions
-      const reactions = new Set(emoji as MessageReaction);
-
-      // Send reaction to network
-      Broker.$chat.sendReactions(messageId, this.jid, reactions);
+      // Send message reaction
+      this.sendMessageReaction(
+        MessageReactionMode.Add,
+        messageId,
+        emoji as MessageReaction
+      );
     },
 
     onStoreConnected(connected: boolean): void {
@@ -956,7 +1023,17 @@ export default {
     onMessagingMessageReactionsReact(event: EventMessageReactionsReact): void {
       this.$log.debug("Got message reactions react", event);
 
-      // TODO: add/retract reaction to message
+      // Add or retract message reaction
+      const reactionMode =
+        event.active === false
+          ? MessageReactionMode.Retract
+          : MessageReactionMode.Add;
+
+      this.sendMessageReaction(
+        reactionMode,
+        event.id,
+        event.reaction as MessageReaction
+      );
     },
 
     onMessagingMessageHistorySeek(event: EventMessageHistorySeek): void {

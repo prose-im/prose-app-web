@@ -16,7 +16,8 @@ import xmppTime from "@xmpp/time";
 
 // PROJECT: BROKER
 import BrokerEventIngestor from "@/broker/events/ingestor";
-import { MessageChatState } from "@/broker/stanzas/message";
+import BrokerBuilderReactions from "@/broker/builders/reactions";
+import { MessageChatState, MessageReaction } from "@/broker/stanzas/message";
 import {
   NS_CHAT_STATES,
   NS_REACTIONS,
@@ -243,50 +244,24 @@ class BrokerEventMessage extends BrokerEventIngestor {
       const fromJID = jid(from).bare(),
         toJID = jid(to).bare();
 
-      // Initialize reactions w/ existing reactions from store (ie. other users)
-      const reactionsMap: { [emoji: string]: Set<string> } = {},
-        existingMessage = Store.$inbox.getMessage(toJID, id);
+      // Map list of reactions from this sending user
+      const reactionsAppend: Array<MessageReaction> = [];
 
-      if (
-        existingMessage !== undefined &&
-        existingMessage.reactions !== undefined &&
-        existingMessage.reactions.length > 0
-      ) {
-        existingMessage.reactions.forEach(existingReaction => {
-          reactionsMap[existingReaction.reaction] = new Set(
-            existingReaction.authors
-          );
-        });
-      }
-
-      // Append list of reactions from this sending user
       reactions.children("reaction").each((_, reactionNode: Element) => {
         const emoji = $(reactionNode).text() || null;
 
         if (emoji !== null) {
-          // Initialize emoji storage set?
-          if (reactionsMap[emoji] === undefined) {
-            reactionsMap[emoji] = new Set();
-          }
-
-          reactionsMap[emoji].add(fromJID.toString());
+          reactionsAppend.push(emoji);
         }
       });
 
-      // Build final list of reactions
-      const reactionEmojis: Array<{
-        reaction: string;
-        authors: Array<string>;
-      }> = [];
-
-      for (const [reactionMapEmoji, reactionMapAuthors] of Object.entries(
-        reactionsMap
-      )) {
-        reactionEmojis.push({
-          reaction: reactionMapEmoji,
-          authors: Array.from(reactionMapAuthors)
-        });
-      }
+      // Reduce current reactions w/ previous reactions
+      const reactionEmojis = BrokerBuilderReactions.reduce({
+        to: toJID,
+        from: fromJID,
+        messageId: id,
+        reactions: reactionsAppend
+      });
 
       logger.info(
         `Updating reactions on message #${id} from: '${from || "?"}'`,
@@ -294,6 +269,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
       );
 
       // Update message in store
+      // TODO: looks like the identifier is not valid for in-line reactions
       Store.$inbox.updateMessage(toJID, id, {
         id,
         reactions: reactionEmojis
