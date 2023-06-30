@@ -85,6 +85,12 @@ const $inbox = defineStore("inbox", {
       };
     },
 
+    getMessage: function () {
+      return (jid: JID, id: string): InboxEntryMessage | void => {
+        return this.assert(jid).messages.byId[id] || undefined;
+      };
+    },
+
     getStates: function () {
       return (jid: JID): Array<InboxEntryStates> => {
         return this.assert(jid).states;

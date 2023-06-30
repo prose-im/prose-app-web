@@ -70,7 +70,9 @@ class BrokerEventMessage extends BrokerEventIngestor {
   private __reactions(stanza: Cash, element: Cash): void {
     // XEP-0444: Message Reactions
     // https://xmpp.org/extensions/xep-0444.html
-    // TODO
+
+    // Pass to generic reactions handler
+    this.__handleReactions(stanza, element);
   }
 
   private __fasten(stanza: Cash, element: Cash): void {
@@ -142,6 +144,13 @@ class BrokerEventMessage extends BrokerEventIngestor {
           delay.length > 0 ? delay : undefined,
           archiveId
         );
+
+        // Restore reactions?
+        const reactions = message.find("reactions").first();
+
+        if (reactions.length > 0) {
+          this.__handleReactions(message, reactions);
+        }
       }
     });
   }
@@ -190,6 +199,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
     // Check if message should be ignored
     // Conditions:
     //  - Retraction message
+    //  - Correct message
     const shouldIgnore =
       message.has("retract, replace").length > 0 ? true : false;
 
@@ -197,7 +207,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
     if (from !== null && to !== null && bodyText && shouldIgnore !== true) {
       logger.info(`Inserting message from: '${from || "?"}'`);
 
-      // Read body text
+      // Build JID objects
       const fromJID = jid(from).bare(),
         toJID = jid(to).bare();
 
@@ -218,6 +228,75 @@ class BrokerEventMessage extends BrokerEventIngestor {
         date: dateTime,
         from: fromJID.toString(),
         content: bodyText
+      });
+    }
+  }
+
+  private __handleReactions(message: Cash, reactions: Cash): void {
+    const from = message.attr("from") || null,
+      to = message.attr("to") || null,
+      id = reactions.attr("id") || null;
+
+    // Handle message reactions?
+    if (from !== null && to !== null && id !== null) {
+      // Build JID object
+      const fromJID = jid(from).bare(),
+        toJID = jid(to).bare();
+
+      // Initialize reactions w/ existing reactions from store (ie. other users)
+      const reactionsMap: { [emoji: string]: Set<string> } = {},
+        existingMessage = Store.$inbox.getMessage(toJID, id);
+
+      if (
+        existingMessage !== undefined &&
+        existingMessage.reactions !== undefined &&
+        existingMessage.reactions.length > 0
+      ) {
+        existingMessage.reactions.forEach(existingReaction => {
+          reactionsMap[existingReaction.reaction] = new Set(
+            existingReaction.authors
+          );
+        });
+      }
+
+      // Append list of reactions from this sending user
+      reactions.children("reaction").each((_, reactionNode: Element) => {
+        const emoji = $(reactionNode).text() || null;
+
+        if (emoji !== null) {
+          // Initialize emoji storage set?
+          if (reactionsMap[emoji] === undefined) {
+            reactionsMap[emoji] = new Set();
+          }
+
+          reactionsMap[emoji].add(fromJID.toString());
+        }
+      });
+
+      // Build final list of reactions
+      const reactionEmojis: Array<{
+        reaction: string;
+        authors: Array<string>;
+      }> = [];
+
+      for (const [reactionMapEmoji, reactionMapAuthors] of Object.entries(
+        reactionsMap
+      )) {
+        reactionEmojis.push({
+          reaction: reactionMapEmoji,
+          authors: Array.from(reactionMapAuthors)
+        });
+      }
+
+      logger.info(
+        `Updating reactions on message #${id} from: '${from || "?"}'`,
+        reactionEmojis
+      );
+
+      // Update message in store
+      Store.$inbox.updateMessage(toJID, id, {
+        id,
+        reactions: reactionEmojis
       });
     }
   }

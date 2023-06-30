@@ -63,7 +63,7 @@ class BrokerModuleMessage extends BrokerModule {
     // Emit message onto network
     // Notice: mark chat state as active whenever sending a message.
     this._client.emit(
-      $msg({ to: to.toString(), type: MessageType.Chat, id: id })
+      $msg({ id, to: to.toString(), type: MessageType.Chat })
         .c("body")
         .t(body)
         .up()
@@ -111,7 +111,7 @@ class BrokerModuleMessage extends BrokerModule {
     // https://xmpp.org/extensions/xep-0424.html
 
     this._client.emit(
-      $msg({ to: to.toString(), type: MessageType.Chat })
+      $msg({ id: xmppID(), to: to.toString(), type: MessageType.Chat })
         .c("body")
         .t(RETRACT_MESSAGE_BODY)
         .up()
@@ -132,9 +132,12 @@ class BrokerModuleMessage extends BrokerModule {
     // https://xmpp.org/extensions/xep-0085.html
 
     this._client.emit(
-      $msg({ to: to.toString(), type: MessageType.Chat }).c(state, {
-        xmlns: NS_CHAT_STATES
-      })
+      $msg({ id: xmppID(), to: to.toString(), type: MessageType.Chat }).c(
+        state,
+        {
+          xmlns: NS_CHAT_STATES
+        }
+      )
     );
 
     logger.info(`Sent ${state} chat state to: '${to}'`);
@@ -144,11 +147,18 @@ class BrokerModuleMessage extends BrokerModule {
     // XEP-0444: Message Reactions
     // https://xmpp.org/extensions/xep-0444.html
 
-    const stanza = $msg({ to: to.toString(), type: MessageType.Chat });
+    const stanza = $msg({
+      id: xmppID(),
+      to: to.toString(),
+      type: MessageType.Chat
+    });
 
     // Append reactions
     {
-      const stanzaReactions = stanza.c("reactions", { xmlns: NS_REACTIONS });
+      const stanzaReactions = stanza.c("reactions", {
+        xmlns: NS_REACTIONS,
+        id
+      });
 
       reactions.forEach(reaction => {
         stanzaReactions.c("reaction", {}, reaction);
