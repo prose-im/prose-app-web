@@ -268,9 +268,12 @@ class BrokerEventMessage extends BrokerEventIngestor {
         reactionEmojis
       );
 
+      // Acquire store target JID
+      const storeJID =
+        this._client.jid?.bare().equals(fromJID) === true ? toJID : fromJID;
+
       // Update message in store
-      // TODO: looks like the identifier is not valid for in-line reactions
-      Store.$inbox.updateMessage(toJID, id, {
+      Store.$inbox.updateMessage(storeJID, id, {
         id,
         reactions: reactionEmojis
       });
