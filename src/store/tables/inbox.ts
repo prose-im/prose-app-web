@@ -10,7 +10,6 @@
 
 // NPM
 import { JID } from "@xmpp/jid";
-import merge from "lodash.merge";
 import cloneDeep from "lodash.clonedeep";
 import mitt from "mitt";
 import { defineStore } from "pinia";
@@ -180,7 +179,7 @@ const $inbox = defineStore("inbox", {
           // Delete existing message at previous identifier
           delete container.byId[id];
 
-          merge(existingMessage, message);
+          Object.assign(existingMessage, message);
 
           // Update existing message identifier (w/ replacement identifier)
           existingMessage.id = message.id;
@@ -195,7 +194,7 @@ const $inbox = defineStore("inbox", {
           });
 
           if (foundListMessage) {
-            merge(foundListMessage, message);
+            Object.assign(foundListMessage, message);
 
             // Update found list message identifier (w/ replacement identifier)
             foundListMessage.id = message.id;

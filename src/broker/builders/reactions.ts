@@ -45,6 +45,9 @@ class BrokerBuilderReactions {
     messageId: string;
     reactions: Array<MessageReaction>;
   }): Array<ReactionsEmoji> {
+    // Acquire from JID in raw format
+    const fromRaw = from.toString();
+
     // Initialize reactions w/ existing reactions from store (ie. other users)
     const reactionsMap: { [emoji: MessageReaction]: Set<string> } = {},
       existingMessage = Store.$inbox.getMessage(to, messageId);
@@ -55,9 +58,17 @@ class BrokerBuilderReactions {
       existingMessage.reactions.length > 0
     ) {
       existingMessage.reactions.forEach(existingReaction => {
-        reactionsMap[existingReaction.reaction as MessageReaction] = new Set(
-          existingReaction.authors
-        );
+        // Do not include current author (as reactions will be fully re-built \
+        //   for this author), this essentially lists 'other' authors.
+        const otherAuthors = existingReaction.authors.filter(author => {
+          return author !== fromRaw;
+        });
+
+        if (otherAuthors.length > 0) {
+          reactionsMap[existingReaction.reaction as MessageReaction] = new Set(
+            otherAuthors
+          );
+        }
       });
     }
 
@@ -68,7 +79,7 @@ class BrokerBuilderReactions {
         reactionsMap[reaction] = new Set();
       }
 
-      reactionsMap[reaction].add(from.toString());
+      reactionsMap[reaction].add(fromRaw);
     });
 
     // Build final list of reactions
