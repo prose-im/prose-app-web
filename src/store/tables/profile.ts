@@ -432,4 +432,5 @@ const $profile = defineStore("profile", {
  * EXPORTS
  * ************************************************************************* */
 
+export type { ProfileEntryInformationContact };
 export default $profile;

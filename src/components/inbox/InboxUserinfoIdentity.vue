@@ -41,29 +41,39 @@
       | {{ profile.role }}
 
   ul.c-inbox-userinfo-identity__actions(
-    v-if="profile.information && profile.information.contact"
+    v-if="profilePhoneUrl || profileEmailUrl"
   )
     li.c-inbox-userinfo-identity__action(
-      v-if="profile.information.contact.phone"
+      v-if="profilePhoneUrl"
     )
-      base-button(
-        class="c-inbox-userinfo-identity__action-button"
-        icon="phone.fill"
-        size="medium"
-        reverse
+      a(
+        :href="profilePhoneUrl"
+        target="_blank"
+        class="c-inbox-userinfo-identity__action-link"
       )
-        | Phone
+        base-button(
+          class="c-inbox-userinfo-identity__action-button"
+          icon="phone.fill"
+          size="medium"
+          reverse
+        )
+          | Phone
 
     li.c-inbox-userinfo-identity__action(
-      v-if="profile.information.contact.email"
+      v-if="profileEmailUrl"
     )
-      base-button(
-        class="c-inbox-userinfo-identity__action-button"
-        icon="envelope.fill"
-        size="medium"
-        reverse
+      a(
+        :href="profileEmailUrl"
+        target="_blank"
+        class="c-inbox-userinfo-identity__action-link"
       )
-        | Email
+        base-button(
+          class="c-inbox-userinfo-identity__action-button"
+          icon="envelope.fill"
+          size="medium"
+          reverse
+        )
+          | Email
 </template>
 
 <!-- **********************************************************************
@@ -77,6 +87,7 @@ import { JID } from "@xmpp/jid";
 
 // PROJECT: STORES
 import Store from "@/store";
+import { ProfileEntryInformationContact } from "@/store/tables/profile";
 
 export default {
   name: "InboxUserinfoIdentity",
@@ -89,6 +100,30 @@ export default {
   },
 
   computed: {
+    profilePhoneUrl(): string | null {
+      if (this.profileContact !== null && this.profileContact.phone) {
+        return `tel:${this.profileContact.phone}`;
+      }
+
+      return null;
+    },
+
+    profileEmailUrl(): string | null {
+      if (this.profileContact !== null && this.profileContact.email) {
+        return `mailto:${this.profileContact.email}`;
+      }
+
+      return null;
+    },
+
+    profileContact(): ProfileEntryInformationContact | null {
+      if (this.profile.information && this.profile.information.contact) {
+        return this.profile.information.contact;
+      }
+
+      return null;
+    },
+
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
     }
