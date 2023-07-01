@@ -74,6 +74,17 @@
     @proceed="onModalSignOutProceed"
     @close="onModalSignOutClose"
   )
+
+  edit-profile(
+    v-if="popups.editProfile.visible"
+    @save="onPopupEditProfileSave"
+    @close="onPopupEditProfileClose"
+  )
+
+  account-settings(
+    v-if="popups.accountSettings.visible"
+    @close="onPopupAccountSettingsClose"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -96,13 +107,17 @@ import {
 // PROJECT: MODALS
 import SignOut from "@/modals/sidebar/SignOut.vue";
 
+// PROJECT: POPUPS
+import EditProfile from "@/popups/sidebar/EditProfile.vue";
+import AccountSettings from "@/popups/sidebar/AccountSettings.vue";
+
 // PROJECT: STORES
 import Store from "@/store";
 
 export default {
   name: "SidebarContext",
 
-  components: { SignOut },
+  components: { SignOut, EditProfile, AccountSettings },
 
   props: {
     jid: {
@@ -125,6 +140,16 @@ export default {
 
       modals: {
         signOut: {
+          visible: false
+        }
+      },
+
+      popups: {
+        editProfile: {
+          visible: false
+        },
+
+        accountSettings: {
           visible: false
         }
       }
@@ -205,12 +230,14 @@ export default {
 
         {
           type: PopoverItemType.Button,
-          label: "Edit profile"
+          label: "Edit profile",
+          click: this.onAvatarPopoverEditProfileClick
         },
 
         {
           type: PopoverItemType.Button,
-          label: "Account settings"
+          label: "Account settings",
+          click: this.onAvatarPopoverAccountSettingsClick
         },
 
         {
@@ -277,7 +304,23 @@ export default {
       this.isAvatarPopoverVisible = false;
     },
 
-    onAvatarPopoverSignOutClick(): Promise<void> {
+    onAvatarPopoverEditProfileClick(): void {
+      // Hide avatar popover
+      this.isAvatarPopoverVisible = false;
+
+      // Show edit profile popup
+      this.popups.editProfile.visible = true;
+    },
+
+    onAvatarPopoverAccountSettingsClick(): void {
+      // Hide avatar popover
+      this.isAvatarPopoverVisible = false;
+
+      // Show account settings popup
+      this.popups.accountSettings.visible = true;
+    },
+
+    onAvatarPopoverSignOutClick(): void {
       // Hide avatar popover
       this.isAvatarPopoverVisible = false;
 
@@ -295,7 +338,21 @@ export default {
       this.isActionsPopoverVisible = false;
     },
 
-    async onModalSignOutProceed(): void {
+    onPopupEditProfileSave(): void {
+      // TODO
+
+      this.popups.editProfile.visible = false;
+    },
+
+    onPopupEditProfileClose(): void {
+      this.popups.editProfile.visible = false;
+    },
+
+    onPopupAccountSettingsClose(): void {
+      this.popups.accountSettings.visible = false;
+    },
+
+    async onModalSignOutProceed(): Promise<void> {
       // Logout from account
       await Store.$account.logout();
 
