@@ -42,6 +42,11 @@ export default {
     popupClass: {
       type: String,
       default: null
+    },
+
+    keyboardEvents: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -49,10 +54,15 @@ export default {
 
   computed: {
     hotkeys() {
-      return {
-        enter: this.onHotkeyEnter,
-        esc: this.onHotkeyEscape
-      };
+      // Enable keyboard events?
+      if (this.keyboardEvents === true) {
+        return {
+          enter: this.onHotkeyEnter,
+          esc: this.onHotkeyEscape
+        };
+      }
+
+      return {};
     }
   },
 
