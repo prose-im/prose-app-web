@@ -37,7 +37,10 @@ base-popup(
       p.p-edit-profile__identity-address
         | {{ selfJID }}
 
-    ul.p-edit-profile__sections
+    base-navigate(
+      :sections="navigateSections"
+      class="p-edit-profile__sections"
+    )
 
   .p-edit-profile__content
     .p-edit-profile__form
@@ -82,6 +85,30 @@ export default {
 
   data() {
     return {
+      // --> DATA <--
+
+      navigateSections: [
+        {
+          title: "Identity",
+          label: "Name, Phone, Email"
+        },
+
+        {
+          title: "Authentication",
+          label: "Password, MFA"
+        },
+
+        {
+          title: "Profile",
+          label: "Job, Location"
+        },
+
+        {
+          title: "Encryption",
+          label: "Certificates, Keys"
+        }
+      ],
+
       // --> STATE <--
 
       fetching: false,
@@ -157,17 +184,17 @@ $c: ".p-edit-profile";
 // VARIABLES
 $popup-max-width: 720px;
 $popup-max-height: 600px;
-$popup-padding-sides: 22px;
-$popup-padding-top-bottom: $popup-padding-sides;
+$popup-padding-inline: 22px;
+$popup-padding-block: $popup-padding-inline;
 
-$popup-width-full-margin-sides: 14px;
+$popup-width-full-margin-inline: 14px;
 $popup-width-full-breakpoint: (
-  $popup-max-width + $popup-width-full-margin-sides
+  $popup-max-width + $popup-width-full-margin-inline
 );
 
-$popup-height-full-margin-top-bottom: $popup-width-full-margin-sides;
+$popup-height-full-margin-block: $popup-width-full-margin-inline;
 $popup-height-full-breakpoint: (
-  $popup-max-height + $popup-height-full-margin-top-bottom
+  $popup-max-height + $popup-height-full-margin-block
 );
 
 .p-edit-profile {
@@ -182,8 +209,8 @@ $popup-height-full-breakpoint: (
 
   #{$c}__navigate {
     border-right: 1px solid $color-border-secondary;
-    padding-inline: $popup-padding-sides;
-    padding-block: $popup-padding-top-bottom;
+    padding-inline: $popup-padding-inline;
+    padding-block: $popup-padding-block;
     overflow: auto;
     width: 190px;
     flex: 0 0 auto;
@@ -210,7 +237,7 @@ $popup-height-full-breakpoint: (
     }
 
     #{$c}__sections {
-      /* TODO */
+      margin-block-start: 26px;
     }
   }
 
@@ -222,17 +249,17 @@ $popup-height-full-breakpoint: (
 
     #{$c}__form,
     #{$c}__actions {
-      padding-inline: $popup-padding-sides;
+      padding-inline: $popup-padding-inline;
     }
 
     #{$c}__form {
-      padding-block-start: $popup-padding-top-bottom;
+      padding-block-start: $popup-padding-block;
       overflow: auto;
       flex: 1;
     }
 
     #{$c}__actions {
-      padding-block: $popup-padding-top-bottom;
+      padding-block: $popup-padding-block;
       flex: 0 0 auto;
       align-items: center;
       display: flex;
@@ -254,7 +281,7 @@ $popup-height-full-breakpoint: (
 @media (max-width: $popup-width-full-breakpoint) {
   .p-edit-profile {
     #{$c}__popup {
-      width: calc(100% - #{$popup-width-full-margin-sides});
+      width: calc(100% - #{$popup-width-full-margin-inline});
     }
   }
 }
@@ -262,7 +289,7 @@ $popup-height-full-breakpoint: (
 @media (max-height: $popup-height-full-breakpoint) {
   .p-edit-profile {
     #{$c}__popup {
-      height: calc(100% - #{$popup-height-full-margin-top-bottom});
+      height: calc(100% - #{$popup-height-full-margin-block});
     }
   }
 }
