@@ -102,6 +102,11 @@ $popup-min-width-large: 440px;
 $popup-max-width: 500px;
 $popup-padding-sides: 25px;
 
+$popup-width-full-margin-sides: 14px;
+$popup-width-full-breakpoint: (
+  $popup-max-width + (2 * $popup-padding-sides) + $popup-width-full-margin-sides
+);
+
 .c-base-modal {
   #{$c}__popup {
     max-width: $popup-max-width;
@@ -161,10 +166,12 @@ $popup-padding-sides: 25px;
 
 // --> MEDIA-QUERIES <--
 
-@media (max-width: 540px) {
+@media (max-width: $popup-width-full-breakpoint) {
   .c-base-modal {
     #{$c}__popup {
-      width: calc(100% - #{2 * $popup-padding-sides} - 14px);
+      width: calc(
+        100% - #{2 * $popup-padding-sides} - #{$popup-width-full-margin-sides}
+      );
       min-width: auto;
     }
   }
