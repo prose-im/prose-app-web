@@ -202,7 +202,7 @@ $c: ".c-base-button";
 // VARIABLES
 $color-button-dark-normal: $color-base-purple-normal;
 $color-button-dark-reverse: $color-white;
-$color-button-light-normal: transparent;
+$color-button-light-normal: $color-white;
 $color-button-light-reverse: rgba($color-black, 0.15);
 $color-button-red-normal: $color-base-red-normal;
 $color-button-red-reverse: $color-white;
