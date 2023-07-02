@@ -9,14 +9,21 @@
      ********************************************************************** -->
 
 <template lang="pug">
-a.c-base-navigate-section
+a(
+  :class=`[
+    "c-base-navigate-section",
+    {
+      "c-base-navigate-section--active": active
+    }
+  ]`
+)
   span.c-base-navigate-section__icon
 
   span.c-base-navigate-section__text
     span.c-base-navigate-section__text-title.u-medium
       | {{ title }}
 
-    span.c-base-navigate-section__text-label.u-medium
+    span.c-base-navigate-section__text-label
       | {{ label }}
 
   span.c-base-navigate-section__arrow
@@ -39,6 +46,11 @@ export default {
     label: {
       type: String,
       required: true
+    },
+
+    active: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -52,26 +64,70 @@ export default {
 $c: ".c-base-navigate-section";
 
 .c-base-navigate-section {
-  display: block;
+  background-color: transparent;
+  padding: 4px 10px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
 
   #{$c}__icon {
-    /* TODO */
+    margin-inline-end: 8px;
+    flex: 0 0 auto;
   }
 
   #{$c}__text {
-    /* TODO */
+    flex: 1;
+
+    #{$c}__text-title,
+    #{$c}__text-label {
+      display: block;
+    }
 
     #{$c}__text-title {
-      /* TODO */
+      color: $color-text-primary;
+      font-size: 15.5px;
+      line-height: 17px;
     }
 
     #{$c}__text-label {
-      /* TODO */
+      color: $color-text-secondary;
+      font-size: 14px;
+      line-height: 15px;
+      margin-block-start: 2px;
     }
   }
 
   #{$c}__arrow {
-    /* TODO */
+    margin-inline-start: 10px;
+    flex: 0 0 auto;
+  }
+
+  &:hover {
+    background-color: $color-base-grey-light;
+  }
+
+  &:active {
+    background-color: darken($color-base-grey-light, 1.5%);
+  }
+
+  // --> BOOLEANS <--
+
+  &--active {
+    &,
+    &:hover,
+    &:active {
+      background-color: $color-base-blue-dark;
+
+      #{$c}__text {
+        #{$c}__text-title {
+          color: $color-text-reverse;
+        }
+
+        #{$c}__text-label {
+          color: rgba($color-text-reverse, 0.7);
+        }
+      }
+    }
   }
 }
 </style>

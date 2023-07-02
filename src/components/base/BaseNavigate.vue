@@ -14,8 +14,10 @@ ul.c-base-navigate
     v-for="section in sections"
   )
     base-navigate-section(
+      @click="onSectionClick(section.id)"
       :title="section.title"
       :label="section.label"
+      :active="section.id === activeId"
     )
 </template>
 
@@ -26,6 +28,7 @@ ul.c-base-navigate
 <script lang="ts">
 // INTERFACES
 export interface Section {
+  id: string;
   title: string;
   label: string;
 }
@@ -41,6 +44,21 @@ export default {
       validator(x: Array<Section>): boolean {
         return x.length > 0;
       }
+    },
+
+    activeId: {
+      type: String,
+      default: null
+    }
+  },
+
+  emits: ["navigate"],
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onSectionClick(sectionId: string): void {
+      this.$emit("navigate", sectionId);
     }
   }
 };

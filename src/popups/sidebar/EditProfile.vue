@@ -38,7 +38,9 @@ base-popup(
         | {{ selfJID }}
 
     base-navigate(
+      @navigate="onSectionsNavigate"
       :sections="navigateSections"
+      :active-id="section"
       class="p-edit-profile__sections"
     )
 
@@ -74,6 +76,7 @@ import { JID } from "@xmpp/jid";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
+import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -89,30 +92,36 @@ export default {
 
       navigateSections: [
         {
+          id: "identity",
           title: "Identity",
           label: "Name, Phone, Email"
         },
 
         {
+          id: "authentication",
           title: "Authentication",
           label: "Password, MFA"
         },
 
         {
+          id: "profile",
           title: "Profile",
           label: "Job, Location"
         },
 
         {
+          id: "encryption",
           title: "Encryption",
           label: "Certificates, Keys"
         }
-      ],
+      ] as NavigateSection,
 
       // --> STATE <--
 
       fetching: false,
-      saving: false
+      saving: false,
+
+      section: "identity"
     };
   },
 
@@ -169,6 +178,10 @@ export default {
 
     onClose(): void {
       this.$emit("close");
+    },
+
+    onSectionsNavigate(sectionId: string): void {
+      this.section = sectionId;
     }
   }
 };
