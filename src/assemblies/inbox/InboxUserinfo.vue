@@ -138,7 +138,7 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    async syncVCardEager(): void {
+    async syncVCardEager(): Promise<void> {
       // Can synchronize now? (connected)
       if (this.isVCardSyncStale === true && Store.$session.connected === true) {
         // Mark synchronization as non-stale
