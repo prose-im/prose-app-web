@@ -267,7 +267,7 @@ $close-icon-size: 12px;
   inset-block-end: 30px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 100;
+  z-index: 10000;
   box-shadow: 0 2px 4px 0 rgba($color-black, 0.04);
   border-radius: 16px;
 
