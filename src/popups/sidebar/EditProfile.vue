@@ -15,7 +15,6 @@ base-popup(
   class="p-edit-profile"
   popup-class="p-edit-profile__popup"
 )
-  | TODO: edit profile
 </template>
 
 <!-- **********************************************************************

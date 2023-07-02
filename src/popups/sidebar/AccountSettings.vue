@@ -14,7 +14,6 @@ base-popup(
   class="p-account-settings"
   popup-class="p-account-settings__popup"
 )
-  | TODO: account settings
 </template>
 
 <!-- **********************************************************************
