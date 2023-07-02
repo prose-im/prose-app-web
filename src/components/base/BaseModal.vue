@@ -21,22 +21,14 @@ base-popup(
   .c-base-modal__content
     slot
 
-  .c-base-modal__actions
-    base-button(
-      @click="onClose"
-      tint="light"
-      size="mid-medium"
-      class="c-base-modal__action"
-    )
-      | {{ closeLabel }}
-
-    base-button(
-      @click="onConfirm"
-      :tint="destructive ? 'red' : 'dark'"
-      size="mid-medium"
-      class="c-base-modal__action"
-    )
-      | {{ confirmLabel }}
+  base-popup-actions(
+    @confirm="onConfirm"
+    @cancel="onClose"
+    :confirm-label="confirmLabel"
+    :cancel-label="closeLabel"
+    :destructive="destructive"
+    class="c-base-modal__actions"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -133,20 +125,6 @@ $popup-width-full-breakpoint: (
 
   #{$c}__actions {
     margin-block-start: 25px;
-    display: flex;
-    justify-content: flex-end;
-
-    #{$c}__action {
-      margin-inline: 3px;
-
-      &:first-child {
-        margin-inline-start: 0;
-      }
-
-      &:last-child {
-        margin-inline-end: 0;
-      }
-    }
   }
 
   // --> SIZES <--
