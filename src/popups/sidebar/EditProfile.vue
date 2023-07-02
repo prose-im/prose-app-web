@@ -15,17 +15,50 @@ base-popup(
   popup-class="p-edit-profile__popup"
 )
   .p-edit-profile__navigate
+    .p-edit-profile__identity
+      base-avatar(
+        :jid="selfJID"
+        size="96px"
+        shadow="light"
+        class="p-edit-profile__identity-avatar"
+      )
+
+      p.p-edit-profile__identity-name.u-medium
+        template(
+          v-if="profile.name"
+        )
+          | {{ profile.name.first }} {{ profile.name.last }}
+
+        template(
+          v-else
+        )
+          | {{ selfJID.local }}
+
+      p.p-edit-profile__identity-address
+        | {{ selfJID }}
+
+    ul.p-edit-profile__sections
 
   .p-edit-profile__content
     .p-edit-profile__form
 
-    base-popup-actions(
-      @confirm="onSave"
-      @cancel="onClose"
-      confirm-label="Save Profile"
-      cancel-label="Cancel"
-      class="p-edit-profile__actions"
-    )
+    .p-edit-profile__actions
+      base-spinner(
+        v-if="fetching"
+        size="10px"
+        border-width="1.5px"
+        class="p-edit-profile__actions-spinner"
+      )
+
+      base-popup-actions(
+        @confirm="onSave"
+        @cancel="onClose"
+        :confirm-disabled="fetching"
+        :confirm-loading="saving"
+        confirm-label="Save Profile"
+        cancel-label="Cancel"
+        class="p-edit-profile__actions-controls"
+      )
 </template>
 
 <!-- **********************************************************************
@@ -33,16 +66,78 @@ base-popup(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { JID } from "@xmpp/jid";
+
+// PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
+
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "EditProfile",
 
   emits: ["close", "save"],
 
+  data() {
+    return {
+      // --> STATE <--
+
+      fetching: false,
+      saving: false
+    };
+  },
+
+  computed: {
+    selfJID(): JID {
+      return this.account.getLocalJID();
+    },
+
+    account(): typeof Store.$account {
+      return Store.$account;
+    },
+
+    profile(): ReturnType<typeof Store.$profile.getProfile> {
+      return Store.$profile.getProfile(this.selfJID);
+    }
+  },
+
+  async mounted() {
+    this.sync();
+  },
+
   methods: {
+    // --> HELPERS <--
+
+    sync(): void {
+      if (this.fetching !== true) {
+        this.fetching = true;
+
+        Promise.all([this.syncVCard()])
+          .catch(() => {
+            // Show error alert
+            BaseAlert.error("Cannot load profile", "Close and try again?");
+
+            return Promise.resolve();
+          })
+          .then(() => {
+            this.fetching = false;
+          });
+      }
+    },
+
+    async syncVCard(): Promise<void> {
+      // Load profile vCard
+      await Store.$profile.loadProfileVCard(this.selfJID);
+    },
+
     // --> EVENT LISTENERS <--
 
     onSave(): void {
-      this.$emit("save");
+      if (this.fetching !== true && this.saving !== true) {
+        this.$emit("save");
+      }
     },
 
     onClose(): void {
@@ -90,8 +185,33 @@ $popup-height-full-breakpoint: (
     padding-inline: $popup-padding-sides;
     padding-block: $popup-padding-top-bottom;
     overflow: auto;
-    width: 220px;
+    width: 190px;
     flex: 0 0 auto;
+
+    #{$c}__identity {
+      text-align: center;
+      margin-block-start: 6px;
+
+      #{$c}__identity-avatar {
+        /* TODO */
+      }
+
+      #{$c}__identity-name {
+        color: $color-text-primary;
+        font-size: 15.5px;
+        margin-block-start: 14px;
+      }
+
+      #{$c}__identity-address {
+        color: $color-text-secondary;
+        font-size: 13.5px;
+        margin-block-start: 4px;
+      }
+    }
+
+    #{$c}__sections {
+      /* TODO */
+    }
   }
 
   #{$c}__content {
@@ -114,6 +234,17 @@ $popup-height-full-breakpoint: (
     #{$c}__actions {
       padding-block: $popup-padding-top-bottom;
       flex: 0 0 auto;
+      align-items: center;
+      display: flex;
+
+      #{$c}__actions-spinner {
+        margin-inline-end: 8px;
+        flex: 0 0 auto;
+      }
+
+      #{$c}__actions-controls {
+        flex: 1;
+      }
     }
   }
 }
