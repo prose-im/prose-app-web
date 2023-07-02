@@ -62,7 +62,6 @@ $popup-width-full-breakpoint: (
       width: calc(
         100% - #{2 * $popup-padding-sides} - #{$popup-width-full-margin-sides}
       );
-      min-width: auto;
     }
   }
 }
