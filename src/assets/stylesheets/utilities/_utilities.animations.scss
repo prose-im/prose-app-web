@@ -46,6 +46,10 @@ $animate-toast-margin-block-end: -3px;
   &--fade-out-down-small {
     animation-name: fadeOutDownSmall;
   }
+
+  &--rotate {
+    animation-name: rotate;
+  }
 }
 
 // --> KEYFRAMES <--
@@ -71,5 +75,19 @@ $animate-toast-margin-block-end: -3px;
   to {
     opacity: 0;
     margin-block-end: $animate-toast-margin-block-end;
+  }
+}
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  50% {
+    transform: rotate(180deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }
