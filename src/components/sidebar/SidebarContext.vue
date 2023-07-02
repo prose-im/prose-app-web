@@ -172,12 +172,14 @@ export default {
 
         {
           type: PopoverItemType.Button,
-          label: "🚀 Update mood"
+          label: "🚀 Update mood",
+          disabled: true
         },
 
         {
           type: PopoverItemType.Button,
           label: "Change availability",
+          disabled: true,
 
           children: [
             {
@@ -195,6 +197,7 @@ export default {
         {
           type: PopoverItemType.Button,
           label: "Pause notifications",
+          disabled: true,
 
           children: [
             {
@@ -270,6 +273,7 @@ export default {
         {
           type: PopoverItemType.Button,
           label: "Switch account",
+          disabled: true,
 
           children: [
             {
@@ -281,7 +285,8 @@ export default {
 
         {
           type: PopoverItemType.Button,
-          label: "Connect account"
+          label: "Connect account",
+          disabled: true
         }
       ];
     },

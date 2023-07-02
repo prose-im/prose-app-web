@@ -70,12 +70,14 @@ export default {
       return [
         {
           type: PopoverItemType.Button,
-          label: "Invite people"
+          label: "Invite people",
+          disabled: true
         },
 
         {
           type: PopoverItemType.Button,
-          label: "Create a group"
+          label: "Create a group",
+          disabled: true
         },
 
         {
@@ -85,7 +87,8 @@ export default {
         {
           type: PopoverItemType.Button,
           label: "Manage server",
-          emphasis: true
+          emphasis: true,
+          disabled: true
         }
       ];
     }
