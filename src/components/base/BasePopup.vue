@@ -81,6 +81,7 @@ $c: ".c-base-popup";
 
 .c-base-popup {
   background-color: rgba($color-base-grey-dark, 0.35);
+  user-select: none;
   position: fixed;
   display: flex;
   align-items: center;
