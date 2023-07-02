@@ -12,6 +12,7 @@
 .c-base-popup-actions
   base-button(
     @click="onCancel"
+    :disabled="cancelDisabled"
     tint="light"
     size="mid-medium"
     class="c-base-popup-actions__action"
@@ -21,6 +22,8 @@
   base-button(
     @click="onConfirm"
     :tint="destructive ? 'red' : 'dark'"
+    :loading="confirmLoading"
+    :disabled="confirmDisabled || confirmLoading"
     size="mid-medium"
     class="c-base-popup-actions__action"
   )
@@ -44,6 +47,21 @@ export default {
     cancelLabel: {
       type: String,
       default: "Cancel"
+    },
+
+    confirmLoading: {
+      type: Boolean,
+      default: false
+    },
+
+    confirmDisabled: {
+      type: Boolean,
+      default: false
+    },
+
+    cancelDisabled: {
+      type: Boolean,
+      default: false
     },
 
     destructive: {
