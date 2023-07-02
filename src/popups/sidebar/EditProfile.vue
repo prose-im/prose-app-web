@@ -11,8 +11,6 @@
 <template lang="pug">
 base-popup(
   @close="onClose"
-  @confirm="onSave"
-  :keyboard-events="false"
   class="p-edit-profile"
   popup-class="p-edit-profile__popup"
 )
