@@ -18,6 +18,11 @@ a(
   ]`
 )
   span.c-base-navigate-section__icon
+    base-icon(
+      :name="icon"
+      size="14px"
+      class="c-base-navigate-section__icon-inner"
+    )
 
   span.c-base-navigate-section__text
     span.c-base-navigate-section__text-title.u-medium
@@ -26,7 +31,11 @@ a(
     span.c-base-navigate-section__text-label
       | {{ label }}
 
-  span.c-base-navigate-section__arrow
+  base-icon(
+    name="chevron.right.circle.fill"
+    size="15px"
+    class="c-base-navigate-section__arrow"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -48,6 +57,11 @@ export default {
       required: true
     },
 
+    icon: {
+      type: String,
+      required: true
+    },
+
     active: {
       type: Boolean,
       default: false
@@ -63,16 +77,30 @@ export default {
 <style lang="scss">
 $c: ".c-base-navigate-section";
 
+// VARIABLES
+$icon-size: 28px;
+
 .c-base-navigate-section {
   background-color: transparent;
-  padding: 4px 10px;
+  padding: 5px 10px;
   display: flex;
   align-items: center;
   border-radius: 4px;
 
   #{$c}__icon {
-    margin-inline-end: 8px;
+    background-color: $color-base-blue-dark;
+    width: $icon-size;
+    height: $icon-size;
+    margin-inline-end: 9px;
     flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+
+    #{$c}__icon-inner {
+      fill: $color-white;
+    }
   }
 
   #{$c}__text {
@@ -85,21 +113,23 @@ $c: ".c-base-navigate-section";
 
     #{$c}__text-title {
       color: $color-text-primary;
-      font-size: 15.5px;
-      line-height: 17px;
+      font-size: 14px;
+      line-height: 16px;
     }
 
     #{$c}__text-label {
       color: $color-text-secondary;
-      font-size: 14px;
+      font-size: 12.75px;
       line-height: 15px;
       margin-block-start: 2px;
     }
   }
 
   #{$c}__arrow {
-    margin-inline-start: 10px;
+    fill: $color-white;
+    margin-inline-start: 8px;
     flex: 0 0 auto;
+    visibility: hidden;
   }
 
   &:hover {
@@ -118,6 +148,10 @@ $c: ".c-base-navigate-section";
     &:active {
       background-color: $color-base-blue-dark;
 
+      #{$c}__icon {
+        background-color: transparent;
+      }
+
       #{$c}__text {
         #{$c}__text-title {
           color: $color-text-reverse;
@@ -126,6 +160,10 @@ $c: ".c-base-navigate-section";
         #{$c}__text-label {
           color: rgba($color-text-reverse, 0.7);
         }
+      }
+
+      #{$c}__arrow {
+        visibility: visible;
       }
     }
   }

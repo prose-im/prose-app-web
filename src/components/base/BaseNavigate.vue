@@ -17,6 +17,7 @@ ul.c-base-navigate
       @click="onSectionClick(section.id)"
       :title="section.title"
       :label="section.label"
+      :icon="section.icon"
       :active="section.id === activeId"
     )
 </template>
@@ -31,6 +32,7 @@ export interface Section {
   id: string;
   title: string;
   label: string;
+  icon: string;
 }
 
 export default {
