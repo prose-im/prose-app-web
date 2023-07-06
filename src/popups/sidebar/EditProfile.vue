@@ -46,6 +46,10 @@ base-popup(
 
   .p-edit-profile__content
     .p-edit-profile__form
+      component(
+        v-if="formSections[section]"
+        :is="formSections[section].component"
+      )
 
     .p-edit-profile__actions
       base-spinner(
@@ -72,11 +76,16 @@ base-popup(
 
 <script lang="ts">
 // NPM
+import { shallowRef } from "vue";
 import { JID } from "@xmpp/jid";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
+import EditProfileIdentity from "@/components/popups/sidebar/EditProfileIdentity.vue";
+import EditProfileAuthentication from "@/components/popups/sidebar/EditProfileAuthentication.vue";
+import EditProfileProfile from "@/components/popups/sidebar/EditProfileProfile.vue";
+import EditProfileEncryption from "@/components/popups/sidebar/EditProfileEncryption.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -119,6 +128,24 @@ export default {
           icon: "key.fill"
         }
       ] as NavigateSection,
+
+      formSections: {
+        identity: {
+          component: shallowRef(EditProfileIdentity)
+        },
+
+        authentication: {
+          component: shallowRef(EditProfileAuthentication)
+        },
+
+        profile: {
+          component: shallowRef(EditProfileProfile)
+        },
+
+        encryption: {
+          component: shallowRef(EditProfileEncryption)
+        }
+      },
 
       // --> STATE <--
 
