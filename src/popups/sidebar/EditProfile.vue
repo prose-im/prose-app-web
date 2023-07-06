@@ -94,25 +94,29 @@ export default {
         {
           id: "identity",
           title: "Identity",
-          label: "Name, Phone, Email"
+          label: "Name, Phone, Email",
+          icon: "mail.fill"
         },
 
         {
           id: "authentication",
           title: "Authentication",
-          label: "Password, MFA"
+          label: "Password, MFA",
+          icon: "lock.fill"
         },
 
         {
           id: "profile",
           title: "Profile",
-          label: "Job, Location"
+          label: "Job, Location",
+          icon: "person.fill"
         },
 
         {
           id: "encryption",
           title: "Encryption",
-          label: "Certificates, Keys"
+          label: "Certificates, Keys",
+          icon: "key.fill"
         }
       ] as NavigateSection,
 
@@ -222,10 +226,10 @@ $popup-height-full-breakpoint: (
 
   #{$c}__navigate {
     border-right: 1px solid $color-border-secondary;
-    padding-inline: $popup-padding-inline;
+    padding-inline: 12px;
     padding-block: $popup-padding-block;
     overflow: auto;
-    width: 190px;
+    width: 200px;
     flex: 0 0 auto;
 
     #{$c}__identity {
