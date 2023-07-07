@@ -34,17 +34,17 @@
           align="left"
         )
 
+        form-toggle(
+          v-else-if="field.type === 'toggle'"
+          :name="field.id"
+        )
+
         base-button(
           v-else-if="field.type === 'button'",
           tint="light"
           size="mid-medium"
         )
           | {{ field.data.text }}
-
-        span(
-          v-else-if="field.type === 'toggle'"
-        )
-          | [TGL]
 
       template(
         v-slot:aside
