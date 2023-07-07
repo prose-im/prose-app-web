@@ -26,7 +26,7 @@ import {
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
-  FieldsetFieldDataButton as FormFieldsetFieldDataButton
+  FieldsetFieldDataToggle as FormFieldsetFieldDataToggle
 } from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
 
 export default {
@@ -50,6 +50,7 @@ export default {
               label: "Organization:",
 
               data: {
+                value: "",
                 placeholder: "Enter your company name…"
               } as FormFieldsetFieldDataInput
             },
@@ -60,6 +61,7 @@ export default {
               label: "Title:",
 
               data: {
+                value: "",
                 placeholder: "Enter your job title…"
               } as FormFieldsetFieldDataInput
             }
@@ -78,7 +80,11 @@ export default {
             {
               id: "automatic",
               type: FormFieldsetFieldType.Toggle,
-              label: "Auto-detect:"
+              label: "Auto-detect:",
+
+              data: {
+                value: true
+              } as FormFieldsetFieldDataToggle
             },
 
             {
@@ -87,6 +93,7 @@ export default {
               label: "Location:",
 
               data: {
+                value: "",
                 placeholder: "Enter your city & country…"
               } as FormFieldsetFieldDataInput
             }

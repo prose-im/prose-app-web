@@ -50,6 +50,7 @@ export default {
               label: "First name:",
 
               data: {
+                value: "",
                 placeholder: "Enter your first name…"
               } as FormFieldsetFieldDataInput,
 
@@ -65,6 +66,7 @@ export default {
               label: "Last name:",
 
               data: {
+                value: "",
                 placeholder: "Enter your last name…"
               } as FormFieldsetFieldDataInput
             }
@@ -87,6 +89,7 @@ export default {
               label: "Email:",
 
               data: {
+                value: "",
                 placeholder: "Enter your email address…"
               } as FormFieldsetFieldDataInput,
 
@@ -104,6 +107,7 @@ export default {
               label: "Phone:",
 
               data: {
+                value: "",
                 placeholder: "Enter your phone number…"
               } as FormFieldsetFieldDataInput,
 
