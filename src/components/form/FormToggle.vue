@@ -13,7 +13,6 @@ div(
   :class=`[
     "c-form-toggle",
     {
-      "c-form-toggle--active": isActive,
       "c-form-toggle--disabled": disabled,
       "c-form-toggle--loading": loading
     }
@@ -22,9 +21,10 @@ div(
   input(
     @change="onInputChange"
     :name="name"
-    :checked="modelValue"
+    :checked="checked"
     class="c-form-toggle__input"
     type="checkbox"
+    ref="input"
   )
 
   a.c-form-toggle__field(
@@ -64,9 +64,21 @@ export default {
 
   emits: ["update:modelValue"],
 
-  computed: {
-    isActive() {
-      return this.modelValue === true;
+  data() {
+    return {
+      // --> STATE <--
+
+      checked: false
+    };
+  },
+
+  watch: {
+    modelValue: {
+      immediate: true,
+
+      handler(value) {
+        this.checked = value;
+      }
     }
   },
 
@@ -84,8 +96,8 @@ export default {
     },
 
     onFieldClick(): void {
-      // Toggle model value
-      this.$emit("update:modelValue", !this.modelValue);
+      // Toggle hidden input value
+      (this.$refs.input as HTMLInputElement).click();
     }
   }
 };
@@ -113,6 +125,22 @@ $toggle-field-height: ($toggle-height - (2 * $toggle-handle-offset));
 
   #{$c}__input {
     display: none;
+
+    &:checked + #{$c}__field {
+      background-color: $color-base-blue-dark;
+
+      &:after {
+        margin-inline-start: ($toggle-field-width - $toggle-handle-size);
+      }
+
+      &:hover {
+        background-color: darken($color-base-blue-dark, 3%);
+      }
+
+      &:active {
+        background-color: darken($color-base-blue-dark, 6%);
+      }
+    }
   }
 
   #{$c}__field {
@@ -146,7 +174,7 @@ $toggle-field-height: ($toggle-height - (2 * $toggle-handle-offset));
     }
 
     &:active {
-      background-color: rgba($color-base-grey-normal, 0.3);
+      background-color: rgba($color-base-grey-normal, 0.34);
 
       &:after {
         box-shadow: 0 1px 2px 0 rgba($color-black, 0.1);
@@ -155,24 +183,6 @@ $toggle-field-height: ($toggle-height - (2 * $toggle-handle-offset));
   }
 
   // --> BOOLEANS <--
-
-  &--active {
-    #{$c}__field {
-      background-color: $color-base-blue-dark;
-
-      &:after {
-        margin-inline-start: ($toggle-field-width - $toggle-handle-size);
-      }
-
-      &:hover {
-        background-color: darken($color-base-blue-dark, 3%);
-      }
-
-      &:active {
-        background-color: darken($color-base-blue-dark, 6%);
-      }
-    }
-  }
 
   &--disabled {
     cursor: not-allowed;
