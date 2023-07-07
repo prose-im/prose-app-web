@@ -69,6 +69,7 @@ $c: ".c-form-fieldset-field";
   }
 
   #{$c}__input {
+    line-height: 0;
     flex: 1;
 
     &,
