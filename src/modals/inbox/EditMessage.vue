@@ -26,6 +26,7 @@ base-modal(
     type="textarea"
     name="message"
     size="large"
+    align="left"
     field-class="m-edit-message__field-textarea"
     autofocus
   )

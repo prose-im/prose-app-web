@@ -54,6 +54,7 @@ layout-toolbar(
           type="textarea"
           name="message"
           size="large"
+          align="left"
           ref="message"
           submittable
           autogrow

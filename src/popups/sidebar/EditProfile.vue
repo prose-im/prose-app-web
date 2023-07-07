@@ -226,10 +226,11 @@ export default {
 $c: ".p-edit-profile";
 
 // VARIABLES
-$popup-max-width: 720px;
-$popup-max-height: 600px;
+$popup-max-width: 760px;
+$popup-max-height: 650px;
 $popup-padding-inline: 22px;
-$popup-padding-block: $popup-padding-inline;
+$popup-padding-block-start: ($popup-padding-inline + 6px);
+$popup-padding-block-end: $popup-padding-inline;
 
 $popup-width-full-margin-inline: 14px;
 $popup-width-full-breakpoint: (
@@ -254,14 +255,13 @@ $popup-height-full-breakpoint: (
   #{$c}__navigate {
     border-right: 1px solid $color-border-secondary;
     padding-inline: 12px;
-    padding-block: $popup-padding-block;
+    padding-block: $popup-padding-block-start $popup-padding-block-end;
     overflow: auto;
     width: 200px;
     flex: 0 0 auto;
 
     #{$c}__identity {
       text-align: center;
-      margin-block-start: 6px;
 
       #{$c}__identity-avatar {
         /* TODO */
@@ -297,13 +297,13 @@ $popup-height-full-breakpoint: (
     }
 
     #{$c}__form {
-      padding-block-start: $popup-padding-block;
+      padding-block-start: $popup-padding-block-start;
       overflow: auto;
       flex: 1;
     }
 
     #{$c}__actions {
-      padding-block: $popup-padding-block;
+      padding-block: $popup-padding-block-end;
       flex: 0 0 auto;
       align-items: center;
       display: flex;

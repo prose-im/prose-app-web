@@ -14,6 +14,7 @@ div(
     "c-form-field",
     "c-form-field--" + type,
     "c-form-field--" + size,
+    "c-form-field--" + align,
     {
       "c-form-field--focused": isFocused,
       "c-form-field--disabled": disabled,
@@ -114,6 +115,15 @@ export default {
           "mid-large",
           "ultra-large"
         ].includes(x);
+      }
+    },
+
+    align: {
+      type: String,
+      default: "center",
+
+      validator(x: string) {
+        return ["left", "center", "right"].includes(x);
       }
     },
 
@@ -304,10 +314,6 @@ $c: ".c-form-field";
     box-shadow: 0 3px 4px 0 rgba($color-black, 0.01),
       inset 0 1px 2px 0 rgba($color-black, 0.04);
 
-    &--input {
-      text-align: center;
-    }
-
     &--textarea {
       height: 100%;
       margin: 0;
@@ -425,6 +431,26 @@ $c: ".c-form-field";
         line-height: 22px;
         padding-block: 13px;
       }
+    }
+  }
+
+  // --> ALIGNS <--
+
+  &--left {
+    #{$c}__inner {
+      text-align: left;
+    }
+  }
+
+  &--center {
+    #{$c}__inner {
+      text-align: center;
+    }
+  }
+
+  &--right {
+    #{$c}__inner {
+      text-align: right;
     }
   }
 
