@@ -127,18 +127,18 @@ $toggle-field-height: ($toggle-height - (2 * $toggle-handle-offset));
     display: none;
 
     &:checked + #{$c}__field {
-      background-color: $color-base-blue-dark;
+      background-color: $color-base-purple-normal;
 
       &:after {
         margin-inline-start: ($toggle-field-width - $toggle-handle-size);
       }
 
       &:hover {
-        background-color: darken($color-base-blue-dark, 3%);
+        background-color: darken($color-base-purple-normal, 6%);
       }
 
       &:active {
-        background-color: darken($color-base-blue-dark, 6%);
+        background-color: darken($color-base-purple-normal, 12%);
       }
     }
   }
