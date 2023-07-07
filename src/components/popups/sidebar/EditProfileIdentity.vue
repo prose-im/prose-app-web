@@ -10,45 +10,9 @@
 
 <template lang="pug">
 .p-edit-profile-identity
-  form-fieldset.p-edit-profile-identity__fieldset(
-    v-for="fieldset in fieldsets"
-    :id="'fieldset_' + fieldset.id"
+  edit-profile-form-fieldset(
+    :fieldsets="fieldsets"
   )
-    h6.p-edit-profile-identity__title.u-medium
-      | {{ fieldset.title }}
-
-    form-fieldset-field(
-      v-for="field in fieldset.fields"
-      :label="field.label"
-      class="p-edit-profile-identity__field"
-    )
-      template(
-        v-slot:default
-      )
-        form-field(
-          :name="field.id"
-          :placeholder="field.placeholder"
-          type="text"
-          size="mid-medium"
-          align="left"
-        )
-
-      template(
-        v-slot:aside
-      )
-        .p-edit-profile-identity__field-aside
-          a.u-medium(
-            v-if="field.aside"
-          )
-            | {{ field.aside.label }}
-
-    form-fieldset-notes(
-      v-if="fieldset.notes"
-    )
-      p(
-        v-for="note in fieldset.notes"
-      )
-        | {{ note }}
 </template>
 
 <!-- **********************************************************************
@@ -56,8 +20,17 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import {
+  default as EditProfileFormFieldset,
+  Fieldset as FormFieldset,
+  FieldsetFieldAsideType as FormFieldsetFieldAsideType
+} from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
+
 export default {
   name: "EditProfileIdentity",
+
+  components: { EditProfileFormFieldset },
 
   data() {
     return {
@@ -75,6 +48,7 @@ export default {
               placeholder: "Enter your first name…",
 
               aside: {
+                type: FormFieldsetFieldAsideType.Link,
                 label: "Get verified"
               }
             },
@@ -103,7 +77,10 @@ export default {
               placeholder: "Enter your email address…",
 
               aside: {
-                label: "Get verified"
+                type: FormFieldsetFieldAsideType.Label,
+                color: "green",
+                icon: "checkmark.seal.fill",
+                label: "Verified"
               }
             },
 
@@ -113,6 +90,7 @@ export default {
               placeholder: "Enter your phone number…",
 
               aside: {
+                type: FormFieldsetFieldAsideType.Link,
                 label: "Get verified"
               }
             }
@@ -123,40 +101,8 @@ export default {
             "It is recommended that your email address and phone number each get verified, as this increases the level of trust of your profile. The process only takes a few seconds: you will receive a link to verify your contact details."
           ]
         }
-      ]
+      ] as FormFieldset
     };
   }
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".p-edit-profile-identity";
-
-.p-edit-profile-identity {
-  #{$c}__title {
-    color: $color-text-secondary;
-    font-size: 14.5px;
-    margin-block-end: 16px;
-  }
-
-  #{$c}__field {
-    #{$c}__field-aside {
-      margin-inline-start: 11px;
-      margin-block-start: -3px;
-      min-width: 120px;
-
-      a {
-        font-size: 13.5px;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
-  }
-}
-</style>

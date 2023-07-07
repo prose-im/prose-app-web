@@ -10,7 +10,9 @@
 
 <template lang="pug">
 .p-edit-profile-profile
-  | TODO: Profile
+  edit-profile-form-fieldset(
+    :fieldsets="fieldsets"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -18,8 +20,24 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import {
+  default as EditProfileFormFieldset,
+  Fieldset as FormFieldset
+} from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
+
 export default {
-  name: "EditProfileProfile"
+  name: "EditProfileProfile",
+
+  components: { EditProfileFormFieldset },
+
+  data() {
+    return {
+      // --> DATA <--
+
+      fieldsets: [] as FormFieldset
+    };
+  }
 };
 </script>
 
