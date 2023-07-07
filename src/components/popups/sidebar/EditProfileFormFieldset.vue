@@ -27,6 +27,7 @@
       )
         form-field(
           v-if="field.type === 'input'"
+          v-model="field.data.value"
           :name="field.id"
           :placeholder="field.data.placeholder"
           type="text"
@@ -36,6 +37,7 @@
 
         form-toggle(
           v-else-if="field.type === 'toggle'"
+          v-model="field.data.value"
           :name="field.id"
         )
 
@@ -94,10 +96,10 @@
 export enum FieldsetFieldType {
   // Input type.
   Input = "input",
-  // Button type.
-  Button = "button",
   // Toggle type.
-  Toggle = "toggle"
+  Toggle = "toggle",
+  // Button type.
+  Button = "button"
 }
 
 export enum FieldsetFieldAsideType {
@@ -110,7 +112,12 @@ export enum FieldsetFieldAsideType {
 // TYPES
 
 type FieldsetFieldDataInput = {
+  value: string;
   placeholder: string;
+};
+
+type FieldsetFieldDataToggle = {
+  value: boolean;
 };
 
 type FieldsetFieldDataButton = {
@@ -129,7 +136,10 @@ interface FieldsetField {
   id: string;
   type: FieldsetFieldType;
   label: string;
-  data?: FieldsetFieldDataInput | FieldsetFieldDataButton;
+  data?:
+    | FieldsetFieldDataInput
+    | FieldsetFieldDataToggle
+    | FieldsetFieldDataButton;
   aside?: FieldsetFieldAside;
 }
 
