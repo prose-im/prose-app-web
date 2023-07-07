@@ -24,7 +24,9 @@
 import {
   default as EditProfileFormFieldset,
   Fieldset as FormFieldset,
-  FieldsetFieldAsideType as FormFieldsetFieldAsideType
+  FieldsetFieldType as FormFieldsetFieldType,
+  FieldsetFieldAsideType as FormFieldsetFieldAsideType,
+  FieldsetFieldDataInput as FormFieldsetFieldDataInput
 } from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
 
 export default {
@@ -44,8 +46,12 @@ export default {
           fields: [
             {
               id: "name_first",
+              type: FormFieldsetFieldType.Input,
               label: "First name:",
-              placeholder: "Enter your first name…",
+
+              data: {
+                placeholder: "Enter your first name…"
+              } as FormFieldsetFieldDataInput,
 
               aside: {
                 type: FormFieldsetFieldAsideType.Link,
@@ -55,8 +61,12 @@ export default {
 
             {
               id: "name_last",
+              type: FormFieldsetFieldType.Input,
               label: "Last name:",
-              placeholder: "Enter your last name…"
+
+              data: {
+                placeholder: "Enter your last name…"
+              } as FormFieldsetFieldDataInput
             }
           ],
 
@@ -73,8 +83,12 @@ export default {
           fields: [
             {
               id: "email",
+              type: FormFieldsetFieldType.Input,
               label: "Email:",
-              placeholder: "Enter your email address…",
+
+              data: {
+                placeholder: "Enter your email address…"
+              } as FormFieldsetFieldDataInput,
 
               aside: {
                 type: FormFieldsetFieldAsideType.Label,
@@ -86,8 +100,12 @@ export default {
 
             {
               id: "phone",
+              type: FormFieldsetFieldType.Input,
               label: "Phone:",
-              placeholder: "Enter your phone number…",
+
+              data: {
+                placeholder: "Enter your phone number…"
+              } as FormFieldsetFieldDataInput,
 
               aside: {
                 type: FormFieldsetFieldAsideType.Link,

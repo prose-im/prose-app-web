@@ -26,12 +26,25 @@
         v-slot:default
       )
         form-field(
+          v-if="field.type === 'input'"
           :name="field.id"
-          :placeholder="field.placeholder"
+          :placeholder="field.data.placeholder"
           type="text"
           size="mid-medium"
           align="left"
         )
+
+        base-button(
+          v-else-if="field.type === 'button'",
+          tint="light"
+          size="mid-medium"
+        )
+          | {{ field.data.text }}
+
+        span(
+          v-else-if="field.type === 'toggle'"
+        )
+          | [TGL]
 
       template(
         v-slot:aside
@@ -78,12 +91,31 @@
 
 <script lang="ts">
 // ENUMERATIONS
+export enum FieldsetFieldType {
+  // Input type.
+  Input = "input",
+  // Button type.
+  Button = "button",
+  // Toggle type.
+  Toggle = "toggle"
+}
+
 export enum FieldsetFieldAsideType {
   // Label type.
   Label = "label",
   // Link type.
   Link = "link"
 }
+
+// TYPES
+
+type FieldsetFieldDataInput = {
+  placeholder: string;
+};
+
+type FieldsetFieldDataButton = {
+  text: string;
+};
 
 // INTERFACES
 export interface Fieldset {
@@ -95,8 +127,9 @@ export interface Fieldset {
 
 interface FieldsetField {
   id: string;
+  type: FieldsetFieldType;
   label: string;
-  placeholder: string;
+  data?: FieldsetFieldDataInput | FieldsetFieldDataButton;
   aside?: FieldsetFieldAside;
 }
 

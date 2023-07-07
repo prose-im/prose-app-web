@@ -22,15 +22,3 @@ export default {
   name: "EditProfileEncryption"
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".p-edit-profile-encryption";
-
-.p-edit-profile-encryption {
-  /* TODO */
-}
-</style>
