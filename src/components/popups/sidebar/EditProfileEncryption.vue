@@ -18,7 +18,18 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
 export default {
-  name: "EditProfileEncryption"
+  name: "EditProfileEncryption",
+
+  props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    }
+  }
 };
 </script>

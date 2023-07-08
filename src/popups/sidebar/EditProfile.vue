@@ -49,6 +49,7 @@ base-popup(
       component(
         v-if="formSections[section]"
         :is="formSections[section].component"
+        :jid="selfJID"
       )
 
     .p-edit-profile__actions

@@ -20,6 +20,10 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
 // PROJECT: COMPONENTS
 import {
   default as EditProfileFormFieldset,
@@ -29,16 +33,37 @@ import {
   FieldsetFieldDataInput as FormFieldsetFieldDataInput
 } from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "EditProfileIdentity",
 
   components: { EditProfileFormFieldset },
 
+  props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    }
+  },
+
   data() {
     return {
-      // --> DATA <--
+      // --> STATE <--
 
-      fieldsets: [
+      form: {
+        nameFirst: "",
+        nameLast: "",
+        email: "",
+        phone: ""
+      }
+    };
+  },
+
+  computed: {
+    fieldsets(): Array<FormFieldset> {
+      return [
         {
           id: "name",
           title: "Name",
@@ -50,7 +75,7 @@ export default {
               label: "First name:",
 
               data: {
-                value: "",
+                value: this.form.nameFirst,
                 placeholder: "Enter your first name…"
               } as FormFieldsetFieldDataInput,
 
@@ -66,7 +91,7 @@ export default {
               label: "Last name:",
 
               data: {
-                value: "",
+                value: this.form.nameLast,
                 placeholder: "Enter your last name…"
               } as FormFieldsetFieldDataInput
             }
@@ -89,7 +114,7 @@ export default {
               label: "Email:",
 
               data: {
-                value: "",
+                value: this.form.email,
                 placeholder: "Enter your email address…"
               } as FormFieldsetFieldDataInput,
 
@@ -107,7 +132,7 @@ export default {
               label: "Phone:",
 
               data: {
-                value: "",
+                value: this.form.phone,
                 placeholder: "Enter your phone number…"
               } as FormFieldsetFieldDataInput,
 
@@ -123,8 +148,25 @@ export default {
             "It is recommended that your email address and phone number each get verified, as this increases the level of trust of your profile. The process only takes a few seconds: you will receive a link to verify your contact details."
           ]
         }
-      ] as FormFieldset
-    };
+      ];
+    },
+
+    profile(): ReturnType<typeof Store.$profile.getProfile> {
+      return Store.$profile.getProfile(this.jid);
+    }
+  },
+
+  created() {
+    // Populate form values
+    if (this.profile.name) {
+      this.form.nameFirst = this.profile.name.first;
+      this.form.nameLast = this.profile.name.last;
+    }
+
+    if (this.profile.information && this.profile.information.contact) {
+      this.form.email = this.profile.information.contact.email || "";
+      this.form.phone = this.profile.information.contact.phone || "";
+    }
   }
 };
 </script>

@@ -20,6 +20,10 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
 // PROJECT: COMPONENTS
 import {
   default as EditProfileFormFieldset,
@@ -29,16 +33,36 @@ import {
   FieldsetFieldDataToggle as FormFieldsetFieldDataToggle
 } from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "EditProfileProfile",
 
   components: { EditProfileFormFieldset },
 
+  props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    }
+  },
+
   data() {
     return {
-      // --> DATA <--
+      // --> STATE <--
 
-      fieldsets: [
+      form: {
+        jobOrganization: "",
+        jobTitle: "",
+        location: ""
+      }
+    };
+  },
+
+  computed: {
+    fieldsets(): Array<FormFieldset> {
+      return [
         {
           id: "job",
           title: "Job information",
@@ -50,7 +74,7 @@ export default {
               label: "Organization:",
 
               data: {
-                value: "",
+                value: this.form.jobOrganization,
                 placeholder: "Enter your company name…"
               } as FormFieldsetFieldDataInput
             },
@@ -61,7 +85,7 @@ export default {
               label: "Title:",
 
               data: {
-                value: "",
+                value: this.form.jobTitle,
                 placeholder: "Enter your job title…"
               } as FormFieldsetFieldDataInput
             }
@@ -93,7 +117,7 @@ export default {
               label: "Location:",
 
               data: {
-                value: "",
+                value: this.form.location,
                 placeholder: "Enter your city & country…"
               } as FormFieldsetFieldDataInput
             }
@@ -104,8 +128,33 @@ export default {
             "Note that geolocation permissions are required for automatic mode."
           ]
         }
-      ] as FormFieldset
-    };
+      ];
+    },
+
+    profile(): ReturnType<typeof Store.$profile.getProfile> {
+      return Store.$profile.getProfile(this.jid);
+    }
+  },
+
+  created() {
+    // Populate form values
+    this.form.jobTitle = this.profile.role || "";
+
+    if (this.profile.information && this.profile.information.location) {
+      if (
+        this.profile.information.location.city &&
+        this.profile.information.location.country
+      ) {
+        this.form.location =
+          `${this.profile.information.location.city}, ` +
+          `${this.profile.information.location.country}`;
+      } else {
+        this.form.location =
+          this.profile.information.location.city ||
+          this.profile.information.location.country ||
+          "";
+      }
+    }
   }
 };
 </script>

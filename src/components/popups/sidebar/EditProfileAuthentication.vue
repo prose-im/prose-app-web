@@ -20,6 +20,10 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
 // PROJECT: COMPONENTS
 import {
   default as EditProfileFormFieldset,
@@ -32,6 +36,13 @@ export default {
   name: "EditProfileAuthentication",
 
   components: { EditProfileFormFieldset },
+
+  props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    }
+  },
 
   data() {
     return {
@@ -84,7 +95,7 @@ export default {
             "In the event that you are unable to generate MFA tokens, you can still use your recovery phone number to login to your account."
           ]
         }
-      ] as FormFieldset
+      ] as Array<FormFieldset>
     };
   }
 };
