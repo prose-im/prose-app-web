@@ -32,7 +32,8 @@ import {
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
   FieldsetFieldDataToggle as FormFieldsetFieldDataToggle,
   FieldsetControlActionType as FormFieldsetControlActionType,
-  FieldsetControlActionDataButton as FormFieldsetControlActionDataButton
+  FieldsetControlActionDataButton as FormFieldsetControlActionDataButton,
+  FieldsetControlIconType as FormFieldsetControlIconType
 } from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
 
 // PROJECT: STORES
@@ -129,9 +130,8 @@ export default {
             {
               id: "location-mode",
               label: "Location mode:",
-              value: "Automatic" // TODO: from configuration
-
-              // TODO: add location icon
+              value: "Automatic", // TODO: from configuration
+              icon: FormFieldsetControlIconType.LocationActive
             },
 
             {

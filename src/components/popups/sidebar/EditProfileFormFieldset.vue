@@ -90,6 +90,16 @@
         template(
           v-slot:default
         )
+          base-icon(
+            v-if="control.icon"
+            :name="controlIconToName(control.icon)"
+            :class=`[
+              "p-edit-profile-form-fieldset__control-icon",
+              ("p-edit-profile-form-fieldset__control-icon--" + controlIconToColor(control.icon))
+            ]`
+            size="11px"
+          )
+
           | {{ control.value }}
 
         template(
@@ -143,6 +153,13 @@ export enum FieldsetControlActionType {
   Button = "button"
 }
 
+export enum FieldsetControlIconType {
+  // Location active type.
+  LocationActive = "location-active",
+  // Location inactive type.
+  LocationInactive = "location-inactive"
+}
+
 // TYPES
 
 export type FieldsetFieldDataInput = {
@@ -192,6 +209,7 @@ interface FieldsetControl {
   id: string;
   label: string;
   value: string;
+  icon?: FieldsetControlIconType;
   actions?: Array<FieldsetControlAction>;
 }
 
@@ -210,6 +228,31 @@ export default {
 
       validator(x: Array<Fieldset>): boolean {
         return x.length > 0;
+      }
+    }
+  },
+
+  methods: {
+    // --> HELPERS <--
+
+    controlIconToName(icon: FieldsetControlIconType): string {
+      switch (icon) {
+        case FieldsetControlIconType.LocationActive:
+        case FieldsetControlIconType.LocationInactive: {
+          return "location.fill";
+        }
+      }
+    },
+
+    controlIconToColor(icon: FieldsetControlIconType): string {
+      switch (icon) {
+        case FieldsetControlIconType.LocationActive: {
+          return "blue";
+        }
+
+        default: {
+          return "grey";
+        }
       }
     }
   }
@@ -270,6 +313,24 @@ $c: ".p-edit-profile-form-fieldset";
 
   #{$c}__controls {
     margin-block-start: 12px;
+
+    #{$c}__control {
+      #{$c}__control-icon {
+        margin-inline-end: 2px;
+
+        &--grey {
+          fill: $color-base-grey-normal;
+        }
+
+        &--blue {
+          fill: $color-base-blue-dark;
+        }
+
+        &--green {
+          fill: $color-base-green-normal;
+        }
+      }
+    }
   }
 }
 </style>

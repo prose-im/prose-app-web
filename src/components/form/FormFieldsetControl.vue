@@ -67,7 +67,12 @@ $c: ".c-form-fieldset-control";
   }
 
   #{$c}__label {
-    padding-inline-end: 4px;
+    padding-inline-end: 5px;
+  }
+
+  #{$c}__value {
+    display: flex;
+    align-items: center;
   }
 
   #{$c}__actions {
