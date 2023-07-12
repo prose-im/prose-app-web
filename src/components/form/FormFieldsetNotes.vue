@@ -34,7 +34,7 @@ $c: ".c-form-fieldset-notes";
   color: $color-text-secondary;
   font-size: 13.5px;
   line-height: 16px;
-  margin-block-start: 24px;
+  margin-block-start: 22px;
 
   p {
     margin-block-end: 11px;
