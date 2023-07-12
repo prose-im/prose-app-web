@@ -93,11 +93,11 @@
           base-icon(
             v-if="control.icon"
             :name="controlIconToName(control.icon)"
+            :size="controlIconToSize(control.icon)"
             :class=`[
               "p-edit-profile-form-fieldset__control-icon",
               ("p-edit-profile-form-fieldset__control-icon--" + controlIconToColor(control.icon))
             ]`
-            size="11px"
           )
 
           | {{ control.value }}
@@ -157,7 +157,11 @@ export enum FieldsetControlIconType {
   // Location active type.
   LocationActive = "location-active",
   // Location inactive type.
-  LocationInactive = "location-inactive"
+  LocationInactive = "location-inactive",
+  // Status enabled type.
+  StatusEnabled = "status-enabled",
+  // Status disabled type.
+  StatusDisabled = "status-disabled"
 }
 
 // TYPES
@@ -241,6 +245,11 @@ export default {
         case FieldsetControlIconType.LocationInactive: {
           return "location.fill";
         }
+
+        case FieldsetControlIconType.StatusEnabled:
+        case FieldsetControlIconType.StatusDisabled: {
+          return "circle.fill";
+        }
       }
     },
 
@@ -250,8 +259,26 @@ export default {
           return "blue";
         }
 
+        case FieldsetControlIconType.StatusEnabled: {
+          return "green";
+        }
+
         default: {
           return "grey";
+        }
+      }
+    },
+
+    controlIconToSize(icon: FieldsetControlIconType): string {
+      switch (icon) {
+        case FieldsetControlIconType.LocationActive:
+        case FieldsetControlIconType.LocationInactive: {
+          return "11px";
+        }
+
+        case FieldsetControlIconType.StatusEnabled:
+        case FieldsetControlIconType.StatusDisabled: {
+          return "9px";
         }
       }
     }
@@ -316,7 +343,8 @@ $c: ".p-edit-profile-form-fieldset";
 
     #{$c}__control {
       #{$c}__control-icon {
-        margin-inline-end: 2px;
+        margin-block-start: 1px;
+        margin-inline-end: 3px;
 
         &--grey {
           fill: $color-base-grey-normal;

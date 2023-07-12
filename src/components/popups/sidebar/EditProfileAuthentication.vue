@@ -31,7 +31,8 @@ import {
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataButton as FormFieldsetFieldDataButton,
   FieldsetControlActionType as FormFieldsetControlActionType,
-  FieldsetControlActionDataButton as FormFieldsetControlActionDataButton
+  FieldsetControlActionDataButton as FormFieldsetControlActionDataButton,
+  FieldsetControlIconType as FormFieldsetControlIconType
 } from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
 
 export default {
@@ -111,9 +112,8 @@ export default {
             {
               id: "status",
               label: "Status:",
-              value: "Enabled" // TODO
-
-              // TODO: add green badge
+              value: "Enabled",
+              icon: FormFieldsetControlIconType.StatusEnabled
             },
 
             {
