@@ -17,67 +17,78 @@
     h6.p-edit-profile-form-fieldset__title.u-medium
       | {{ fieldset.title }}
 
-    form-fieldset-field(
-      v-for="field in fieldset.fields"
-      :label="field.label"
-      class="p-edit-profile-form-fieldset__field"
+    template(
+      v-if="fieldset.parts"
     )
-      template(
-        v-slot:default
+      component(
+        v-for="part in fieldset.parts"
+        :is="part.component"
       )
-        form-field(
-          v-if="field.type === 'input'"
-          v-model="field.data.value"
-          :name="field.id"
-          :placeholder="field.data.placeholder"
-          type="text"
-          size="mid-medium"
-          align="left"
-        )
 
-        form-toggle(
-          v-else-if="field.type === 'toggle'"
-          v-model="field.data.value"
-          :name="field.id"
-        )
-
-        base-button(
-          v-else-if="field.type === 'button'",
-          :disabled="field.data.disabled"
-          tint="light"
-          size="mid-medium"
-        )
-          | {{ field.data.text }}
-
-      template(
-        v-slot:aside
+    template(
+      v-if="fieldset.fields"
+    )
+      form-fieldset-field(
+        v-for="field in fieldset.fields"
+        :label="field.label"
+        class="p-edit-profile-form-fieldset__field"
       )
-        .p-edit-profile-form-fieldset__field-aside
-          template(
-            v-if="field.aside"
+        template(
+          v-slot:default
+        )
+          form-field(
+            v-if="field.type === 'input'"
+            v-model="field.data.value"
+            :name="field.id"
+            :placeholder="field.data.placeholder"
+            type="text"
+            size="mid-medium"
+            align="left"
           )
-            a.p-edit-profile-form-fieldset__field-aside-link.u-medium(
-              v-if="field.aside.type === 'link'"
-            )
-              | {{ field.aside.label }}
 
-            span(
-              v-else-if="field.aside.type === 'label'"
-              :class=`[
-                "p-edit-profile-form-fieldset__field-aside-label",
-                {
-                  ["p-edit-profile-form-fieldset__field-aside-label--" + field.aside.color]: field.aside.color
-                }
-              ]`
+          form-toggle(
+            v-else-if="field.type === 'toggle'"
+            v-model="field.data.value"
+            :name="field.id"
+          )
+
+          base-button(
+            v-else-if="field.type === 'button'",
+            :disabled="field.data.disabled"
+            tint="light"
+            size="mid-medium"
+          )
+            | {{ field.data.text }}
+
+        template(
+          v-slot:aside
+        )
+          .p-edit-profile-form-fieldset__field-aside
+            template(
+              v-if="field.aside"
             )
-              base-icon(
-                v-if="field.aside.icon"
-                :name="field.aside.icon"
-                size="13px"
-                class="p-edit-profile-form-fieldset__field-aside-icon"
+              a.p-edit-profile-form-fieldset__field-aside-link.u-medium(
+                v-if="field.aside.type === 'link'"
               )
+                | {{ field.aside.label }}
 
-              | {{ field.aside.label }}
+              span(
+                v-else-if="field.aside.type === 'label'"
+                :class=`[
+                  "p-edit-profile-form-fieldset__field-aside-label",
+                  {
+                    ["p-edit-profile-form-fieldset__field-aside-label--" + field.aside.color]: field.aside.color
+                  }
+                ]`
+              )
+                base-icon(
+                  v-if="field.aside.icon"
+                  :name="field.aside.icon"
+                  size="13px"
+                  class="p-edit-profile-form-fieldset__field-aside-icon"
+                )
+
+                | {{ field.aside.label }}
 
     .p-edit-profile-form-fieldset__controls(
       v-if="fieldset.controls"
@@ -186,9 +197,15 @@ export type FieldsetControlActionDataButton = FieldsetFieldDataButton;
 export interface Fieldset {
   id: string;
   title: string;
-  fields: Array<FieldsetField>;
+  parts?: Array<FieldsetPart>;
+  fields?: Array<FieldsetField>;
   controls?: Array<FieldsetControl>;
   notes?: Array<string>;
+}
+
+interface FieldsetPart {
+  id: string;
+  component: object;
 }
 
 interface FieldsetField {
