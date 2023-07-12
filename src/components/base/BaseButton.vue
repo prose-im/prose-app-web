@@ -68,6 +68,14 @@ div(
 <script lang="ts">
 // CONSTANTS
 const AVAILABLE_SIZES: { [size: string]: { icon: string } } = {
+  small: {
+    icon: "11px"
+  },
+
+  "mid-small": {
+    icon: "12px"
+  },
+
   medium: {
     icon: "13px"
   },
@@ -207,6 +215,8 @@ $color-button-light-reverse: rgba($color-black, 0.15);
 $color-button-red-normal: $color-base-red-normal;
 $color-button-red-reverse: $color-white;
 
+$size-small-padding-sides: 10px;
+$size-mid-small-padding-sides: 12px;
 $size-medium-padding-sides: 14px;
 $size-mid-medium-padding-sides: 20px;
 $size-large-padding-sides: 24px;
@@ -324,6 +334,24 @@ $size-ultra-large-padding-sides: 44px;
   }
 
   // --> SIZES <--
+
+  &--small {
+    #{$c}__inner {
+      font-size: 8.5px;
+      line-height: 20px;
+      padding-inline-start: $size-small-padding-sides;
+      padding-inline-end: $size-small-padding-sides;
+    }
+  }
+
+  &--mid-small {
+    #{$c}__inner {
+      font-size: 9.5px;
+      line-height: 22px;
+      padding-inline-start: $size-mid-small-padding-sides;
+      padding-inline-end: $size-mid-small-padding-sides;
+    }
+  }
 
   &--medium {
     #{$c}__inner {
