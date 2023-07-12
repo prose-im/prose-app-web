@@ -30,7 +30,9 @@ import {
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
-  FieldsetFieldDataToggle as FormFieldsetFieldDataToggle
+  FieldsetFieldDataToggle as FormFieldsetFieldDataToggle,
+  FieldsetControlActionType as FormFieldsetControlActionType,
+  FieldsetControlActionDataButton as FormFieldsetControlActionDataButton
 } from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
 
 // PROJECT: STORES
@@ -120,6 +122,33 @@ export default {
                 value: this.form.location,
                 placeholder: "Enter your city & country…"
               } as FormFieldsetFieldDataInput
+            }
+          ],
+
+          controls: [
+            {
+              id: "location-mode",
+              label: "Location mode:",
+              value: "Automatic" // TODO: from configuration
+
+              // TODO: add location icon
+            },
+
+            {
+              id: "location-permission",
+              label: "Geolocation permission:",
+              value: "Allowed", // TODO: from configuration
+
+              actions: [
+                {
+                  type: FormFieldsetControlActionType.Button,
+
+                  data: {
+                    text: "Manage",
+                    disabled: true
+                  } as FormFieldsetControlActionDataButton
+                }
+              ]
             }
           ],
 

@@ -29,7 +29,9 @@ import {
   default as EditProfileFormFieldset,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
-  FieldsetFieldDataButton as FormFieldsetFieldDataButton
+  FieldsetFieldDataButton as FormFieldsetFieldDataButton,
+  FieldsetControlActionType as FormFieldsetControlActionType,
+  FieldsetControlActionDataButton as FormFieldsetControlActionDataButton
 } from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
 
 export default {
@@ -63,8 +65,25 @@ export default {
                 text: "Change password…"
               } as FormFieldsetFieldDataButton
             }
+          ],
 
-            // TODO: recovery email small button
+          controls: [
+            {
+              id: "recovery-email",
+              label: "Recovery email:",
+              value: "(none)", // TODO: fetch this from somewhere
+
+              actions: [
+                {
+                  type: FormFieldsetControlActionType.Button,
+
+                  data: {
+                    text: "Edit",
+                    disabled: true
+                  } as FormFieldsetControlActionDataButton
+                }
+              ]
+            }
           ],
 
           notes: [
@@ -86,8 +105,33 @@ export default {
                 text: "Disable MFA…"
               } as FormFieldsetFieldDataButton
             }
+          ],
 
-            // TODO: status + recovery small buttons
+          controls: [
+            {
+              id: "status",
+              label: "Status:",
+              value: "Enabled" // TODO
+
+              // TODO: add green badge
+            },
+
+            {
+              id: "recovery-phone",
+              label: "Recovery phone:",
+              value: "(none)", // TODO: fetch this from somewhere
+
+              actions: [
+                {
+                  type: FormFieldsetControlActionType.Button,
+
+                  data: {
+                    text: "Edit",
+                    disabled: true
+                  } as FormFieldsetControlActionDataButton
+                }
+              ]
+            }
           ],
 
           notes: [

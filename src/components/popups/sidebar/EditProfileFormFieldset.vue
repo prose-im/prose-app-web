@@ -43,6 +43,7 @@
 
         base-button(
           v-else-if="field.type === 'button'",
+          :disabled="field.data.disabled"
           tint="light"
           size="mid-medium"
         )
@@ -78,6 +79,34 @@
 
               | {{ field.aside.label }}
 
+    .p-edit-profile-form-fieldset__controls(
+      v-if="fieldset.controls"
+    )
+      form-fieldset-control(
+        v-for="control in fieldset.controls"
+        :label="control.label"
+        class="p-edit-profile-form-fieldset__control"
+      )
+        template(
+          v-slot:default
+        )
+          | {{ control.value }}
+
+        template(
+          v-if="control.actions && control.actions.length > 0"
+          v-slot:actions
+        )
+          template(
+            v-for="action in control.actions"
+          )
+            base-button(
+              v-if="action.type === 'button'",
+              :disabled="action.data.disabled"
+              tint="light"
+              size="mid-small"
+            )
+              | {{ action.data.text }}
+
     form-fieldset-notes(
       v-if="fieldset.notes"
     )
@@ -109,26 +138,35 @@ export enum FieldsetFieldAsideType {
   Link = "link"
 }
 
+export enum FieldsetControlActionType {
+  // Button type.
+  Button = "button"
+}
+
 // TYPES
 
-type FieldsetFieldDataInput = {
+export type FieldsetFieldDataInput = {
   value: string;
   placeholder: string;
 };
 
-type FieldsetFieldDataToggle = {
+export type FieldsetFieldDataToggle = {
   value: boolean;
 };
 
-type FieldsetFieldDataButton = {
+export type FieldsetFieldDataButton = {
   text: string;
+  disabled?: boolean;
 };
+
+export type FieldsetControlActionDataButton = FieldsetFieldDataButton;
 
 // INTERFACES
 export interface Fieldset {
   id: string;
   title: string;
   fields: Array<FieldsetField>;
+  controls?: Array<FieldsetControl>;
   notes?: Array<string>;
 }
 
@@ -148,6 +186,18 @@ interface FieldsetFieldAside {
   label: string;
   color?: string;
   icon?: string;
+}
+
+interface FieldsetControl {
+  id: string;
+  label: string;
+  value: string;
+  actions?: Array<FieldsetControlAction>;
+}
+
+interface FieldsetControlAction {
+  type: FieldsetControlActionType;
+  data?: FieldsetControlActionDataButton;
 }
 
 export default {
@@ -216,6 +266,10 @@ $c: ".p-edit-profile-form-fieldset";
         }
       }
     }
+  }
+
+  #{$c}__controls {
+    margin-block-start: 12px;
   }
 }
 </style>
