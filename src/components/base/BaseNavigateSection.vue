@@ -143,11 +143,11 @@ $icon-size: 28px;
   // --> BOOLEANS <--
 
   &--active {
+    background-color: $color-base-blue-dark;
+
     &,
     &:hover,
     &:active {
-      background-color: $color-base-blue-dark;
-
       #{$c}__icon {
         background-color: transparent;
       }
@@ -165,6 +165,14 @@ $icon-size: 28px;
       #{$c}__arrow {
         visibility: visible;
       }
+    }
+
+    &:hover {
+      background-color: darken($color-base-blue-dark, 2%);
+    }
+
+    &:active {
+      background-color: darken($color-base-blue-dark, 3%);
     }
   }
 }
