@@ -21,6 +21,7 @@ import { NS_ROSTER } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+import { Contact } from "../../../../prose-core-client/master/bindings/prose-core-client-wasm/pkg";
 
 /**************************************************************************
  * ENUMERATIONS
@@ -40,15 +41,7 @@ enum RosterItemGroup {
  * ************************************************************************* */
 
 interface LoadRosterResponse {
-  items: Array<LoadRosterResponseItem>;
-}
-
-interface LoadRosterResponseItem {
-  jid: JID;
-  group: RosterItemGroup;
-  subscription: IQRosterSubscription;
-  ask?: IQRosterAsk;
-  name?: string;
+  items: Array<Contact>;
 }
 
 /**************************************************************************
@@ -67,11 +60,13 @@ class BrokerModuleRoster extends BrokerModule {
     // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-get
     logger.info("Will load roster");
 
-    const response = await this._client.request(
-      $iq({ type: IQType.Get, id: xmppID() }).c("query", { xmlns: NS_ROSTER })
-    );
+    if (!this._client.client) {
+      return Promise.reject("No client");
+    }
 
-    return this.__respondLoadRoster(response);
+    return {
+      items: await this._client.client.loadContacts()
+    }
   }
 
   private __respondLoadRoster(response: Cash): LoadRosterResponse {

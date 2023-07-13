@@ -235,11 +235,13 @@ export default {
     // --> HELPERS <--
 
     async syncRosterEager(): void {
+      console.log("SYNC ROSTER")
       // Can synchronize now? (connected)
       if (
         this.isRosterSyncStale === true &&
         Store.$session.connected === true
       ) {
+        console.log("SYNC ROSTER 1")
         // Mark synchronization as non-stale
         this.isRosterSyncStale = false;
 

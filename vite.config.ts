@@ -15,6 +15,7 @@ import vitePugPlugin from "vite-plugin-pug-transformer";
 import { viteStaticCopy as viteStaticCopyPlugin } from "vite-plugin-static-copy";
 import { createSvgIconsPlugin as viteSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { getInstalledPathSync } from "get-installed-path";
+import wasm from "vite-plugin-wasm";
 
 import commonConfig from "./config/common";
 import developmentConfig from "./config/development";
@@ -46,7 +47,10 @@ export default {
   server: {
     host: "localhost",
     port: 3010,
-    strictPort: true
+    strictPort: true,
+    fs: {
+      strict: false
+    }
   },
 
   preview: {
@@ -74,6 +78,7 @@ export default {
   plugins: [
     vue(),
     vitePugPlugin({}),
+    wasm(),
 
     viteStaticCopyPlugin({
       targets: [
