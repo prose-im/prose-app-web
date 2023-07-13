@@ -96,14 +96,11 @@ class StropheJSConnection implements ProseConnection {
       { protocol: "wss" }
     )
     this.__connection.rawInput = (data) => {
-      console.log("RECV", data);
+      //console.log("RECV", data);
       if (this.__eventHandler) {
         this.__eventHandler.handleStanza(data)
       }
     };
-    this.__connection.rawOutput = (data) => {
-      // console.log("SENT", data);
-    }
   }
 
   async connect(jid: string, password: string) {
@@ -310,6 +307,7 @@ class BrokerClient implements ProseClientDelegate {
 
   contactChanged(jid: String) {
     console.log("Contact changed")
+    Store.$roster.emitContactChanged(jid)
   }
 
   messagesAppended(conversation: String, messageIDs: string[]) {
@@ -325,7 +323,6 @@ class BrokerClient implements ProseClientDelegate {
   }
 
   private __onConnect(status: Strophe.Status): void {
-    console.log("_______ ON CONNECT")
     switch (status) {
       // [CONNECTING] The connection is currently being made
       case Strophe.Status.CONNECTING: {

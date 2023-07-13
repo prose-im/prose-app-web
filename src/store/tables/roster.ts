@@ -15,6 +15,7 @@ import { JID } from "@xmpp/jid";
 // PROJECT: BROKER
 import Broker from "@/broker";
 import { RosterItemGroup } from "@/broker/modules/roster";
+import mitt from "mitt";
 
 /**************************************************************************
  * TYPES
@@ -53,6 +54,8 @@ interface RosterEntry {
 const LOCAL_STATES = {
   loaded: false
 };
+
+const EventBus = mitt();
 
 /**************************************************************************
  * TABLE
@@ -149,6 +152,14 @@ const $roster = defineStore("roster", {
       }
 
       return Promise.resolve(this.list);
+    },
+
+    events(): ReturnType<typeof mitt> {
+      return EventBus
+    },
+
+    emitContactChanged(jid: string) {
+      EventBus.emit("contact:changed", jid);
     }
   }
 });

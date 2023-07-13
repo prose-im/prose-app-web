@@ -221,6 +221,7 @@ export default {
 
     // Bind connected handler
     Store.$session.events().on("connected", this.onStoreConnected);
+    Store.$roster.events().on("contact:changed", this.onContactChanged);
 
     // Synchronize roster eagerly
     this.syncRosterEager();
@@ -235,13 +236,11 @@ export default {
     // --> HELPERS <--
 
     async syncRosterEager(): void {
-      console.log("SYNC ROSTER")
       // Can synchronize now? (connected)
       if (
         this.isRosterSyncStale === true &&
         Store.$session.connected === true
       ) {
-        console.log("SYNC ROSTER 1")
         // Mark synchronization as non-stale
         this.isRosterSyncStale = false;
 
@@ -294,6 +293,11 @@ export default {
         //   is restored)
         this.isRosterSyncStale = true;
       }
+    },
+
+    onContactChanged(jid: string): void {
+      this.isRosterSyncStale = true;
+      this.syncRosterEager()
     }
   }
 };
