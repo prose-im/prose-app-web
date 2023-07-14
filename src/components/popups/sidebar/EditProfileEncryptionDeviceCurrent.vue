@@ -145,10 +145,12 @@ $inner-spacing-sides: 18px;
 
     #{$c}__snapshot-platform {
       margin-inline-end: 12px;
+      flex: 0 0 auto;
     }
 
     #{$c}__snapshot-text {
       padding-block-start: 2px;
+      flex: 1;
 
       #{$c}__snapshot-system {
         color: $color-text-primary;
