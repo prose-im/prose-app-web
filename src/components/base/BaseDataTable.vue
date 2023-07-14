@@ -31,11 +31,19 @@
           size="small"
         )
 
-      span.c-base-data-table__column(
+      span(
         v-for="(column, index) in columns"
         :style=`{
           width: sizes[index]
         }`
+        :class=`[
+          "c-base-data-table__column",
+          "u-select",
+          {
+            "u-regular": !row.selected,
+            "u-medium": row.selected
+          }
+        ]`
       )
         | {{ row[column.id] ? row[column.id] : "" }}
 
@@ -134,8 +142,10 @@ $c: ".c-base-data-table";
   #{$c}__rows {
     color: $color-text-primary;
     font-size: 13px;
+    line-height: 13px;
     min-height: 120px;
-    padding-block-end: 28px;
+    padding-block-start: 4px;
+    padding-block-end: 14px;
     overflow: auto;
 
     #{$c}__row {
@@ -152,7 +162,7 @@ $c: ".c-base-data-table";
       margin-inline-end: 12px;
 
       &:nth-child(1) {
-        min-width: ($size-form-checkbox-small-size + 2px);
+        width: ($size-form-checkbox-small-size + 2px);
       }
     }
   }
