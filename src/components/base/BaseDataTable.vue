@@ -47,7 +47,22 @@
       )
         | {{ row.columns[column.id] ? row.columns[column.id] : "" }}
 
-  .c-base-data-table__controls
+  .c-base-data-table__controls(
+    v-if="controlsWithIcons.length > 0"
+  )
+    base-button.c-base-data-table__control(
+      v-for="control in controlsWithIcons"
+      @click="onControlClick(control.type)"
+      :disabled="control.disabled"
+      size="small"
+      tint="light"
+      button-class="c-base-data-table__control-button"
+    )
+      base-icon(
+        :name="control.icon"
+        size="10px"
+        class="c-base-data-table__control-icon"
+      )
 </template>
 
 <!-- **********************************************************************
@@ -55,6 +70,12 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// ENUMERATIONS
+export enum ControlType {
+  // Remove control.
+  Remove = "remove"
+}
+
 // TYPES
 type RowColumns = {
   [id: string]: string;
@@ -73,6 +94,10 @@ export interface Row {
 
 export interface Sizes {
   [id: string]: string;
+}
+
+export interface Control {
+  type: ControlType;
 }
 
 export default {
@@ -104,6 +129,51 @@ export default {
       validator(x: Sizes): boolean {
         return Object.keys(x).length > 0;
       }
+    },
+
+    controls: {
+      type: Array,
+
+      default(): Array<Control> {
+        return [];
+      }
+    }
+  },
+
+  emits: ["control"],
+
+  computed: {
+    controlsWithIcons() {
+      return this.controls.map((control: Control) => {
+        let icon: string,
+          disabled = false;
+
+        switch (control.type) {
+          case ControlType.Remove: {
+            icon = "minus";
+
+            disabled = this.rows.find(row => row.selected === true)
+              ? false
+              : true;
+
+            break;
+          }
+        }
+
+        return {
+          type: control.type,
+          icon,
+          disabled
+        };
+      });
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onControlClick(type: ControlType): void {
+      this.$emit("control", type);
     }
   }
 };
@@ -115,6 +185,10 @@ export default {
 
 <style lang="scss">
 $c: ".c-base-data-table";
+
+// VARIABLES
+$controls-button-width: 26px;
+$controls-button-height: 22px;
 
 .c-base-data-table {
   background-color: $color-background-primary;
@@ -180,6 +254,19 @@ $c: ".c-base-data-table";
 
   #{$c}__controls {
     border-block-start: 1px solid $color-border-secondary;
+
+    #{$c}__control {
+      #{$c}__control-button {
+        width: $controls-button-width;
+        height: $controls-button-height;
+        padding-inline: 0;
+      }
+
+      #{$c}__control-icon {
+        margin-inline: auto;
+        display: block;
+      }
+    }
   }
 }
 </style>

@@ -11,9 +11,11 @@
 <template lang="pug">
 .p-edit-profile-encryption-device-other
   base-data-table(
+    @control="onDataTableControlClick"
     :columns="table.columns"
     :rows="table.rows"
     :sizes="table.sizes"
+    :controls="table.controls"
     :class="dataTableClass"
   )
 </template>
@@ -27,7 +29,9 @@
 import {
   Column as DataTableColumn,
   Row as DataTableRow,
-  Sizes as DataTableSizes
+  Sizes as DataTableSizes,
+  Control as DataTableControl,
+  ControlType as DataTableControlType
 } from "@/components/base/BaseDataTable.vue";
 
 export default {
@@ -96,9 +100,23 @@ export default {
           }
         ] as Array<DataTableRow>,
 
-        sizes: { name: "40%", device: "25%", hash: "35%" } as DataTableSizes
+        sizes: { name: "40%", device: "25%", hash: "35%" } as DataTableSizes,
+
+        controls: [
+          {
+            type: DataTableControlType.Remove
+          }
+        ] as Array<DataTableControl>
       }
     };
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onDataTableControlClick(type: DataTableControlType): void {
+      // TODO: handle action for type
+    }
   }
 };
 </script>
