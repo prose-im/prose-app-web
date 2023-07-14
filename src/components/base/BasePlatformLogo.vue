@@ -90,6 +90,9 @@ export default {
 <style lang="scss">
 $c: ".c-base-platform-logo";
 
+// VARIABLES
+$name-logos: ("web", "macos", "ios", "windows", "android", "linux");
+
 .c-base-platform-logo {
   background-color: $color-white;
   border: 0.5px solid $color-black;
@@ -101,12 +104,34 @@ $c: ".c-base-platform-logo";
     height: 26px;
     margin-block-start: 5px;
     display: block;
+
+    &:before {
+      content: "";
+      background-repeat: no-repeat;
+      background-size: contain;
+      height: 100%;
+      aspect-ratio: 1;
+      margin-inline: auto;
+      display: block;
+    }
   }
 
   #{$c}__label {
     font-size: 11px;
     text-align: center;
     margin-block-start: 5px;
+  }
+
+  // --> NAMES <--
+
+  @each $name in $name-logos {
+    &--#{$name} {
+      #{$c}__icon {
+        &:before {
+          background-image: url("@/assets/images/components/base/BasePlatformLogo/logo-#{$name}.svg");
+        }
+      }
+    }
   }
 }
 </style>
