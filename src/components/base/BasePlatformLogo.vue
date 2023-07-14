@@ -12,7 +12,7 @@
 div(
   :class=`[
     "c-base-platform-logo",
-    ("c-base-platform-logo--" + name)
+    "c-base-platform-logo--" + name
   ]`
 )
   span.c-base-platform-logo__icon
