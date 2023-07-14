@@ -22,6 +22,7 @@
     )
       component(
         v-for="part in fieldset.parts"
+        v-bind="part.properties"
         :is="part.component"
       )
 
@@ -107,7 +108,7 @@
             :size="controlIconToSize(control.icon)"
             :class=`[
               "p-edit-profile-form-fieldset__control-icon",
-              ("p-edit-profile-form-fieldset__control-icon--" + controlIconToColor(control.icon))
+              "p-edit-profile-form-fieldset__control-icon--" + controlIconToColor(control.icon)
             ]`
           )
 
@@ -206,6 +207,7 @@ export interface Fieldset {
 interface FieldsetPart {
   id: string;
   component: object;
+  properties?: object;
 }
 
 interface FieldsetField {

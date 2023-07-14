@@ -48,6 +48,7 @@ base-popup(
     .p-edit-profile__form
       component(
         v-if="formSections[section]"
+        v-bind="formSections[section].properties"
         :is="formSections[section].component"
         :jid="selfJID"
       )
@@ -144,7 +145,11 @@ export default {
         },
 
         encryption: {
-          component: shallowRef(EditProfileEncryption)
+          component: shallowRef(EditProfileEncryption),
+
+          properties: {
+            dataTableClass: "p-edit-profile__form-offset-sides"
+          }
         }
       },
 
@@ -301,6 +306,10 @@ $popup-height-full-breakpoint: (
       padding-block-start: $popup-padding-block-start;
       overflow: auto;
       flex: 1;
+
+      #{$c}__form-offset-sides {
+        margin-inline: (-1 * $popup-padding-inline);
+      }
     }
 
     #{$c}__actions {

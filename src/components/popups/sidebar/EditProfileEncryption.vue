@@ -41,6 +41,11 @@ export default {
     jid: {
       type: Object as PropType<JID>,
       required: true
+    },
+
+    dataTableClass: {
+      type: String,
+      required: true
     }
   },
 
@@ -73,7 +78,11 @@ export default {
           parts: [
             {
               id: "identities",
-              component: shallowRef(EditProfileEncryptionDeviceOther)
+              component: shallowRef(EditProfileEncryptionDeviceOther),
+
+              properties: {
+                dataTableClass: this.dataTableClass
+              }
             }
           ],
 
