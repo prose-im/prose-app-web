@@ -12,6 +12,7 @@
 div(
   :class=`[
     "c-form-checkbox",
+    "c-form-checkbox--" + size,
     {
       "c-form-checkbox--disabled": disabled,
       "c-form-checkbox--loading": loading
@@ -45,6 +46,15 @@ export default {
     modelValue: {
       type: Boolean,
       default: false
+    },
+
+    size: {
+      type: String,
+      default: "medium",
+
+      validator(x: string) {
+        return ["small", "medium"].includes(x);
+      }
     },
 
     name: {
@@ -93,9 +103,6 @@ export default {
 <style lang="scss">
 $c: ".c-form-checkbox";
 
-// VARIABLES
-$checkbox-size: 24px;
-
 .c-form-checkbox {
   text-align: left;
   display: flex;
@@ -103,8 +110,6 @@ $checkbox-size: 24px;
 
   #{$c}__input {
     border: 0 none;
-    width: $checkbox-size;
-    height: $checkbox-size;
     outline: 0;
     cursor: pointer;
     margin: 0;
@@ -134,8 +139,8 @@ $checkbox-size: 24px;
       background-position: center;
       background-size: cover;
       background-repeat: no-repeat;
-      width: 13px;
-      height: 9px;
+      width: 54%;
+      aspect-ratio: 13/9;
       visibility: hidden;
       position: relative;
     }
@@ -200,6 +205,22 @@ $checkbox-size: 24px;
 
     &:hover {
       cursor: pointer;
+    }
+  }
+
+  // --> SIZES <--
+
+  &--small {
+    #{$c}__input {
+      width: $size-form-checkbox-small-size;
+      height: $size-form-checkbox-small-size;
+    }
+  }
+
+  &--medium {
+    #{$c}__input {
+      width: $size-form-checkbox-medium-size;
+      height: $size-form-checkbox-medium-size;
     }
   }
 
