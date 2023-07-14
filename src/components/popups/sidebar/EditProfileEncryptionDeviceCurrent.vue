@@ -11,8 +11,10 @@
 <template lang="pug">
 .p-edit-profile-encryption-device-current
   .p-edit-profile-encryption-device-current__snapshot
-    //- TODO: into component
-    .p-edit-profile-encryption-device-current__snapshot-platform
+    base-platform-logo(
+      :name="snapshot.platform"
+      class="p-edit-profile-encryption-device-current__snapshot-platform"
+    )
 
     .p-edit-profile-encryption-device-current__snapshot-text
       p.p-edit-profile-encryption-device-current__snapshot-system.u-medium
@@ -78,6 +80,7 @@ export default {
       // --> DATA <--
 
       snapshot: {
+        platform: "web",
         system: VERSION_SYSTEM,
         client: `${VERSION_NAME} ${
           projectPackage.version || VERSION_REVISION_FALLBACK
@@ -141,12 +144,7 @@ $inner-spacing-sides: 18px;
     align-items: flex-start;
 
     #{$c}__snapshot-platform {
-      background-color: $color-white;
-      border: 0.5px solid $color-black;
-      width: 38px;
-      height: 52px;
-      margin-inline-end: 11px;
-      border-radius: 4px;
+      margin-inline-end: 12px;
     }
 
     #{$c}__snapshot-text {
