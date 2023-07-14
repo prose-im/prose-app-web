@@ -14,9 +14,9 @@
     span.c-base-data-table__column
 
     span.c-base-data-table__column(
-      v-for="(column, index) in columns"
+      v-for="column in columns"
       :style=`{
-        width: sizes[index]
+        width: sizes[column.id]
       }`
     )
       | {{ column.label }}
@@ -32,9 +32,9 @@
         )
 
       span(
-        v-for="(column, index) in columns"
+        v-for="column in columns"
         :style=`{
-          width: sizes[index]
+          width: sizes[column.id]
         }`
         :class=`[
           "c-base-data-table__column",
@@ -45,7 +45,7 @@
           }
         ]`
       )
-        | {{ row[column.id] ? row[column.id] : "" }}
+        | {{ row.columns[column.id] ? row.columns[column.id] : "" }}
 
   .c-base-data-table__controls
 </template>
@@ -55,6 +55,11 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// TYPES
+type RowColumns = {
+  [id: string]: string;
+};
+
 // INTERFACES
 export interface Column {
   id: string;
@@ -63,9 +68,11 @@ export interface Column {
 
 export interface Row {
   selected: boolean;
-  name: string;
-  device: string;
-  hash: string;
+  columns: RowColumns;
+}
+
+export interface Sizes {
+  [id: string]: string;
 }
 
 export default {
@@ -91,11 +98,11 @@ export default {
     },
 
     sizes: {
-      type: Array,
+      type: Object,
       required: true,
 
-      validator(x: Array<string>): boolean {
-        return x.length > 0;
+      validator(x: Sizes): boolean {
+        return Object.keys(x).length > 0;
       }
     }
   }
@@ -163,6 +170,10 @@ $c: ".c-base-data-table";
 
       &:nth-child(1) {
         width: ($size-form-checkbox-small-size + 2px);
+      }
+
+      &:last-child {
+        margin-inline-end: 0;
       }
     }
   }

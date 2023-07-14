@@ -26,7 +26,8 @@
 // PROJECT: COMPONENTS
 import {
   Column as DataTableColumn,
-  Row as DataTableRow
+  Row as DataTableRow,
+  Sizes as DataTableSizes
 } from "@/components/base/BaseDataTable.vue";
 
 export default {
@@ -66,27 +67,36 @@ export default {
 
           {
             selected: false,
-            name: "Prose (iPhone Valerian)",
-            device: "938173",
-            hash: "Z29QD"
+
+            columns: {
+              name: "Prose (iPhone Valerian)",
+              device: "938173",
+              hash: "Z29QD"
+            }
           },
 
           {
             selected: false,
-            name: "Prose (iPad Valerian)",
-            device: "163012",
-            hash: "OB21A"
+
+            columns: {
+              name: "Prose (iPad Valerian)",
+              device: "163012",
+              hash: "OB21A"
+            }
           },
 
           {
             selected: false,
-            name: "Gajim (Ubuntu VM)",
-            device: "129",
-            hash: "AQW02"
+
+            columns: {
+              name: "Gajim (Ubuntu VM)",
+              device: "129",
+              hash: "AQW02"
+            }
           }
         ] as Array<DataTableRow>,
 
-        sizes: ["40%", "25%", "35%"]
+        sizes: { name: "40%", device: "25%", hash: "35%" } as DataTableSizes
       }
     };
   }
