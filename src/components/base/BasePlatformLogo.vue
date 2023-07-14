@@ -41,7 +41,7 @@ const AVAILABLE_PLATFORMS: { [name: string]: { label: string } } = {
   },
 
   windows: {
-    label: "Windows"
+    label: "Win."
   },
 
   android: {
