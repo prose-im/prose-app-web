@@ -59,6 +59,11 @@ export default {
       validator(x: string) {
         return ["none", "light", "normal"].includes(x);
       }
+    },
+
+    square: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -74,8 +79,9 @@ export default {
     },
 
     borderRadius() {
-      // Acquire numeric size
-      const sizeNumeric = parseInt(this.size.replace("px", ""), 10);
+      // Acquire numeric size (size should be zero if square requested)
+      const sizeNumeric =
+        this.square === true ? 0 : parseInt(this.size.replace("px", ""), 10);
 
       // Compute numeric border radius
       const borderRadiusNumeric = Math.ceil(
