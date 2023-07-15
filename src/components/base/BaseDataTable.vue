@@ -51,7 +51,7 @@
 
   ul.c-base-data-table__rows
     li.c-base-data-table__row.c-base-data-table__columns(
-      v-for="row in rows"
+      v-for="row in sortedRows"
     )
       span.c-base-data-table__column
         form-checkbox(
@@ -103,6 +103,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { firstBy } from "thenby";
+
 // ENUMERATIONS
 export enum ControlType {
   // Remove control.
@@ -215,6 +218,24 @@ export default {
           disabled
         };
       });
+    },
+
+    sortedRows() {
+      // Sortable, and a sort is active?
+      if (
+        this.sortable === true &&
+        this.orderBy.columnId !== null &&
+        this.orderBy.direction !== 0
+      ) {
+        return [...this.rows].sort(
+          firstBy(
+            row => row.columns[this.orderBy.columnId],
+            this.orderBy.direction
+          )
+        );
+      }
+
+      return this.rows;
     }
   },
 
