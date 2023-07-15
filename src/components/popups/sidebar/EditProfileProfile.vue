@@ -58,7 +58,8 @@ export default {
       form: {
         jobOrganization: "",
         jobTitle: "",
-        location: ""
+        locationCity: "",
+        locationCountry: ""
       }
     };
   },
@@ -116,13 +117,24 @@ export default {
             },
 
             {
-              id: "location",
+              id: "city",
               type: FormFieldsetFieldType.Input,
-              label: "Location:",
+              label: "City:",
 
               data: {
-                value: this.form.location,
-                placeholder: "Enter your city & country…"
+                value: this.form.locationCity,
+                placeholder: "Enter your current city…"
+              } as FormFieldsetFieldDataInput
+            },
+
+            {
+              id: "country",
+              type: FormFieldsetFieldType.Input,
+              label: "Country:",
+
+              data: {
+                value: this.form.locationCountry,
+                placeholder: "Enter your current country…"
               } as FormFieldsetFieldDataInput
             }
           ],
@@ -131,7 +143,7 @@ export default {
             {
               id: "location-mode",
               label: "Location mode:",
-              value: "Manual",
+              value: "Manual", // TODO: need to geocode lat/lon to city/country
               icon: FormFieldsetControlIconType.LocationInactive
             },
 
@@ -171,19 +183,10 @@ export default {
     this.form.jobTitle = this.profile.role || "";
 
     if (this.profile.information && this.profile.information.location) {
-      if (
-        this.profile.information.location.city &&
-        this.profile.information.location.country
-      ) {
-        this.form.location =
-          `${this.profile.information.location.city}, ` +
-          `${this.profile.information.location.country}`;
-      } else {
-        this.form.location =
-          this.profile.information.location.city ||
-          this.profile.information.location.country ||
-          "";
-      }
+      this.form.locationCity = this.profile.information.location.city || "";
+
+      this.form.locationCountry =
+        this.profile.information.location.country || "";
     }
   }
 };
