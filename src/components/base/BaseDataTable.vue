@@ -13,13 +13,41 @@
   .c-base-data-table__header.c-base-data-table__columns
     span.c-base-data-table__column
 
-    span.c-base-data-table__column(
+    span(
       v-for="column in columns"
+      @click="onHeaderColumnClick(column.id)"
       :style=`{
         width: sizes[column.id]
       }`
+      :class=`[
+        "c-base-data-table__column",
+        {
+          "c-base-data-table__column--actionable": sortable,
+          "c-base-data-table__column--ordered": (column.id === orderBy.columnId)
+        }
+      ]`
     )
-      | {{ column.label }}
+      span(
+        :class=`[
+          "c-base-data-table__column-label",
+          {
+            "u-medium": (column.id === orderBy.columnId)
+          }
+        ]`
+      )
+        | {{ column.label }}
+
+      base-icon(
+        v-if="column.id === orderBy.columnId"
+        name="chevron.down"
+        size="7px"
+        :class=`[
+          "c-base-data-table__column-icon",
+          {
+            "c-base-data-table__column-icon--flipped": (orderBy.direction < 0)
+          }
+        ]`
+      )
 
   ul.c-base-data-table__rows
     li.c-base-data-table__row.c-base-data-table__columns(
@@ -38,14 +66,19 @@
         }`
         :class=`[
           "c-base-data-table__column",
-          "u-select",
-          {
-            "u-regular": !row.selected,
-            "u-medium": row.selected
-          }
+          "u-select"
         ]`
       )
-        | {{ row.columns[column.id] ? row.columns[column.id] : "" }}
+        span(
+          :class=`[
+            "c-base-data-table__column-label",
+            {
+              "u-regular": !row.selected,
+              "u-medium": row.selected
+            }
+          ]`
+        )
+          | {{ row.columns[column.id] ? row.columns[column.id] : "" }}
 
   .c-base-data-table__controls(
     v-if="controlsWithIcons.length > 0"
@@ -137,10 +170,26 @@ export default {
       default(): Array<Control> {
         return [];
       }
+    },
+
+    sortable: {
+      type: Boolean,
+      default: false
     }
   },
 
   emits: ["control"],
+
+  data() {
+    return {
+      // --> STATE <--
+
+      orderBy: {
+        columnId: null,
+        direction: 0
+      }
+    };
+  },
 
   computed: {
     controlsWithIcons() {
@@ -152,7 +201,7 @@ export default {
           case ControlType.Remove: {
             icon = "minus";
 
-            disabled = this.rows.find(row => row.selected === true)
+            disabled = this.rows.find((row: Row) => row.selected === true)
               ? false
               : true;
 
@@ -171,6 +220,28 @@ export default {
 
   methods: {
     // --> EVENT LISTENERS <--
+
+    onHeaderColumnClick(columnId: string): void {
+      if (this.sortable === true) {
+        // Change ordered by column and reset direction back to default? (zero)
+        if (this.orderBy.columnId !== columnId) {
+          this.orderBy.columnId = columnId;
+          this.orderBy.direction = 1;
+        } else {
+          // Circle back and forth to new direction
+          if (this.orderBy.direction >= 1) {
+            this.orderBy.direction = -1;
+          } else {
+            this.orderBy.direction++;
+          }
+
+          // New direction is zero? Reset active column
+          if (this.orderBy.direction === 0) {
+            this.orderBy.columnId = null;
+          }
+        }
+      }
+    },
 
     onControlClick(type: ControlType): void {
       this.$emit("control", type);
@@ -200,16 +271,11 @@ $controls-button-height: 22px;
     padding-inline: 16px;
   }
 
-  #{$c}__header,
-  #{$c}__controls {
-    padding-block: 5px;
-  }
-
   #{$c}__header {
-    color: $color-text-secondary;
     border-block-end: 1px solid $color-border-secondary;
     font-size: 12px;
-    line-height: 20px;
+    line-height: 14px;
+    padding-block: 8px;
 
     > #{$c}__column {
       border-inline-end: 1px solid $color-border-tertiary;
@@ -217,11 +283,30 @@ $controls-button-height: 22px;
       &:last-child {
         border-inline-end: 0 none;
       }
+
+      #{$c}__column-label {
+        color: $color-text-secondary;
+      }
+
+      &--actionable {
+        cursor: pointer;
+
+        &:hover {
+          #{$c}__column-label {
+            color: $color-text-primary;
+          }
+        }
+      }
+
+      &--ordered {
+        #{$c}__column-label {
+          color: $color-text-primary;
+        }
+      }
     }
   }
 
   #{$c}__rows {
-    color: $color-text-primary;
     font-size: 13px;
     line-height: 13px;
     min-height: 120px;
@@ -232,12 +317,21 @@ $controls-button-height: 22px;
     #{$c}__row {
       border-block-end: 1px solid $color-border-tertiary;
       padding-block: 4px;
+
+      > #{$c}__column {
+        #{$c}__column-label {
+          color: $color-text-primary;
+        }
+      }
     }
   }
 
   #{$c}__columns {
-    display: flex;
-    align-items: center;
+    &,
+    #{$c}__column {
+      display: flex;
+      align-items: center;
+    }
 
     #{$c}__column {
       margin-inline-end: 12px;
@@ -249,11 +343,26 @@ $controls-button-height: 22px;
       &:last-child {
         margin-inline-end: 0;
       }
+
+      #{$c}__column-label {
+        flex: 1;
+      }
+
+      #{$c}__column-icon {
+        margin-inline-start: 5px;
+        margin-inline-end: 8px;
+        flex: 0 0 auto;
+
+        &--flipped {
+          transform: scaleY(-1);
+        }
+      }
     }
   }
 
   #{$c}__controls {
     border-block-start: 1px solid $color-border-secondary;
+    padding-block: 5px;
 
     #{$c}__control {
       #{$c}__control-button {
