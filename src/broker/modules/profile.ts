@@ -10,7 +10,7 @@
 
 // NPM
 import { Cash } from "cash-dom";
-import { $iq } from "strophe.js";
+import { $iq, Strophe } from "strophe.js";
 import xmppID from "@xmpp/id";
 import xmppTime from "@xmpp/time";
 import { JID } from "@xmpp/jid";
@@ -34,6 +34,12 @@ import logger from "@/utilities/logger";
  * ************************************************************************* */
 
 const SECOND_TO_MILLISECONDS = 1000; // 1 second
+
+/**************************************************************************
+ * TYPES
+ * ************************************************************************* */
+
+type SaveVCardRequest = LoadVCardResponse;
 
 /**************************************************************************
  * INTERFACES
@@ -151,6 +157,20 @@ class BrokerModuleProfile extends BrokerModule {
     return this.__respondLoadAvatarData(response);
   }
 
+  async saveVCard(jid: JID, vCard: SaveVCardRequest): Promise<void> {
+    // XEP-0292: vCard4 Over XMPP
+    // https://xmpp.org/extensions/xep-0292.html
+
+    logger.info(`Will save vCard profile for: '${jid}'`, vCard);
+
+    const stanza = $iq({ to: jid, type: IQType.Set, id: xmppID() });
+
+    // Make vCard element and append to stanza
+    this.__makeStanzaVCard(stanza, vCard);
+
+    await this._client.request(stanza);
+  }
+
   private __respondLoadVCard(response: Cash): LoadVCardResponse {
     const responseData: LoadVCardResponse = {};
 
@@ -240,6 +260,71 @@ class BrokerModuleProfile extends BrokerModule {
     }
 
     return undefined;
+  }
+
+  private __makeStanzaVCard(
+    stanza: Strophe.Builder,
+    vCard: SaveVCardRequest
+  ): void {
+    const stanzaVCard = stanza.c("vcard", {
+      xmlns: NS_VCARD4
+    });
+
+    // Append full name
+    this.__makeStanzaVCardValue(stanzaVCard, "fn", vCard.fullName);
+
+    // Append name?
+    if (vCard.firstName || vCard.lastName) {
+      const stanzaVCardName = stanzaVCard.c("n");
+
+      if (vCard.firstName) {
+        stanzaVCardName.c("given", {}, vCard.firstName);
+      }
+      if (vCard.lastName) {
+        stanzaVCardName.c("surname", {}, vCard.lastName);
+      }
+
+      // Done, go back to root
+      stanzaVCardName.up();
+    }
+
+    // Append URL, email & phone
+    this.__makeStanzaVCardValue(stanzaVCard, "url", vCard.url, "uri");
+    this.__makeStanzaVCardValue(stanzaVCard, "email", vCard.email);
+    this.__makeStanzaVCardValue(stanzaVCard, "tel", vCard.phone, "uri");
+
+    // Append job?
+    if (vCard.job) {
+      this.__makeStanzaVCardValue(stanzaVCard, "title", vCard.job.title);
+      this.__makeStanzaVCardValue(stanzaVCard, "role", vCard.job.role);
+      this.__makeStanzaVCardValue(stanzaVCard, "org", vCard.job.organization);
+    }
+
+    // Append address?
+    if (vCard.address && (vCard.address.city || vCard.address.country)) {
+      const stanzaVCardAddress = stanzaVCard.c("adr");
+
+      if (vCard.address.city) {
+        stanzaVCardAddress.c("locality", {}, vCard.address.city);
+      }
+      if (vCard.address.country) {
+        stanzaVCardAddress.c("country", {}, vCard.address.country);
+      }
+
+      // Done, go back to root
+      stanzaVCardAddress.up();
+    }
+  }
+
+  private __makeStanzaVCardValue(
+    stanzaVCard: Strophe.Builder,
+    nodeName: string,
+    nodeValue: string | undefined,
+    wrapperType = "text"
+  ): void {
+    if (nodeValue) {
+      stanzaVCard.c(nodeName).c(wrapperType, {}, nodeValue).up();
+    }
   }
 }
 
