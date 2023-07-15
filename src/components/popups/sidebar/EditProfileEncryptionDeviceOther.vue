@@ -17,6 +17,7 @@
     :sizes="table.sizes"
     :controls="table.controls"
     :class="dataTableClass"
+    sortable
   )
 </template>
 
