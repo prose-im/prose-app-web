@@ -16,7 +16,14 @@ base-popup(
 )
   .p-edit-profile__navigate
     .p-edit-profile__identity
-      .p-edit-profile__identity-avatar
+      div(
+        :class=`[
+          "p-edit-profile__identity-avatar",
+          {
+            "p-edit-profile__identity-avatar--locked": saving
+          }
+        ]`
+      )
         base-avatar(
           :jid="selfJID"
           size="96px"
@@ -51,7 +58,14 @@ base-popup(
     )
 
   .p-edit-profile__content
-    .p-edit-profile__form
+    div(
+      :class=`[
+        "p-edit-profile__form",
+        {
+          "p-edit-profile__form--locked": saving
+        }
+      ]`
+    )
       component(
         v-if="formSections[section]"
         v-bind="formSections[section].properties"
@@ -101,7 +115,7 @@ import Store from "@/store";
 export default {
   name: "EditProfile",
 
-  emits: ["close", "save"],
+  emits: ["close"],
 
   data() {
     return {
@@ -215,7 +229,9 @@ export default {
 
     onSave(): void {
       if (this.fetching !== true && this.saving !== true) {
-        this.$emit("save");
+        this.saving = true;
+
+        // TODO: proceed save here, then close
       }
     },
 
@@ -298,6 +314,10 @@ $popup-height-full-breakpoint: (
           }
         }
 
+        &--locked {
+          pointer-events: none;
+        }
+
         #{$c}__identity-avatar-image {
           position: relative;
           z-index: 0;
@@ -366,6 +386,14 @@ $popup-height-full-breakpoint: (
 
       #{$c}__form-offset-sides {
         margin-inline: (-1 * $popup-padding-inline);
+      }
+
+      &--locked {
+        cursor: not-allowed;
+
+        > * {
+          pointer-events: none;
+        }
       }
     }
 
