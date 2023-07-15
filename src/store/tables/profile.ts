@@ -32,6 +32,11 @@ type ProfileEntryName = {
   last: string;
 };
 
+type ProfileEntryEmployment = {
+  title?: string;
+  organization?: string;
+};
+
 type ProfileEntryInformation = {
   contact: ProfileEntryInformationContact;
   lastActive: ProfileEntryInformationLastActive | null;
@@ -95,7 +100,7 @@ interface ProfileEntries {
 
 interface ProfileEntry {
   name?: ProfileEntryName;
-  role?: string;
+  employment?: ProfileEntryEmployment;
   information?: ProfileEntryInformation;
   security?: ProfileEntrySecurity;
 }
@@ -255,23 +260,26 @@ const $profile = defineStore("profile", {
           delete profile.name;
         }
 
-        // #2. Store role
-        if (vCardResponse.job) {
-          const roleParts = [];
+        // #2. Store employment
+        if (
+          vCardResponse.job &&
+          (vCardResponse.job.title ||
+            vCardResponse.job.role ||
+            vCardResponse.job.organization)
+        ) {
+          profile.employment = {};
 
           if (vCardResponse.job.title) {
-            roleParts.push(vCardResponse.job.title);
+            profile.employment.title = vCardResponse.job.title;
           } else if (vCardResponse.job.role) {
-            roleParts.push(vCardResponse.job.role);
+            profile.employment.title = vCardResponse.job.role;
           }
 
           if (vCardResponse.job.organization) {
-            roleParts.push(vCardResponse.job.organization);
+            profile.employment.organization = vCardResponse.job.organization;
           }
-
-          profile.role = roleParts.join(", ");
         } else {
-          delete profile.role;
+          delete profile.employment;
         }
 
         // #3. Store information

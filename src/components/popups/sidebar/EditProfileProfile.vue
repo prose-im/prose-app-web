@@ -180,7 +180,10 @@ export default {
 
   created() {
     // Populate form values
-    this.form.jobTitle = this.profile.role || "";
+    if (this.profile.employment) {
+      this.form.jobOrganization = this.profile.employment.organization || "";
+      this.form.jobTitle = this.profile.employment.title || "";
+    }
 
     if (this.profile.information && this.profile.information.location) {
       this.form.locationCity = this.profile.information.location.city || "";

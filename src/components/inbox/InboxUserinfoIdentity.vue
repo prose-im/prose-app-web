@@ -36,9 +36,9 @@
           | {{ jid.local }}
 
     p.c-inbox-userinfo-identity__role(
-      v-if="profile.role"
+      v-if="profileRole"
     )
-      | {{ profile.role }}
+      | {{ profileRole }}
 
   ul.c-inbox-userinfo-identity__actions(
     v-if="profilePhoneUrl || profileEmailUrl"
@@ -100,6 +100,20 @@ export default {
   },
 
   computed: {
+    profileRole(): string | null {
+      const employment = this.profile.employment || null;
+
+      if (employment !== null) {
+        if (employment.title && employment.organization) {
+          return `${employment.title} at ${employment.organization}`;
+        }
+
+        return employment.title || employment.organization || null;
+      }
+
+      return null;
+    },
+
     profilePhoneUrl(): string | null {
       if (this.profileContact !== null && this.profileContact.phone) {
         return `tel:${this.profileContact.phone}`;
