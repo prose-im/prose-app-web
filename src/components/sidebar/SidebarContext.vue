@@ -77,7 +77,6 @@
 
   edit-profile(
     v-if="popups.editProfile.visible"
-    @save="onPopupEditProfileSave"
     @close="onPopupEditProfileClose"
   )
 
@@ -341,12 +340,6 @@ export default {
     onActionsPopoverClickAway(): void {
       // Close popover
       this.isActionsPopoverVisible = false;
-    },
-
-    onPopupEditProfileSave(): void {
-      // TODO
-
-      this.popups.editProfile.visible = false;
     },
 
     onPopupEditProfileClose(): void {
