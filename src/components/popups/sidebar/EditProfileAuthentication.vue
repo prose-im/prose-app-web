@@ -63,7 +63,8 @@ export default {
               label: "Password:",
 
               data: {
-                text: "Change password…"
+                text: "Change password…",
+                disabled: true
               } as FormFieldsetFieldDataButton
             }
           ],
@@ -103,7 +104,8 @@ export default {
               label: "Token:",
 
               data: {
-                text: "Disable MFA…"
+                text: "Configure MFA…",
+                disabled: true
               } as FormFieldsetFieldDataButton
             }
           ],
@@ -112,8 +114,8 @@ export default {
             {
               id: "status",
               label: "Status:",
-              value: "Enabled",
-              icon: FormFieldsetControlIconType.StatusEnabled
+              value: "Disabled",
+              icon: FormFieldsetControlIconType.StatusDisabled
             },
 
             {

@@ -68,15 +68,15 @@ export default {
         ] as Array<DataTableColumn>,
 
         rows: [
-          // TODO: from dynamic data
+          // TODO: from dynamic data (those are fixtures)
 
           {
             selected: false,
 
             columns: {
-              name: "Prose (iPhone Valerian)",
-              device: "938173",
-              hash: "Z29QD"
+              name: "Unknown Device #1",
+              device: "(none)",
+              hash: "(none)"
             }
           },
 
@@ -84,9 +84,9 @@ export default {
             selected: false,
 
             columns: {
-              name: "Prose (iPad Valerian)",
-              device: "163012",
-              hash: "OB21A"
+              name: "Unknown Device #2",
+              device: "(none)",
+              hash: "(none)"
             }
           },
 
@@ -94,9 +94,9 @@ export default {
             selected: false,
 
             columns: {
-              name: "Gajim (Ubuntu VM)",
-              device: "129",
-              hash: "AQW02"
+              name: "Unknown Device #3",
+              device: "(none)",
+              hash: "(none)"
             }
           }
         ] as Array<DataTableRow>,

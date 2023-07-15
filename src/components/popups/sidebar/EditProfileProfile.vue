@@ -110,7 +110,8 @@ export default {
               label: "Auto-detect:",
 
               data: {
-                value: true
+                value: false,
+                disabled: true
               } as FormFieldsetFieldDataToggle
             },
 
@@ -130,14 +131,14 @@ export default {
             {
               id: "location-mode",
               label: "Location mode:",
-              value: "Automatic", // TODO: from configuration
-              icon: FormFieldsetControlIconType.LocationActive
+              value: "Manual",
+              icon: FormFieldsetControlIconType.LocationInactive
             },
 
             {
               id: "location-permission",
               label: "Geolocation permission:",
-              value: "Allowed", // TODO: from configuration
+              value: "Disallowed", // TODO: from configuration
 
               actions: [
                 {

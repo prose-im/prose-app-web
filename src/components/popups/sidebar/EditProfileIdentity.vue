@@ -81,7 +81,8 @@ export default {
 
               aside: {
                 type: FormFieldsetFieldAsideType.Link,
-                label: "Get verified"
+                label: "Get verified",
+                disabled: true
               }
             },
 
@@ -138,7 +139,8 @@ export default {
 
               aside: {
                 type: FormFieldsetFieldAsideType.Link,
-                label: "Get verified"
+                label: "Get verified",
+                disabled: true
               }
             }
           ],

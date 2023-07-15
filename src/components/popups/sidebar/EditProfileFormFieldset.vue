@@ -42,6 +42,7 @@
             v-model="field.data.value"
             :name="field.id"
             :placeholder="field.data.placeholder"
+            :disabled="field.data.disabled"
             type="text"
             size="mid-medium"
             align="left"
@@ -51,6 +52,7 @@
             v-else-if="field.type === 'toggle'"
             v-model="field.data.value"
             :name="field.id"
+            :disabled="field.data.disabled"
           )
 
           base-button(
@@ -68,8 +70,15 @@
             template(
               v-if="field.aside"
             )
-              a.p-edit-profile-form-fieldset__field-aside-link.u-medium(
+              a(
                 v-if="field.aside.type === 'link'"
+                :class=`[
+                  "p-edit-profile-form-fieldset__field-aside-link",
+                  "u-medium",
+                  {
+                    "p-edit-profile-form-fieldset__field-aside-link--disabled": field.aside.disabled
+                  }
+                ]`
               )
                 | {{ field.aside.label }}
 
@@ -181,10 +190,12 @@ export enum FieldsetControlIconType {
 export type FieldsetFieldDataInput = {
   value: string;
   placeholder: string;
+  disabled?: boolean;
 };
 
 export type FieldsetFieldDataToggle = {
   value: boolean;
+  disabled?: boolean;
 };
 
 export type FieldsetFieldDataButton = {
@@ -226,6 +237,7 @@ interface FieldsetFieldAside {
   label: string;
   color?: string;
   icon?: string;
+  disabled?: boolean;
 }
 
 interface FieldsetControl {
@@ -334,6 +346,11 @@ $c: ".p-edit-profile-form-fieldset";
 
         &:hover {
           text-decoration: underline;
+        }
+
+        &--disabled {
+          pointer-events: none;
+          opacity: 0.2;
         }
       }
 

@@ -98,17 +98,17 @@ export default {
       details: [
         {
           label: "Device name:",
-          value: "Prose (Firefox)" // TODO: from dynamic data
+          value: "(none)" // TODO: from dynamic data
         },
 
         {
           label: "Device ID:",
-          value: "120645" // TODO: from dynamic data
+          value: "(none)" // TODO: from dynamic data
         },
 
         {
           label: "Security hash:",
-          value: "ERT65", // TODO: from dynamic data
+          value: "(none)", // TODO: from dynamic data
 
           actions: [
             {
