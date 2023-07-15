@@ -16,12 +16,18 @@ base-popup(
 )
   .p-edit-profile__navigate
     .p-edit-profile__identity
-      base-avatar(
-        :jid="selfJID"
-        size="96px"
-        shadow="light"
-        class="p-edit-profile__identity-avatar"
-      )
+      .p-edit-profile__identity-avatar
+        base-avatar(
+          :jid="selfJID"
+          size="96px"
+          shadow="light"
+          class="p-edit-profile__identity-avatar-image"
+          square
+        )
+
+        span.p-edit-profile__identity-avatar-edit
+          span.p-edit-profile__identity-avatar-edit-text.u-bold
+            | Edit
 
       p.p-edit-profile__identity-name.u-medium
         template(
@@ -270,7 +276,58 @@ $popup-height-full-breakpoint: (
       text-align: center;
 
       #{$c}__identity-avatar {
-        /* TODO */
+        line-height: 0;
+        cursor: pointer;
+        overflow: hidden;
+        display: inline-block;
+        position: relative;
+        border-radius: 12px;
+
+        &:hover {
+          #{$c}__identity-avatar-edit {
+            visibility: visible;
+            opacity: 1;
+          }
+        }
+
+        &:active {
+          #{$c}__identity-avatar-edit {
+            #{$c}__identity-avatar-edit-text {
+              transform: scale(0.96);
+            }
+          }
+        }
+
+        #{$c}__identity-avatar-image {
+          position: relative;
+          z-index: 0;
+        }
+
+        #{$c}__identity-avatar-edit {
+          background-image: linear-gradient(
+            180deg,
+            rgba($color-black, 0) 0%,
+            rgba($color-black, 0.6) 100%
+          );
+          padding-block-start: 14px;
+          padding-block-end: 10px;
+          position: absolute;
+          z-index: 1;
+          inset-inline: 0;
+          inset-block-end: 0;
+          visibility: hidden;
+          opacity: 0;
+          transition: opacity 100ms linear;
+
+          #{$c}__identity-avatar-edit-text {
+            color: $color-text-reverse;
+            font-size: 12.5px;
+            line-height: 14px;
+            text-transform: lowercase;
+            display: inline-block;
+            transition: transform 100ms linear;
+          }
+        }
       }
 
       #{$c}__identity-name {
