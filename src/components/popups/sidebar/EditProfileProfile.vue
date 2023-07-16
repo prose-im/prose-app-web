@@ -36,8 +36,8 @@ import {
   FieldsetControlIconType as FormFieldsetControlIconType
 } from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
 
-// PROJECT: STORES
-import Store from "@/store";
+// PROJECT: POPUPS
+import { FormProfile as ProfileFormProfile } from "@/popups/sidebar/EditProfile.vue";
 
 export default {
   name: "EditProfileProfile",
@@ -48,25 +48,19 @@ export default {
     jid: {
       type: Object as PropType<JID>,
       required: true
+    },
+
+    form: {
+      type: Object as ProfileFormProfile,
+      required: true
     }
   },
 
   data() {
     return {
-      // --> STATE <--
+      // --> DATA <--
 
-      form: {
-        jobOrganization: "",
-        jobTitle: "",
-        locationCity: "",
-        locationCountry: ""
-      }
-    };
-  },
-
-  computed: {
-    fieldsets(): Array<FormFieldset> {
-      return [
+      fieldsets: [
         {
           id: "job",
           title: "Job information",
@@ -111,7 +105,10 @@ export default {
               label: "Auto-detect:",
 
               data: {
-                value: false,
+                value: {
+                  inner: false
+                },
+
                 disabled: true
               } as FormFieldsetFieldDataToggle
             },
@@ -170,27 +167,8 @@ export default {
             "Note that geolocation permissions are required for automatic mode."
           ]
         }
-      ];
-    },
-
-    profile(): ReturnType<typeof Store.$profile.getProfile> {
-      return Store.$profile.getProfile(this.jid);
-    }
-  },
-
-  created() {
-    // Populate form values
-    if (this.profile.employment) {
-      this.form.jobOrganization = this.profile.employment.organization || "";
-      this.form.jobTitle = this.profile.employment.title || "";
-    }
-
-    if (this.profile.information && this.profile.information.location) {
-      this.form.locationCity = this.profile.information.location.city || "";
-
-      this.form.locationCountry =
-        this.profile.information.location.country || "";
-    }
+      ] as Array<FormFieldset>
+    };
   }
 };
 </script>

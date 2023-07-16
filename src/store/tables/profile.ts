@@ -174,15 +174,18 @@ const $profile = defineStore("profile", {
       return Promise.resolve(profile);
     },
 
-    async loadProfileVCard(bareJID: JID): Promise<void> {
+    async loadProfileVCard(bareJID: JID): Promise<ProfileEntry> {
       // Load vCard data for JID
       const profileResponse = await Broker.$profile.loadVCard(bareJID);
 
       // Set local profile vCard data
-      this.setProfileVCard(bareJID, profileResponse);
+      return this.setProfileVCard(bareJID, profileResponse);
     },
 
-    async loadProfileLast(bareJID: JID, fullJIDHighest: JID): Promise<void> {
+    async loadProfileLast(
+      bareJID: JID,
+      fullJIDHighest: JID
+    ): Promise<ProfileEntry> {
       // Load last activity time
       // TODO: only if remote client supports it (w/ CAPS)
       const lastActivityResponse = await Broker.$profile.loadLastActivity(
@@ -190,10 +193,13 @@ const $profile = defineStore("profile", {
       );
 
       // Set local profile last active time
-      this.setProfileLast(bareJID, lastActivityResponse);
+      return this.setProfileLast(bareJID, lastActivityResponse);
     },
 
-    async loadProfileTime(bareJID: JID, fullJIDHighest: JID): Promise<void> {
+    async loadProfileTime(
+      bareJID: JID,
+      fullJIDHighest: JID
+    ): Promise<ProfileEntry> {
       // Load user timezone
       // TODO: only if remote client supports it (w/ CAPS)
       const entityTimeResponse = await Broker.$profile.loadEntityTime(
@@ -201,26 +207,26 @@ const $profile = defineStore("profile", {
       );
 
       // Set local profile time
-      this.setProfileTime(bareJID, entityTimeResponse);
+      return this.setProfileTime(bareJID, entityTimeResponse);
     },
 
     async loadProfileActivity(
       bareJID: JID,
       fullJIDHighest: JID
-    ): Promise<void> {
+    ): Promise<ProfileEntry> {
       // Load user activity
       // TODO: only if remote client supports it (w/ CAPS)
       // TODO: load activity on fullJIDHighest (??)
 
       // Set local profile activity
       // TODO: from server data
-      this.setProfileActivity(bareJID, "Focusing on code", "👨‍💻");
+      return this.setProfileActivity(bareJID, "Focusing on code", "👨‍💻");
     },
 
-    async loadProfileVerification(bareJID: JID): Promise<void> {
+    async loadProfileVerification(bareJID: JID): Promise<ProfileEntry> {
       // Set local profile verification status
       // TODO: from server data
-      this.setProfileVerification(bareJID, {
+      return this.setProfileVerification(bareJID, {
         fingerprint: "0000",
         email: bareJID.toString(),
         phone: null,
@@ -228,10 +234,10 @@ const $profile = defineStore("profile", {
       });
     },
 
-    async loadProfileEncryption(bareJID: JID): Promise<void> {
+    async loadProfileEncryption(bareJID: JID): Promise<ProfileEntry> {
       // Set local profile encryption status
       // TODO: from server data
-      this.setProfileEncryption(bareJID, {
+      return this.setProfileEncryption(bareJID, {
         connectionProtocol: "TLS1.3",
         messageEndToEndMethod: "OMEMO"
       });
@@ -440,5 +446,5 @@ const $profile = defineStore("profile", {
  * EXPORTS
  * ************************************************************************* */
 
-export type { ProfileEntryInformationContact };
+export type { ProfileEntry, ProfileEntryInformationContact };
 export default $profile;

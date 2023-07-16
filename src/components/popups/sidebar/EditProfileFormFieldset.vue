@@ -39,7 +39,7 @@
         )
           form-field(
             v-if="field.type === 'input'"
-            v-model="field.data.value"
+            v-model="field.data.value.inner"
             :name="field.id"
             :placeholder="field.data.placeholder"
             :disabled="field.data.disabled"
@@ -50,7 +50,7 @@
 
           form-toggle(
             v-else-if="field.type === 'toggle'"
-            v-model="field.data.value"
+            v-model="field.data.value.inner"
             :name="field.id"
             :disabled="field.data.disabled"
           )
@@ -188,14 +188,22 @@ export enum FieldsetControlIconType {
 // TYPES
 
 export type FieldsetFieldDataInput = {
-  value: string;
+  value: FieldsetFieldDataInputValue;
   placeholder: string;
   disabled?: boolean;
 };
 
+type FieldsetFieldDataInputValue = {
+  inner: string;
+};
+
 export type FieldsetFieldDataToggle = {
-  value: boolean;
+  value: FieldsetFieldDataToggleValue;
   disabled?: boolean;
+};
+
+type FieldsetFieldDataToggleValue = {
+  inner: boolean;
 };
 
 export type FieldsetFieldDataButton = {

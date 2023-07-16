@@ -20,7 +20,7 @@ base-popup(
         :class=`[
           "p-edit-profile__identity-avatar",
           {
-            "p-edit-profile__identity-avatar--locked": saving
+            "p-edit-profile__identity-avatar--locked": isPending
           }
         ]`
       )
@@ -62,7 +62,7 @@ base-popup(
       :class=`[
         "p-edit-profile__form",
         {
-          "p-edit-profile__form--locked": saving
+          "p-edit-profile__form--locked": isPending
         }
       ]`
     )
@@ -75,7 +75,7 @@ base-popup(
 
     .p-edit-profile__actions
       base-spinner(
-        v-if="fetching || saving"
+        v-if="isPending"
         size="10px"
         border-width="1.5px"
         class="p-edit-profile__actions-spinner"
@@ -111,6 +111,29 @@ import EditProfileEncryption from "@/components/popups/sidebar/EditProfileEncryp
 
 // PROJECT: STORES
 import Store from "@/store";
+import { ProfileEntry } from "@/store/tables/profile";
+
+// PROJECT: BROKER
+import Broker from "@/broker";
+import { SaveVCardRequest } from "@/broker/modules/profile";
+
+// TYPES
+type FormValueString = { inner: string };
+
+// INTERFACES
+export interface FormIdentity {
+  nameFirst: FormValueString;
+  nameLast: FormValueString;
+  email: FormValueString;
+  phone: FormValueString;
+}
+
+export interface FormProfile {
+  jobOrganization: FormValueString;
+  jobTitle: FormValueString;
+  locationCity: FormValueString;
+  locationCountry: FormValueString;
+}
 
 export default {
   name: "EditProfile",
@@ -153,7 +176,16 @@ export default {
 
       formSections: {
         identity: {
-          component: shallowRef(EditProfileIdentity)
+          component: shallowRef(EditProfileIdentity),
+
+          properties: {
+            form: {
+              nameFirst: { value: "" },
+              nameLast: { value: "" },
+              email: { value: "" },
+              phone: { value: "" }
+            } as FormIdentity
+          }
         },
 
         authentication: {
@@ -161,7 +193,16 @@ export default {
         },
 
         profile: {
-          component: shallowRef(EditProfileProfile)
+          component: shallowRef(EditProfileProfile),
+
+          properties: {
+            form: {
+              jobOrganization: { value: "" },
+              jobTitle: { value: "" },
+              locationCity: { value: "" },
+              locationCountry: { value: "" }
+            } as FormProfile
+          }
         },
 
         encryption: {
@@ -183,6 +224,10 @@ export default {
   },
 
   computed: {
+    isPending(): boolean {
+      return this.fetching || this.saving;
+    },
+
     selfJID(): JID {
       return this.account.getLocalJID();
     },
@@ -194,6 +239,11 @@ export default {
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.selfJID);
     }
+  },
+
+  created() {
+    // Apply initial vCard data
+    this.vCardDataToForms(this.profile);
   },
 
   async mounted() {
@@ -222,16 +272,112 @@ export default {
 
     async syncVCard(): Promise<void> {
       // Load profile vCard
-      await Store.$profile.loadProfileVCard(this.selfJID);
+      const profile = await Store.$profile.loadProfileVCard(this.selfJID);
+
+      // Apply new profile data to form
+      this.vCardDataToForms(profile);
+    },
+
+    vCardDataToForms(profile: ProfileEntry): void {
+      const formIdentity = this.formSections.identity.properties.form,
+        formProfile = this.formSections.profile.properties.form;
+
+      // Populate identity form
+      if (profile.name) {
+        formIdentity.nameFirst.inner = profile.name.first;
+        formIdentity.nameLast.inner = profile.name.last;
+      }
+
+      if (profile.information && profile.information.contact) {
+        formIdentity.email.inner = profile.information.contact.email || "";
+        formIdentity.phone.inner = profile.information.contact.phone || "";
+      }
+
+      // Populate profile form
+      if (profile.employment) {
+        formProfile.jobOrganization.inner =
+          profile.employment.organization || "";
+        formProfile.jobTitle.inner = profile.employment.title || "";
+      }
+
+      if (profile.information && profile.information.location) {
+        formProfile.locationCity.inner =
+          profile.information.location.city || "";
+
+        formProfile.locationCountry.inner =
+          profile.information.location.country || "";
+      }
+    },
+
+    formsToVCardData(
+      formIdentity: FormIdentity,
+      formProfile: FormProfile
+    ): SaveVCardRequest {
+      const vCardData: SaveVCardRequest = {};
+
+      // Assign data from identity form
+      if (formIdentity.nameFirst.inner && formIdentity.nameLast.inner) {
+        vCardData.fullName = [
+          formIdentity.nameFirst.inner,
+          formIdentity.nameLast.inner
+        ].join(" ");
+      }
+
+      vCardData.firstName = formIdentity.nameFirst.inner || undefined;
+      vCardData.lastName = formIdentity.nameLast.inner || undefined;
+
+      vCardData.email = formIdentity.email.inner || undefined;
+      vCardData.phone = formIdentity.phone.inner || undefined;
+
+      // Assign data from profile form
+      if (formProfile.jobTitle.inner || formProfile.jobOrganization.inner) {
+        vCardData.job = {
+          title: formProfile.jobTitle.inner || undefined,
+          organization: formProfile.jobOrganization.inner || undefined
+        };
+      }
+
+      if (formProfile.locationCity.inner || formProfile.locationCountry.inner) {
+        vCardData.address = {
+          city: formProfile.locationCity.inner || undefined,
+          country: formProfile.locationCountry.inner || undefined
+        };
+      }
+
+      return vCardData;
     },
 
     // --> EVENT LISTENERS <--
 
-    onSave(): void {
+    async onSave(): Promise<void> {
       if (this.fetching !== true && this.saving !== true) {
         this.saving = true;
 
-        // TODO: proceed save here, then close
+        // Generate vCard save data
+        const vCardData = this.formsToVCardData(
+          this.formSections.identity.properties.form,
+          this.formSections.profile.properties.form
+        );
+
+        try {
+          // Save vCard data
+          await Broker.$profile.saveVCard(this.selfJID, vCardData);
+
+          // Save success: close
+          this.$emit("close");
+
+          // Show success alert
+          BaseAlert.success("Profile saved", "Your profile has been updated");
+        } catch (error) {
+          // Save error: show failure
+          this.saving = false;
+
+          // Show error alert
+          BaseAlert.error(
+            "Cannot save profile",
+            "Check your profile information"
+          );
+        }
       }
     },
 

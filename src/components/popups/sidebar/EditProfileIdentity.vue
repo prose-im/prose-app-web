@@ -33,6 +33,9 @@ import {
   FieldsetFieldDataInput as FormFieldsetFieldDataInput
 } from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
 
+// PROJECT: POPUPS
+import { FormIdentity as ProfileFormIdentity } from "@/popups/sidebar/EditProfile.vue";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -45,25 +48,19 @@ export default {
     jid: {
       type: Object as PropType<JID>,
       required: true
+    },
+
+    form: {
+      type: Object as ProfileFormIdentity,
+      required: true
     }
   },
 
   data() {
     return {
-      // --> STATE <--
+      // --> DATA <--
 
-      form: {
-        nameFirst: "",
-        nameLast: "",
-        email: "",
-        phone: ""
-      }
-    };
-  },
-
-  computed: {
-    fieldsets(): Array<FormFieldset> {
-      return [
+      fieldsets: [
         {
           id: "name",
           title: "Name",
@@ -150,25 +147,8 @@ export default {
             "It is recommended that your email address and phone number each get verified, as this increases the level of trust of your profile. The process only takes a few seconds: you will receive a link to verify your contact details."
           ]
         }
-      ];
-    },
-
-    profile(): ReturnType<typeof Store.$profile.getProfile> {
-      return Store.$profile.getProfile(this.jid);
-    }
-  },
-
-  created() {
-    // Populate form values
-    if (this.profile.name) {
-      this.form.nameFirst = this.profile.name.first;
-      this.form.nameLast = this.profile.name.last;
-    }
-
-    if (this.profile.information && this.profile.information.contact) {
-      this.form.email = this.profile.information.contact.email || "";
-      this.form.phone = this.profile.information.contact.phone || "";
-    }
+      ] as Array<FormFieldset>
+    };
   }
 };
 </script>

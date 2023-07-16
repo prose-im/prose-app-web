@@ -89,6 +89,12 @@ interface LoadAvatarDataResponse {
 const PHONE_URI_REGEX = /^tel:(.+)$/;
 
 /**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const PHONE_URI_PREFIX = "tel:";
+
+/**************************************************************************
  * CLASS
  * ************************************************************************* */
 
@@ -291,7 +297,14 @@ class BrokerModuleProfile extends BrokerModule {
     // Append URL, email & phone
     this.__makeStanzaVCardValue(stanzaVCard, "url", vCard.url, "uri");
     this.__makeStanzaVCardValue(stanzaVCard, "email", vCard.email);
-    this.__makeStanzaVCardValue(stanzaVCard, "tel", vCard.phone, "uri");
+
+    this.__makeStanzaVCardValue(
+      stanzaVCard,
+      "tel",
+      vCard.phone,
+      "uri",
+      PHONE_URI_PREFIX
+    );
 
     // Append job?
     if (vCard.job) {
@@ -320,10 +333,14 @@ class BrokerModuleProfile extends BrokerModule {
     stanzaVCard: Strophe.Builder,
     nodeName: string,
     nodeValue: string | undefined,
-    wrapperType = "text"
+    wrapperType = "text",
+    valuePrefix = ""
   ): void {
     if (nodeValue) {
-      stanzaVCard.c(nodeName).c(wrapperType, {}, nodeValue).up();
+      stanzaVCard
+        .c(nodeName)
+        .c(wrapperType, {}, `${valuePrefix}${nodeValue}`)
+        .up();
     }
   }
 }
