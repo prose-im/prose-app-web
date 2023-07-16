@@ -75,7 +75,7 @@ base-popup(
 
     .p-edit-profile__actions
       base-spinner(
-        v-if="fetching"
+        v-if="fetching || saving"
         size="10px"
         border-width="1.5px"
         class="p-edit-profile__actions-spinner"
