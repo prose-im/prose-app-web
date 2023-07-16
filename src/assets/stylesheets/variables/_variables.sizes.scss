@@ -40,14 +40,32 @@ $size-list-item-details-margin-inline-start: 6px;
 
 // --> FORM FIELD <--
 
-$size-form-field-border-radius: 10px;
+$size-form-field-padding-block: 1px;
 $size-form-field-outline-width: 2px;
+$size-form-field-border-radius: 10px;
 
 $size-form-field-medium-padding-sides: 10px;
 $size-form-field-mid-medium-padding-sides: 14px;
 $size-form-field-large-padding-sides: 18px;
 $size-form-field-mid-large-padding-sides: 22px;
 $size-form-field-ultra-large-padding-sides: 24px;
+
+$size-form-field-medium-input-line-height: 25px;
+$size-form-field-mid-medium-input-line-height: 32px;
+$size-form-field-large-input-line-height: 42px;
+$size-form-field-mid-large-input-line-height: 48px;
+$size-form-field-ultra-large-input-line-height: 58px;
+
+// --> FORM SELECT <--
+
+$size-form-select-padding-block: $size-form-field-padding-block;
+$size-form-select-border-radius: $size-form-field-border-radius;
+
+$size-form-select-medium-height: $size-form-field-medium-input-line-height;
+$size-form-select-mid-medium-height: $size-form-field-mid-medium-input-line-height;
+$size-form-select-large-height: $size-form-field-large-input-line-height;
+$size-form-select-mid-large-height: $size-form-field-mid-large-input-line-height;
+$size-form-select-ultra-large-height: $size-form-field-ultra-large-input-line-height;
 
 // --> FORM CHECKBOX <--
 

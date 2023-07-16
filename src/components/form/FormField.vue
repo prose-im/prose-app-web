@@ -308,6 +308,7 @@ $c: ".c-form-field";
     color: $color-text-primary;
     font-family: inherit;
     width: 100%;
+    padding-block: $size-form-field-padding-block;
     transition-property: box-shadow, border-color;
     border-radius: $size-form-field-border-radius;
     box-sizing: border-box;
@@ -356,7 +357,7 @@ $c: ".c-form-field";
       padding-inline-end: $size-form-field-medium-padding-sides;
 
       &--input {
-        line-height: 25px;
+        line-height: $size-form-field-medium-input-line-height;
       }
 
       &--textarea {
@@ -373,7 +374,7 @@ $c: ".c-form-field";
       padding-inline-end: $size-form-field-mid-medium-padding-sides;
 
       &--input {
-        line-height: 32px;
+        line-height: $size-form-field-mid-medium-input-line-height;
       }
 
       &--textarea {
@@ -390,7 +391,7 @@ $c: ".c-form-field";
       padding-inline-end: $size-form-field-large-padding-sides;
 
       &--input {
-        line-height: 42px;
+        line-height: $size-form-field-large-input-line-height;
       }
 
       &--textarea {
@@ -407,7 +408,7 @@ $c: ".c-form-field";
       padding-inline-end: $size-form-field-mid-large-padding-sides;
 
       &--input {
-        line-height: 48px;
+        line-height: $size-form-field-mid-large-input-line-height;
       }
 
       &--textarea {
@@ -424,7 +425,7 @@ $c: ".c-form-field";
       padding-inline-end: $size-form-field-ultra-large-padding-sides;
 
       &--input {
-        line-height: 58px;
+        line-height: $size-form-field-ultra-large-input-line-height;
       }
 
       &--textarea {

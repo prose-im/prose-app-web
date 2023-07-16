@@ -48,6 +48,16 @@
             align="left"
           )
 
+          form-select(
+            v-else-if="field.type === 'select'"
+            v-model="field.data.value.inner"
+            :name="field.id"
+            :placeholder="field.data.placeholder"
+            :disabled="field.data.disabled"
+            size="mid-medium"
+            align="left"
+          )
+
           form-toggle(
             v-else-if="field.type === 'toggle'"
             v-model="field.data.value.inner"
@@ -156,6 +166,8 @@
 export enum FieldsetFieldType {
   // Input type.
   Input = "input",
+  // Select type.
+  Select = "select",
   // Toggle type.
   Toggle = "toggle",
   // Button type.
@@ -197,6 +209,16 @@ type FieldsetFieldDataInputValue = {
   inner: string;
 };
 
+export type FieldsetFieldDataSelect = {
+  value: FieldsetFieldDataSelectValue;
+  placeholder: string;
+  disabled?: boolean;
+};
+
+type FieldsetFieldDataSelectValue = {
+  inner: string;
+};
+
 export type FieldsetFieldDataToggle = {
   value: FieldsetFieldDataToggleValue;
   disabled?: boolean;
@@ -235,6 +257,7 @@ interface FieldsetField {
   label: string;
   data?:
     | FieldsetFieldDataInput
+    | FieldsetFieldDataSelect
     | FieldsetFieldDataToggle
     | FieldsetFieldDataButton;
   aside?: FieldsetFieldAside;

@@ -30,6 +30,7 @@ import {
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
+  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
   FieldsetFieldDataToggle as FormFieldsetFieldDataToggle,
   FieldsetControlActionType as FormFieldsetControlActionType,
   FieldsetControlActionDataButton as FormFieldsetControlActionDataButton,
@@ -126,13 +127,13 @@ export default {
 
             {
               id: "country",
-              type: FormFieldsetFieldType.Input,
+              type: FormFieldsetFieldType.Select,
               label: "Country:",
 
               data: {
                 value: this.form.locationCountry,
-                placeholder: "Enter your current country…"
-              } as FormFieldsetFieldDataInput
+                placeholder: "Pick a country…"
+              } as FormFieldsetFieldDataSelect
             }
           ],
 
