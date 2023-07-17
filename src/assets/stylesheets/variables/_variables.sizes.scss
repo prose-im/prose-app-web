@@ -59,13 +59,20 @@ $size-form-field-ultra-large-input-line-height: 58px;
 // --> FORM SELECT <--
 
 $size-form-select-padding-block: $size-form-field-padding-block;
-$size-form-select-border-radius: $size-form-field-border-radius;
+$size-form-select-border-width: 1px;
+$size-form-select-border-radius: ($size-form-field-border-radius - 3px);
 
-$size-form-select-medium-height: $size-form-field-medium-input-line-height;
-$size-form-select-mid-medium-height: $size-form-field-mid-medium-input-line-height;
-$size-form-select-large-height: $size-form-field-large-input-line-height;
-$size-form-select-mid-large-height: $size-form-field-mid-large-input-line-height;
-$size-form-select-ultra-large-height: $size-form-field-ultra-large-input-line-height;
+$size-form-select-medium-padding-sides: $size-form-field-medium-padding-sides;
+$size-form-select-mid-medium-padding-sides: $size-form-field-mid-medium-padding-sides;
+$size-form-select-large-padding-sides: $size-form-field-large-padding-sides;
+$size-form-select-mid-large-padding-sides: $size-form-field-mid-large-padding-sides;
+$size-form-select-ultra-large-padding-sides: $size-form-field-ultra-large-padding-sides;
+
+$size-form-select-medium-line-height: $size-form-field-medium-input-line-height;
+$size-form-select-mid-medium-line-height: $size-form-field-mid-medium-input-line-height;
+$size-form-select-large-line-height: $size-form-field-large-input-line-height;
+$size-form-select-mid-large-line-height: $size-form-field-mid-large-input-line-height;
+$size-form-select-ultra-large-line-height: $size-form-field-ultra-large-input-line-height;
 
 // --> FORM CHECKBOX <--
 
