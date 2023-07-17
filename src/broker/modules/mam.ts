@@ -63,23 +63,8 @@ class BrokerModuleMAM extends BrokerModule {
     );
 
     for (const message of messages) {
-      logger.info(message.timestamp, message.from.toString(), message.body);
+      Store.$inbox.insertMessages(conversation, messages)
     }
-
-    logger.info(messages);
-
-    // for (const message of messages) {
-    //   logger.info(message.id, message.stanzaID, message.from, message.body)
-    //
-    //   // Store.$inbox.insertMessage(jid, {
-    //   //   id: message.id,
-    //   //   archiveId: message.stanzaID,
-    //   //   type: "text",
-    //   //   date: undefined,
-    //   //   from: message.from,
-    //   //   content: message.body
-    //   // });
-    // }
   }
 
   async loadMessages(

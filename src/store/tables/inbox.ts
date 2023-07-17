@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { BareJID, JID, Message } from "@prose-im/prose-core-client-wasm";
 import cloneDeep from "lodash.clonedeep";
 import mitt from "mitt";
 import { defineStore } from "pinia";
@@ -23,8 +23,8 @@ import { MessageChatState } from "@/broker/stanzas/message";
  * ************************************************************************* */
 
 type InboxEntryMessages = {
-  list: Array<InboxEntryMessage>;
-  byId: { [id: string]: InboxEntryMessage };
+  list: Array<Message>;
+  byId: { [id: string]: Message };
 };
 
 type InboxEntryStates = {
@@ -33,8 +33,8 @@ type InboxEntryStates = {
 
 type EventMessageGeneric = {
   jid: JID;
-  message: InboxEntryMessage;
-  original?: InboxEntryMessage;
+  message: Message;
+  original?: Message;
 };
 
 /**************************************************************************
@@ -69,7 +69,7 @@ const EventBus = mitt();
  * ************************************************************************* */
 
 const $inbox = defineStore("inbox", {
-  persist: true,
+  persist: false,
 
   state: (): Inbox => {
     return {
@@ -79,20 +79,20 @@ const $inbox = defineStore("inbox", {
 
   getters: {
     getMessages: function () {
-      return (jid: JID): Array<InboxEntryMessage> => {
-        return this.assert(jid).messages.list;
+      return (jid: JID): Array<Message> => {
+        return this.assert(jid.bare()).messages.list;
       };
     },
 
     getMessage: function () {
-      return (jid: JID, id: string): InboxEntryMessage | void => {
-        return this.assert(jid).messages.byId[id] || undefined;
+      return (jid: JID, id: string): Message | void => {
+        return this.assert(jid.bare()).messages.byId[id] || undefined;
       };
     },
 
     getStates: function () {
-      return (jid: JID): Array<InboxEntryStates> => {
-        return this.assert(jid).states;
+      return (jid: JID): Array<Message> => {
+        return this.assert(jid.bare()).states;
       };
     }
   },
@@ -103,7 +103,7 @@ const $inbox = defineStore("inbox", {
       return EventBus;
     },
 
-    assert(jid: JID): InboxEntry {
+    assert(jid: BareJID): InboxEntry {
       const jidString = jid.toString(),
         entries = this.entries;
 
@@ -130,11 +130,11 @@ const $inbox = defineStore("inbox", {
       return entries[jidString];
     },
 
-    insertMessage(jid: JID, message: InboxEntryMessage) {
+    insertMessage(jid: BareJID, message: Message) {
       this.insertMessages(jid, [message]);
     },
 
-    insertMessages(jid: JID, messages: Array<InboxEntryMessage>) {
+    insertMessages(jid: BareJID, messages: Array<Message>) {
       const container = this.assert(jid).messages;
 
       messages.forEach(message => {
@@ -161,7 +161,7 @@ const $inbox = defineStore("inbox", {
       });
     },
 
-    updateMessage(jid: JID, id: string, message: InboxEntryMessage): boolean {
+    updateMessage(jid: BareJID, id: string, message: Message): boolean {
       const container = this.assert(jid).messages;
 
       if (!message.id) {
@@ -216,7 +216,7 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
-    retractMessage(jid: JID, id: string): boolean {
+    retractMessage(jid: BareJID, id: string): boolean {
       const container = this.assert(jid).messages;
 
       // Acquire message from store
@@ -253,7 +253,7 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
-    setStatesChatstate(jid: JID, chatstate: MessageChatState) {
+    setStatesChatstate(jid: BareJID, chatstate: MessageChatState) {
       this.assert(jid).states.chatstate = chatstate;
     }
   }

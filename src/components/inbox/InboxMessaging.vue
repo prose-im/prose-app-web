@@ -312,7 +312,7 @@ export default {
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
       runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
-      runtime.MessagingContext.setAccountJID(this.selfJID.toString());
+      runtime.MessagingContext.setAccountJID(this.selfJID.bare().toString());
     },
 
     setupEvents(runtime: MessagingRuntime): void {
@@ -518,14 +518,12 @@ export default {
 
     async seekMoreMessages(): void {
       // Can seek now? (connected and not stale)
-      this.$log.debug("1");
       if (
         true
         // Store.$session.connected === true &&
         // this.isMessageSyncStale !== true &&
         // this.isMessageSyncMoreLoading !== true
       ) {
-        this.$log.debug("2");
         const frameRuntime = this.frame();
 
         // Find first message with an archive identifier
@@ -533,11 +531,10 @@ export default {
           this.messages.find(message => {
             return message.archiveId !== undefined ? true : false;
           })?.archiveId || undefined;
-        this.$log.debug("3");
+
         // Load previous messages?
         // Notice: only load messages after first loaded identifier
         if (firstResultIdFromArchive !== undefined && frameRuntime !== null) {
-          this.$log.debug("4");
           // Mark backwards as loading
           this.isMessageSyncMoreLoading = true;
 
@@ -547,21 +544,18 @@ export default {
           // await Broker.$mam.loadMessages(this.jid, {
           //   beforeId: firstResultIdFromArchive
           // });
-          this.$log.debug("HELLO");
-          await Broker.$mam.loadLatestMessages(this.jid);
+          await Broker.$mam.loadLatestMessages(this.jid.bare());
 
           // Mark backwards loading as complete
           frameRuntime.MessagingStore.loader("backwards", false);
 
           this.isMessageSyncMoreLoading = false;
         } else {
-          this.$log.debug("5");
           this.$log.warn(
             `Could not seek previous messages, as there is no first ` +
               `message from archives or frame is not ready yet for: ${this.jid}`
           );
         }
-        this.$log.debug("6");
       }
     },
 
@@ -863,14 +857,14 @@ export default {
     },
 
     onStoreMessageInserted(event: EventMessageGeneric): void {
-      if (this.jid.equals(event.jid) === true) {
+      if (this.jid.bare().equals(event.jid) === true) {
         // Insert into view
         this.frame()?.MessagingStore.insert(event.message);
       }
     },
 
     onStoreMessageUpdated(event: EventMessageGeneric): void {
-      if (this.jid.equals(event.jid) === true) {
+      if (this.jid.bare().equals(event.jid) === true) {
         // Update in view
         // Notice: use identifier from original message as reference, if any, \
         //   otherwise fallback on the actual message. This is done as the \
