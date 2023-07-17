@@ -353,6 +353,7 @@ export type {
   LoadVCardResponse,
   LoadLastActivityResponse,
   LoadEntityTimeResponse,
-  LoadAvatarDataResponse
+  LoadAvatarDataResponse,
+  SaveVCardRequest
 };
 export default BrokerModuleProfile;
