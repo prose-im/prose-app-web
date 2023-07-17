@@ -132,7 +132,19 @@ export default {
 
               data: {
                 value: this.form.locationCountry,
-                placeholder: "Pick a country…"
+                placeholder: "Pick a country…",
+
+                options: [
+                  {
+                    value: "France",
+                    label: "France"
+                  },
+
+                  {
+                    value: "USA",
+                    label: "United States"
+                  }
+                ]
               } as FormFieldsetFieldDataSelect
             }
           ],

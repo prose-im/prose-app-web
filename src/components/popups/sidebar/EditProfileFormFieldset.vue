@@ -51,6 +51,7 @@
           form-select(
             v-else-if="field.type === 'select'"
             v-model="field.data.value.inner"
+            :options="field.data.options"
             :name="field.id"
             :placeholder="field.data.placeholder"
             :disabled="field.data.disabled"
@@ -162,6 +163,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import { Option as FormSelectOption } from "@/components/form/FormSelect.vue";
+
 // ENUMERATIONS
 export enum FieldsetFieldType {
   // Input type.
@@ -211,6 +215,7 @@ type FieldsetFieldDataInputValue = {
 
 export type FieldsetFieldDataSelect = {
   value: FieldsetFieldDataSelectValue;
+  options: Array<FormSelectOption>;
   placeholder: string;
   disabled?: boolean;
 };
