@@ -75,7 +75,8 @@ div(
       )
 
       input(
-        v-model="searchQuery"
+        v-model.trim="searchQuery"
+        @keydown="onSearchInputKeyDown"
         :name="name ? (name + '_search') : null"
         :class=`[
           {
@@ -84,13 +85,14 @@ div(
         ]`
         type="search"
         placeholder="Search…"
+        autofocus
       )
 
     ul.c-form-select__options(
       ref="options"
     )
       li(
-        v-for="(option, index) in options"
+        v-for="(option, index) in filteredOptions"
         @mouseenter="onOptionMouseEnter(index)"
         :class=`[
           "c-form-select__option",
@@ -122,6 +124,7 @@ div(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
+import { names as keyNames } from "keycode";
 
 // INTERFACES
 export interface Option {
@@ -249,8 +252,22 @@ export default {
   },
 
   computed: {
+    filteredOptions(): Array<Option> {
+      // Any search query? Filter options.
+      if (this.search === true && this.searchQuery) {
+        const searchQueryLower = this.searchQuery.toLowerCase();
+
+        return this.options.filter(option => {
+          return option.label.toLowerCase().startsWith(searchQueryLower);
+        });
+      }
+
+      // No search query, return identity.
+      return this.options;
+    },
+
     hasOptions(): boolean {
-      return this.options.length > 0;
+      return this.filteredOptions.length > 0;
     },
 
     valueLabel(): string {
@@ -279,7 +296,7 @@ export default {
       return "10px";
     },
 
-    hotkeys() {
+    hotkeys(): { [name: string]: (event: Event) => void } {
       return {
         enter: this.onHotkeyEnter,
         esc: this.onHotkeyEscape,
@@ -295,6 +312,28 @@ export default {
 
       handler(value) {
         this.value = value;
+      }
+    },
+
+    searchQuery: {
+      handler(value) {
+        // Reset hovered index (as search query changed)
+        this.hoveredIndex = value ? 0 : -1;
+      }
+    },
+
+    visible: {
+      handler(value) {
+        // Now invisible? Reset values (as needed)
+        if (value === false) {
+          if (this.hoveredIndex >= 0) {
+            this.hoveredIndex = -1;
+          }
+
+          if (this.searchQuery) {
+            this.searchQuery = "";
+          }
+        }
       }
     }
   },
@@ -333,14 +372,18 @@ export default {
       }
     },
 
+    eventOverrides(event: Event): void {
+      event.stopPropagation();
+      event.preventDefault();
+    },
+
     // --> EVENT LISTENERS <--
 
     onHotkeyEnter(event: Event): void {
-      event.stopPropagation();
-      event.preventDefault();
+      this.eventOverrides(event);
 
       if (this.hasOptions === true && this.hoveredIndex >= 0) {
-        const selectedOption = this.options[this.hoveredIndex] || null;
+        const selectedOption = this.filteredOptions[this.hoveredIndex] || null;
 
         if (selectedOption !== null) {
           this.selectOption(selectedOption);
@@ -349,21 +392,25 @@ export default {
     },
 
     onHotkeyEscape(event: Event): void {
-      event.stopPropagation();
-      event.preventDefault();
+      this.eventOverrides(event);
 
-      // Hide dropdown selector
-      this.hideDropdown();
+      // Stepped escape handling (1st hit resets search, 2nd hit closes)
+      if (this.searchQuery) {
+        // Reset search query
+        this.searchQuery = "";
+      } else {
+        // Hide dropdown selector
+        this.hideDropdown();
+      }
     },
 
     onHotkeyDown(event: Event): void {
-      event.stopPropagation();
-      event.preventDefault();
+      this.eventOverrides(event);
 
       if (this.hasOptions === true) {
         const nextHoveredIndex = this.hoveredIndex + 1;
 
-        if (nextHoveredIndex < this.options.length) {
+        if (nextHoveredIndex < this.filteredOptions.length) {
           this.hoveredIndex = nextHoveredIndex;
         } else {
           this.hoveredIndex = 0;
@@ -374,8 +421,7 @@ export default {
     },
 
     onHotkeyUp(event: Event): void {
-      event.stopPropagation();
-      event.preventDefault();
+      this.eventOverrides(event);
 
       if (this.hasOptions === true) {
         const previousHoveredIndex = this.hoveredIndex - 1;
@@ -383,7 +429,7 @@ export default {
         if (previousHoveredIndex >= 0) {
           this.hoveredIndex = previousHoveredIndex;
         } else {
-          this.hoveredIndex = this.options.length - 1;
+          this.hoveredIndex = this.filteredOptions.length - 1;
         }
 
         this.scrollToOptionIndex(this.hoveredIndex);
@@ -397,6 +443,19 @@ export default {
     onDropdownClickAway(): void {
       // Hide dropdown
       this.hideDropdown();
+    },
+
+    onSearchInputKeyDown(event: KeyboardEvent): void {
+      const keyName = keyNames[event.keyCode] || null;
+
+      if (keyName !== null) {
+        // Re-trigger hotkey handler function? (if any)
+        const handlerFn = this.hotkeys[keyName] || null;
+
+        if (handlerFn !== null) {
+          handlerFn(event);
+        }
+      }
     },
 
     onOptionMouseEnter(index: number): void {
