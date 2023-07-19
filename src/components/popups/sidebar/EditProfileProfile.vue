@@ -21,10 +21,12 @@
 
 <script lang="ts">
 // NPM
-import { PropType } from "vue";
+import { shallowRef, PropType } from "vue";
 import { JID } from "@xmpp/jid";
+import { countries } from "crisp-countries-languages";
 
 // PROJECT: COMPONENTS
+import BaseFlag from "@/components/base/BaseFlag.vue";
 import {
   default as EditProfileFormFieldset,
   Fieldset as FormFieldset,
@@ -52,7 +54,7 @@ export default {
     },
 
     form: {
-      type: Object as ProfileFormProfile,
+      type: Object as PropType<ProfileFormProfile>,
       required: true
     }
   },
@@ -134,17 +136,25 @@ export default {
                 value: this.form.locationCountry,
                 placeholder: "Pick a country…",
 
-                options: [
-                  {
-                    value: "France",
-                    label: "France"
-                  },
+                options: countries.map(country => {
+                  return {
+                    value: country.code,
+                    label: country.name
+                  };
+                }),
 
-                  {
-                    value: "USA",
-                    label: "United States"
+                icon: {
+                  component: shallowRef(BaseFlag),
+
+                  properties: (value: string) => {
+                    return {
+                      code: value,
+                      width: "20px",
+                      height: "15px",
+                      shadow: "none"
+                    };
                   }
-                ]
+                }
               } as FormFieldsetFieldDataSelect
             }
           ],
