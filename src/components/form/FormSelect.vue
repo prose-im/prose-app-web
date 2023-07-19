@@ -155,6 +155,8 @@ const AVAILABLE_SIZES: { [size: string]: { arrow: string } } = {
   }
 };
 
+const SEARCH_QUERY_PREFIX_LENGTH_MAXIMUM = 2;
+
 export interface Icon {
   component: object;
   properties: (value: string) => object;
@@ -258,7 +260,14 @@ export default {
         const searchQueryLower = this.searchQuery.toLowerCase();
 
         return this.options.filter(option => {
-          return option.label.toLowerCase().startsWith(searchQueryLower);
+          const optionLabelLower = option.label.toLowerCase();
+
+          // Perform prefix search, or include search?
+          if (searchQueryLower.length <= SEARCH_QUERY_PREFIX_LENGTH_MAXIMUM) {
+            return optionLabelLower.startsWith(searchQueryLower);
+          }
+
+          return optionLabelLower.includes(searchQueryLower);
         });
       }
 
