@@ -16,7 +16,7 @@ div(
     "c-form-select--" + align,
     "c-form-select--" + position,
     {
-      "c-form-select--visible": visible,
+      "c-form-select--visible": visible && !disabled,
       "c-form-select--search": search,
       "c-form-select--disabled": disabled,
       "c-form-select--loading": loading
@@ -61,7 +61,7 @@ div(
       )
 
   .c-form-select__dropdown(
-    v-if="visible"
+    v-if="visible && !disabled"
     v-click-away="onDropdownClickAway"
     v-hotkey="hotkeys"
   )
@@ -78,6 +78,7 @@ div(
         v-model.trim="searchQuery"
         @keydown="onSearchInputKeyDown"
         :name="name ? (name + '_search') : null"
+        :disabled="disabled"
         :class=`[
           {
             "u-medium": searchQuery
@@ -530,7 +531,6 @@ $c: ".c-form-select";
     border-radius: $size-form-select-border-radius;
     cursor: pointer;
     position: relative;
-    z-index: 2;
 
     &:hover {
       border-color: rgba($color-black, 0.15);
@@ -564,7 +564,6 @@ $c: ".c-form-select";
     overflow: hidden;
     position: absolute;
     inset-inline: 0;
-    z-index: 1;
   }
 
   #{$c}__search {
@@ -867,6 +866,7 @@ $c: ".c-form-select";
 
   &--left {
     #{$c}__field #{$c}__inner,
+    #{$c}__search input,
     #{$c}__options #{$c}__option a {
       text-align: left;
     }
@@ -874,6 +874,7 @@ $c: ".c-form-select";
 
   &--center {
     #{$c}__field #{$c}__inner,
+    #{$c}__search input,
     #{$c}__options #{$c}__option a {
       text-align: center;
     }
@@ -882,9 +883,14 @@ $c: ".c-form-select";
   // --> POSITIONS <--
 
   &--top {
+    #{$c}__field {
+      z-index: 2;
+    }
+
     #{$c}__dropdown {
       border-block-end: 0 none;
       inset-block-end: 100%;
+      z-index: 1;
       border-start-start-radius: $size-form-select-border-radius;
       border-start-end-radius: $size-form-select-border-radius;
     }
@@ -898,9 +904,14 @@ $c: ".c-form-select";
   }
 
   &--bottom {
+    #{$c}__field {
+      z-index: 1;
+    }
+
     #{$c}__dropdown {
       border-block-start: 0 none;
       inset-block-start: 100%;
+      z-index: 2;
       border-end-start-radius: $size-form-select-border-radius;
       border-end-end-radius: $size-form-select-border-radius;
     }
@@ -946,6 +957,23 @@ $c: ".c-form-select";
 
     &#{$c}--loading {
       cursor: wait;
+    }
+
+    #{$c}__field,
+    #{$c}__dropdown {
+      pointer-events: none;
+    }
+
+    #{$c}__field {
+      background-color: rgba($color-base-grey-light, 0.6);
+
+      #{$c}__icon {
+        opacity: 0.6;
+      }
+
+      #{$c}__value {
+        color: $color-text-secondary;
+      }
     }
   }
 }
