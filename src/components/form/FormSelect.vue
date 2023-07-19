@@ -60,25 +60,31 @@ div(
 
   ul.c-form-select__options(
     v-if="visible"
+    v-hotkey.prevent.stop="hotkeys"
+    ref="options"
   )
-    template(
-      v-for="option in options"
+    li(
+      v-for="(option, index) in options"
+      @mouseenter="onOptionMouseEnter(index)"
+      :class=`[
+        "c-form-select__option",
+        {
+          "c-form-select__option--hovered": (hoveredIndex === index)
+        }
+      ]`
     )
-      li.c-form-select__option(
-        v-if="option.value !== value"
+      a(
+        @click="onOptionClick(option)"
       )
-        a(
-          @click="onOptionClick(option)"
+        component(
+          v-if="icon"
+          v-bind="icon.properties(option.value)"
+          :is="icon.component"
+          class="c-form-select__icon"
         )
-          component(
-            v-if="icon"
-            v-bind="icon.properties(option.value)"
-            :is="icon.component"
-            class="c-form-select__icon"
-          )
 
-          span.c-form-select__value.u-ellipsis
-            | {{ option.label }}
+        span.c-form-select__value.u-ellipsis
+          | {{ option.label }}
 </template>
 
 <!-- **********************************************************************
@@ -176,11 +182,17 @@ export default {
 
       value: "",
 
+      hoveredIndex: -1,
+
       visible: false
     };
   },
 
   computed: {
+    hasOptions(): boolean {
+      return this.options.length > 0;
+    },
+
     valueLabel(): string {
       const option = this.options.find(option => {
         return this.value === option.value;
@@ -193,6 +205,15 @@ export default {
 
       // Fallback on raw value
       return this.value;
+    },
+
+    hotkeys() {
+      return {
+        enter: this.onHotkeyEnter,
+        esc: this.onHotkeyEscape,
+        down: this.onHotkeyDown,
+        up: this.onHotkeyUp
+      };
     }
   },
 
@@ -207,13 +228,9 @@ export default {
   },
 
   methods: {
-    // --> EVENT LISTENERS <--
+    // --> HELPERS <--
 
-    onFieldClick(): void {
-      this.visible = !this.visible;
-    },
-
-    onOptionClick(option: Option): void {
+    selectOption(option: Option): void {
       const inputElement = this.$refs.input as HTMLInputElement;
 
       // Assign new value, and dispatch change event
@@ -222,7 +239,85 @@ export default {
       inputElement.dispatchEvent(new Event("change"));
 
       // Hide options selector
+      this.hideOptions();
+    },
+
+    hideOptions(): void {
       this.visible = false;
+    },
+
+    scrollToOptionIndex(index: number): void {
+      const optionsElement = (this.$refs.options as HTMLElement) || null;
+
+      if (optionsElement !== null) {
+        const optionElement = optionsElement.children[index] || null;
+
+        if (optionElement !== null) {
+          optionElement.scrollIntoView({
+            behavior: "auto",
+            block: "nearest"
+          });
+        }
+      }
+    },
+
+    // --> EVENT LISTENERS <--
+
+    onHotkeyEnter(): void {
+      if (this.hasOptions === true && this.hoveredIndex >= 0) {
+        const selectedOption = this.options[this.hoveredIndex] || null;
+
+        if (selectedOption !== null) {
+          this.selectOption(selectedOption);
+        }
+      }
+    },
+
+    onHotkeyEscape(): void {
+      // Hide options selector
+      this.hideOptions();
+    },
+
+    onHotkeyDown(): void {
+      if (this.hasOptions === true) {
+        const nextHoveredIndex = this.hoveredIndex + 1;
+
+        if (nextHoveredIndex < this.options.length) {
+          this.hoveredIndex = nextHoveredIndex;
+        } else {
+          this.hoveredIndex = 0;
+        }
+
+        this.scrollToOptionIndex(this.hoveredIndex);
+      }
+    },
+
+    onHotkeyUp(): void {
+      if (this.hasOptions === true) {
+        const previousHoveredIndex = this.hoveredIndex - 1;
+
+        if (previousHoveredIndex >= 0) {
+          this.hoveredIndex = previousHoveredIndex;
+        } else {
+          this.hoveredIndex = this.options.length - 1;
+        }
+
+        this.scrollToOptionIndex(this.hoveredIndex);
+      }
+    },
+
+    onFieldClick(): void {
+      this.visible = !this.visible;
+    },
+
+    onOptionMouseEnter(index: number): void {
+      if (this.hoveredIndex !== index) {
+        this.hoveredIndex = index;
+      }
+    },
+
+    onOptionClick(option: Option): void {
+      this.selectOption(option);
     },
 
     onInputChange(event: Event): void {
@@ -334,20 +429,22 @@ $c: ".c-form-select";
         #{$c}__value {
           color: $color-text-primary;
         }
+      }
 
-        &:hover,
-        &:active {
-          #{$c}__value {
-            color: $color-text-reverse;
-          }
-        }
-
-        &:hover {
+      &--hovered {
+        a {
           background-color: $color-base-purple-normal;
-        }
 
-        &:active {
-          background-color: darken($color-base-purple-normal, 6%);
+          &,
+          &:active {
+            #{$c}__value {
+              color: $color-text-reverse;
+            }
+          }
+
+          &:active {
+            background-color: darken($color-base-purple-normal, 6%);
+          }
         }
       }
     }
