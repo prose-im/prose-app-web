@@ -34,9 +34,17 @@ div(
     @click="onFieldClick"
   )
     .c-form-select__inner
+      component(
+        v-if="icon && value"
+        v-bind="icon.properties(value)"
+        :is="icon.component"
+        class="c-form-select__icon"
+      )
+
       span(
         :class=`[
           "c-form-select__value",
+          "u-ellipsis",
           {
             "c-form-select__value--empty": !value
           }
@@ -53,13 +61,24 @@ div(
   ul.c-form-select__options(
     v-if="visible"
   )
-    li.c-form-select__option(
+    template(
       v-for="option in options"
     )
-      a(
-        @click="onOptionClick(option)"
+      li.c-form-select__option(
+        v-if="option.value !== value"
       )
-        | {{ option.label }}
+        a(
+          @click="onOptionClick(option)"
+        )
+          component(
+            v-if="icon"
+            v-bind="icon.properties(option.value)"
+            :is="icon.component"
+            class="c-form-select__icon"
+          )
+
+          span.c-form-select__value.u-ellipsis
+            | {{ option.label }}
 </template>
 
 <!-- **********************************************************************
@@ -67,10 +86,18 @@ div(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+
 // INTERFACES
 export interface Option {
   value: string;
   label: string;
+}
+
+export interface Icon {
+  component: object;
+  properties: (value: string) => object;
 }
 
 export default {
@@ -93,6 +120,11 @@ export default {
 
     name: {
       type: String,
+      default: null
+    },
+
+    icon: {
+      type: Object as PropType<Icon>,
       default: null
     },
 
@@ -223,6 +255,18 @@ $c: ".c-form-select";
     box-shadow: 0 2px 3px 0 rgba($color-black, 0.01);
   }
 
+  #{$c}__field,
+  #{$c}__options #{$c}__option {
+    #{$c}__icon {
+      margin-inline-end: 9px;
+      flex: 0 0 auto;
+    }
+
+    #{$c}__value {
+      flex: 1;
+    }
+  }
+
   #{$c}__input {
     display: none;
   }
@@ -251,7 +295,6 @@ $c: ".c-form-select";
 
     #{$c}__value {
       color: $color-text-primary;
-      flex: 1;
 
       &--empty {
         color: $color-text-secondary;
@@ -260,13 +303,17 @@ $c: ".c-form-select";
 
     #{$c}__arrow {
       fill: $color-text-tertiary;
+      margin-inline-start: 5px;
       flex: 0 0 auto;
     }
   }
 
   #{$c}__options {
     border-block-end: 0 none;
-    padding-block: 3px;
+    max-height: 200px;
+    padding-block: 5px;
+    overflow-x: hidden;
+    overflow-y: auto;
     position: absolute;
     inset-inline: 0;
     inset-block-end: 100%;
@@ -275,21 +322,24 @@ $c: ".c-form-select";
     border-top-right-radius: $size-form-select-border-radius;
 
     #{$c}__option {
+      display: block;
       line-height: 28px;
-
-      &,
-      a {
-        display: block;
-      }
 
       a {
         background-color: transparent;
-        color: $color-text-primary;
+        display: flex;
+        align-items: center;
         transition: none;
+
+        #{$c}__value {
+          color: $color-text-primary;
+        }
 
         &:hover,
         &:active {
-          color: $color-text-reverse;
+          #{$c}__value {
+            color: $color-text-reverse;
+          }
         }
 
         &:hover {
