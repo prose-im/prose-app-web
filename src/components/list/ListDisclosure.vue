@@ -180,8 +180,8 @@ $c: ".c-list-disclosure";
 
   &--separated {
     #{$c}__header {
-      border-bottom: 1px solid rgba($color-base-grey-normal, 0.2);
-      padding-bottom: 4px;
+      border-block-end: 1px solid rgba($color-base-grey-normal, 0.2);
+      padding-block-end: 4px;
     }
   }
 
