@@ -69,6 +69,8 @@ div(
       :class=`[
         "c-form-select__option",
         {
+          "u-medium": (value === option.value),
+          "c-form-select__option--selected": (value === option.value),
           "c-form-select__option--hovered": (hoveredIndex === index)
         }
       ]`
@@ -444,6 +446,29 @@ $c: ".c-form-select";
 
           &:active {
             background-color: darken($color-base-purple-normal, 6%);
+          }
+        }
+      }
+
+      &--selected {
+        a {
+          background-color: darken($color-background-secondary, 3%);
+        }
+
+        &#{$c}__option--hovered {
+          a {
+            background-color: darken($color-background-secondary, 8%);
+
+            &,
+            &:active {
+              #{$c}__value {
+                color: $color-text-primary;
+              }
+            }
+
+            &:active {
+              background-color: darken($color-background-secondary, 10%);
+            }
           }
         }
       }
