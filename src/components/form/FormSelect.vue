@@ -54,8 +54,8 @@ div(
         | {{ valueLabel || placeholder || "" }}
 
       base-icon(
+        :size="arrowSize"
         name="chevron.up"
-        size="8px"
         class="c-form-select__arrow"
       )
 
@@ -105,6 +105,29 @@ export interface Option {
   label: string;
 }
 
+// CONSTANTS
+const AVAILABLE_SIZES: { [size: string]: { arrow: string } } = {
+  medium: {
+    arrow: "6px"
+  },
+
+  "mid-medium": {
+    arrow: "8px"
+  },
+
+  large: {
+    arrow: "9px"
+  },
+
+  "mid-large": {
+    arrow: "9px"
+  },
+
+  "ultra-large": {
+    arrow: "10px"
+  }
+};
+
 export interface Icon {
   component: object;
   properties: (value: string) => object;
@@ -143,22 +166,16 @@ export default {
       default: "large",
 
       validator(x: string) {
-        return [
-          "medium",
-          "mid-medium",
-          "large",
-          "mid-large",
-          "ultra-large"
-        ].includes(x);
+        return Object.keys(AVAILABLE_SIZES).includes(x);
       }
     },
 
     align: {
       type: String,
-      default: "center",
+      default: "left",
 
       validator(x: string) {
-        return ["left", "center", "right"].includes(x);
+        return ["left", "center"].includes(x);
       }
     },
 
@@ -218,6 +235,18 @@ export default {
 
       // Fallback on raw value
       return this.value;
+    },
+
+    arrowSize(): string {
+      const sizeProperties = AVAILABLE_SIZES[this.size];
+
+      // Return arrow size for select size?
+      if (sizeProperties) {
+        return sizeProperties.arrow;
+      }
+
+      // Return fallback size
+      return "10px";
     },
 
     hotkeys() {
@@ -432,7 +461,6 @@ $c: ".c-form-select";
 
     #{$c}__option {
       display: block;
-      line-height: 28px;
 
       a {
         background-color: transparent;
@@ -495,16 +523,22 @@ $c: ".c-form-select";
       font-size: 11.5px;
     }
 
+    #{$c}__field #{$c}__inner,
+    #{$c}__options #{$c}__option a {
+      padding-inline-start: $size-form-select-medium-padding-sides;
+      padding-inline-end: $size-form-select-medium-padding-sides;
+    }
+
     #{$c}__field {
       #{$c}__value {
         line-height: $size-form-select-medium-line-height;
       }
     }
 
-    #{$c}__field #{$c}__inner,
-    #{$c}__options #{$c}__option a {
-      padding-inline-start: $size-form-select-medium-padding-sides;
-      padding-inline-end: $size-form-select-medium-padding-sides;
+    #{$c}__options {
+      #{$c}__option {
+        line-height: ($size-form-select-medium-line-height - 2px);
+      }
     }
   }
 
@@ -514,16 +548,22 @@ $c: ".c-form-select";
       font-size: 12.5px;
     }
 
+    #{$c}__field #{$c}__inner,
+    #{$c}__options #{$c}__option a {
+      padding-inline-start: $size-form-select-mid-medium-padding-sides;
+      padding-inline-end: $size-form-select-mid-medium-padding-sides;
+    }
+
     #{$c}__field {
       #{$c}__value {
         line-height: $size-form-select-mid-medium-line-height;
       }
     }
 
-    #{$c}__field #{$c}__inner,
-    #{$c}__options #{$c}__option a {
-      padding-inline-start: $size-form-select-mid-medium-padding-sides;
-      padding-inline-end: $size-form-select-mid-medium-padding-sides;
+    #{$c}__options {
+      #{$c}__option {
+        line-height: ($size-form-select-mid-medium-line-height - 4px);
+      }
     }
   }
 
@@ -533,16 +573,22 @@ $c: ".c-form-select";
       font-size: 14.5px;
     }
 
+    #{$c}__field #{$c}__inner,
+    #{$c}__options #{$c}__option a {
+      padding-inline-start: $size-form-select-large-padding-sides;
+      padding-inline-end: $size-form-select-large-padding-sides;
+    }
+
     #{$c}__field {
       #{$c}__value {
         line-height: $size-form-select-large-line-height;
       }
     }
 
-    #{$c}__field #{$c}__inner,
-    #{$c}__options #{$c}__option a {
-      padding-inline-start: $size-form-select-large-padding-sides;
-      padding-inline-end: $size-form-select-large-padding-sides;
+    #{$c}__options {
+      #{$c}__option {
+        line-height: ($size-form-select-large-line-height - 6px);
+      }
     }
   }
 
@@ -552,16 +598,22 @@ $c: ".c-form-select";
       font-size: 15.5px;
     }
 
+    #{$c}__field #{$c}__inner,
+    #{$c}__options #{$c}__option a {
+      padding-inline-start: $size-form-select-mid-large-padding-sides;
+      padding-inline-end: $size-form-select-mid-large-padding-sides;
+    }
+
     #{$c}__field {
       #{$c}__value {
         line-height: $size-form-select-mid-large-line-height;
       }
     }
 
-    #{$c}__field #{$c}__inner,
-    #{$c}__options #{$c}__option a {
-      padding-inline-start: $size-form-select-mid-large-padding-sides;
-      padding-inline-end: $size-form-select-mid-large-padding-sides;
+    #{$c}__options {
+      #{$c}__option {
+        line-height: ($size-form-select-mid-large-line-height - 8px);
+      }
     }
   }
 
@@ -571,39 +623,38 @@ $c: ".c-form-select";
       font-size: 16.5px;
     }
 
+    #{$c}__field #{$c}__inner,
+    #{$c}__options #{$c}__option a {
+      padding-inline-start: $size-form-select-ultra-large-padding-sides;
+      padding-inline-end: $size-form-select-ultra-large-padding-sides;
+    }
+
     #{$c}__field {
       #{$c}__value {
         line-height: $size-form-select-ultra-large-line-height;
       }
     }
 
-    #{$c}__field #{$c}__inner,
-    #{$c}__options #{$c}__option a {
-      padding-inline-start: $size-form-select-ultra-large-padding-sides;
-      padding-inline-end: $size-form-select-ultra-large-padding-sides;
+    #{$c}__options {
+      #{$c}__option {
+        line-height: ($size-form-select-ultra-large-line-height - 10px);
+      }
     }
   }
 
   // --> ALIGNS <--
 
   &--left {
-    #{$c}__field,
-    #{$c}__options {
+    #{$c}__field #{$c}__inner,
+    #{$c}__options #{$c}__option a {
       text-align: left;
     }
   }
 
   &--center {
-    #{$c}__field,
-    #{$c}__options {
+    #{$c}__field #{$c}__inner,
+    #{$c}__options #{$c}__option a {
       text-align: center;
-    }
-  }
-
-  &--right {
-    #{$c}__field,
-    #{$c}__options {
-      text-align: right;
     }
   }
 
