@@ -14,6 +14,7 @@ div(
     "c-form-select",
     "c-form-select--" + size,
     "c-form-select--" + align,
+    "c-form-select--" + position,
     {
       "c-form-select--visible": visible,
       "c-form-select--disabled": disabled,
@@ -158,6 +159,15 @@ export default {
 
       validator(x: string) {
         return ["left", "center", "right"].includes(x);
+      }
+    },
+
+    position: {
+      type: String,
+      default: "top",
+
+      validator(x: string) {
+        return ["top", "bottom"].includes(x);
       }
     },
 
@@ -381,7 +391,7 @@ $c: ".c-form-select";
     border-radius: $size-form-select-border-radius;
     cursor: pointer;
     position: relative;
-    z-index: 1;
+    z-index: 2;
 
     &:hover {
       border-color: rgba($color-black, 0.15);
@@ -412,17 +422,13 @@ $c: ".c-form-select";
   }
 
   #{$c}__options {
-    border-block-end: 0 none;
-    max-height: 200px;
+    max-height: 240px;
     padding-block: 5px;
     overflow-x: hidden;
     overflow-y: auto;
     position: absolute;
     inset-inline: 0;
-    inset-block-end: 100%;
-    z-index: 0;
-    border-top-left-radius: $size-form-select-border-radius;
-    border-top-right-radius: $size-form-select-border-radius;
+    z-index: 1;
 
     #{$c}__option {
       display: block;
@@ -601,6 +607,40 @@ $c: ".c-form-select";
     }
   }
 
+  // --> POSITIONS <--
+
+  &--top {
+    #{$c}__options {
+      border-block-end: 0 none;
+      inset-block-end: 100%;
+      border-start-start-radius: $size-form-select-border-radius;
+      border-start-end-radius: $size-form-select-border-radius;
+    }
+
+    &#{$c}--visible {
+      #{$c}__field {
+        border-start-start-radius: 0;
+        border-start-end-radius: 0;
+      }
+    }
+  }
+
+  &--bottom {
+    #{$c}__options {
+      border-block-start: 0 none;
+      inset-block-start: 100%;
+      border-end-start-radius: $size-form-select-border-radius;
+      border-end-end-radius: $size-form-select-border-radius;
+    }
+
+    &#{$c}--visible {
+      #{$c}__field {
+        border-end-start-radius: 0;
+        border-end-end-radius: 0;
+      }
+    }
+  }
+
   // --> BOOLEANS <--
 
   &--visible {
@@ -614,9 +654,6 @@ $c: ".c-form-select";
     }
 
     #{$c}__field {
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-
       #{$c}__arrow {
         transform: scaleY(-1);
       }
