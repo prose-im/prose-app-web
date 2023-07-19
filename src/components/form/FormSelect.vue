@@ -17,6 +17,7 @@ div(
     "c-form-select--" + position,
     {
       "c-form-select--visible": visible,
+      "c-form-select--search": search,
       "c-form-select--disabled": disabled,
       "c-form-select--loading": loading
     }
@@ -59,36 +60,59 @@ div(
         class="c-form-select__arrow"
       )
 
-  ul.c-form-select__options(
+  .c-form-select__dropdown(
     v-if="visible"
-    v-click-away="onOptionsClickAway"
-    v-hotkey.prevent.stop="hotkeys"
-    ref="options"
+    v-click-away="onDropdownClickAway"
+    v-hotkey="hotkeys"
   )
-    li(
-      v-for="(option, index) in options"
-      @mouseenter="onOptionMouseEnter(index)"
-      :class=`[
-        "c-form-select__option",
-        {
-          "u-medium": (value === option.value),
-          "c-form-select__option--selected": (value === option.value),
-          "c-form-select__option--hovered": (hoveredIndex === index)
-        }
-      ]`
+    .c-form-select__search(
+      v-if="search"
     )
-      a(
-        @click="onOptionClick(option)"
+      base-icon(
+        name="magnifyingglass"
+        size="11px"
+        class="c-form-select__search-icon"
       )
-        component(
-          v-if="icon"
-          v-bind="icon.properties(option.value)"
-          :is="icon.component"
-          class="c-form-select__icon"
-        )
 
-        span.c-form-select__value.u-ellipsis
-          | {{ option.label }}
+      input(
+        v-model="searchQuery"
+        :name="name ? (name + '_search') : null"
+        :class=`[
+          {
+            "u-medium": searchQuery
+          }
+        ]`
+        type="search"
+        placeholder="Search…"
+      )
+
+    ul.c-form-select__options(
+      ref="options"
+    )
+      li(
+        v-for="(option, index) in options"
+        @mouseenter="onOptionMouseEnter(index)"
+        :class=`[
+          "c-form-select__option",
+          {
+            "u-medium": (value === option.value),
+            "c-form-select__option--selected": (value === option.value),
+            "c-form-select__option--hovered": (hoveredIndex === index)
+          }
+        ]`
+      )
+        a(
+          @click="onOptionClick(option)"
+        )
+          component(
+            v-if="icon"
+            v-bind="icon.properties(option.value)"
+            :is="icon.component"
+            class="c-form-select__icon"
+          )
+
+          span.c-form-select__value.u-ellipsis
+            | {{ option.label }}
 </template>
 
 <!-- **********************************************************************
@@ -201,6 +225,11 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+
+    search: {
+      type: Boolean,
+      default: true
     }
   },
 
@@ -211,6 +240,7 @@ export default {
       // --> STATE <--
 
       value: "",
+      searchQuery: "",
 
       hoveredIndex: -1,
 
@@ -280,11 +310,11 @@ export default {
 
       inputElement.dispatchEvent(new Event("change"));
 
-      // Hide options selector
-      this.hideOptions();
+      // Hide dropdown selector
+      this.hideDropdown();
     },
 
-    hideOptions(): void {
+    hideDropdown(): void {
       this.visible = false;
     },
 
@@ -305,7 +335,10 @@ export default {
 
     // --> EVENT LISTENERS <--
 
-    onHotkeyEnter(): void {
+    onHotkeyEnter(event: Event): void {
+      event.stopPropagation();
+      event.preventDefault();
+
       if (this.hasOptions === true && this.hoveredIndex >= 0) {
         const selectedOption = this.options[this.hoveredIndex] || null;
 
@@ -315,12 +348,18 @@ export default {
       }
     },
 
-    onHotkeyEscape(): void {
-      // Hide options selector
-      this.hideOptions();
+    onHotkeyEscape(event: Event): void {
+      event.stopPropagation();
+      event.preventDefault();
+
+      // Hide dropdown selector
+      this.hideDropdown();
     },
 
-    onHotkeyDown(): void {
+    onHotkeyDown(event: Event): void {
+      event.stopPropagation();
+      event.preventDefault();
+
       if (this.hasOptions === true) {
         const nextHoveredIndex = this.hoveredIndex + 1;
 
@@ -334,7 +373,10 @@ export default {
       }
     },
 
-    onHotkeyUp(): void {
+    onHotkeyUp(event: Event): void {
+      event.stopPropagation();
+      event.preventDefault();
+
       if (this.hasOptions === true) {
         const previousHoveredIndex = this.hoveredIndex - 1;
 
@@ -352,9 +394,9 @@ export default {
       this.visible = !this.visible;
     },
 
-    onOptionsClickAway(): void {
-      // Hide options selector
-      this.hideOptions();
+    onDropdownClickAway(): void {
+      // Hide dropdown
+      this.hideDropdown();
     },
 
     onOptionMouseEnter(index: number): void {
@@ -391,7 +433,7 @@ $c: ".c-form-select";
   position: relative;
 
   #{$c}__field,
-  #{$c}__options {
+  #{$c}__dropdown {
     background-color: $color-white;
     border: $size-form-select-border-width solid rgba($color-black, 0.1);
     box-shadow: 0 2px 3px 0 rgba($color-black, 0.01);
@@ -450,14 +492,55 @@ $c: ".c-form-select";
     }
   }
 
-  #{$c}__options {
-    max-height: 240px;
-    padding-block: 5px;
-    overflow-x: hidden;
-    overflow-y: auto;
+  #{$c}__dropdown {
+    overflow: hidden;
     position: absolute;
     inset-inline: 0;
     z-index: 1;
+  }
+
+  #{$c}__search {
+    background-color: rgba($color-background-primary, 0.94);
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline: 0;
+    backdrop-filter: blur(8px);
+
+    &,
+    input {
+      height: $size-form-select-search-height;
+    }
+
+    #{$c}__search-icon {
+      fill: $color-base-grey-normal;
+      pointer-events: none;
+      position: absolute;
+      inset-block-start: 50%;
+      transform: translateY(-50%);
+    }
+
+    input {
+      background-color: transparent;
+      border: 0 none;
+      border-block-end: 1px solid $color-border-tertiary;
+      color: $color-text-primary;
+      outline: 0 none;
+      font-size: 11px;
+      letter-spacing: 0.05px;
+      width: 100%;
+
+      &::placeholder {
+        color: $color-text-tertiary;
+        opacity: 1;
+      }
+    }
+  }
+
+  #{$c}__options {
+    max-height: 240px;
+    padding-block: $size-form-select-options-padding-block;
+    overflow-x: hidden;
+    overflow-y: auto;
 
     #{$c}__option {
       display: block;
@@ -535,6 +618,20 @@ $c: ".c-form-select";
       }
     }
 
+    #{$c}__search {
+      #{$c}__search-icon {
+        inset-inline-start: $size-form-select-medium-padding-sides;
+      }
+
+      input {
+        padding-inline-start: (
+          $size-form-select-medium-padding-sides +
+            $size-form-select-search-icon-offset
+        );
+        padding-inline-end: $size-form-select-medium-padding-sides;
+      }
+    }
+
     #{$c}__options {
       #{$c}__option {
         line-height: ($size-form-select-medium-line-height - 2px);
@@ -557,6 +654,20 @@ $c: ".c-form-select";
     #{$c}__field {
       #{$c}__value {
         line-height: $size-form-select-mid-medium-line-height;
+      }
+    }
+
+    #{$c}__search {
+      #{$c}__search-icon {
+        inset-inline-start: $size-form-select-mid-medium-padding-sides;
+      }
+
+      input {
+        padding-inline-start: (
+          $size-form-select-mid-medium-padding-sides +
+            $size-form-select-search-icon-offset
+        );
+        padding-inline-end: $size-form-select-mid-medium-padding-sides;
       }
     }
 
@@ -585,6 +696,20 @@ $c: ".c-form-select";
       }
     }
 
+    #{$c}__search {
+      #{$c}__search-icon {
+        inset-inline-start: $size-form-select-large-padding-sides;
+      }
+
+      input {
+        padding-inline-start: (
+          $size-form-select-large-padding-sides +
+            $size-form-select-search-icon-offset
+        );
+        padding-inline-end: $size-form-select-large-padding-sides;
+      }
+    }
+
     #{$c}__options {
       #{$c}__option {
         line-height: ($size-form-select-large-line-height - 6px);
@@ -610,6 +735,20 @@ $c: ".c-form-select";
       }
     }
 
+    #{$c}__search {
+      #{$c}__search-icon {
+        inset-inline-start: $size-form-select-mid-large-padding-sides;
+      }
+
+      input {
+        padding-inline-start: (
+          $size-form-select-mid-large-padding-sides +
+            $size-form-select-search-icon-offset
+        );
+        padding-inline-end: $size-form-select-mid-large-padding-sides;
+      }
+    }
+
     #{$c}__options {
       #{$c}__option {
         line-height: ($size-form-select-mid-large-line-height - 8px);
@@ -632,6 +771,20 @@ $c: ".c-form-select";
     #{$c}__field {
       #{$c}__value {
         line-height: $size-form-select-ultra-large-line-height;
+      }
+    }
+
+    #{$c}__search {
+      #{$c}__search-icon {
+        inset-inline-start: $size-form-select-ultra-large-padding-sides;
+      }
+
+      input {
+        padding-inline-start: (
+          $size-form-select-ultra-large-padding-sides +
+            $size-form-select-search-icon-offset
+        );
+        padding-inline-end: $size-form-select-ultra-large-padding-sides;
       }
     }
 
@@ -661,7 +814,7 @@ $c: ".c-form-select";
   // --> POSITIONS <--
 
   &--top {
-    #{$c}__options {
+    #{$c}__dropdown {
       border-block-end: 0 none;
       inset-block-end: 100%;
       border-start-start-radius: $size-form-select-border-radius;
@@ -677,7 +830,7 @@ $c: ".c-form-select";
   }
 
   &--bottom {
-    #{$c}__options {
+    #{$c}__dropdown {
       border-block-start: 0 none;
       inset-block-start: 100%;
       border-end-start-radius: $size-form-select-border-radius;
@@ -696,7 +849,7 @@ $c: ".c-form-select";
 
   &--visible {
     #{$c}__field,
-    #{$c}__options {
+    #{$c}__dropdown {
       &,
       &:hover,
       &:active {
@@ -708,6 +861,15 @@ $c: ".c-form-select";
       #{$c}__arrow {
         transform: scaleY(-1);
       }
+    }
+  }
+
+  &--search {
+    #{$c}__options {
+      padding-block-start: (
+        $size-form-select-search-height +
+          $size-form-select-options-padding-block
+      );
     }
   }
 
