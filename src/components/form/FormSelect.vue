@@ -498,6 +498,44 @@ export default {
 <style lang="scss">
 $c: ".c-form-select";
 
+// VARIABLES
+$sizes: (
+  "medium": (
+    "font-size": 11.5px,
+    "line-height": $size-form-select-medium-line-height,
+    "padding-sides": $size-form-select-medium-padding-sides,
+    "option-retract": 2px
+  ),
+
+  "mid-medium": (
+    "font-size": 12.5px,
+    "line-height": $size-form-select-mid-medium-line-height,
+    "padding-sides": $size-form-select-mid-medium-padding-sides,
+    "option-retract": 4px
+  ),
+
+  "large": (
+    "font-size": 14.5px,
+    "line-height": $size-form-select-large-line-height,
+    "padding-sides": $size-form-select-large-padding-sides,
+    "option-retract": 6px
+  ),
+
+  "mid-large": (
+    "font-size": 15.5px,
+    "line-height": $size-form-select-mid-large-line-height,
+    "padding-sides": $size-form-select-mid-large-padding-sides,
+    "option-retract": 8px
+  ),
+
+  "ultra-large": (
+    "font-size": 16.5px,
+    "line-height": $size-form-select-ultra-large-line-height,
+    "padding-sides": $size-form-select-ultra-large-padding-sides,
+    "option-retract": 10px
+  )
+);
+
 .c-form-select {
   position: relative;
 
@@ -667,197 +705,45 @@ $c: ".c-form-select";
 
   // --> SIZES <--
 
-  &--medium {
-    #{$c}__field,
-    #{$c}__options {
-      font-size: 11.5px;
-    }
-
-    #{$c}__field #{$c}__inner,
-    #{$c}__options #{$c}__option a {
-      padding-inline-start: $size-form-select-medium-padding-sides;
-      padding-inline-end: $size-form-select-medium-padding-sides;
-    }
-
-    #{$c}__field {
-      #{$c}__value {
-        line-height: $size-form-select-medium-line-height;
-      }
-    }
-
-    #{$c}__search {
-      #{$c}__search-icon {
-        inset-inline-start: $size-form-select-medium-padding-sides;
+  @each $name, $size in $sizes {
+    &--#{$name} {
+      #{$c}__field,
+      #{$c}__options {
+        font-size: map-get($size, "font-size");
       }
 
-      input {
-        padding-inline-start: (
-          $size-form-select-medium-padding-sides +
-            $size-form-select-search-icon-offset
-        );
-        padding-inline-end: $size-form-select-medium-padding-sides;
-      }
-    }
-
-    #{$c}__options {
-      #{$c}__option {
-        line-height: ($size-form-select-medium-line-height - 2px);
-      }
-    }
-  }
-
-  &--mid-medium {
-    #{$c}__field,
-    #{$c}__options {
-      font-size: 12.5px;
-    }
-
-    #{$c}__field #{$c}__inner,
-    #{$c}__options #{$c}__option a {
-      padding-inline-start: $size-form-select-mid-medium-padding-sides;
-      padding-inline-end: $size-form-select-mid-medium-padding-sides;
-    }
-
-    #{$c}__field {
-      #{$c}__value {
-        line-height: $size-form-select-mid-medium-line-height;
-      }
-    }
-
-    #{$c}__search {
-      #{$c}__search-icon {
-        inset-inline-start: $size-form-select-mid-medium-padding-sides;
+      #{$c}__field #{$c}__inner,
+      #{$c}__options #{$c}__option a {
+        padding-inline-start: map-get($size, "padding-sides");
+        padding-inline-end: map-get($size, "padding-sides");
       }
 
-      input {
-        padding-inline-start: (
-          $size-form-select-mid-medium-padding-sides +
-            $size-form-select-search-icon-offset
-        );
-        padding-inline-end: $size-form-select-mid-medium-padding-sides;
-      }
-    }
-
-    #{$c}__options {
-      #{$c}__option {
-        line-height: ($size-form-select-mid-medium-line-height - 4px);
-      }
-    }
-  }
-
-  &--large {
-    #{$c}__field,
-    #{$c}__options {
-      font-size: 14.5px;
-    }
-
-    #{$c}__field #{$c}__inner,
-    #{$c}__options #{$c}__option a {
-      padding-inline-start: $size-form-select-large-padding-sides;
-      padding-inline-end: $size-form-select-large-padding-sides;
-    }
-
-    #{$c}__field {
-      #{$c}__value {
-        line-height: $size-form-select-large-line-height;
-      }
-    }
-
-    #{$c}__search {
-      #{$c}__search-icon {
-        inset-inline-start: $size-form-select-large-padding-sides;
+      #{$c}__field {
+        #{$c}__value {
+          line-height: map-get($size, "line-height");
+        }
       }
 
-      input {
-        padding-inline-start: (
-          $size-form-select-large-padding-sides +
-            $size-form-select-search-icon-offset
-        );
-        padding-inline-end: $size-form-select-large-padding-sides;
-      }
-    }
+      #{$c}__search {
+        #{$c}__search-icon {
+          inset-inline-start: map-get($size, "padding-sides");
+        }
 
-    #{$c}__options {
-      #{$c}__option {
-        line-height: ($size-form-select-large-line-height - 6px);
-      }
-    }
-  }
-
-  &--mid-large {
-    #{$c}__field,
-    #{$c}__options {
-      font-size: 15.5px;
-    }
-
-    #{$c}__field #{$c}__inner,
-    #{$c}__options #{$c}__option a {
-      padding-inline-start: $size-form-select-mid-large-padding-sides;
-      padding-inline-end: $size-form-select-mid-large-padding-sides;
-    }
-
-    #{$c}__field {
-      #{$c}__value {
-        line-height: $size-form-select-mid-large-line-height;
-      }
-    }
-
-    #{$c}__search {
-      #{$c}__search-icon {
-        inset-inline-start: $size-form-select-mid-large-padding-sides;
+        input {
+          padding-inline-start: (
+            map-get($size, "padding-sides") +
+              $size-form-select-search-icon-offset
+          );
+          padding-inline-end: map-get($size, "padding-sides");
+        }
       }
 
-      input {
-        padding-inline-start: (
-          $size-form-select-mid-large-padding-sides +
-            $size-form-select-search-icon-offset
-        );
-        padding-inline-end: $size-form-select-mid-large-padding-sides;
-      }
-    }
-
-    #{$c}__options {
-      #{$c}__option {
-        line-height: ($size-form-select-mid-large-line-height - 8px);
-      }
-    }
-  }
-
-  &--ultra-large {
-    #{$c}__field,
-    #{$c}__options {
-      font-size: 16.5px;
-    }
-
-    #{$c}__field #{$c}__inner,
-    #{$c}__options #{$c}__option a {
-      padding-inline-start: $size-form-select-ultra-large-padding-sides;
-      padding-inline-end: $size-form-select-ultra-large-padding-sides;
-    }
-
-    #{$c}__field {
-      #{$c}__value {
-        line-height: $size-form-select-ultra-large-line-height;
-      }
-    }
-
-    #{$c}__search {
-      #{$c}__search-icon {
-        inset-inline-start: $size-form-select-ultra-large-padding-sides;
-      }
-
-      input {
-        padding-inline-start: (
-          $size-form-select-ultra-large-padding-sides +
-            $size-form-select-search-icon-offset
-        );
-        padding-inline-end: $size-form-select-ultra-large-padding-sides;
-      }
-    }
-
-    #{$c}__options {
-      #{$c}__option {
-        line-height: ($size-form-select-ultra-large-line-height - 10px);
+      #{$c}__options {
+        #{$c}__option {
+          line-height: (
+            map-get($size, "line-height") - map-get($size, "option-retract")
+          );
+        }
       }
     }
   }
