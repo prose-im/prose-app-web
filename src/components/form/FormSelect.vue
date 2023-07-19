@@ -60,6 +60,7 @@ div(
 
   ul.c-form-select__options(
     v-if="visible"
+    v-click-away="onOptionsClickAway"
     v-hotkey.prevent.stop="hotkeys"
     ref="options"
   )
@@ -310,6 +311,11 @@ export default {
 
     onFieldClick(): void {
       this.visible = !this.visible;
+    },
+
+    onOptionsClickAway(): void {
+      // Hide options selector
+      this.hideOptions();
     },
 
     onOptionMouseEnter(index: number): void {
