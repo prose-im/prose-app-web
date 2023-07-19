@@ -57,7 +57,6 @@
             :placeholder="field.data.placeholder"
             :disabled="field.data.disabled"
             size="mid-medium"
-            align="left"
           )
 
           form-toggle(
