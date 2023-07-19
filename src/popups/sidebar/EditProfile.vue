@@ -10,7 +10,6 @@
 
 <template lang="pug">
 base-popup(
-  @close="onClose"
   class="p-edit-profile"
   popup-class="p-edit-profile__popup"
 )
