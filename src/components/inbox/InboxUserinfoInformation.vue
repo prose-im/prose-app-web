@@ -32,10 +32,19 @@ list-disclosure(
     template(
       v-slot:icon
     )
+      base-flag(
+        v-if="entry.flag"
+        :code="entry.flag"
+        :width="iconSize"
+        height="12px"
+        shadow="none"
+        class="c-inbox-userinfo-information__icon"
+      )
+
       base-icon(
-        v-if="entry.icon"
+        v-else-if="entry.icon"
         :name="entry.icon"
-        size="14px"
+        :size="iconSize"
         class="c-inbox-userinfo-information__icon"
       )
 
@@ -51,6 +60,7 @@ list-disclosure(
 // NPM
 import { PropType } from "vue";
 import { JID } from "@xmpp/jid";
+import { getCountryCode, getCountryName } from "crisp-countries-languages";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -73,6 +83,14 @@ export default {
       type: String,
       default: null
     }
+  },
+
+  data() {
+    return {
+      // --> DATA <--
+
+      iconSize: "14px"
+    };
   },
 
   computed: {
@@ -114,7 +132,8 @@ export default {
 
         if (this.profile.information.location) {
           const userTimezone =
-            this.profile.information.location.timezone || null;
+              this.profile.information.location.timezone || null,
+            userCountry = this.profile.information.location.country || null;
 
           if (userTimezone !== null) {
             const nowDate = new Date();
@@ -129,19 +148,36 @@ export default {
             });
           }
 
-          if (this.profile.information.location.country) {
+          if (userCountry !== null) {
             const locationParts = [];
 
+            // Append city? (if any)
             if (this.profile.information.location.city) {
               locationParts.push(this.profile.information.location.city);
             }
 
-            locationParts.push(this.profile.information.location.country);
+            // Append country? (convert code to country name for display, eg. \
+            //   'FR'/'fr' becomes 'France')
+            const userCountryName = getCountryName(userCountry) || null;
+
+            locationParts.push(userCountryName || userCountry);
+
+            // Acquire user country code (if country name found, then we \
+            //   already got a country code, otherwise we need to look it up \
+            //   from raw country name)
+            let userCountryCode = userCountryName !== null ? userCountry : null;
+
+            if (userCountryCode === null) {
+              // Attempt to acquire country code from raw country name (will \
+              //   possibly return nothing, eg. 'Germany' will become 'DE')
+              userCountryCode = getCountryCode(userCountry) || null;
+            }
 
             entries.push({
               id: "location",
               title: locationParts.join(", "),
-              icon: "location.fill"
+              icon: "location.fill",
+              flag: userCountryCode
             });
           }
         }
