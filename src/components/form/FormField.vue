@@ -207,24 +207,24 @@ export default {
     // --> HELPERS <--
 
     focusField(): void {
-      const field = (this.$refs.field as HTMLElement) || null;
+      const fieldElement = (this.$refs.field as HTMLElement) || null;
 
-      if (field !== null) {
-        field.focus();
+      if (fieldElement !== null) {
+        fieldElement.focus();
       }
     },
 
     refreshAutogrow(): void {
       if (this.autogrow === true) {
-        const field = (this.$refs.field as HTMLElement) || null;
+        const fieldElement = (this.$refs.field as HTMLElement) || null;
 
-        if (field !== null) {
+        if (fieldElement !== null) {
           // Reset height to default (so that later measured scroll height \
           //   reports its real value)
-          field.style.height = "auto";
+          fieldElement.style.height = "auto";
 
           // Assign new field height
-          field.style.height = `${field.scrollHeight}px`;
+          fieldElement.style.height = `${fieldElement.scrollHeight}px`;
         }
       }
     },
