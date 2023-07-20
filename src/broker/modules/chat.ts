@@ -54,35 +54,11 @@ const RETRACT_MESSAGE_BODY =
  * ************************************************************************* */
 
 class BrokerModuleMessage extends BrokerModule {
-  sendMessage(to: JID, body: string, id?: MessageID): void {
-    // XMPP: Instant Messaging and Presence
-    // https://xmpp.org/rfcs/rfc6121.html#message
-
-    // Assign default value to identifier
-    id = id || xmppID();
-
-    // Emit message onto network
-    // Notice: mark chat state as active whenever sending a message.
-    this._client.emit(
-      $msg({ id, to: to.toString(), type: MessageType.Chat })
-        .c("body")
-        .t(body)
-        .up()
-        .c(MessageChatState.Active, {
-          xmlns: NS_CHAT_STATES
-        })
-    );
-
-    // Insert message into store
-    Store.$inbox.insertMessage(to.bare(), {
-      id,
-      type: "text",
-      date: xmppTime.datetime(),
-      from: this._client.jid?.toString(),
-      content: body
-    });
-
-    logger.info(`Sent message to: '${to}' with body:`, body);
+  async sendMessage(to: JID, body: string): void {
+    if (!this._client.client) {
+      return
+    }
+    await this._client.client.sendMessage(to, body);
   }
 
   updateMessage(
