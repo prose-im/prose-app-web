@@ -86,7 +86,7 @@ div(
         ]`
         type="search"
         placeholder="Search…"
-        autofocus
+        ref="search"
       )
 
     ul.c-form-select__options(
@@ -348,6 +348,11 @@ export default {
     }
   },
 
+  mounted() {
+    // Apply focus on search input (as needed)
+    this.autoFocusDropdownSearch();
+  },
+
   methods: {
     // --> HELPERS <--
 
@@ -365,6 +370,17 @@ export default {
 
     hideDropdown(): void {
       this.visible = false;
+    },
+
+    autoFocusDropdownSearch(): void {
+      // Apply auto-focus?
+      if (this.search === true && this.visible === true) {
+        const searchElement = (this.$refs.search as HTMLElement) || null;
+
+        if (searchElement !== null) {
+          searchElement.focus();
+        }
+      }
     },
 
     scrollToOptionIndex(index: number): void {
@@ -447,7 +463,11 @@ export default {
     },
 
     onFieldClick(): void {
+      // Toggle dropdown visibility
       this.visible = !this.visible;
+
+      // Apply focus on search input (as needed)
+      this.$nextTick(this.autoFocusDropdownSearch);
     },
 
     onDropdownClickAway(): void {
