@@ -31,9 +31,21 @@ base-popup(
           square
         )
 
-        span.p-edit-profile__identity-avatar-edit
-          span.p-edit-profile__identity-avatar-edit-text.u-bold
-            | Edit
+        span.p-edit-profile__identity-avatar-file
+          input.p-edit-profile__identity-avatar-input(
+            @change.prevent="onAvatarFileChange",
+            :accept="avatarAcceptTypes"
+            type="file",
+            id="avatar_file",
+            tabindex="-1"
+          )
+
+        label.p-edit-profile__identity-avatar-edit(
+          for="avatar_file"
+        )
+          span.p-edit-profile__identity-avatar-edit-inner
+            span.p-edit-profile__identity-avatar-edit-text.u-bold
+              | Edit
 
       p.p-edit-profile__identity-name.u-medium
         template(
@@ -134,6 +146,10 @@ export interface FormProfile {
   locationCountry: FormValueString;
 }
 
+// CONSTANTS
+const AVATAR_MIME_TYPES = ["image/jpeg", "image/png", "image/gif"];
+const AVATAR_EXTENSIONS = ["JPG", "PNG", "GIF"];
+
 export default {
   name: "EditProfile",
 
@@ -231,6 +247,10 @@ export default {
       return this.account.getLocalJID();
     },
 
+    avatarAcceptTypes(): string {
+      return AVATAR_MIME_TYPES.join(",");
+    },
+
     account(): typeof Store.$account {
       return Store.$account;
     },
@@ -275,6 +295,19 @@ export default {
 
       // Apply new profile data to form
       this.vCardDataToForms(profile);
+    },
+
+    async readAvatarFile(
+      avatarFile: File
+    ): Promise<string | ArrayBuffer | null> {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+
+        reader.readAsDataURL(avatarFile);
+
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
     },
 
     vCardDataToForms(profile: ProfileEntry): void {
@@ -384,6 +417,33 @@ export default {
       this.$emit("close");
     },
 
+    async onAvatarFileChange(event: InputEvent): void {
+      // TODO: fix typing error there
+      if (event.target && event.target.files && event.target.files.length > 0) {
+        const avatarFile: File = event.target.files[0];
+
+        if (AVATAR_MIME_TYPES.includes(avatarFile.type) === true) {
+          // TODO: save when hit save
+          // TODO: lock when reading avatar file? (or show loader)
+
+          // Acquire avatar data
+          const avatarData = await this.readAvatarFile(avatarFile);
+
+          // TODO: commit avatarData Base64 string somewhere
+          // TODO: save committed Base64 string to PEP when hitting 'Save'
+
+          BaseAlert.info("Avatar changed", "Save your profile to submit it!");
+        } else {
+          BaseAlert.warning(
+            "Cannot use this file",
+            `Accepted files: ${AVATAR_EXTENSIONS.join(", ")}`
+          );
+        }
+      } else {
+        BaseAlert.error("Cannot load avatar", "No file was selected!");
+      }
+    },
+
     onSectionsNavigate(sectionId: string): void {
       this.section = sectionId;
     }
@@ -438,7 +498,6 @@ $popup-height-full-breakpoint: (
 
       #{$c}__identity-avatar {
         line-height: 0;
-        cursor: pointer;
         overflow: hidden;
         display: inline-block;
         position: relative;
@@ -446,15 +505,19 @@ $popup-height-full-breakpoint: (
 
         &:hover {
           #{$c}__identity-avatar-edit {
-            visibility: visible;
-            opacity: 1;
+            #{$c}__identity-avatar-edit-inner {
+              visibility: visible;
+              opacity: 1;
+            }
           }
         }
 
         &:active {
           #{$c}__identity-avatar-edit {
-            #{$c}__identity-avatar-edit-text {
-              transform: scale(0.96);
+            #{$c}__identity-avatar-edit-inner {
+              #{$c}__identity-avatar-edit-text {
+                transform: scale(0.96);
+              }
             }
           }
         }
@@ -465,32 +528,54 @@ $popup-height-full-breakpoint: (
 
         #{$c}__identity-avatar-image {
           position: relative;
-          z-index: 0;
+          z-index: 1;
+        }
+
+        #{$c}__identity-avatar-file {
+          overflow: hidden;
+          position: absolute;
+          inset: 0;
+          z-index: -1;
+
+          #{$c}__identity-avatar-input {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            display: block;
+            opacity: 0;
+          }
         }
 
         #{$c}__identity-avatar-edit {
-          background-image: linear-gradient(
-            180deg,
-            rgba($color-black, 0) 0%,
-            rgba($color-black, 0.6) 100%
-          );
-          padding-block-start: 14px;
-          padding-block-end: 10px;
+          cursor: pointer;
           position: absolute;
-          z-index: 1;
-          inset-inline: 0;
-          inset-block-end: 0;
-          visibility: hidden;
-          opacity: 0;
-          transition: opacity 100ms linear;
+          inset: 0;
+          z-index: 2;
 
-          #{$c}__identity-avatar-edit-text {
-            color: $color-text-reverse;
-            font-size: 12.5px;
-            line-height: 14px;
-            text-transform: lowercase;
-            display: inline-block;
-            transition: transform 100ms linear;
+          #{$c}__identity-avatar-edit-inner {
+            background-image: linear-gradient(
+              180deg,
+              rgba($color-black, 0) 0%,
+              rgba($color-black, 0.6) 100%
+            );
+            padding-block-start: 14px;
+            padding-block-end: 10px;
+            position: absolute;
+            inset-inline: 0;
+            inset-block-end: 0;
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 100ms linear;
+
+            #{$c}__identity-avatar-edit-text {
+              color: $color-text-reverse;
+              font-size: 12.5px;
+              line-height: 14px;
+              text-transform: lowercase;
+              display: inline-block;
+              transition: transform 100ms linear;
+            }
           }
         }
       }
