@@ -10,14 +10,10 @@
 
 // NPM
 import { default as $, Cash } from "cash-dom";
-import { $iq } from "strophe.js";
 import { BareJID, Contact } from "@prose-im/prose-core-client-wasm";
-import xmppID from "@xmpp/id";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
-import { IQType, IQRosterSubscription, IQRosterAsk } from "@/broker/stanzas/iq";
-import { NS_ROSTER } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
