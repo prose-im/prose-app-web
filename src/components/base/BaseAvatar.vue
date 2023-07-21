@@ -61,6 +61,11 @@ export default {
       }
     },
 
+    data: {
+      type: String,
+      default: null
+    },
+
     square: {
       type: Boolean,
       default: false
@@ -69,7 +74,10 @@ export default {
 
   computed: {
     backgroundImage() {
-      const avatarDataUrl = Store.$avatar.getAvatarDataUrl(this.jid);
+      const avatarDataUrl =
+        this.data !== null
+          ? this.data
+          : Store.$avatar.getAvatarDataUrl(this.jid);
 
       if (avatarDataUrl) {
         return `url(${avatarDataUrl})`;
