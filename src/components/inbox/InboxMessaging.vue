@@ -716,36 +716,41 @@ export default {
       this.hidePopover();
     },
 
-    onPopoverActionsCopyClick({ messageId }: { messageId: string }): void {
+    async onPopoverActionsCopyClick({
+      messageId
+    }: {
+      messageId: string;
+    }): Promise<void> {
       // Acquire message contents
       const messageData = this.frame()?.MessagingStore.resolve(messageId);
 
       if (messageData && messageData.type === "text" && messageData.content) {
-        // Copy to clipboard
-        navigator.clipboard
-          .writeText(messageData.content)
-          .then(() => {
-            this.$log.info(`Copied message text: ${messageData.content}`);
+        try {
+          // Copy to clipboard
+          await navigator.clipboard.writeText(messageData.content);
 
-            BaseAlert.success(
-              "Text copied",
-              "Message text was copied to clipboard"
-            );
+          // Acknowledge copy
+          this.$log.info(`Copied message text: ${messageData.content}`);
 
-            // Hide popover
-            this.hidePopover();
-          })
-          .catch(error => {
-            this.$log.info(
-              `Could not copy message text: ${messageData.content}`,
-              error
-            );
+          BaseAlert.success(
+            "Text copied",
+            "Message text was copied to clipboard"
+          );
 
-            BaseAlert.error(
-              "Cannot copy text",
-              "Message text could not be copied to clipboard"
-            );
-          });
+          // Hide popover
+          this.hidePopover();
+        } catch (error) {
+          // Alert of copy error
+          this.$log.info(
+            `Could not copy message text: ${messageData.content}`,
+            error
+          );
+
+          BaseAlert.error(
+            "Cannot copy text",
+            "Message text could not be copied to clipboard"
+          );
+        }
       } else {
         BaseAlert.warning(
           "No text to copy",
