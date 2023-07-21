@@ -19,12 +19,13 @@ base-popup(
         :class=`[
           "p-edit-profile__identity-avatar",
           {
-            "p-edit-profile__identity-avatar--locked": isPending
+            "p-edit-profile__identity-avatar--locked": isPending || avatarFileLoading
           }
         ]`
       )
         base-avatar(
           :jid="selfJID"
+          :data="avatarUpdateData"
           size="96px"
           shadow="light"
           class="p-edit-profile__identity-avatar-image"
@@ -234,7 +235,11 @@ export default {
       fetching: false,
       saving: false,
 
-      section: "identity"
+      avatarFileLoading: false,
+
+      section: "identity",
+
+      avatarUpdateData: null as string | null
     };
   },
 
@@ -300,13 +305,13 @@ export default {
     async readAvatarFile(
       avatarFile: File
     ): Promise<string | ArrayBuffer | null> {
-      return new Promise((resolve, reject) => {
+      return new Promise(resolve => {
         const reader = new FileReader();
 
         reader.readAsDataURL(avatarFile);
 
         reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
+        reader.onerror = () => resolve(null);
       });
     },
 
@@ -395,6 +400,11 @@ export default {
           // Save vCard data
           await Broker.$profile.saveVCard(this.selfJID, vCardData);
 
+          // Save avatar data?
+          if (this.avatarUpdateData !== null) {
+            // TODO: publish new avatar to PEP
+          }
+
           // Save success: close
           this.$emit("close");
 
@@ -417,22 +427,36 @@ export default {
       this.$emit("close");
     },
 
-    async onAvatarFileChange(event: InputEvent): void {
+    async onAvatarFileChange(event: InputEvent): Promise<void> {
       // TODO: fix typing error there
-      if (event.target && event.target.files && event.target.files.length > 0) {
+      if (
+        event.target &&
+        event.target.files &&
+        event.target.files.length > 0 &&
+        this.avatarFileLoading !== true
+      ) {
         const avatarFile: File = event.target.files[0];
 
         if (AVATAR_MIME_TYPES.includes(avatarFile.type) === true) {
-          // TODO: save when hit save
-          // TODO: lock when reading avatar file? (or show loader)
+          // Mark as loading
+          this.avatarFileLoading = true;
 
           // Acquire avatar data
           const avatarData = await this.readAvatarFile(avatarFile);
 
-          // TODO: commit avatarData Base64 string somewhere
-          // TODO: save committed Base64 string to PEP when hitting 'Save'
+          if (avatarData !== null && typeof avatarData === "string") {
+            this.avatarUpdateData = avatarData;
 
-          BaseAlert.info("Avatar changed", "Save your profile to submit it!");
+            BaseAlert.info("Avatar changed", "Save your profile to submit it!");
+          } else {
+            BaseAlert.warning(
+              "Cannot load this file",
+              "Image file seems to be empty"
+            );
+          }
+
+          // Mark as non-loading
+          this.avatarFileLoading = false;
         } else {
           BaseAlert.warning(
             "Cannot use this file",
