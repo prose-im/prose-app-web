@@ -47,6 +47,7 @@
     "cash-dom": "8.1.x",
     "mitt": "3.0.x",
     "crypto-js": "4.1.x",
+    "browser-image-resizer": "2.4.x",
     "pinia": "2.0.x",
     "pinia-plugin-persistedstate": "3.0.x",
     "vue": "3.2.x",

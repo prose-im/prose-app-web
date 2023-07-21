@@ -112,6 +112,7 @@ base-popup(
 // NPM
 import { shallowRef } from "vue";
 import { JID } from "@xmpp/jid";
+import { readAndCompressImage } from "browser-image-resizer";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -151,6 +152,10 @@ export interface FormProfile {
 const AVATAR_MIME_TYPES = ["image/jpeg", "image/png", "image/gif"];
 const AVATAR_EXTENSIONS = ["JPG", "PNG", "GIF"];
 
+const AVATAR_CONVERT_MIME = "image/jpeg";
+const AVATAR_COMPRESS_QUALITY = 0.94;
+const AVATAR_SIZE_MAXIMUM = 400;
+
 export default {
   name: "EditProfile",
 
@@ -160,6 +165,7 @@ export default {
     return {
       // --> DATA <--
 
+      // TODO: fix this
       navigateSections: [
         {
           id: "identity",
@@ -271,26 +277,24 @@ export default {
   },
 
   async mounted() {
-    this.sync();
+    await this.sync();
   },
 
   methods: {
     // --> HELPERS <--
 
-    sync(): void {
+    async sync(): Promise<void> {
       if (this.fetching !== true) {
         this.fetching = true;
 
-        Promise.all([this.syncVCard()])
-          .catch(() => {
-            // Show error alert
-            BaseAlert.error("Cannot load profile", "Close and try again?");
-
-            return Promise.resolve();
-          })
-          .then(() => {
-            this.fetching = false;
-          });
+        try {
+          await Promise.all([this.syncVCard()]);
+        } catch (error) {
+          // Show error alert
+          BaseAlert.error("Cannot load profile", "Close and try again?");
+        } finally {
+          this.fetching = false;
+        }
       }
     },
 
@@ -302,17 +306,33 @@ export default {
       this.vCardDataToForms(profile);
     },
 
-    async readAvatarFile(
-      avatarFile: File
-    ): Promise<string | ArrayBuffer | null> {
-      return new Promise(resolve => {
-        const reader = new FileReader();
-
-        reader.readAsDataURL(avatarFile);
-
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = () => resolve(null);
+    async readAvatarFile(avatarFile: File): Promise<string> {
+      // #1. Read and normalize image
+      const avatarBlob = await readAndCompressImage(avatarFile, {
+        quality: AVATAR_COMPRESS_QUALITY,
+        maxWidth: AVATAR_SIZE_MAXIMUM,
+        maxHeight: AVATAR_SIZE_MAXIMUM,
+        mimeType: AVATAR_CONVERT_MIME
       });
+
+      // #2. Convert image file blob to Base64
+      const avatarData: string | ArrayBuffer | null = await new Promise(
+        resolve => {
+          const reader = new FileReader();
+
+          reader.readAsDataURL(avatarBlob);
+
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => resolve(null);
+        }
+      );
+
+      // #3. Ensure that avatar is defined (and return format is 'string')
+      if (avatarData !== null && typeof avatarData === "string") {
+        return avatarData;
+      }
+
+      throw new Error("Could not load avatar");
     },
 
     vCardDataToForms(profile: ProfileEntry): void {
@@ -442,13 +462,13 @@ export default {
           this.avatarFileLoading = true;
 
           // Acquire avatar data
-          const avatarData = await this.readAvatarFile(avatarFile);
+          try {
+            const avatarData = await this.readAvatarFile(avatarFile);
 
-          if (avatarData !== null && typeof avatarData === "string") {
             this.avatarUpdateData = avatarData;
 
             BaseAlert.info("Avatar changed", "Save your profile to submit it!");
-          } else {
+          } catch (error) {
             BaseAlert.warning(
               "Cannot load this file",
               "Image file seems to be empty"
