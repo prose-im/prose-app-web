@@ -13,61 +13,15 @@ base-popup(
   class="p-edit-profile"
   popup-class="p-edit-profile__popup"
 )
-  .p-edit-profile__navigate
-    .p-edit-profile__identity
-      div(
-        :class=`[
-          "p-edit-profile__identity-avatar",
-          {
-            "p-edit-profile__identity-avatar--locked": isPending || avatarFileLoading
-          }
-        ]`
-      )
-        base-avatar(
-          :jid="selfJID"
-          :data-url="avatarUpdate ? avatarUpdate.dataUrl : null"
-          size="96px"
-          shadow="light"
-          class="p-edit-profile__identity-avatar-image"
-          square
-        )
-
-        span.p-edit-profile__identity-avatar-file
-          input.p-edit-profile__identity-avatar-input(
-            @change.prevent="onAvatarFileChange",
-            :accept="avatarAcceptTypes"
-            type="file",
-            id="avatar_file",
-            tabindex="-1"
-          )
-
-        label.p-edit-profile__identity-avatar-edit(
-          for="avatar_file"
-        )
-          span.p-edit-profile__identity-avatar-edit-inner
-            span.p-edit-profile__identity-avatar-edit-text.u-bold
-              | Edit
-
-      p.p-edit-profile__identity-name.u-medium
-        template(
-          v-if="profile.name"
-        )
-          | {{ profile.name.first }} {{ profile.name.last }}
-
-        template(
-          v-else
-        )
-          | {{ selfJID.local }}
-
-      p.p-edit-profile__identity-address
-        | {{ selfJID }}
-
-    base-navigate(
-      @navigate="onSectionsNavigate"
-      :sections="navigateSections"
-      :active-id="section"
-      class="p-edit-profile__sections"
-    )
+  edit-profile-navigate(
+    @navigate="onNavigate"
+    @avatar="onAvatarUpdate"
+    :jid="selfJID"
+    :sections="navigateSections"
+    :section-initial="sectionInitial"
+    :pending="isPending"
+    class="p-edit-profile__navigate"
+  )
 
   .p-edit-profile__content
     div(
@@ -112,13 +66,14 @@ base-popup(
 // NPM
 import { shallowRef } from "vue";
 import { JID } from "@xmpp/jid";
-import Latin1 from "crypto-js/enc-latin1";
-import Base64 from "crypto-js/enc-base64";
-import { readAndCompressImage } from "browser-image-resizer";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
+import {
+  default as EditProfileNavigate,
+  StateAvatarUpdate
+} from "@/components/popups/sidebar/EditProfileNavigate.vue";
 import EditProfileIdentity from "@/components/popups/sidebar/EditProfileIdentity.vue";
 import EditProfileAuthentication from "@/components/popups/sidebar/EditProfileAuthentication.vue";
 import EditProfileProfile from "@/components/popups/sidebar/EditProfileProfile.vue";
@@ -130,7 +85,7 @@ import { ProfileEntry } from "@/store/tables/profile";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { SaveVCardRequest } from "@/broker/modules/profile";
+import { SaveVCardRequest, SaveAvatarRequest } from "@/broker/modules/profile";
 
 // TYPES
 type FormValueString = { inner: string };
@@ -150,30 +105,21 @@ export interface FormProfile {
   locationCountry: FormValueString;
 }
 
-interface StateAvatarData {
-  binary: string;
-  base64: string;
-  dataUrl: string;
-  type: string;
-  bytes: number;
-}
-
 // CONSTANTS
-const AVATAR_MIME_TYPES = ["image/jpeg", "image/png", "image/gif"];
-const AVATAR_EXTENSIONS = ["JPG", "PNG", "GIF"];
-
-const AVATAR_CONVERT_MIME = "image/jpeg";
-const AVATAR_COMPRESS_QUALITY = 0.94;
-const AVATAR_SIZE_MAXIMUM = 400;
+const SECTION_INITIAL = "identity";
 
 export default {
   name: "EditProfile",
+
+  components: { EditProfileNavigate },
 
   emits: ["close"],
 
   data() {
     return {
       // --> DATA <--
+
+      sectionInitial: SECTION_INITIAL,
 
       navigateSections: [
         {
@@ -250,11 +196,9 @@ export default {
       fetching: false,
       saving: false,
 
-      avatarFileLoading: false,
+      section: SECTION_INITIAL,
 
-      section: "identity",
-
-      avatarUpdate: null as StateAvatarData | null
+      avatarUpdate: null as StateAvatarUpdate | null
     };
   },
 
@@ -265,10 +209,6 @@ export default {
 
     selfJID(): JID {
       return this.account.getLocalJID();
-    },
-
-    avatarAcceptTypes(): string {
-      return AVATAR_MIME_TYPES.join(",");
     },
 
     account(): typeof Store.$account {
@@ -315,45 +255,6 @@ export default {
 
       // Apply new profile data to form
       this.vCardDataToForms(profile);
-    },
-
-    async readAvatarFile(avatarFile: File): Promise<StateAvatarData> {
-      // #1. Read and normalize image
-      const avatarBlob = await readAndCompressImage(avatarFile, {
-        quality: AVATAR_COMPRESS_QUALITY,
-        maxWidth: AVATAR_SIZE_MAXIMUM,
-        maxHeight: AVATAR_SIZE_MAXIMUM,
-        mimeType: AVATAR_CONVERT_MIME
-      });
-
-      // #2. Convert image file blob to Base64
-      const avatarBinary: string | ArrayBuffer | null = await new Promise(
-        resolve => {
-          const reader = new FileReader();
-
-          reader.readAsBinaryString(avatarBlob);
-
-          reader.onload = () => resolve(reader.result);
-          reader.onerror = () => resolve(null);
-        }
-      );
-
-      // #3. Ensure that avatar is defined (and return format is 'string')
-      if (avatarBinary !== null && typeof avatarBinary === "string") {
-        // Acquire avatar data from binary
-        const avatarData = Base64.stringify(Latin1.parse(avatarBinary));
-        const avatarDataUrl = `data:${avatarBlob.type};base64,${avatarData}`;
-
-        return {
-          binary: avatarBinary,
-          base64: avatarData,
-          dataUrl: avatarDataUrl,
-          type: avatarBlob.type,
-          bytes: avatarBlob.size
-        };
-      }
-
-      throw new Error("Could not load avatar");
     },
 
     vCardDataToForms(profile: ProfileEntry): void {
@@ -425,7 +326,29 @@ export default {
       return vCardData;
     },
 
+    avatarUpdateToData(avatarUpdate: StateAvatarUpdate): SaveAvatarRequest {
+      return {
+        data: {
+          binary: avatarUpdate.binary,
+          base64: avatarUpdate.base64
+        },
+
+        metadata: {
+          type: avatarUpdate.type,
+          bytes: avatarUpdate.bytes
+        }
+      };
+    },
+
     // --> EVENT LISTENERS <--
+
+    onNavigate(sectionId: string): void {
+      this.section = sectionId;
+    },
+
+    onAvatarUpdate(avatarUpdate: StateAvatarUpdate): void {
+      this.avatarUpdate = avatarUpdate;
+    },
 
     async onSave(): Promise<void> {
       if (this.fetching !== true && this.saving !== true) {
@@ -437,23 +360,19 @@ export default {
           this.formSections.profile.properties.form
         );
 
+        // Generate avatar save data (might be empty)
+        const avatarData =
+          this.avatarUpdate !== null
+            ? this.avatarUpdateToData(this.avatarUpdate)
+            : null;
+
         try {
           // Save vCard data
           await Broker.$profile.saveVCard(this.selfJID, vCardData);
 
-          // Save avatar data?
-          if (this.avatarUpdate !== null) {
-            await Broker.$profile.saveAvatar(this.selfJID, {
-              data: {
-                binary: this.avatarUpdate.binary,
-                base64: this.avatarUpdate.base64
-              },
-
-              metadata: {
-                type: this.avatarUpdate.type,
-                bytes: this.avatarUpdate.bytes
-              }
-            });
+          // Save avatar data? (if non-empty)
+          if (avatarData !== null) {
+            await Broker.$profile.saveAvatar(this.selfJID, avatarData);
           }
 
           // Save success: close
@@ -478,52 +397,6 @@ export default {
 
     onClose(): void {
       this.$emit("close");
-    },
-
-    async onAvatarFileChange(event: InputEvent): Promise<void> {
-      const target = (event.target as HTMLInputElement) || null;
-
-      if (
-        target !== null &&
-        target.files &&
-        target.files.length > 0 &&
-        this.avatarFileLoading !== true
-      ) {
-        const avatarFile: File = target.files[0];
-
-        if (AVATAR_MIME_TYPES.includes(avatarFile.type) === true) {
-          // Mark as loading
-          this.avatarFileLoading = true;
-
-          // Acquire avatar data
-          try {
-            this.avatarUpdate = await this.readAvatarFile(avatarFile);
-
-            BaseAlert.info("Avatar changed", "Save your profile to submit it!");
-          } catch (error) {
-            this.$log.error("Error loading avatar file", error);
-
-            BaseAlert.warning(
-              "Cannot load this file",
-              "Image file seems to be empty"
-            );
-          }
-
-          // Mark as non-loading
-          this.avatarFileLoading = false;
-        } else {
-          BaseAlert.warning(
-            "Cannot use this file",
-            `Accepted files: ${AVATAR_EXTENSIONS.join(", ")}`
-          );
-        }
-      } else {
-        BaseAlert.error("Cannot load avatar", "No file was selected!");
-      }
-    },
-
-    onSectionsNavigate(sectionId: string): void {
-      this.section = sectionId;
     }
   }
 };
@@ -570,110 +443,6 @@ $popup-height-full-breakpoint: (
     overflow: auto;
     width: 200px;
     flex: 0 0 auto;
-
-    #{$c}__identity {
-      text-align: center;
-
-      #{$c}__identity-avatar {
-        line-height: 0;
-        overflow: hidden;
-        display: inline-block;
-        position: relative;
-        border-radius: 12px;
-
-        &:hover {
-          #{$c}__identity-avatar-edit {
-            #{$c}__identity-avatar-edit-inner {
-              visibility: visible;
-              opacity: 1;
-            }
-          }
-        }
-
-        &:active {
-          #{$c}__identity-avatar-edit {
-            #{$c}__identity-avatar-edit-inner {
-              #{$c}__identity-avatar-edit-text {
-                transform: scale(0.96);
-              }
-            }
-          }
-        }
-
-        &--locked {
-          pointer-events: none;
-        }
-
-        #{$c}__identity-avatar-image {
-          position: relative;
-          z-index: 1;
-        }
-
-        #{$c}__identity-avatar-file {
-          overflow: hidden;
-          position: absolute;
-          inset: 0;
-          z-index: -1;
-
-          #{$c}__identity-avatar-input {
-            width: 100%;
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            display: block;
-            opacity: 0;
-          }
-        }
-
-        #{$c}__identity-avatar-edit {
-          cursor: pointer;
-          position: absolute;
-          inset: 0;
-          z-index: 2;
-
-          #{$c}__identity-avatar-edit-inner {
-            background-image: linear-gradient(
-              180deg,
-              rgba($color-black, 0) 0%,
-              rgba($color-black, 0.6) 100%
-            );
-            padding-block-start: 14px;
-            padding-block-end: 10px;
-            position: absolute;
-            inset-inline: 0;
-            inset-block-end: 0;
-            visibility: hidden;
-            opacity: 0;
-            transition: opacity 100ms linear;
-
-            #{$c}__identity-avatar-edit-text {
-              color: $color-text-reverse;
-              font-size: 12.5px;
-              line-height: 14px;
-              text-transform: lowercase;
-              display: inline-block;
-              transition: transform 100ms linear;
-            }
-          }
-        }
-      }
-
-      #{$c}__identity-name {
-        color: $color-text-primary;
-        font-size: 15.5px;
-        margin-block-start: 14px;
-      }
-
-      #{$c}__identity-address {
-        color: $color-text-secondary;
-        font-size: 13.5px;
-        margin-block-start: 4px;
-      }
-    }
-
-    #{$c}__sections {
-      margin-block-start: 26px;
-    }
   }
 
   #{$c}__content {
