@@ -18,7 +18,7 @@
   .v-app-inbox-base__content
     .v-app-inbox-base__messages
       base-banner(
-        v-if="true"
+        v-if="!this.session.connected"
         icon="exclamationmark.triangle.fill"
         title="You are offline"
         description="New messages will not appear, reconnect to send messages."
@@ -77,6 +77,10 @@ export default {
   computed: {
     jid(): JID {
       return jid(this.$route.params.jid as string);
+    },
+
+    session(): typeof Store.$session {
+      return Store.$session;
     },
 
     layout(): typeof Store.$layout {
