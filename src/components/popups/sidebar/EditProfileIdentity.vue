@@ -36,9 +36,6 @@ import {
 // PROJECT: POPUPS
 import { FormIdentity as ProfileFormIdentity } from "@/popups/sidebar/EditProfile.vue";
 
-// PROJECT: STORES
-import Store from "@/store";
-
 export default {
   name: "EditProfileIdentity",
 
@@ -51,7 +48,7 @@ export default {
     },
 
     form: {
-      type: Object as ProfileFormIdentity,
+      type: Object as PropType<ProfileFormIdentity>,
       required: true
     }
   },
