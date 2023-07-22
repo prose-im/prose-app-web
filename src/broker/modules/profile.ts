@@ -202,10 +202,10 @@ class BrokerModuleProfile extends BrokerModule {
 
     logger.info(`Will save avatar for: '${jid}'`);
 
-    // Compute SHA-1 of avatar data (from binary)
+    // #1. Compute stable SHA-1 of avatar data (from binary)
     const id = sha1(avatar.data.binary);
 
-    // #1. Publish avatar data to PEP node
+    // #2. Publish avatar data to PEP node
     await this._client.request(
       $iq({ to: jid, type: IQType.Set, id: xmppID() })
         .c("pubsub", { xmlns: NS_PUBSUB })
@@ -214,7 +214,7 @@ class BrokerModuleProfile extends BrokerModule {
         .c("data", { xmlns: NS_AVATAR_DATA }, avatar.data.base64)
     );
 
-    // #2. Publish avatar metadata to PEP node
+    // #3. Publish avatar metadata to PEP node
     await this._client.request(
       $iq({ to: jid, type: IQType.Set, id: xmppID() })
         .c("pubsub", { xmlns: NS_PUBSUB })
