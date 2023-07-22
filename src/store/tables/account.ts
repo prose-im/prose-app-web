@@ -39,13 +39,19 @@ const $account = defineStore("account", {
   getters: {
     getLocalJID: function () {
       return (): JID => {
-        if (!this.credentials.jid) {
+        // Notice: use last JID as a fallback, as during logout the UI still \
+        //   requires the JID value, although it is in process of being reset. \
+        //   The last JID is supposed to of the exact same value as the JID \
+        //   from the credentials object.
+        const localJID = this.credentials.jid || this.last.jid || null;
+
+        if (localJID === null) {
           throw new Error(
             "No JID defined in credentials (this should never happen)"
           );
         }
 
-        return jid(this.credentials.jid);
+        return jid(localJID);
       };
     }
   },
