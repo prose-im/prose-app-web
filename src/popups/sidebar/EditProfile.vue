@@ -175,7 +175,6 @@ export default {
     return {
       // --> DATA <--
 
-      // TODO: fix this
       navigateSections: [
         {
           id: "identity",
@@ -204,7 +203,7 @@ export default {
           label: "Certificates, Keys",
           icon: "key.fill"
         }
-      ] as NavigateSection,
+      ] as Array<NavigateSection>,
 
       formSections: {
         identity: {
@@ -212,10 +211,10 @@ export default {
 
           properties: {
             form: {
-              nameFirst: { value: "" },
-              nameLast: { value: "" },
-              email: { value: "" },
-              phone: { value: "" }
+              nameFirst: { inner: "" },
+              nameLast: { inner: "" },
+              email: { inner: "" },
+              phone: { inner: "" }
             } as FormIdentity
           }
         },
@@ -229,10 +228,10 @@ export default {
 
           properties: {
             form: {
-              jobOrganization: { value: "" },
-              jobTitle: { value: "" },
-              locationCity: { value: "" },
-              locationCountry: { value: "" }
+              jobOrganization: { inner: "" },
+              jobTitle: { inner: "" },
+              locationCity: { inner: "" },
+              locationCountry: { inner: "" }
             } as FormProfile
           }
         },
@@ -482,14 +481,15 @@ export default {
     },
 
     async onAvatarFileChange(event: InputEvent): Promise<void> {
-      // TODO: fix typing error there
+      const target = (event.target as HTMLInputElement) || null;
+
       if (
-        event.target &&
-        event.target.files &&
-        event.target.files.length > 0 &&
+        target !== null &&
+        target.files &&
+        target.files.length > 0 &&
         this.avatarFileLoading !== true
       ) {
-        const avatarFile: File = event.target.files[0];
+        const avatarFile: File = target.files[0];
 
         if (AVATAR_MIME_TYPES.includes(avatarFile.type) === true) {
           // Mark as loading
