@@ -85,13 +85,6 @@ class BrokerClient {
   }
 
   async authenticate(jid: JID, password: string): Promise<void> {
-    // Acquire relay host
-    const relayHost = CONFIG.hosts.websocket || null;
-
-    if (!relayHost) {
-      throw new Error("No relay host configured");
-    }
-
     // Incomplete parameters?
     if (!jid.toString()) {
       throw new Error("Please provide a Jabber ID");
@@ -120,7 +113,7 @@ class BrokerClient {
     };
 
     // Connect to account
-    await this.__connect(relayHost, jid, password);
+    await this.__connect(jid, password);
   }
 
   logout(): void {
@@ -231,14 +224,7 @@ class BrokerClient {
 
             logger.debug("Reconnecting now…");
 
-            // TODO: implement another way, cause it looks like a bug in \
-            //   Strophe.js is triggering a flood of DISCONNECTED event on the \
-            //   second reconnect attempt, and subsequent ones.
-            // this.__connect(
-            //   CONFIG.hosts.websocket,
-            //   credentials.jid,
-            //   credentials.password
-            // );
+            this.__connect(credentials.jid, credentials.password);
           }, RECONNECT_INTERVAL);
         }
 
@@ -395,11 +381,14 @@ class BrokerClient {
     this.__credentials = undefined;
   }
 
-  private async __connect(
-    relayHost: string,
-    jid: JID,
-    password: string
-  ): Promise<void> {
+  private async __connect(jid: JID, password: string): Promise<void> {
+    // Acquire relay host
+    const relayHost = CONFIG.hosts.websocket || null;
+
+    if (!relayHost) {
+      throw new Error("No relay host to connect to");
+    }
+
     // Create connection
     this.__connection = new Strophe.Connection(relayHost, {
       protocol: "wss"
