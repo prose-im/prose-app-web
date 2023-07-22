@@ -25,7 +25,7 @@ import logger from "@/utilities/logger";
  * ************************************************************************* */
 
 class BrokerModuleConnection extends BrokerModule {
-  sendInitialPresence(): void {
+  sendPresence(): void {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#presence
     const stanza = $pres();
@@ -47,7 +47,7 @@ class BrokerModuleConnection extends BrokerModule {
 
     this._client.emit(stanza);
 
-    logger.info("Sent initial presence to server");
+    logger.info("Sent presence to server");
   }
 
   sendPing(): void {

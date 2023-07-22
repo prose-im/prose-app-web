@@ -322,9 +322,7 @@ class BrokerClient {
 
   private __setupConnection(): void {
     // Send initial presence
-    // TODO: this should not be done here, some kind of event bus w/ a hook is \
-    //   cleaner than that. This is a temporary solution.
-    Broker.$connection.sendInitialPresence();
+    Broker.$connection.sendPresence();
   }
 
   private __clearConnection(): void {
