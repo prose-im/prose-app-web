@@ -210,15 +210,16 @@ class BrokerClient {
         this.__raiseConnectLifecycle(new Error("Disconnected from server"));
 
         // Clear connection
-        this.__clearConnection();
+        // Important: do not disconnect in this case (as we are already \
+        //   disconnected, this could create a disconnection loop in certain \
+        //   cases)
+        this.__clearConnection(false);
 
         // Disconnect for good? (was not connected before)
         if (this.__credentials === undefined) {
           // Clear context
           this.__clearContext();
         } else {
-          logger.debug("Reconnecting in a few moments…");
-
           // Pause context
           this.__pauseContext();
 
@@ -297,6 +298,39 @@ class BrokerClient {
 
         break;
       }
+
+      // [ERROR] An error has occurred
+      case Strophe.Status.ERROR: {
+        logger.error("Connection error");
+
+        break;
+      }
+
+      // [AUTHENTICATING] The connection is authenticating
+      case Strophe.Status.AUTHENTICATING: {
+        logger.debug("Authenticating…");
+
+        break;
+      }
+
+      // [ATTACHED] The connection has been attached
+      case Strophe.Status.ATTACHED: {
+        logger.info("Connection has been attached to");
+
+        break;
+      }
+
+      // [REDIRECT] The connection has been redirected
+      case Strophe.Status.REDIRECT: {
+        logger.info("Connection has been redirected");
+
+        break;
+      }
+
+      // [OTHER] Unhandled connection event received
+      default: {
+        logger.warn("Received unhandled connection event");
+      }
     }
   }
 
@@ -325,13 +359,15 @@ class BrokerClient {
     Broker.$connection.sendPresence();
   }
 
-  private __clearConnection(): void {
+  private __clearConnection(disconnect = true): void {
     // Cancel timers (that may re-create a connection)
     this.__cancelScheduledReconnectTimer();
 
-    // Disconnect and void the connection
+    // Disconnect and void the connection? (as needed)
     if (this.__connection) {
-      this.__connection.disconnect("closed");
+      if (disconnect === true) {
+        this.__connection.disconnect("closed");
+      }
 
       this.__connection = undefined;
     }
