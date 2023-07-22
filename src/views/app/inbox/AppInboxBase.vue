@@ -17,6 +17,22 @@
 
   .v-app-inbox-base__content
     .v-app-inbox-base__messages
+      base-banner(
+        v-if="true"
+        icon="exclamationmark.triangle.fill"
+        title="You are offline"
+        description="New messages will not appear, reconnect to send messages."
+        class="v-app-inbox-base__banner"
+      )
+        template(
+          v-slot:action
+        )
+          base-button(
+            tint="light"
+            size="medium"
+          )
+            | Reconnect now
+
       inbox-messaging(
         :jid="jid"
         class="v-app-inbox-base__timeline"
@@ -103,6 +119,11 @@ $content-padding-sides: 14px;
       display: flex;
       flex: 1;
       flex-direction: column;
+
+      #{$c}__banner {
+        padding-inline: ($content-padding-sides + 11px);
+        flex: 0 0 auto;
+      }
 
       #{$c}__timeline {
         width: 100%;
