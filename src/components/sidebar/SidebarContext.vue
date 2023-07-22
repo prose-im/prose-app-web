@@ -178,17 +178,18 @@ export default {
         {
           type: PopoverItemType.Button,
           label: "Change availability",
-          disabled: true,
 
           children: [
             {
               type: PopoverItemType.Button,
-              label: "Available for chat"
+              label: "Available for chat",
+              click: this.onAvatarPopoverAvailabilityAvailableClick
             },
 
             {
               type: PopoverItemType.Button,
-              label: "Do not disturb"
+              label: "Do not disturb",
+              click: this.onAvatarPopoverAvailabilityDoNotDisturbClick
             }
           ]
         },
@@ -308,6 +309,16 @@ export default {
       this.isAvatarPopoverVisible = false;
     },
 
+    onAvatarPopoverAvailabilityAvailableClick(): void {
+      // TODO: change availability
+      console.error("==> onAvatarPopoverAvailabilityAvailableClick");
+    },
+
+    onAvatarPopoverAvailabilityDoNotDisturbClick(): void {
+      // TODO: change availability
+      console.error("==> onAvatarPopoverAvailabilityDoNotDisturbClick");
+    },
+
     onAvatarPopoverEditProfileClick(): void {
       // Hide avatar popover
       this.isAvatarPopoverVisible = false;
@@ -357,16 +368,13 @@ export default {
       // Reset all stores
       Store.reset();
 
-      // Show confirm alert
-      BaseAlert.info("Signed out", "Successfully signed out");
-
-      // Close modal
-      this.modals.signOut.visible = false;
-
       // Redirect to login
-      this.$router.push({
+      await this.$router.push({
         name: "start.login"
       });
+
+      // Show confirm alert
+      BaseAlert.info("Signed out", "Successfully signed out");
     },
 
     onModalSignOutClose(): void {
