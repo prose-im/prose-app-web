@@ -25,7 +25,7 @@ base-popup(
       )
         base-avatar(
           :jid="selfJID"
-          :data="avatarUpdateData"
+          :data-url="avatarUpdate ? avatarUpdate.dataUrl : null"
           size="96px"
           shadow="light"
           class="p-edit-profile__identity-avatar-image"
@@ -112,6 +112,8 @@ base-popup(
 // NPM
 import { shallowRef } from "vue";
 import { JID } from "@xmpp/jid";
+import Latin1 from "crypto-js/enc-latin1";
+import Base64 from "crypto-js/enc-base64";
 import { readAndCompressImage } from "browser-image-resizer";
 
 // PROJECT: COMPONENTS
@@ -146,6 +148,14 @@ export interface FormProfile {
   jobTitle: FormValueString;
   locationCity: FormValueString;
   locationCountry: FormValueString;
+}
+
+interface StateAvatarData {
+  binary: string;
+  base64: string;
+  dataUrl: string;
+  type: string;
+  bytes: number;
 }
 
 // CONSTANTS
@@ -245,7 +255,7 @@ export default {
 
       section: "identity",
 
-      avatarUpdateData: null as string | null
+      avatarUpdate: null as StateAvatarData | null
     };
   },
 
@@ -290,6 +300,8 @@ export default {
         try {
           await Promise.all([this.syncVCard()]);
         } catch (error) {
+          this.$log.error("Failed loading profile", error);
+
           // Show error alert
           BaseAlert.error("Cannot load profile", "Close and try again?");
         } finally {
@@ -306,7 +318,7 @@ export default {
       this.vCardDataToForms(profile);
     },
 
-    async readAvatarFile(avatarFile: File): Promise<string> {
+    async readAvatarFile(avatarFile: File): Promise<StateAvatarData> {
       // #1. Read and normalize image
       const avatarBlob = await readAndCompressImage(avatarFile, {
         quality: AVATAR_COMPRESS_QUALITY,
@@ -316,11 +328,11 @@ export default {
       });
 
       // #2. Convert image file blob to Base64
-      const avatarData: string | ArrayBuffer | null = await new Promise(
+      const avatarBinary: string | ArrayBuffer | null = await new Promise(
         resolve => {
           const reader = new FileReader();
 
-          reader.readAsDataURL(avatarBlob);
+          reader.readAsBinaryString(avatarBlob);
 
           reader.onload = () => resolve(reader.result);
           reader.onerror = () => resolve(null);
@@ -328,8 +340,18 @@ export default {
       );
 
       // #3. Ensure that avatar is defined (and return format is 'string')
-      if (avatarData !== null && typeof avatarData === "string") {
-        return avatarData;
+      if (avatarBinary !== null && typeof avatarBinary === "string") {
+        // Acquire avatar data from binary
+        const avatarData = Base64.stringify(Latin1.parse(avatarBinary));
+        const avatarDataUrl = `data:${avatarBlob.type};base64,${avatarData}`;
+
+        return {
+          binary: avatarBinary,
+          base64: avatarData,
+          dataUrl: avatarDataUrl,
+          type: avatarBlob.type,
+          bytes: avatarBlob.size
+        };
       }
 
       throw new Error("Could not load avatar");
@@ -421,8 +443,18 @@ export default {
           await Broker.$profile.saveVCard(this.selfJID, vCardData);
 
           // Save avatar data?
-          if (this.avatarUpdateData !== null) {
-            // TODO: publish new avatar to PEP
+          if (this.avatarUpdate !== null) {
+            await Broker.$profile.saveAvatar(this.selfJID, {
+              data: {
+                binary: this.avatarUpdate.binary,
+                base64: this.avatarUpdate.base64
+              },
+
+              metadata: {
+                type: this.avatarUpdate.type,
+                bytes: this.avatarUpdate.bytes
+              }
+            });
           }
 
           // Save success: close
@@ -431,6 +463,8 @@ export default {
           // Show success alert
           BaseAlert.success("Profile saved", "Your profile has been updated");
         } catch (error) {
+          this.$log.error("Failed saving profile", error);
+
           // Save error: show failure
           this.saving = false;
 
@@ -463,12 +497,12 @@ export default {
 
           // Acquire avatar data
           try {
-            const avatarData = await this.readAvatarFile(avatarFile);
-
-            this.avatarUpdateData = avatarData;
+            this.avatarUpdate = await this.readAvatarFile(avatarFile);
 
             BaseAlert.info("Avatar changed", "Save your profile to submit it!");
           } catch (error) {
+            this.$log.error("Error loading avatar file", error);
+
             BaseAlert.warning(
               "Cannot load this file",
               "Image file seems to be empty"

@@ -14,6 +14,7 @@ import { $iq, Strophe } from "strophe.js";
 import xmppID from "@xmpp/id";
 import xmppTime from "@xmpp/time";
 import { JID } from "@xmpp/jid";
+import sha1 from "crypto-js/sha1";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -23,6 +24,7 @@ import {
   NS_LAST,
   NS_TIME,
   NS_AVATAR_DATA,
+  NS_AVATAR_METADATA,
   NS_PUBSUB
 } from "@/broker/stanzas/xmlns";
 
@@ -80,6 +82,23 @@ interface LoadEntityTimeResponse {
 interface LoadAvatarDataResponse {
   encoding: string;
   data: string;
+}
+
+interface SaveAvatarRequest {
+  data: SaveAvatarRequestData;
+  metadata: SaveAvatarRequestMetadata;
+}
+
+interface SaveAvatarRequestData {
+  binary: string;
+  base64: string;
+}
+
+interface SaveAvatarRequestMetadata {
+  type: string;
+  bytes: number;
+  height?: number;
+  width?: number;
 }
 
 /**************************************************************************
@@ -175,6 +194,41 @@ class BrokerModuleProfile extends BrokerModule {
     this.__makeStanzaVCard(stanza, vCard);
 
     await this._client.request(stanza);
+  }
+
+  async saveAvatar(jid: JID, avatar: SaveAvatarRequest): Promise<void> {
+    // XEP-0084: User Avatar
+    // https://xmpp.org/extensions/xep-0084.html
+
+    logger.info(`Will save avatar for: '${jid}'`);
+
+    // Compute SHA-1 of avatar data (from binary)
+    const id = sha1(avatar.data.binary);
+
+    // #1. Publish avatar data to PEP node
+    await this._client.request(
+      $iq({ to: jid, type: IQType.Set, id: xmppID() })
+        .c("pubsub", { xmlns: NS_PUBSUB })
+        .c("publish", { node: NS_AVATAR_DATA })
+        .c("item", { id })
+        .c("data", { xmlns: NS_AVATAR_DATA }, avatar.data.base64)
+    );
+
+    // #2. Publish avatar metadata to PEP node
+    await this._client.request(
+      $iq({ to: jid, type: IQType.Set, id: xmppID() })
+        .c("pubsub", { xmlns: NS_PUBSUB })
+        .c("publish", { node: NS_AVATAR_METADATA })
+        .c("item", { id })
+        .c("metadata", { xmlns: NS_AVATAR_METADATA })
+        .c("info", {
+          id: id,
+          type: avatar.metadata.type,
+          bytes: avatar.metadata.bytes,
+          height: avatar.metadata.height,
+          width: avatar.metadata.width
+        })
+    );
   }
 
   private __respondLoadVCard(response: Cash): LoadVCardResponse {
@@ -354,6 +408,7 @@ export type {
   LoadLastActivityResponse,
   LoadEntityTimeResponse,
   LoadAvatarDataResponse,
-  SaveVCardRequest
+  SaveVCardRequest,
+  SaveAvatarRequest
 };
 export default BrokerModuleProfile;

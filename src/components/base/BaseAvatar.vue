@@ -61,7 +61,7 @@ export default {
       }
     },
 
-    data: {
+    dataUrl: {
       type: String,
       default: null
     },
@@ -75,8 +75,8 @@ export default {
   computed: {
     backgroundImage() {
       const avatarDataUrl =
-        this.data !== null
-          ? this.data
+        this.dataUrl !== null
+          ? this.dataUrl
           : Store.$avatar.getAvatarDataUrl(this.jid);
 
       if (avatarDataUrl) {
