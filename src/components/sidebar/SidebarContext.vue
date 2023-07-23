@@ -43,14 +43,14 @@
 
   .c-sidebar-context__current
     p.c-sidebar-context__team.u-bold
-      | Crisp
+      | (no team)
 
     p.c-sidebar-context__status
       span.c-sidebar-context__status-icon
-        | 🚀
+        | 👨‍💻
 
       span.c-sidebar-context__status-text
-        | Building new features.
+        | (no activity)
 
   base-action(
     @click="onActionsClick"

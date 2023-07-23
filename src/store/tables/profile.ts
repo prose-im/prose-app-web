@@ -220,7 +220,7 @@ const $profile = defineStore("profile", {
 
       // Set local profile activity
       // TODO: from server data
-      return this.setProfileActivity(bareJID, "Focusing on code", "👨‍💻");
+      return this.setProfileActivity(bareJID, "(no activity)", "👨‍💻");
     },
 
     async loadProfileVerification(bareJID: JID): Promise<ProfileEntry> {
