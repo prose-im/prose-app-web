@@ -492,9 +492,10 @@ export default {
 
         // Load all messages
         // Notice: only load messages after last loaded identifier
-        const result = await Broker.$mam.loadMessages(this.jid, {
-          afterId: lastResultIdFromArchive
-        });
+        // const result = await Broker.$mam.loadMessages(this.jid, {
+        //   afterId: lastResultIdFromArchive
+        // });
+        await Broker.$mam.loadLatestMessages(this.jid);
 
         const frameRuntime = this.frame();
 
@@ -503,9 +504,9 @@ export default {
           frameRuntime.MessagingStore.loader("forwards", false);
 
           // Mark backwards loading as complete?
-          if (result.complete === true) {
-            frameRuntime.MessagingStore.loader("backwards", false);
-          }
+          // if (result.complete === true) {
+          //   frameRuntime.MessagingStore.loader("backwards", false);
+          // }
         } else {
           this.$log.warn(
             `Could not show loaders in message frame runtime upon eagerly ` +
@@ -517,11 +518,14 @@ export default {
 
     async seekMoreMessages(): void {
       // Can seek now? (connected and not stale)
+      this.$log.debug("1")
       if (
-        Store.$session.connected === true &&
-        this.isMessageSyncStale !== true &&
-        this.isMessageSyncMoreLoading !== true
+        true
+        // Store.$session.connected === true &&
+        // this.isMessageSyncStale !== true &&
+        // this.isMessageSyncMoreLoading !== true
       ) {
+        this.$log.debug("2")
         const frameRuntime = this.frame();
 
         // Find first message with an archive identifier
@@ -529,30 +533,35 @@ export default {
           this.messages.find(message => {
             return message.archiveId !== undefined ? true : false;
           })?.archiveId || undefined;
-
+        this.$log.debug("3")
         // Load previous messages?
         // Notice: only load messages after first loaded identifier
         if (firstResultIdFromArchive !== undefined && frameRuntime !== null) {
+          this.$log.debug("4")
           // Mark backwards as loading
           this.isMessageSyncMoreLoading = true;
 
           frameRuntime.MessagingStore.loader("backwards", true);
 
           // TODO: this one is not working
-          await Broker.$mam.loadMessages(this.jid, {
-            beforeId: firstResultIdFromArchive
-          });
+          // await Broker.$mam.loadMessages(this.jid, {
+          //   beforeId: firstResultIdFromArchive
+          // });
+          this.$log.debug("HELLO")
+          await Broker.$mam.loadLatestMessages(this.jid);
 
           // Mark backwards loading as complete
           frameRuntime.MessagingStore.loader("backwards", false);
 
           this.isMessageSyncMoreLoading = false;
         } else {
+          this.$log.debug("5")
           this.$log.warn(
             `Could not seek previous messages, as there is no first ` +
               `message from archives or frame is not ready yet for: ${this.jid}`
           );
         }
+        this.$log.debug("6")
       }
     },
 

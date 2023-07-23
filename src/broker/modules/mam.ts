@@ -22,6 +22,8 @@ import { NS_MAM, NS_RSM, NS_DATA } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+import Store from "@/store";
+import message from "@/broker/events/message";
 
 /**************************************************************************
  * INTERFACES
@@ -49,6 +51,28 @@ const HISTORY_PAGE_SIZE = 40;
  * ************************************************************************* */
 
 class BrokerModuleMAM extends BrokerModule {
+  async loadLatestMessages(jid: JID) {
+    if (!this._client.client) {
+      return
+    }
+
+    // const messages = await this._client.client.loadLatestMessages(jid.toString(), undefined, true);
+    // logger.info(messages)
+
+    // for (const message of messages) {
+    //   logger.info(message.id, message.stanzaID, message.from, message.body)
+    //
+    //   // Store.$inbox.insertMessage(jid, {
+    //   //   id: message.id,
+    //   //   archiveId: message.stanzaID,
+    //   //   type: "text",
+    //   //   date: undefined,
+    //   //   from: message.from,
+    //   //   content: message.body
+    //   // });
+    // }
+  }
+
   async loadMessages(
     jid: JID,
     {

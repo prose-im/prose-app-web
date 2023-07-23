@@ -124,18 +124,18 @@ const $roster = defineStore("roster", {
           // Important: JID must be stored as string so that persistence works.
           const entry = {
             jid: rosterItem.jid.toString(),
-            group: rosterItem.group,
-            name: rosterItem.name ? rosterItem.name : rosterItem.jid.local
+            group: RosterItemGroup.Team,
+            name: rosterItem.name
           };
 
           entries.push(entry);
 
           // Append entry into its group
-          const byGroupEntries = byGroup[rosterItem.group] || [];
+          const byGroupEntries = byGroup[entry.group] || [];
 
           byGroupEntries.push(entry);
 
-          byGroup[rosterItem.group] = byGroupEntries;
+          byGroup[entry.group] = byGroupEntries;
 
           // Append entry to per-JID storage
           byJID[entry.jid] = entry;
