@@ -310,6 +310,10 @@ class BrokerClient implements ProseClientDelegate {
     Store.$roster.emitContactChanged(jid);
   }
 
+  async messagesAppended(conversation: BareJID, messageIDs: string[]) {
+    let messages =
+      (await this.client?.loadMessagesWithIDs(conversation, messageIDs)) || [];
+    Store.$inbox.insertMessages(conversation, messages);
   }
 
     console.log("Messages deleted");
