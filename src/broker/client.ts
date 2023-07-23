@@ -17,6 +17,7 @@ import { JID, jid } from "@xmpp/jid";
 import Broker from "@/broker";
 import BrokerEvent from "@/broker/events";
 import { IQType } from "@/broker/stanzas/iq";
+import { PresenceShow } from "@/broker/stanzas/presence";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -360,7 +361,7 @@ class BrokerClient {
 
   private __setupConnection(): void {
     // Send initial presence
-    Broker.$connection.sendPresence();
+    Broker.$connection.sendPresence(Store.$presence.getLocalShow());
   }
 
   private __clearConnection(disconnect = true): void {

@@ -37,7 +37,12 @@ type PresenceEntryResource = {
  * ************************************************************************* */
 
 interface Presence {
+  local: PresenceLocal;
   entries: PresenceEntries;
+}
+
+interface PresenceLocal {
+  show?: PresenceShow;
 }
 
 interface PresenceEntries {
@@ -66,11 +71,18 @@ const $presence = defineStore("presence", {
 
   state: (): Presence => {
     return {
+      local: {},
       entries: {}
     };
   },
 
   getters: {
+    getLocalShow: function () {
+      return (): PresenceShow | void => {
+        return this.local.show || undefined;
+      };
+    },
+
     getHighest: function () {
       return (bareJID: JID): PresenceEntryResource => {
         return this.assert(bareJID, true);
@@ -94,6 +106,10 @@ const $presence = defineStore("presence", {
   },
 
   actions: {
+    setLocalShow(show?: PresenceShow): void {
+      this.local.show = show;
+    },
+
     assert(fullJID: JID, highest = false): PresenceEntryResource {
       const bareJIDString = fullJID.bare().toString(),
         fullJIDResource = fullJID.resource,

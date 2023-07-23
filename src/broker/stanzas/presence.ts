@@ -34,10 +34,10 @@ export enum PresenceShow {
   // The entity or resource is actively interested in chatting.
   Chat = "chat",
   // The entity or resource is busy (dnd = "Do Not Disturb").
-  DND = "dnd",
+  DoNotDisturb = "dnd",
   // The entity or resource is away for an extended period (xa = "eXtended \
   //   Away").
-  XA = "xa"
+  ExtendedAway = "xa"
 }
 
 /**************************************************************************

@@ -110,6 +110,10 @@ import SignOut from "@/modals/sidebar/SignOut.vue";
 import EditProfile from "@/popups/sidebar/EditProfile.vue";
 import AccountSettings from "@/popups/sidebar/AccountSettings.vue";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+import { PresenceShow } from "@/broker/stanzas/presence";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -182,14 +186,20 @@ export default {
           children: [
             {
               type: PopoverItemType.Button,
-              label: "Available for chat",
+              label: "Available",
               click: this.onAvatarPopoverAvailabilityAvailableClick
             },
 
             {
               type: PopoverItemType.Button,
-              label: "Do not disturb",
-              click: this.onAvatarPopoverAvailabilityDoNotDisturbClick
+              label: "Busy (Do not disturb)",
+              click: this.onAvatarPopoverAvailabilityBusyClick
+            },
+
+            {
+              type: PopoverItemType.Button,
+              label: "Away (Invisible)",
+              click: this.onAvatarPopoverAvailabilityAwayClick
             }
           ]
         },
@@ -297,6 +307,22 @@ export default {
   },
 
   methods: {
+    // --> HELPERS <--
+
+    toggleAvatarPopoverAvailability(
+      show?: PresenceShow,
+      alertText: string
+    ): void {
+      // Store last selected availability
+      Store.$presence.setLocalShow(show);
+
+      // Send Do Not Disturb presence
+      Broker.$connection.sendPresence(show);
+
+      // Show confirm alert
+      BaseAlert.info("Availability changed", alertText);
+    },
+
     // --> EVENT LISTENERS <--
 
     onAvatarImageClick(): void {
@@ -310,13 +336,36 @@ export default {
     },
 
     onAvatarPopoverAvailabilityAvailableClick(): void {
-      // TODO: change availability
-      console.error("==> onAvatarPopoverAvailabilityAvailableClick");
+      // Hide avatar popover
+      this.isAvatarPopoverVisible = false;
+
+      // Toggle availability
+      this.toggleAvatarPopoverAvailability(
+        undefined,
+        "You are now seen as available"
+      );
     },
 
-    onAvatarPopoverAvailabilityDoNotDisturbClick(): void {
-      // TODO: change availability
-      console.error("==> onAvatarPopoverAvailabilityDoNotDisturbClick");
+    onAvatarPopoverAvailabilityBusyClick(): void {
+      // Hide avatar popover
+      this.isAvatarPopoverVisible = false;
+
+      // Toggle availability ('Do Not Disturb' goes for 'Busy')
+      this.toggleAvatarPopoverAvailability(
+        PresenceShow.DoNotDisturb,
+        "You are now seen as busy"
+      );
+    },
+
+    onAvatarPopoverAvailabilityAwayClick(): void {
+      // Hide avatar popover
+      this.isAvatarPopoverVisible = false;
+
+      // Toggle availability ('Extended Away' goes for 'Invisible')
+      this.toggleAvatarPopoverAvailability(
+        PresenceShow.ExtendedAway,
+        "You are now invisible"
+      );
     },
 
     onAvatarPopoverEditProfileClick(): void {
