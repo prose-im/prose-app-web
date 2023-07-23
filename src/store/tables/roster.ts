@@ -10,7 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { BareJID, JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -158,7 +158,7 @@ const $roster = defineStore("roster", {
       return EventBus;
     },
 
-    emitContactChanged(jid: string) {
+    emitContactChanged(jid: BareJID) {
       EventBus.emit("contact:changed", jid);
     }
   }

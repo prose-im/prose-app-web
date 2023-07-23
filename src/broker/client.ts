@@ -302,24 +302,21 @@ class BrokerClient implements ProseClientDelegate {
     console.log("Client disconnected");
   }
 
-  composingUsersChanged(conversation: string) {
+  composingUsersChanged(conversation: BareJID) {
     console.log("Composing users changed");
   }
 
-  contactChanged(jid: string) {
-    console.log("Contact changed");
+  contactChanged(jid: BareJID) {
     Store.$roster.emitContactChanged(jid);
   }
 
-  messagesAppended(conversation: string, messageIDs: string[]) {
-    console.log("Messages appended");
   }
 
-  messagesDeleted(conversation: string, messageIDs: string[]) {
     console.log("Messages deleted");
+  messagesDeleted(conversation: BareJID, messageIDs: string[]) {
   }
 
-  messagesUpdated(conversation: string, messageIDs: string[]) {
+  messagesUpdated(conversation: BareJID, messageIDs: string[]) {
     console.log("Messages updated");
   }
 

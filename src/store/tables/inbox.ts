@@ -17,6 +17,7 @@ import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/mess
 
 // PROJECT: BROKER
 import { MessageChatState } from "@/broker/stanzas/message";
+import { toJID } from "@/utilities/jid";
 
 /**************************************************************************
  * TYPES
@@ -154,7 +155,7 @@ const $inbox = defineStore("inbox", {
 
           // Emit IPC inserted event
           EventBus.emit("message:inserted", {
-            jid,
+            jid: toJID(jid),
             message
           } as EventMessageGeneric);
         }
@@ -203,7 +204,7 @@ const $inbox = defineStore("inbox", {
 
         // Emit IPC updated event
         EventBus.emit("message:updated", {
-          jid,
+          jid: toJID(jid),
           message: existingMessage,
           original: originalMessage
         } as EventMessageGeneric);
@@ -241,7 +242,7 @@ const $inbox = defineStore("inbox", {
 
         // Emit IPC retracted event
         EventBus.emit("message:retracted", {
-          jid,
+          jid: toJID(jid),
           message: existingMessage
         } as EventMessageGeneric);
 

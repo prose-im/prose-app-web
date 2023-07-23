@@ -33,7 +33,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-core-client-wasm": "https://github.com/prose-im/prose-core-client/releases/download/0.1.1/prose-im-prose-core-client-wasm-0.1.1.tgz",
+    "@prose-im/prose-core-client-wasm": "https://github.com/prose-im/prose-core-client/releases/download/0.1.3/prose-im-prose-core-client-wasm-0.1.3.tgz",
     "@prose-im/prose-core-views": "0.23.1",
     "@xmpp/id": "0.13.x",
     "@xmpp/time": "0.13.x",

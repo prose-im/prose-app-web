@@ -857,14 +857,14 @@ export default {
     },
 
     onStoreMessageInserted(event: EventMessageGeneric): void {
-      if (this.jid.bare().equals(event.jid) === true) {
+      if (this.jid.bare().equals(event.jid.bare()) === true) {
         // Insert into view
         this.frame()?.MessagingStore.insert(event.message);
       }
     },
 
     onStoreMessageUpdated(event: EventMessageGeneric): void {
-      if (this.jid.bare().equals(event.jid) === true) {
+      if (this.jid.bare().equals(event.jid.bare()) === true) {
         // Update in view
         // Notice: use identifier from original message as reference, if any, \
         //   otherwise fallback on the actual message. This is done as the \
@@ -878,7 +878,7 @@ export default {
     },
 
     onStoreMessageRetracted(event: EventMessageGeneric): void {
-      if (this.jid.equals(event.jid) === true) {
+      if (this.jid.bare().equals(event.jid.bare()) === true) {
         // Retract from view
         this.frame()?.MessagingStore.retract(event.message.id);
       }
@@ -953,7 +953,10 @@ export default {
           });
 
           // Message from self? Append private actions.
-          if (this.selfJID.equals(jid(messageData.from)) === true) {
+          if (
+            messageData.from &&
+            this.selfJID.equals(new JID(messageData.from)) === true
+          ) {
             items.push(
               {
                 type: PopoverItemType.Divider
