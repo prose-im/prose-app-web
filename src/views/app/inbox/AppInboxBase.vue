@@ -17,21 +17,7 @@
 
   .v-app-inbox-base__content
     .v-app-inbox-base__messages
-      base-banner(
-        v-if="!this.session.connected"
-        icon="exclamationmark.triangle.fill"
-        title="You are offline"
-        description="New messages will not appear, reconnect to send messages."
-        class="v-app-inbox-base__banner"
-      )
-        template(
-          v-slot:action
-        )
-          base-button(
-            tint="light"
-            size="medium"
-          )
-            | Reconnect now
+      inbox-banner
 
       inbox-messaging(
         :jid="jid"
@@ -62,6 +48,7 @@ import { jid, JID } from "@xmpp/jid";
 import Store from "@/store";
 
 // PROJECT: COMPONENTS
+import InboxBanner from "@/components/inbox/InboxBanner.vue";
 import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
 
 // PROJECT: ASSEMBLIES
@@ -72,15 +59,17 @@ import InboxForm from "@/assemblies/inbox/InboxForm.vue";
 export default {
   name: "AppInboxBase",
 
-  components: { InboxMessaging, InboxTopbar, InboxUserinfo, InboxForm },
+  components: {
+    InboxMessaging,
+    InboxBanner,
+    InboxTopbar,
+    InboxUserinfo,
+    InboxForm
+  },
 
   computed: {
     jid(): JID {
       return jid(this.$route.params.jid as string);
-    },
-
-    session(): typeof Store.$session {
-      return Store.$session;
     },
 
     layout(): typeof Store.$layout {
