@@ -322,8 +322,12 @@ class BrokerClient implements ProseClientDelegate {
     }
   }
 
-  messagesUpdated(conversation: BareJID, messageIDs: string[]) {
-    console.log("Messages updated");
+  async messagesUpdated(conversation: BareJID, messageIDs: string[]) {
+    const messages =
+      (await this.client?.loadMessagesWithIDs(conversation, messageIDs)) || [];
+    for (const message of messages) {
+      Store.$inbox.updateMessage(conversation, message.id, message);
+    }
   }
 
   private __onConnect(status: Strophe.Status): void {

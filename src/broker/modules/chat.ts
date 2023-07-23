@@ -56,7 +56,7 @@ const RETRACT_MESSAGE_BODY =
 class BrokerModuleMessage extends BrokerModule {
   async sendMessage(to: JID, body: string): void {
     if (!this._client.client) {
-      return
+      return;
     }
     await this._client.client.sendMessage(to, body);
   }
@@ -120,59 +120,20 @@ class BrokerModuleMessage extends BrokerModule {
     logger.info(`Sent ${state} chat state to: '${to}'`);
   }
 
-  sendReactions(id: MessageID, to: JID, reactions: Set<MessageReaction>): void {
+  async sendReactions(id: MessageID, to: JID, reactions: Set<MessageReaction>) {
     // XEP-0444: Message Reactions
     // https://xmpp.org/extensions/xep-0444.html
-
-    const stanza = $msg({
-      id: xmppID(),
-      to: to.toString(),
-      type: MessageType.Chat
-    });
-
-    // Append reactions
-    {
-      const stanzaReactions = stanza.c("reactions", {
-        xmlns: NS_REACTIONS,
-        id
-      });
-
-      reactions.forEach(reaction => {
-        stanzaReactions.c("reaction", {}, reaction);
-      });
-
-      // Done, go back to root
-      stanzaReactions.up();
+    if (!this._client.client) {
+      return;
     }
 
-    // Append hints
-    {
-      stanza.c("store", { xmlns: NS_HINTS }).up();
-    }
-
-    this._client.emit(stanza);
-
-    // Update reactions in store?
-    const from = this._client.jid || null;
-
-    if (from !== null) {
-      const reactionEmojis = BrokerBuilderReactions.reduce({
-        to: to.bare(),
-        from,
-        messageId: id,
-        reactions: Array.from(reactions)
-      });
-
-      Store.$inbox.updateMessage(to.bare(), id, {
+    for (const reaction of reactions) {
+      await this._client.client.toggleReactionToMessage(
+        to.bare(),
         id,
-        reactions: reactionEmojis
-      });
+        reaction
+      );
     }
-
-    logger.info(
-      `Reacted to message #${id} sent to: '${to}' with reactions:`,
-      reactions
-    );
   }
 
   async setMessageCarbonsEnabled(enabled: boolean): Promise<void> {
