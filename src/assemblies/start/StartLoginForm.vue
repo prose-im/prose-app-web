@@ -54,9 +54,9 @@
       .a-start-login-form__options-left
         form-checkbox(
           v-model="form.remember"
-          :disabled="loading"
           :loading="loading"
           name="remember"
+          disabled
         )
           | Remember me
 
