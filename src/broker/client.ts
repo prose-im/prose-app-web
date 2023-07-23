@@ -15,7 +15,11 @@ import init, {
   ProseClient,
   ProseConnectionProvider,
   ProseConnection,
-  ProseConnectionEventHandler, ProseClientDelegate, ConnectionError, FullJID, BareJID
+  ProseConnectionEventHandler,
+  ProseClientDelegate,
+  ConnectionError,
+  FullJID,
+  BareJID
 } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
@@ -86,62 +90,65 @@ class StropheJSConnectionProvider implements ProseConnectionProvider {
 }
 
 class StropheJSConnection implements ProseConnection {
-  private readonly __connection: Strophe.Connection
-  private __eventHandler?: ProseConnectionEventHandler
+  private readonly __connection: Strophe.Connection;
+  private __eventHandler?: ProseConnectionEventHandler;
 
   constructor() {
     this.__connection = new Strophe.Connection(
       "wss://chat.prose.org/websocket/",
       { protocol: "wss" }
-    )
-    this.__connection.rawInput = (data) => {
+    );
+    this.__connection.rawInput = data => {
       //console.log("RECV", data);
       if (this.__eventHandler) {
-        this.__eventHandler.handleStanza(data)
+        this.__eventHandler.handleStanza(data);
       }
     };
   }
 
   async connect(jid: string, password: string) {
-    return new Promise<void> ((resolve, reject) => {
-      this.__connection.connect(jid, password, (status) => {
+    return new Promise<void>((resolve, reject) => {
+      this.__connection.connect(jid, password, status => {
         if (status === Strophe.Status.CONNECTING) {
           console.log("Strophe is connecting.");
         } else if (status === Strophe.Status.CONNFAIL) {
           console.log("Strophe failed to connect.");
-          reject(new Error("Something went wrong."))
+          reject(new Error("Something went wrong."));
         } else if (status === Strophe.Status.DISCONNECTING) {
           console.log("Strophe is disconnecting.");
         } else if (status === Strophe.Status.DISCONNECTED) {
           console.log("Strophe is disconnected.");
         } else if (status === Strophe.Status.CONNECTED) {
           console.log("Strophe is connected.");
-          resolve()
+          resolve();
 
           //connection.addHandler(onMessage, null, 'message', null, null,  null);
           //connection.send($pres().tree());
         }
       });
-    })
+    });
   }
 
   disconnect() {
-    this.__connection.disconnect("logout")
+    this.__connection.disconnect("logout");
   }
 
   sendStanza(stanza: string) {
     console.log("Sending stanza", stanza);
-    const element = new DOMParser().parseFromString(stanza, "text/xml").firstElementChild;
+    const element = new DOMParser().parseFromString(
+      stanza,
+      "text/xml"
+    ).firstElementChild;
 
     if (!element) {
-      throw new Error("Failed to parse stanza")
+      throw new Error("Failed to parse stanza");
     }
 
     this.__connection.send(element);
   }
 
   setEventHandler(handler: ProseConnectionEventHandler) {
-    this.__eventHandler = handler
+    this.__eventHandler = handler;
   }
 }
 
@@ -185,7 +192,10 @@ class BrokerClient implements ProseClientDelegate {
       password
     };
 
-    const client = await ProseClient.init(new StropheJSConnectionProvider(), this);
+    const client = await ProseClient.init(
+      new StropheJSConnectionProvider(),
+      this
+    );
     this.client = client;
 
     try {
@@ -285,32 +295,32 @@ class BrokerClient implements ProseClientDelegate {
   }
 
   clientConnected() {
-    console.log("Client connected")
+    console.log("Client connected");
   }
 
   clientDisconnected(error?: ConnectionError) {
-    console.log("Client disconnected")
+    console.log("Client disconnected");
   }
 
   composingUsersChanged(conversation: string) {
-    console.log("Composing users changed")
+    console.log("Composing users changed");
   }
 
   contactChanged(jid: string) {
-    console.log("Contact changed")
-    Store.$roster.emitContactChanged(jid)
+    console.log("Contact changed");
+    Store.$roster.emitContactChanged(jid);
   }
 
   messagesAppended(conversation: string, messageIDs: string[]) {
-    console.log("Messages appended")
+    console.log("Messages appended");
   }
 
   messagesDeleted(conversation: string, messageIDs: string[]) {
-    console.log("Messages deleted")
+    console.log("Messages deleted");
   }
 
   messagesUpdated(conversation: string, messageIDs: string[]) {
-    console.log("Messages updated")
+    console.log("Messages updated");
   }
 
   private __onConnect(status: Strophe.Status): void {
@@ -491,7 +501,9 @@ class BrokerClient implements ProseClientDelegate {
   }
 
   private __setupContext(): void {
-    this.jid = this.__connection ? new FullJID(this.__connection.jid) : undefined;
+    this.jid = this.__connection
+      ? new FullJID(this.__connection.jid)
+      : undefined;
 
     Store.$session.setConnected(true);
     Store.$session.setConnecting(false);

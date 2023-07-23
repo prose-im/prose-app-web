@@ -12,7 +12,7 @@
 import { Cash } from "cash-dom";
 import { $iq } from "strophe.js";
 import xmppID from "@xmpp/id";
-import { BareJID, jidToString } from "@prose-im/prose-core-client-wasm";
+import { BareJID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -23,7 +23,6 @@ import { NS_MAM, NS_RSM, NS_DATA } from "@/broker/stanzas/xmlns";
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 import Store from "@/store";
-import message from "@/broker/events/message";
 
 /**************************************************************************
  * INTERFACES
@@ -62,9 +61,7 @@ class BrokerModuleMAM extends BrokerModule {
       true
     );
 
-    for (const message of messages) {
-      Store.$inbox.insertMessages(conversation, messages)
-    }
+    Store.$inbox.insertMessages(conversation, messages);
   }
 
   async loadMessages(
