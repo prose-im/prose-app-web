@@ -316,8 +316,10 @@ class BrokerClient implements ProseClientDelegate {
     Store.$inbox.insertMessages(conversation, messages);
   }
 
-    console.log("Messages deleted");
   messagesDeleted(conversation: BareJID, messageIDs: string[]) {
+    for (const messageID of messageIDs) {
+      Store.$inbox.retractMessage(conversation, messageID);
+    }
   }
 
   messagesUpdated(conversation: BareJID, messageIDs: string[]) {
