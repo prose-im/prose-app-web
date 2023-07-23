@@ -50,7 +50,7 @@
         | 👨‍💻
 
       span.c-sidebar-context__status-text
-        | (no activity)
+        | (no status)
 
   base-action(
     @click="onActionsClick"
@@ -171,7 +171,7 @@ export default {
 
         {
           type: PopoverItemType.Button,
-          label: "🚀 Update mood",
+          label: "🚀 Update status",
           disabled: true
         },
 
