@@ -42,7 +42,7 @@
 
 <script lang="ts">
 // NPM
-import { jid, JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -69,7 +69,7 @@ export default {
 
   computed: {
     jid(): JID {
-      return jid(this.$route.params.jid as string);
+      return new JID(this.$route.params.jid as string);
     },
 
     layout(): typeof Store.$layout {

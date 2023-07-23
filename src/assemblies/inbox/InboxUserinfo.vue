@@ -49,7 +49,7 @@
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -91,7 +91,7 @@ export default {
     },
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
-      return Store.$profile.getProfile(this.jid);
+      return Store.$profile.getProfile(this.jid.bare());
     },
 
     fullJIDHighestOnline(): ReturnType<

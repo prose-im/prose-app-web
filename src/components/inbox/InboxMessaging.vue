@@ -69,7 +69,7 @@
 // NPM
 import { shallowRef, PropType } from "vue";
 import xmppID from "@xmpp/id";
-import { jid, JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 import {
   Messaging as MessagingRuntime,
   Platform as MessagingPlatform,
@@ -495,7 +495,7 @@ export default {
         // const result = await Broker.$mam.loadMessages(this.jid, {
         //   afterId: lastResultIdFromArchive
         // });
-        await Broker.$mam.loadLatestMessages(this.jid);
+        await Broker.$mam.loadLatestMessages(this.jid.bare());
 
         const frameRuntime = this.frame();
 
@@ -518,14 +518,14 @@ export default {
 
     async seekMoreMessages(): void {
       // Can seek now? (connected and not stale)
-      this.$log.debug("1")
+      this.$log.debug("1");
       if (
         true
         // Store.$session.connected === true &&
         // this.isMessageSyncStale !== true &&
         // this.isMessageSyncMoreLoading !== true
       ) {
-        this.$log.debug("2")
+        this.$log.debug("2");
         const frameRuntime = this.frame();
 
         // Find first message with an archive identifier
@@ -533,11 +533,11 @@ export default {
           this.messages.find(message => {
             return message.archiveId !== undefined ? true : false;
           })?.archiveId || undefined;
-        this.$log.debug("3")
+        this.$log.debug("3");
         // Load previous messages?
         // Notice: only load messages after first loaded identifier
         if (firstResultIdFromArchive !== undefined && frameRuntime !== null) {
-          this.$log.debug("4")
+          this.$log.debug("4");
           // Mark backwards as loading
           this.isMessageSyncMoreLoading = true;
 
@@ -547,7 +547,7 @@ export default {
           // await Broker.$mam.loadMessages(this.jid, {
           //   beforeId: firstResultIdFromArchive
           // });
-          this.$log.debug("HELLO")
+          this.$log.debug("HELLO");
           await Broker.$mam.loadLatestMessages(this.jid);
 
           // Mark backwards loading as complete
@@ -555,13 +555,13 @@ export default {
 
           this.isMessageSyncMoreLoading = false;
         } else {
-          this.$log.debug("5")
+          this.$log.debug("5");
           this.$log.warn(
             `Could not seek previous messages, as there is no first ` +
               `message from archives or frame is not ready yet for: ${this.jid}`
           );
         }
-        this.$log.debug("6")
+        this.$log.debug("6");
       }
     },
 

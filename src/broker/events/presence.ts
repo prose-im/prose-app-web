@@ -10,7 +10,7 @@
 
 // NPM
 import { Cash } from "cash-dom";
-import { jid } from "@xmpp/jid";
+import { FullJID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import BrokerEventIngestor from "@/broker/events/ingestor";
@@ -47,7 +47,7 @@ class BrokerEventPresence extends BrokerEventIngestor {
 
     if (from !== null) {
       // TODO: (separately) implement support for 'probe' presences
-      Store.$presence.update(jid(from), {
+      Store.$presence.update(new FullJID(from), {
         priority,
         type,
         show: show || undefined,

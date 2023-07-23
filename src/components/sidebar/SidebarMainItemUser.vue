@@ -75,7 +75,7 @@ list-button(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -108,11 +108,11 @@ export default {
     unreadCount() {
       // TODO: those are fixtures, this data should come somewhere from the \
       //   store, based on the user JID!
-      if (this.jid.local.startsWith("m") === true) {
+      if (this.jid.bare().node?.startsWith("m") === true) {
         return 8;
       }
 
-      if (this.jid.local.startsWith("s") === true) {
+      if (this.jid.bare().node?.startsWith("s") === true) {
         return 15;
       }
 

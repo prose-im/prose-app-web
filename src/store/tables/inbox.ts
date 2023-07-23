@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 import cloneDeep from "lodash.clonedeep";
 import mitt from "mitt";
 import { defineStore } from "pinia";
@@ -104,7 +104,7 @@ const $inbox = defineStore("inbox", {
     },
 
     assert(jid: JID): InboxEntry {
-      const jidString = jid.bare().toString(),
+      const jidString = jid.toString(),
         entries = this.entries;
 
       // Assign new inbox entry?

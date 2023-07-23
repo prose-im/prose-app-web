@@ -10,7 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -103,7 +103,7 @@ const $roster = defineStore("roster", {
 
     getEntryName: function () {
       return (jid: JID): string => {
-        return this.getEntry(jid)?.name || jid.local;
+        return this.getEntry(jid)?.name || jid.bare().node;
       };
     }
   },
@@ -155,7 +155,7 @@ const $roster = defineStore("roster", {
     },
 
     events(): ReturnType<typeof mitt> {
-      return EventBus
+      return EventBus;
     },
 
     emitContactChanged(jid: string) {

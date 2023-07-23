@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 import { defineStore } from "pinia";
 import mitt from "mitt";
 
@@ -114,7 +114,7 @@ const $avatar = defineStore("avatar", {
     },
 
     assert(jid: JID): AvatarEntry {
-      const bareJIDString = jid.bare().toString();
+      const bareJIDString = jid.toString();
 
       // Assign new avatar entry for JID?
       if (!(bareJIDString in this.entries)) {
@@ -138,7 +138,7 @@ const $avatar = defineStore("avatar", {
         );
       }
 
-      const bareJIDString = jid.bare().toString();
+      const bareJIDString = jid.toString();
 
       // Not already loading? Load now.
       if (!LOCAL_STATES.loading[bareJIDString]) {

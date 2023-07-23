@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@xmpp/jid";
+import { BareJID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import { MessageReaction } from "@/broker/stanzas/message";
@@ -40,8 +40,8 @@ class BrokerBuilderReactions {
     messageId,
     reactions
   }: {
-    to: JID;
-    from: JID;
+    to: BareJID;
+    from: BareJID;
     messageId: string;
     reactions: Array<MessageReaction>;
   }): Array<ReactionsEmoji> {

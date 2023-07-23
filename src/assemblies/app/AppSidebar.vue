@@ -38,7 +38,7 @@
 
 <script lang="ts">
 // NPM
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: COMPONENTS
 import SidebarHeader from "@/components/sidebar/SidebarHeader.vue";

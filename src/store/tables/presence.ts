@@ -9,11 +9,12 @@
  * ************************************************************************* */
 
 // NPM
-import { jid, JID } from "@xmpp/jid";
+import { FullJID, JID } from "@prose-im/prose-core-client-wasm";
 import { defineStore } from "pinia";
 
 // PROJECT: BROKER
 import { PresenceType, PresenceShow } from "@/broker/stanzas/presence";
+import { isBareJID, isFullJID, toJID } from "@/utilities/jid";
 
 /**************************************************************************
  * TYPES
@@ -90,17 +91,24 @@ const $presence = defineStore("presence", {
     },
 
     getHighestOnlineJID: function () {
-      return (bareJID: JID): JID => {
-        const highest = this.getHighest(bareJID);
+      return (jid: JID): JID => {
+        const highest = this.getHighest(jid);
+
+        if (!isFullJID(jid)) {
+          return jid;
+        }
 
         // Highest JID is online? Return full JID.
         if (highest.type === null && highest.resource) {
+          const fullJID = jid.full;
           // Build JID in the form of: '[local]@[domain]/[resource]'
-          return jid(bareJID.local, bareJID.domain, highest.resource);
+          return toJID(
+            new FullJID(`${fullJID.node}@${fullJID.domain}/${highest.resource}`)
+          );
         }
 
         // Return bare JID, as none is online (identity function)
-        return bareJID;
+        return toJID(jid.bare());
       };
     }
   },
@@ -110,10 +118,21 @@ const $presence = defineStore("presence", {
       this.local.show = show;
     },
 
-    assert(fullJID: JID, highest = false): PresenceEntryResource {
-      const bareJIDString = fullJID.bare().toString(),
-        fullJIDResource = fullJID.resource,
-        entries = this.entries;
+    assert(jid: JID, highest = false): PresenceEntryResource | undefined {
+      let bareJIDString: string;
+      let fullJIDResource: string | undefined;
+
+      if (isBareJID(jid)) {
+        bareJIDString = jid.bare.toString();
+        fullJIDResource = undefined;
+      } else if (isFullJID(jid)) {
+        bareJIDString = jid.full.bare().toString();
+        fullJIDResource = jid.full.resource;
+      } else {
+        throw new Error("Encountered invalid JID");
+      }
+
+      const entries = this.entries;
 
       // Assign new presence JID?
       if (!(bareJIDString in entries)) {
@@ -132,7 +151,10 @@ const $presence = defineStore("presence", {
       }
 
       // Assign new presence resource for JID?
-      if (!(fullJIDResource in entries[bareJIDString].resources)) {
+      if (
+        fullJIDResource &&
+        !(fullJIDResource in entries[bareJIDString].resources)
+      ) {
         this.$patch(() => {
           // Insert with defaults
           entries[bareJIDString].resources[fullJIDResource] = {
@@ -144,17 +166,28 @@ const $presence = defineStore("presence", {
       }
 
       // Return highest resource, or target resource?
-      if (highest === true) {
+      if (highest === true || !fullJIDResource) {
         return entries[bareJIDString].highest;
       }
 
       return entries[bareJIDString].resources[fullJIDResource];
     },
 
-    unassert(fullJID: JID): number {
-      const bareJIDString = fullJID.bare().toString(),
-        fullJIDResource = fullJID.resource,
-        entries = this.entries;
+    unassert(jid: JID): number {
+      let bareJIDString: string;
+      let fullJIDResource: string | undefined;
+
+      if (isBareJID(jid)) {
+        bareJIDString = jid.bare.toString();
+        fullJIDResource = undefined;
+      } else if (isFullJID(jid)) {
+        bareJIDString = jid.full.bare().toString();
+        fullJIDResource = jid.full.resource;
+      } else {
+        throw new Error("Encountered invalid jid");
+      }
+
+      const entries = this.entries;
 
       // Obtain number of resources for JID
       let resourceCount =
@@ -238,7 +271,7 @@ const $presence = defineStore("presence", {
     },
 
     computeHighest(fullJID: JID): void {
-      const bareJIDString = fullJID.bare().toString(),
+      const bareJIDString = bare(fullJID).toString(),
         entries = this.entries;
 
       // Acquire presence with the highest-priority

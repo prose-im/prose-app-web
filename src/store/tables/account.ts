@@ -10,10 +10,11 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { jid, JID } from "@xmpp/jid";
+import { FullJID, JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
+import { toJID } from "@/utilities/jid";
 
 /**************************************************************************
  * TABLE
@@ -50,30 +51,38 @@ const $account = defineStore("account", {
             "No JID defined in credentials (this should never happen)"
           );
         }
-
-        return jid(localJID);
+        return toJID(localJID);
       };
     }
   },
 
   actions: {
     async login(
-      rawJid: string,
+      rawJID: string,
       password: string,
       remember = true
     ): Promise<void> {
+      let jid: FullJID;
+      const fullRawJID = rawJID + "/web";
+
+      try {
+        jid = new FullJID(fullRawJID);
+      } catch (e) {
+        throw new Error("Please provide a valid Jabber ID");
+      }
+
       // Connect and authenticate to server
-      await Broker.client.authenticate(jid(rawJid), password);
+      await Broker.client.authenticate(jid, password);
 
       // Store credentials? (if success)
       if (remember === true) {
         this.$patch(state => {
           // Assign account credentials
-          state.credentials.jid = rawJid;
+          state.credentials.jid = fullRawJID;
           state.credentials.password = password;
 
           // Assign last account marker
-          state.last.jid = rawJid;
+          state.last.jid = fullRawJID;
           state.last.timestamp = Date.now();
         });
       }

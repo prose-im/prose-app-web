@@ -12,7 +12,7 @@
 import { Cash } from "cash-dom";
 import { $iq } from "strophe.js";
 import xmppID from "@xmpp/id";
-import { JID } from "@xmpp/jid";
+import { BareJID, jidToString } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -51,13 +51,22 @@ const HISTORY_PAGE_SIZE = 40;
  * ************************************************************************* */
 
 class BrokerModuleMAM extends BrokerModule {
-  async loadLatestMessages(jid: JID) {
+  async loadLatestMessages(conversation: BareJID) {
     if (!this._client.client) {
-      return
+      return;
     }
 
-    // const messages = await this._client.client.loadLatestMessages(jid.toString(), undefined, true);
-    // logger.info(messages)
+    const messages = await this._client.client.loadLatestMessages(
+      conversation,
+      undefined,
+      true
+    );
+
+    for (const message of messages) {
+      logger.info(message.timestamp, message.from.toString(), message.body);
+    }
+
+    logger.info(messages);
 
     // for (const message of messages) {
     //   logger.info(message.id, message.stanzaID, message.from, message.body)
@@ -74,7 +83,7 @@ class BrokerModuleMAM extends BrokerModule {
   }
 
   async loadMessages(
-    jid: JID,
+    jid: BareJID,
     {
       beforeId,
       afterId,

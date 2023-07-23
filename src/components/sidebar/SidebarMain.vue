@@ -129,7 +129,7 @@
 
 <script lang="ts">
 // NPM
-import { jid, JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -208,7 +208,7 @@ export default {
 
       handler(value) {
         if (value.name && value.name.startsWith("app.inbox")) {
-          this.activeJID = jid(value.params.jid);
+          this.activeJID = new JID(value.params.jid);
         } else {
           this.activeJID = null;
         }
@@ -256,7 +256,7 @@ export default {
     intoRosterDisplayItems(list: RosterList): Array<RosterDisplayItem> {
       return list.map(item => {
         return {
-          jid: jid(item.jid),
+          jid: new JID(item.jid),
           name: item.name
         };
       });
@@ -297,7 +297,7 @@ export default {
 
     onContactChanged(jid: string): void {
       this.isRosterSyncStale = true;
-      this.syncRosterEager()
+      this.syncRosterEager();
     }
   }
 };

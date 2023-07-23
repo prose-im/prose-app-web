@@ -11,13 +11,12 @@
 // NPM
 import { default as $, Cash } from "cash-dom";
 import { Strophe } from "strophe.js";
-import { JID, jid } from "@xmpp/jid";
 import init, {
   ProseClient,
   ProseConnectionProvider,
   ProseConnection,
-  ProseConnectionEventHandler, ProseClientDelegate, ConnectionError
-} from "prose-core-client-wasm";
+  ProseConnectionEventHandler, ProseClientDelegate, ConnectionError, FullJID, BareJID
+} from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -147,14 +146,14 @@ class StropheJSConnection implements ProseConnection {
 }
 
 class BrokerClient implements ProseClientDelegate {
-  jid?: JID;
+  jid?: FullJID;
 
   private readonly __ingestors: BrokerEvent;
   client?: ProseClient;
 
   private __connection?: Strophe.Connection;
   private __connectLifecycle?: ConnectLifecycle;
-  private __credentials?: { jid: JID; password: string };
+  private __credentials?: { jid: FullJID; password: string };
   private __boundReceivers: Array<StropheHandler> = [];
   private __pendingRequests: { [id: string]: PendingRequest } = {};
   private __reconnectTimeout?: ReturnType<typeof setTimeout>;
@@ -164,16 +163,10 @@ class BrokerClient implements ProseClientDelegate {
     this.__ingestors = new BrokerEvent(this);
   }
 
-  async authenticate(jid: JID, password: string): Promise<void> {
+  async authenticate(jid: FullJID, password: string): Promise<void> {
     // Incomplete parameters?
-    if (!jid.toString()) {
-      throw new Error("Please provide a Jabber ID");
-    }
     if (!password) {
       throw new Error("Please provide a password");
-    }
-    if (!jid.getLocal()) {
-      throw new Error("Invalid Jabber ID");
     }
 
     // Another connection pending?
@@ -192,13 +185,11 @@ class BrokerClient implements ProseClientDelegate {
       password
     };
 
-    await init();
-
     const client = await ProseClient.init(new StropheJSConnectionProvider(), this);
     this.client = client;
 
     try {
-      await client.connect(jid.toString(), password);
+      await client.connect(jid, password);
     } catch (error) {
       console.log("Something went wrong", error);
       this.__clearContext();
@@ -301,24 +292,24 @@ class BrokerClient implements ProseClientDelegate {
     console.log("Client disconnected")
   }
 
-  composingUsersChanged(conversation: String) {
+  composingUsersChanged(conversation: string) {
     console.log("Composing users changed")
   }
 
-  contactChanged(jid: String) {
+  contactChanged(jid: string) {
     console.log("Contact changed")
     Store.$roster.emitContactChanged(jid)
   }
 
-  messagesAppended(conversation: String, messageIDs: string[]) {
+  messagesAppended(conversation: string, messageIDs: string[]) {
     console.log("Messages appended")
   }
 
-  messagesDeleted(conversation: String, messageIDs: string[]) {
+  messagesDeleted(conversation: string, messageIDs: string[]) {
     console.log("Messages deleted")
   }
 
-  messagesUpdated(conversation: String, messageIDs: string[]) {
+  messagesUpdated(conversation: string, messageIDs: string[]) {
     console.log("Messages updated")
   }
 
@@ -500,7 +491,7 @@ class BrokerClient implements ProseClientDelegate {
   }
 
   private __setupContext(): void {
-    this.jid = this.__connection ? jid(this.__connection.jid) : undefined;
+    this.jid = this.__connection ? new FullJID(this.__connection.jid) : undefined;
 
     Store.$session.setConnected(true);
     Store.$session.setConnecting(false);
@@ -536,7 +527,7 @@ class BrokerClient implements ProseClientDelegate {
     this.__credentials = undefined;
   }
 
-  private async __connect(jid: JID, password: string): Promise<void> {
+  private async __connect(jid: FullJID, password: string): Promise<void> {
     // Acquire relay host
     const relayHost = CONFIG.hosts.websocket || null;
 

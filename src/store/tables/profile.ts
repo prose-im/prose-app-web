@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 import { defineStore } from "pinia";
 
 // PROJECT: BROKER
@@ -22,6 +22,7 @@ import {
 
 // PROJECT: FILTERS
 import dateFilters from "@/filters/date";
+import { bare } from "@/utilities/jid";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -136,7 +137,7 @@ const $profile = defineStore("profile", {
 
   actions: {
     assert(jid: JID): ProfileEntry {
-      const bareJIDString = jid.bare().toString();
+      const bareJIDString = jid.toString();
 
       // Assign new profile entry for JID?
       if (!(bareJIDString in this.entries)) {
@@ -359,7 +360,7 @@ const $profile = defineStore("profile", {
 
     setProfileEncryption(
       jid: JID,
-      encryption?: ProfileEntrySecurityEncryption
+      encryption: ProfileEntrySecurityEncryption
     ): ProfileEntry {
       const profile = this.assert(jid);
 

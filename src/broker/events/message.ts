@@ -10,7 +10,7 @@
 
 // NPM
 import { default as $, Cash } from "cash-dom";
-import { jid, JID } from "@xmpp/jid";
+import { BareJID } from "@prose-im/prose-core-client-wasm";
 import xmppID from "@xmpp/id";
 import xmppTime from "@xmpp/time";
 
@@ -65,7 +65,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
       chatstate = (element.prop("tagName") as MessageChatState) || null;
 
     if (from !== null && chatstate !== null) {
-      Store.$inbox.setStatesChatstate(jid(from), chatstate);
+      Store.$inbox.setStatesChatstate(new BareJID(from), chatstate);
     }
   }
 
@@ -85,7 +85,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
       id = element.attr("id") || null;
 
     if (from !== null && id !== null) {
-      const fromJID = jid(from).bare();
+      const fromJID = new BareJID(from);
 
       // Check if should retract message?
       if (element.has("retract").length > 0) {
@@ -106,7 +106,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
       logger.info(`Correcting message #${replaceId} from: '${from || "?"}'`);
 
       // Read body text
-      const fromJID = jid(from).bare();
+      const fromJID = new BareJID(from);
 
       // Update message in store
       // TODO: handle different message types
@@ -164,7 +164,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
     const from = stanza.attr("from") || null;
 
     if (from !== null) {
-      const fromJID = jid(from);
+      const fromJID = new BareJID(from);
 
       element.children("items").each((_, itemsNode: Element) => {
         const items = $(itemsNode),
@@ -217,12 +217,12 @@ class BrokerEventMessage extends BrokerEventIngestor {
       logger.info(`Inserting message from: '${from || "?"}'`);
 
       // Build JID objects
-      const fromJID = jid(from).bare(),
-        toJID = jid(to).bare();
+      const fromJID = new BareJID(from),
+        toJID = new BareJID(to);
 
       // Acquire store target JID
       const storeJID =
-        this._client.jid?.bare().equals(fromJID) === true ? toJID : fromJID;
+        this._client.jid?.equals(fromJID) === true ? toJID : fromJID;
 
       // Read date and time
       const dateTime =
@@ -249,8 +249,8 @@ class BrokerEventMessage extends BrokerEventIngestor {
     // Handle message reactions?
     if (from !== null && to !== null && id !== null) {
       // Build JID object
-      const fromJID = jid(from).bare(),
-        toJID = jid(to).bare();
+      const fromJID = new BareJID(from),
+        toJID = new BareJID(to);
 
       // Map list of reactions from this sending user
       const reactionsAppend: Array<MessageReaction> = [];
@@ -278,7 +278,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
 
       // Acquire store target JID
       const storeJID =
-        this._client.jid?.bare().equals(fromJID) === true ? toJID : fromJID;
+        this._client.jid?.equals(fromJID) === true ? toJID : fromJID;
 
       // Update message in store
       Store.$inbox.updateMessage(storeJID, id, {
@@ -288,7 +288,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
     }
   }
 
-  private __handleFastenRetract(fromJID: JID, messageId: string): void {
+  private __handleFastenRetract(fromJID: BareJID, messageId: string): void {
     // XEP-0424: Message Retraction
     // https://xmpp.org/extensions/xep-0424.html
 
@@ -305,7 +305,7 @@ class BrokerEventMessage extends BrokerEventIngestor {
     }
   }
 
-  private __handlePubsubEventAvatarMetadata(fromJID: JID, items: Cash): void {
+  private __handlePubsubEventAvatarMetadata(fromJID: BareJID, items: Cash): void {
     // XEP-0084: User Avatar
     // https://xmpp.org/extensions/xep-0084.html
 

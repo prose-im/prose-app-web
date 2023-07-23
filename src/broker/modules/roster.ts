@@ -11,7 +11,7 @@
 // NPM
 import { default as $, Cash } from "cash-dom";
 import { $iq } from "strophe.js";
-import { jid, JID } from "@xmpp/jid";
+import { BareJID, Contact } from "@prose-im/prose-core-client-wasm";
 import xmppID from "@xmpp/id";
 
 // PROJECT: BROKER
@@ -21,7 +21,6 @@ import { NS_ROSTER } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
-import { Contact } from "../../../../prose-core-client/master/bindings/prose-core-client-wasm/pkg";
 
 /**************************************************************************
  * ENUMERATIONS
@@ -66,7 +65,7 @@ class BrokerModuleRoster extends BrokerModule {
 
     return {
       items: await this._client.client.loadContacts()
-    }
+    };
   }
 
   private __respondLoadRoster(response: Cash): LoadRosterResponse {
@@ -83,7 +82,7 @@ class BrokerModuleRoster extends BrokerModule {
         const groupElement = itemElement.find("group").first();
 
         // Acquire item JID
-        const itemJID = jid(elementJID);
+        const itemJID = new BareJID(elementJID);
 
         // Acquire group name
         let groupName;

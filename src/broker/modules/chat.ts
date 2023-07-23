@@ -12,7 +12,7 @@
 import { $msg, $iq } from "strophe.js";
 import xmppID from "@xmpp/id";
 import xmppTime from "@xmpp/time";
-import { JID } from "@xmpp/jid";
+import { BareJID, JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -74,11 +74,11 @@ class BrokerModuleMessage extends BrokerModule {
     );
 
     // Insert message into store
-    Store.$inbox.insertMessage(to, {
+    Store.$inbox.insertMessage(to.bare(), {
       id,
       type: "text",
       date: xmppTime.datetime(),
-      from: this._client.jid?.bare().toString(),
+      from: this._client.jid?.toString(),
       content: body
     });
 
@@ -86,7 +86,7 @@ class BrokerModuleMessage extends BrokerModule {
   }
 
   updateMessage(
-    to: JID,
+    to: BareJID,
     body: string,
     ids: { original: MessageID; replacement?: MessageID }
   ): void {
@@ -107,7 +107,7 @@ class BrokerModuleMessage extends BrokerModule {
     );
   }
 
-  retractMessage(id: MessageID, to: JID): void {
+  retractMessage(id: MessageID, to: BareJID): void {
     // XEP-0424: Message Retraction
     // https://xmpp.org/extensions/xep-0424.html
 
@@ -177,17 +177,17 @@ class BrokerModuleMessage extends BrokerModule {
     this._client.emit(stanza);
 
     // Update reactions in store?
-    const from = this._client.jid?.bare() || null;
+    const from = this._client.jid || null;
 
     if (from !== null) {
       const reactionEmojis = BrokerBuilderReactions.reduce({
-        to,
+        to: to.bare(),
         from,
         messageId: id,
         reactions: Array.from(reactions)
       });
 
-      Store.$inbox.updateMessage(to, id, {
+      Store.$inbox.updateMessage(to.bare(), id, {
         id,
         reactions: reactionEmojis
       });

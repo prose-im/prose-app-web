@@ -13,7 +13,7 @@ import { Cash } from "cash-dom";
 import { $iq, Strophe } from "strophe.js";
 import xmppID from "@xmpp/id";
 import xmppTime from "@xmpp/time";
-import { JID } from "@xmpp/jid";
+import { BareJID, FullJID } from "@prose-im/prose-core-client-wasm";
 import sha1 from "crypto-js/sha1";
 
 // PROJECT: BROKER
@@ -118,7 +118,7 @@ const PHONE_URI_PREFIX = "tel:";
  * ************************************************************************* */
 
 class BrokerModuleProfile extends BrokerModule {
-  async loadVCard(jid: JID): Promise<LoadVCardResponse> {
+  async loadVCard(jid: BareJID): Promise<LoadVCardResponse> {
     // XEP-0292: vCard4 Over XMPP
     // https://xmpp.org/extensions/xep-0292.html
 
@@ -133,7 +133,7 @@ class BrokerModuleProfile extends BrokerModule {
     return this.__respondLoadVCard(response);
   }
 
-  async loadLastActivity(fullJID: JID): Promise<LoadLastActivityResponse> {
+  async loadLastActivity(fullJID: FullJID): Promise<LoadLastActivityResponse> {
     // XEP-0012: Last Activity
     // https://xmpp.org/extensions/xep-0012.html
 
@@ -148,7 +148,7 @@ class BrokerModuleProfile extends BrokerModule {
     return this.__respondLoadLastActivity(response);
   }
 
-  async loadEntityTime(fullJID: JID): Promise<LoadEntityTimeResponse> {
+  async loadEntityTime(fullJID: FullJID): Promise<LoadEntityTimeResponse> {
     // XEP-0202: Entity Time
     // https://xmpp.org/extensions/xep-0202.html
 
@@ -164,7 +164,7 @@ class BrokerModuleProfile extends BrokerModule {
   }
 
   async loadAvatarData(
-    jid: JID,
+    jid: BareJID,
     id: string
   ): Promise<LoadAvatarDataResponse | void> {
     // XEP-0084: User Avatar
