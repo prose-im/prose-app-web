@@ -90,13 +90,13 @@ export default {
       if (this.profile.security) {
         if (this.profile.security.verification) {
           entries.push({
-            id: "identity",
+            id: "identity-verified",
             title: "Identity verified",
             icon: "checkmark.seal.fill"
           });
         } else {
           entries.push({
-            id: "identity",
+            id: "identity-unknown",
             title: "Identity unknown",
             icon: "xmark.seal.fill"
           });
@@ -104,7 +104,7 @@ export default {
 
         if (this.profile.security.encryption) {
           entries.push({
-            id: "encryption",
+            id: "encryption-secure",
             title:
               `Encrypted ` +
               `(${this.profile.security.encryption.messageEndToEndMethod})`,
@@ -112,7 +112,7 @@ export default {
           });
         } else {
           entries.push({
-            id: "encryption",
+            id: "encryption-insecure",
             title: "Not encrypted",
             icon: "lock.slash.fill"
           });
@@ -146,12 +146,20 @@ $c: ".c-inbox-userinfo-security";
 
 .c-inbox-userinfo-security {
   #{$c}__icon {
-    &--identity {
+    &--identity-verified {
       fill: $color-base-green-normal;
     }
 
-    &--encryption {
+    &--identity-unknown {
+      fill: $color-base-grey-normal;
+    }
+
+    &--encryption-secure {
       fill: $color-base-blue-dark;
+    }
+
+    &--encryption-insecure {
+      fill: $color-base-red-normal;
     }
   }
 

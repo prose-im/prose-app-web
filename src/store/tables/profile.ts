@@ -226,21 +226,25 @@ const $profile = defineStore("profile", {
     async loadProfileVerification(bareJID: JID): Promise<ProfileEntry> {
       // Set local profile verification status
       // TODO: from server data
-      return this.setProfileVerification(bareJID, {
-        fingerprint: "0000",
-        email: bareJID.toString(),
-        phone: null,
-        identity: null
-      });
+      // return this.setProfileVerification(bareJID, {
+      //   fingerprint: "0000",
+      //   email: bareJID.toString(),
+      //   phone: null,
+      //   identity: null
+      // });
+
+      return this.setProfileVerification(bareJID, undefined);
     },
 
     async loadProfileEncryption(bareJID: JID): Promise<ProfileEntry> {
       // Set local profile encryption status
       // TODO: from server data
-      return this.setProfileEncryption(bareJID, {
-        connectionProtocol: "TLS1.3",
-        messageEndToEndMethod: "OMEMO"
-      });
+      // return this.setProfileEncryption(bareJID, {
+      //   connectionProtocol: "TLS1.3",
+      //   messageEndToEndMethod: "OMEMO"
+      // });
+
+      return this.setProfileEncryption(bareJID, undefined);
     },
 
     setProfileVCard(jid: JID, vCardResponse: LoadVCardResponse): ProfileEntry {
@@ -364,7 +368,7 @@ const $profile = defineStore("profile", {
 
     setProfileVerification(
       jid: JID,
-      verification: ProfileEntrySecurityVerification
+      verification?: ProfileEntrySecurityVerification
     ): ProfileEntry {
       const profile = this.assert(jid);
 
@@ -372,12 +376,16 @@ const $profile = defineStore("profile", {
       this.$patch(() => {
         profile.security = profile.security || {};
 
-        profile.security.verification = {
-          fingerprint: verification.fingerprint,
-          email: verification.email,
-          phone: verification.phone,
-          identity: verification.identity
-        };
+        if (verification !== undefined) {
+          profile.security.verification = {
+            fingerprint: verification.fingerprint,
+            email: verification.email,
+            phone: verification.phone,
+            identity: verification.identity
+          };
+        } else {
+          delete profile.security.verification;
+        }
       });
 
       return profile;
@@ -385,7 +393,7 @@ const $profile = defineStore("profile", {
 
     setProfileEncryption(
       jid: JID,
-      encryption: ProfileEntrySecurityEncryption
+      encryption?: ProfileEntrySecurityEncryption
     ): ProfileEntry {
       const profile = this.assert(jid);
 
@@ -393,10 +401,14 @@ const $profile = defineStore("profile", {
       this.$patch(() => {
         profile.security = profile.security || {};
 
-        profile.security.encryption = {
-          connectionProtocol: encryption.connectionProtocol,
-          messageEndToEndMethod: encryption.messageEndToEndMethod
-        };
+        if (encryption !== undefined) {
+          profile.security.encryption = {
+            connectionProtocol: encryption.connectionProtocol,
+            messageEndToEndMethod: encryption.messageEndToEndMethod
+          };
+        } else {
+          delete profile.security.encryption;
+        }
       });
 
       return profile;

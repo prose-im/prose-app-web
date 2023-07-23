@@ -14,7 +14,7 @@
     base-server-logo(
       @click="onIdentityLogoClick"
       class="c-sidebar-header__identity-logo"
-      domain="crisp.chat"
+      domain="prose.org"
       size="30px"
     )
 

@@ -12,7 +12,7 @@
 .c-start-server-identity
   base-server-logo(
     class="c-start-server-identity__logo"
-    domain="crisp.chat"
+    domain="prose.org"
     size="44px"
     shadow="none"
   )
@@ -20,10 +20,10 @@
   .c-start-server-identity__text
     .c-start-server-identity__server
       span.c-start-server-identity__server-name.u-bold
-        | Crisp
+        | Prose
 
       span.c-start-server-identity__server-domain
-        | crisp.chat
+        | prose.org
 
     .c-start-server-identity__versions
       span.u-medium

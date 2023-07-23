@@ -265,8 +265,8 @@ export default {
 
           properties: {
             type: "server",
-            name: "Crisp",
-            address: "crisp.chat"
+            name: "Prose",
+            address: "prose.org"
           }
         },
 
@@ -278,7 +278,7 @@ export default {
           children: [
             {
               type: PopoverItemType.Button,
-              label: "Crisp – crisp.chat"
+              label: "Prose – prose.org"
             }
           ]
         },
