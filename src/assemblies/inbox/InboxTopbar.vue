@@ -69,8 +69,11 @@ layout-toolbar(
   )
     span.a-inbox-topbar__identity.a-inbox-topbar__identity--jid
       base-icon(
-        class="a-inbox-topbar__identity-badge"
-        name="checkmark.seal.fill"
+        :name="identityBadge.icon"
+        :class=`[
+          "a-inbox-topbar__identity-badge",
+          "a-inbox-topbar__identity-badge--" + identityBadge.status
+        ]`
         size="16px"
       )
 
@@ -131,6 +134,12 @@ import {
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
 
+// INTERFACES
+interface IdentityBadge {
+  status: string;
+  icon: string;
+}
+
 export default {
   name: "InboxTopbar",
 
@@ -160,6 +169,26 @@ export default {
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
       return Store.$roster.getEntryName(this.jid);
+    },
+
+    profile(): ReturnType<typeof Store.$profile.getProfile> {
+      return Store.$profile.getProfile(this.jid);
+    },
+
+    identityBadge(): IdentityBadge {
+      // Identity verified?
+      if (this.profile.security && this.profile.security.verification) {
+        return {
+          status: "verified",
+          icon: "checkmark.seal.fill"
+        };
+      }
+
+      // Identity unknown
+      return {
+        status: "unknown",
+        icon: "xmark.seal.fill"
+      };
     },
 
     hasActionHistoryPrevious(): boolean {
@@ -312,8 +341,15 @@ $c: ".a-inbox-topbar";
       font-size: 15px;
 
       #{$c}__identity-badge {
-        fill: $color-base-green-normal;
         margin-block-start: 2px;
+
+        &--verified {
+          fill: $color-base-green-normal;
+        }
+
+        &--unknown {
+          fill: $color-base-grey-normal;
+        }
       }
     }
 
