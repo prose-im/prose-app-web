@@ -17,7 +17,6 @@ import { JID, jid } from "@xmpp/jid";
 import Broker from "@/broker";
 import BrokerEvent from "@/broker/events";
 import { IQType } from "@/broker/stanzas/iq";
-import { PresenceShow } from "@/broker/stanzas/presence";
 
 // PROJECT: STORES
 import Store from "@/store";
