@@ -28,7 +28,8 @@ const $session = defineStore("session", {
 
   state: () => {
     return {
-      connected: false
+      connected: false,
+      connecting: false
     };
   },
 
@@ -38,18 +39,26 @@ const $session = defineStore("session", {
       return EventBus;
     },
 
-    setConnected(connected: boolean) {
+    setConnected(connected: boolean): void {
+      this.setGeneric("connected", this.connected, connected);
+    },
+
+    setConnecting(connecting: boolean): void {
+      this.setGeneric("connecting", this.connecting, connecting);
+    },
+
+    setGeneric(key: string, previousValue: boolean, nextValue: boolean): void {
       // Check if will change
-      const willChange = this.connected !== connected ? true : false;
+      const willChange = previousValue !== nextValue ? true : false;
 
       if (willChange === true) {
         // Update value
         this.$patch({
-          connected
+          [key]: nextValue
         });
 
-        // Broadcast connected state change
-        EventBus.emit("connected", connected);
+        // Broadcast state change
+        EventBus.emit(key, nextValue);
       }
     }
   }

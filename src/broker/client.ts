@@ -116,6 +116,29 @@ class BrokerClient {
     await this.__connect(jid, password);
   }
 
+  reconnect(afterDelay = 0): void {
+    const credentials = this.__credentials;
+
+    if (credentials === undefined) {
+      throw new Error("Cannot reconnect: credentials are not set");
+    }
+    if (this.__connection !== undefined) {
+      throw new Error("Cannot reconnect: connection is active");
+    }
+
+    // Cancel any scheduled reconnect timeout
+    this.__cancelScheduledReconnectTimer();
+
+    // Schedule reconnect
+    this.__reconnectTimeout = setTimeout(() => {
+      delete this.__reconnectTimeout;
+
+      logger.debug("Reconnecting now…");
+
+      this.__connect(credentials.jid, credentials.password);
+    }, afterDelay);
+  }
+
   logout(): void {
     this.__connection?.disconnect("logout");
   }
@@ -183,6 +206,9 @@ class BrokerClient {
       case Strophe.Status.CONNECTING: {
         logger.debug("Connecting…");
 
+        // Resume context
+        this.__resumeContext();
+
         break;
       }
 
@@ -217,15 +243,7 @@ class BrokerClient {
           this.__pauseContext();
 
           // Schedule reconnect
-          const credentials = this.__credentials;
-
-          this.__reconnectTimeout = setTimeout(() => {
-            delete this.__reconnectTimeout;
-
-            logger.debug("Reconnecting now…");
-
-            this.__connect(credentials.jid, credentials.password);
-          }, RECONNECT_INTERVAL);
+          this.reconnect(RECONNECT_INTERVAL);
         }
 
         break;
@@ -363,16 +381,24 @@ class BrokerClient {
     this.jid = this.__connection ? jid(this.__connection.jid) : undefined;
 
     Store.$session.setConnected(true);
+    Store.$session.setConnecting(false);
+  }
+
+  private __resumeContext(): void {
+    // Mark as connecting
+    Store.$session.setConnecting(true);
   }
 
   private __pauseContext(): void {
     // Mark as disconnected (this might be temporary)
     Store.$session.setConnected(false);
+    Store.$session.setConnecting(false);
   }
 
   private __clearContext(): void {
     // Mark as disconnected (this is permanent)
     Store.$session.setConnected(false);
+    Store.$session.setConnecting(false);
 
     // Unassign JID
     this.jid = undefined;
