@@ -187,19 +187,22 @@ export default {
             {
               type: PopoverItemType.Button,
               label: "Available",
-              click: this.onAvatarPopoverAvailabilityAvailableClick
+              click: this.onAvatarPopoverAvailabilityAvailableClick,
+              emphasis: this.presenceLocalShow === undefined
             },
 
             {
               type: PopoverItemType.Button,
               label: "Busy (Do not disturb)",
-              click: this.onAvatarPopoverAvailabilityBusyClick
+              click: this.onAvatarPopoverAvailabilityBusyClick,
+              emphasis: this.presenceLocalShow === PresenceShow.DoNotDisturb
             },
 
             {
               type: PopoverItemType.Button,
               label: "Away (Invisible)",
-              click: this.onAvatarPopoverAvailabilityAwayClick
+              click: this.onAvatarPopoverAvailabilityAwayClick,
+              emphasis: this.presenceLocalShow === PresenceShow.ExtendedAway
             }
           ]
         },
@@ -301,6 +304,10 @@ export default {
       ];
     },
 
+    presenceLocalShow(): ReturnType<typeof Store.$presence.getLocalShow> {
+      return Store.$presence.getLocalShow();
+    },
+
     session(): typeof Store.$session {
       return Store.$session;
     }
@@ -311,16 +318,20 @@ export default {
 
     toggleAvatarPopoverAvailability(
       show?: PresenceShow,
-      alertText: string
+      alertText?: string
     ): void {
-      // Store last selected availability
-      Store.$presence.setLocalShow(show);
+      if (this.presenceLocalShow !== show) {
+        // Store last selected availability
+        Store.$presence.setLocalShow(show);
 
-      // Send Do Not Disturb presence
-      Broker.$connection.sendPresence(show);
+        // Send Do Not Disturb presence
+        Broker.$connection.sendPresence(show);
 
-      // Show confirm alert
-      BaseAlert.info("Availability changed", alertText);
+        // Show confirm alert?
+        if (alertText !== undefined) {
+          BaseAlert.info("Availability changed", alertText);
+        }
+      }
     },
 
     // --> EVENT LISTENERS <--
