@@ -18,7 +18,14 @@ base-popup(
   ]`
   popup-class="c-base-modal__popup"
 )
-  .c-base-modal__content
+  div(
+    :class=`[
+      "c-base-modal__content",
+      {
+        "c-base-modal__content--loading": confirmLoading
+      }
+    ]`
+  )
     slot
 
   base-popup-actions(
@@ -26,6 +33,7 @@ base-popup(
     @cancel="onClose"
     :confirm-label="confirmLabel"
     :cancel-label="closeLabel"
+    :confirm-loading="confirmLoading"
     :destructive="destructive"
     class="c-base-modal__actions"
   )
@@ -50,6 +58,11 @@ export default {
       default: "Cancel"
     },
 
+    confirmLoading: {
+      type: Boolean,
+      default: false
+    },
+
     size: {
       type: String,
       default: "medium",
@@ -71,7 +84,9 @@ export default {
     // --> EVENT LISTENERS <--
 
     onConfirm(): void {
-      this.$emit("confirm");
+      if (this.confirmLoading !== true) {
+        this.$emit("confirm");
+      }
     },
 
     onClose(): void {
@@ -109,6 +124,14 @@ $popup-width-full-breakpoint: (
   #{$c}__content {
     font-size: 14.5px;
     line-height: 18px;
+
+    &--loading {
+      cursor: wait;
+
+      > * {
+        pointer-events: none;
+      }
+    }
 
     > p {
       margin-block: 10px;
