@@ -20,15 +20,21 @@ base-modal(
     | Set a status for others to see:
 
   .m-update-status__fields
-    form-select(
-      v-model="status.icon"
-      :options="iconOptions"
-      :search="false"
-      name="icon"
-      placeholder="🙂"
-      size="large"
+    base-action(
+      @click="onIconClick"
+      :active="isIconPopoverVisible"
       class="m-update-status__icon"
+      icon="face.smiling"
+      size="18px"
     )
+      base-popover(
+        v-if="isIconPopoverVisible"
+        v-click-away="onIconPopoverClickAway"
+        class="m-update-status__icon-popover"
+      )
+        tool-emoji-picker(
+          @pick="onIconPick"
+        )
 
     form-field(
       v-model="status.text"
@@ -37,6 +43,7 @@ base-modal(
       name="status"
       size="large"
       align="left"
+      ref="text"
       class="m-update-status__text"
       autofocus
     )
@@ -49,7 +56,7 @@ base-modal(
 <script lang="ts">
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
-import { Option as FormSelectOption } from "@/components/form/FormSelect.vue";
+import FormField from "@/components/form/FormField.vue";
 
 export default {
   name: "UpdateStatus",
@@ -58,33 +65,40 @@ export default {
 
   data() {
     return {
-      // --> DATA <--
-
-      iconOptions: [
-        // TODO: replace w/ emoji picker
-
-        {
-          value: "🥞",
-          label: "🥞"
-        },
-
-        {
-          value: "🍽️",
-          label: "🍽️"
-        }
-      ] as Array<FormSelectOption>,
-
       // --> STATE <--
 
       status: {
         icon: "",
         text: ""
-      }
+      },
+
+      isIconPopoverVisible: false
     };
   },
 
   methods: {
     // --> EVENT LISTENERS <--
+
+    onIconClick(): void {
+      // Toggle popover
+      this.isIconPopoverVisible = !this.isIconPopoverVisible;
+    },
+
+    onIconPopoverClickAway(): void {
+      // Close popover
+      this.isIconPopoverVisible = false;
+    },
+
+    onIconPick(glyph: string): void {
+      // Assign selected icon
+      this.status.icon = glyph;
+
+      // Close emoji popover
+      this.isIconPopoverVisible = false;
+
+      // Focus on input
+      (this.$refs.text as typeof FormField).focusField();
+    },
 
     onConfirm(): void {
       if (!this.status.icon) {
@@ -110,8 +124,17 @@ $c: ".m-update-status";
     align-items: center;
 
     #{$c}__icon {
-      margin-inline-end: 5px;
+      margin-inline-end: 8px;
       flex: 0 0 auto;
+
+      #{$c}__icon-popover {
+        position: absolute;
+        inset-inline-start: 0;
+        inset-block-start: calc(
+          100% + #{$size-base-popover-list-inset-block-edge-offset} + 3px
+        );
+        z-index: 1;
+      }
     }
 
     #{$c}__text {
