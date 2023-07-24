@@ -33,6 +33,8 @@ export const NS_MESSAGE_CORRECT = "urn:xmpp:message-correct:0";
 export const NS_MESSAGE_RETRACT = "urn:xmpp:message-retract:0";
 
 export const NS_CHAT_STATES = "http://jabber.org/protocol/chatstates";
+export const NS_ACTIVITY = "http://jabber.org/protocol/activity";
+export const NS_ACTIVITY_NOTIFY = "http://jabber.org/protocol/activity+notify";
 export const NS_RSM = "http://jabber.org/protocol/rsm";
 export const NS_CAPS = "http://jabber.org/protocol/caps";
 export const NS_DISCO_INFO = "http://jabber.org/protocol/disco#info";
