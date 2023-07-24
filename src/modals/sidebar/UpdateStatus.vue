@@ -23,9 +23,11 @@ base-modal(
     base-action(
       @click="onIconClick"
       :active="isIconPopoverVisible"
+      :emoji="status.icon"
       class="m-update-status__icon"
       icon="face.smiling"
-      size="18px"
+      size="20px"
+      dropdown
     )
       base-popover(
         v-if="isIconPopoverVisible"
@@ -47,6 +49,24 @@ base-modal(
       class="m-update-status__text"
       autofocus
     )
+
+  .m-update-status__example(
+    v-if="example.icon && example.text"
+  )
+    | For instance, you could update your status with
+
+    base-space
+
+    a.m-update-status__example-status(
+      @click="onExampleStatusClick(example.icon, example.text)"
+    )
+      span.m-update-status__example-icon
+        | {{ example.icon }}
+
+      span.m-update-status__example-text.u-medium
+        | {{ example.text }}
+
+    | .
 </template>
 
 <!-- **********************************************************************
@@ -57,6 +77,24 @@ base-modal(
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import FormField from "@/components/form/FormField.vue";
+
+// CONSTANTS
+const EXAMPLE_STATUSES = [
+  ["🥞", "Eating breakfast"],
+  ["🌮", "Eating lunch"],
+  ["🍽️", "Eating dinner"],
+  ["🧑‍💻", "Focusing on code"],
+  ["🏝️", "Vacationning"],
+  ["🎉", "It's my birthday!"],
+  ["🛏️", "Taking a nap"],
+  ["📆", "In a meeting"],
+  ["📞", "In a call"],
+  ["☕️", "Drinking coffee"],
+  ["🧉", "Drinking mate"],
+  ["⛔️", "Important chats only"],
+  ["🚴‍♂️", "Cycling"],
+  ["🏃‍♂️", "Running"]
+];
 
 export default {
   name: "UpdateStatus",
@@ -72,11 +110,32 @@ export default {
         text: ""
       },
 
+      example: {
+        icon: "",
+        text: ""
+      },
+
       isIconPopoverVisible: false
     };
   },
 
+  created() {
+    // Pick a random example status
+    this.pickRandomExampleStatus();
+  },
+
   methods: {
+    // --> HELPERS <--
+
+    pickRandomExampleStatus() {
+      const randomStatus =
+        EXAMPLE_STATUSES[Math.floor(Math.random() * EXAMPLE_STATUSES.length)];
+
+      // Assign random status
+      this.example.icon = randomStatus[0];
+      this.example.text = randomStatus[1];
+    },
+
     // --> EVENT LISTENERS <--
 
     onIconClick(): void {
@@ -98,6 +157,12 @@ export default {
 
       // Focus on input
       (this.$refs.text as typeof FormField).focusField();
+    },
+
+    onExampleStatusClick(icon: string, text: string): void {
+      // Assign selected example status
+      this.status.icon = icon;
+      this.status.text = text;
     },
 
     onConfirm(): void {
@@ -124,7 +189,7 @@ $c: ".m-update-status";
     align-items: center;
 
     #{$c}__icon {
-      margin-inline-end: 8px;
+      margin-inline-end: 10px;
       flex: 0 0 auto;
 
       #{$c}__icon-popover {
@@ -139,6 +204,27 @@ $c: ".m-update-status";
 
     #{$c}__text {
       flex: 1;
+    }
+  }
+
+  #{$c}__example {
+    color: $color-text-secondary;
+    font-size: 13px;
+    margin-block-start: 15px;
+
+    #{$c}__example-status {
+      color: $color-text-primary;
+      margin-inline-start: 4px;
+
+      &:hover {
+        #{$c}__example-text {
+          text-decoration: underline;
+        }
+      }
+
+      #{$c}__example-text {
+        margin-inline-start: 3px;
+      }
     }
   }
 }

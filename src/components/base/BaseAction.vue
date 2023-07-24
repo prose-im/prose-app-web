@@ -23,7 +23,17 @@ div(
   button.c-base-action__inner(
     @click="onInnerClick"
   )
+    span.c-base-action__emoji(
+      v-if="emoji"
+      v-text="emoji"
+      :style=`{
+        fontSize: size,
+        lineHeight: size
+      }`
+    )
+
     base-icon(
+      v-else
       :name="icon"
       :size="size"
       :style=`{
@@ -77,6 +87,11 @@ export default {
       validator(x: string) {
         return ["-90deg", "90deg"].includes(x);
       }
+    },
+
+    emoji: {
+      type: String,
+      default: null
     },
 
     dropdown: {
@@ -157,10 +172,15 @@ $c: ".c-base-action";
       outline-offset: 1px;
     }
 
+    #{$c}__emoji,
+    #{$c}__icon,
+    #{$c}__dropdown {
+      flex: 0 0 auto;
+    }
+
     #{$c}__icon,
     #{$c}__dropdown {
       fill: $color-base-grey-dark;
-      flex: 0 0 auto;
     }
 
     #{$c}__dropdown {
