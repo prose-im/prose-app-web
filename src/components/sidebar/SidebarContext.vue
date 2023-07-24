@@ -69,6 +69,12 @@
       class="c-sidebar-context__actions-popover"
     )
 
+  update-status(
+    v-if="modals.updateStatus.visible"
+    @update="onModalUpdateStatusUpdate"
+    @close="onModalUpdateStatusClose"
+  )
+
   sign-out(
     v-if="modals.signOut.visible"
     @proceed="onModalSignOutProceed"
@@ -104,6 +110,7 @@ import {
 } from "@/components/base/BasePopoverList.vue";
 
 // PROJECT: MODALS
+import UpdateStatus from "@/modals/sidebar/UpdateStatus.vue";
 import SignOut from "@/modals/sidebar/SignOut.vue";
 
 // PROJECT: POPUPS
@@ -120,7 +127,7 @@ import Store from "@/store";
 export default {
   name: "SidebarContext",
 
-  components: { SignOut, EditProfile, AccountSettings },
+  components: { UpdateStatus, SignOut, EditProfile, AccountSettings },
 
   props: {
     jid: {
@@ -142,6 +149,10 @@ export default {
       isActionsPopoverVisible: false,
 
       modals: {
+        updateStatus: {
+          visible: false
+        },
+
         signOut: {
           visible: false
         }
@@ -176,7 +187,7 @@ export default {
         {
           type: PopoverItemType.Button,
           label: "🚀 Update status",
-          disabled: true
+          click: this.onAvatarPopoverUpdateStatusClick
         },
 
         {
@@ -346,6 +357,14 @@ export default {
       this.isAvatarPopoverVisible = false;
     },
 
+    onAvatarPopoverUpdateStatusClick(): void {
+      // Hide avatar popover
+      this.isAvatarPopoverVisible = false;
+
+      // Show update status modal
+      this.modals.updateStatus.visible = true;
+    },
+
     onAvatarPopoverAvailabilityAvailableClick(): void {
       // Hide avatar popover
       this.isAvatarPopoverVisible = false;
@@ -419,6 +438,25 @@ export default {
 
     onPopupAccountSettingsClose(): void {
       this.popups.accountSettings.visible = false;
+    },
+
+    onModalUpdateStatusUpdate(icon: string, text?: string): void {
+      // TODO: update there
+      console.error("==> update status : " + icon + " | " + text);
+
+      // TODO: will publish as '<undefined/>'->'<other/>'->:text={icon} + \
+      //   '<text/>'->:text={text}(optional)
+
+      BaseAlert.success(
+        "Status updated",
+        "Other users will now your new status"
+      );
+
+      this.modals.updateStatus.visible = false;
+    },
+
+    onModalUpdateStatusClose(): void {
+      this.modals.updateStatus.visible = false;
     },
 
     async onModalSignOutProceed(): Promise<void> {
