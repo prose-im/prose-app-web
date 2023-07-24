@@ -35,6 +35,7 @@ import logger from "@/utilities/logger";
 
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
+import { MessageChatState } from "./stanzas/message";
 
 /**************************************************************************
  * TYPES
@@ -302,8 +303,18 @@ class BrokerClient implements ProseClientDelegate {
     console.log("Client disconnected");
   }
 
-  composingUsersChanged(conversation: BareJID) {
+  async composingUsersChanged(conversation: BareJID) {
     console.log("Composing users changed");
+    let composingUsers =
+      (await this.client?.loadComposingUsersInConversation(
+        conversation.toJID()
+      )) || [];
+    Store.$inbox.setStatesChatstate(
+      conversation,
+      composingUsers.find(jid => jid.equals(conversation))
+        ? MessageChatState.Composing
+        : MessageChatState.Active
+    );
   }
 
   contactChanged(jid: BareJID) {

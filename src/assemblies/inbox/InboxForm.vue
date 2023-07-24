@@ -154,7 +154,7 @@ export default {
       isActionFormattingPopoverVisible: false,
       isActionEmojisPopoverVisible: false,
 
-      chatStateLast: MessageChatState.Active,
+      isUserComposing: false,
       chatStateComposeTimeout: null as null | ReturnType<typeof setTimeout>
     };
   },
@@ -199,19 +199,18 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    propagateChatState(chatState: MessageChatState): void {
+    setUserIsComposing(isComposing: boolean): void {
       // Propagate new chat state?
-      if (chatState !== this.chatStateLast) {
-        this.chatStateLast = chatState;
-
-        Broker.$chat.sendChatState(this.jid, chatState);
+      if (isComposing !== this.isUserComposing) {
+        this.isUserComposing = isComposing;
+        Broker.$chat.setUserIsComposing(this.jid, isComposing);
       }
     },
 
     scheduleChatStateComposeTimeout(): void {
       this.chatStateComposeTimeout = setTimeout(() => {
         // Propagate paused chat state
-        this.propagateChatState(MessageChatState.Paused);
+        this.setUserIsComposing(false);
       }, CHATSTATE_COMPOSE_INACTIVE_DELAY);
     },
 
@@ -267,14 +266,13 @@ export default {
       this.unscheduleChatStateComposeTimeout();
 
       // Acquire current chat state
-      const newChatState =
-        value.length > 0 ? MessageChatState.Composing : MessageChatState.Active;
+      const isComposing = value.length > 0;
 
       // Propagate new chat state (as needed)
-      this.propagateChatState(newChatState);
+      this.setUserIsComposing(isComposing);
 
       // Re-schedule compose timeout?
-      if (newChatState === MessageChatState.Composing) {
+      if (isComposing) {
         this.scheduleChatStateComposeTimeout();
       }
     },
@@ -286,8 +284,8 @@ export default {
         // Clear compose chat state timeout (as needed)
         this.unscheduleChatStateComposeTimeout();
 
-        // Force-mark last chat state as 'active' (implicit)
-        this.chatStateLast = MessageChatState.Active;
+        // Mark user as not composing anymore.
+        this.isUserComposing = false;
 
         // Send message
         Broker.$chat.sendMessage(this.jid, message);
