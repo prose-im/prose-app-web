@@ -22,6 +22,7 @@ import $avatar from "@/store/tables/avatar";
 import $profile from "@/store/tables/profile";
 import $inbox from "@/store/tables/inbox";
 import $roster from "@/store/tables/roster";
+import $activity from "@/store/tables/activity";
 import $presence from "@/store/tables/presence";
 
 /**************************************************************************
@@ -52,6 +53,7 @@ class Store {
   $profile!: ReturnType<typeof $profile>;
   $inbox!: ReturnType<typeof $inbox>;
   $roster!: ReturnType<typeof $roster>;
+  $activity!: ReturnType<typeof $activity>;
   $presence!: ReturnType<typeof $presence>;
 
   constructor() {
@@ -108,6 +110,7 @@ class Store {
     this.$profile = $profile(this.__store);
     this.$inbox = $inbox(this.__store);
     this.$roster = $roster(this.__store);
+    this.$activity = $activity(this.__store);
     this.$presence = $presence(this.__store);
   }
 }

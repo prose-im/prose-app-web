@@ -51,6 +51,16 @@ base-modal(
       autofocus
     )
 
+    base-button(
+      v-if="hasClearButton"
+      @click="onClear"
+      size="medium"
+      tint="red"
+      class="m-update-status__clear"
+      bolder
+    )
+      | Clear
+
   .m-update-status__example(
     v-if="example.icon && example.text"
   )
@@ -75,9 +85,16 @@ base-modal(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@xmpp/jid";
+
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import FormField from "@/components/form/FormField.vue";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 // CONSTANTS
 const EXAMPLE_STATUSES = [
@@ -101,13 +118,18 @@ export default {
   name: "UpdateStatus",
 
   props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    },
+
     loading: {
       type: Boolean,
       default: false
     }
   },
 
-  emits: ["close", "update"],
+  emits: ["close", "update", "clear"],
 
   data() {
     return {
@@ -123,8 +145,15 @@ export default {
         text: ""
       },
 
+      hasClearButton: false,
       isIconPopoverVisible: false
     };
+  },
+
+  computed: {
+    statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
+      return Store.$activity.getActivity(this.jid);
+    }
   },
 
   created() {
@@ -132,16 +161,32 @@ export default {
     this.pickRandomExampleStatus();
   },
 
+  mounted() {
+    // Assign last known status activity
+    this.assignLastKnownActivity();
+  },
+
   methods: {
     // --> HELPERS <--
 
-    pickRandomExampleStatus() {
+    pickRandomExampleStatus(): void {
       const randomStatus =
         EXAMPLE_STATUSES[Math.floor(Math.random() * EXAMPLE_STATUSES.length)];
 
       // Assign random status
       this.example.icon = randomStatus[0];
       this.example.text = randomStatus[1];
+    },
+
+    assignLastKnownActivity(): void {
+      if (this.statusActivity.status) {
+        // Assign previous status
+        this.status.icon = this.statusActivity.status.icon;
+        this.status.text = this.statusActivity.status.text || "";
+
+        // Enable 'clear status' button
+        this.hasClearButton = true;
+      }
     },
 
     // --> EVENT LISTENERS <--
@@ -171,6 +216,9 @@ export default {
       // Assign selected example status
       this.status.icon = icon;
       this.status.text = text;
+
+      // Roll the dice once again!
+      this.pickRandomExampleStatus();
     },
 
     onConfirm(): void {
@@ -179,6 +227,10 @@ export default {
       } else {
         this.$emit("update", this.status.icon, this.status.text || undefined);
       }
+    },
+
+    onClear(): void {
+      this.$emit("clear");
     }
   }
 };
@@ -212,6 +264,10 @@ $c: ".m-update-status";
 
     #{$c}__text {
       flex: 1;
+    }
+
+    #{$c}__clear {
+      margin-inline-start: 6px;
     }
   }
 

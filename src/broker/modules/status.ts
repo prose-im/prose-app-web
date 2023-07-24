@@ -66,7 +66,7 @@ class BrokerModuleStatus extends BrokerModule {
     logger.info("Sent presence to server");
   }
 
-  async sendActivity(icon: string, text?: string): Promise<void> {
+  async sendActivity(icon?: string, text?: string): Promise<void> {
     // XEP-0108: User Activity
     // https://xmpp.org/extensions/xep-0108.html
 
@@ -81,25 +81,33 @@ class BrokerModuleStatus extends BrokerModule {
         .c("item")
         .c("activity", { xmlns: NS_ACTIVITY });
 
-      // Add icon
-      // Notice: as we are using emoji-based icons in order to specify the \
-      //   kind of activity, we do not map to a proper RPID there, but rather \
-      //   use the 'undefined' unspecified activity general category, and the \
-      //   'other' specific instance, with a text value for the icon. Given \
-      //   that the specification is far too limiting in terms of available \
-      //   activity categories, we prefer to rely on more modern, emoji-based, \
-      //   activities.
-      {
-        stanzaActivity.c("undefined").c("other", {}, icon).up();
-      }
+      // Add icon? (if any)
+      // Notice: sending with no icon indicates that we are willing to retract \
+      //   any previously published activity.
+      if (icon) {
+        // Notice: as we are using emoji-based icons in order to specify the \
+        //   kind of activity, we do not map to a proper RPID there, but \
+        //   rather use the 'undefined' unspecified activity general category, \
+        //   and the 'other' specific instance, with a text value for the \
+        //   icon. Given that the specification is far too limiting in terms \
+        //   of available activity categories, we prefer to rely on more \
+        //   modern, emoji-based, activities.
+        {
+          stanzaActivity.c("undefined").c("other", {}, icon).up();
+        }
 
-      // Add text? (if any)
-      if (text) {
-        stanzaActivity.c("text", {}, text);
+        // Add text? (if any)
+        if (text) {
+          stanzaActivity.c("text", {}, text);
+        }
       }
     }
 
-    logger.info(`Will send activity with icon: ${icon}`);
+    if (icon) {
+      logger.info(`Will send activity with icon: ${icon}`);
+    } else {
+      logger.info(`Will retract any existing activity`);
+    }
 
     // Publish user activity to PEP node
     await this._client.request(stanza);

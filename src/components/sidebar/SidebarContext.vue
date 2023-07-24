@@ -45,12 +45,24 @@
     p.c-sidebar-context__team.u-bold
       | (no team)
 
-    p.c-sidebar-context__status
+    p.c-sidebar-context__status(
+      v-if="statusActivity.status"
+    )
       span.c-sidebar-context__status-icon
-        | 👨‍💻
+        | {{ statusActivity.status.icon }}
 
-      span.c-sidebar-context__status-text
-        | (no status)
+      span.c-sidebar-context__status-text(
+        v-if="statusActivity.status.text"
+      )
+        | {{ statusActivity.status.text }}
+
+    p.c-sidebar-context__status(
+      v-else
+    )
+      a.c-sidebar-context__status-define(
+        @click="onCurrentStatusDefineClick"
+      )
+        | Set your status
 
   base-action(
     @click="onActionsClick"
@@ -71,8 +83,10 @@
 
   update-status(
     v-if="modals.updateStatus.visible"
+    :jid="jid"
     :loading="modals.updateStatus.loading"
     @update="onModalUpdateStatusUpdate"
+    @clear="onModalUpdateStatusClear"
     @close="onModalUpdateStatusClose"
   )
 
@@ -188,7 +202,11 @@ export default {
 
         {
           type: PopoverItemType.Button,
-          label: "🚀 Update status",
+
+          label: `${
+            this.statusActivity.status ? this.statusActivity.status.icon : "🙂"
+          } Update status`,
+
           click: this.onAvatarPopoverUpdateStatusClick
         },
 
@@ -321,6 +339,10 @@ export default {
       return Store.$presence.getLocalShow();
     },
 
+    statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
+      return Store.$activity.getActivity(this.jid);
+    },
+
     session(): typeof Store.$session {
       return Store.$session;
     }
@@ -424,6 +446,11 @@ export default {
       this.modals.signOut.visible = true;
     },
 
+    onCurrentStatusDefineClick(): void {
+      // Show update status modal
+      this.modals.updateStatus.visible = true;
+    },
+
     onActionsClick(): void {
       // Toggle popover
       this.isActionsPopoverVisible = !this.isActionsPopoverVisible;
@@ -442,7 +469,10 @@ export default {
       this.popups.accountSettings.visible = false;
     },
 
-    async onModalUpdateStatusUpdate(icon: string, text?: string): void {
+    async onModalUpdateStatusUpdate(
+      icon: string,
+      text?: string
+    ): Promise<void> {
       if (this.modals.updateStatus.loading !== true) {
         this.modals.updateStatus.loading = true;
 
@@ -462,6 +492,33 @@ export default {
           BaseAlert.error(
             "Status not updated",
             "Status failed to save. Try again?"
+          );
+        } finally {
+          this.modals.updateStatus.loading = false;
+        }
+      }
+    },
+
+    async onModalUpdateStatusClear(): Promise<void> {
+      if (this.modals.updateStatus.loading !== true) {
+        this.modals.updateStatus.loading = true;
+
+        try {
+          // Send blank activity status
+          await Broker.$status.sendActivity();
+
+          BaseAlert.info(
+            "Status cleared",
+            "Users will not see your status anymore"
+          );
+
+          this.modals.updateStatus.visible = false;
+        } catch (error) {
+          this.$log.error("Failed clearing status", error);
+
+          BaseAlert.error(
+            "Status not cleared",
+            "Status failed to reset. Try again?"
           );
         } finally {
           this.modals.updateStatus.loading = false;
@@ -502,6 +559,9 @@ export default {
 
 <style lang="scss">
 $c: ".c-sidebar-context";
+
+// VARIABLES
+$current-status-define-padding-sides: 5px;
 
 .c-sidebar-context {
   display: flex;
@@ -545,6 +605,11 @@ $c: ".c-sidebar-context";
     #{$c}__status {
       margin-block-start: 4px;
 
+      #{$c}__status-text,
+      #{$c}__status-define {
+        font-size: 13px;
+      }
+
       #{$c}__status-icon {
         font-size: 15px;
         margin-inline-end: 5px;
@@ -552,7 +617,6 @@ $c: ".c-sidebar-context";
 
       #{$c}__status-text {
         color: $color-text-secondary;
-        font-size: 13px;
 
         &:before {
           content: "“";
@@ -560,6 +624,22 @@ $c: ".c-sidebar-context";
 
         &:after {
           content: "”";
+        }
+      }
+
+      #{$c}__status-define {
+        color: $color-base-purple-normal;
+        margin-inline: (-1 * $current-status-define-padding-sides);
+        padding: 2px $current-status-define-padding-sides;
+        border-radius: 3px;
+        transition: background-color 100ms linear;
+
+        &:hover {
+          background-color: darken($color-base-grey-light, 3%);
+        }
+
+        &:active {
+          background-color: darken($color-base-grey-light, 5%);
         }
       }
     }

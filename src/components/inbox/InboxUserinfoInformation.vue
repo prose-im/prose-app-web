@@ -182,11 +182,11 @@ export default {
           }
         }
 
-        if (this.profile.information.activity) {
+        if (this.statusActivity.status) {
           entries.push({
             id: "activity",
-            title: this.profile.information.activity.text,
-            emoji: this.profile.information.activity.icon
+            title: this.statusActivity.status.text || "Current status",
+            emoji: this.statusActivity.status.icon
           });
         }
       }
@@ -200,6 +200,10 @@ export default {
 
     highestPresence(): ReturnType<typeof Store.$presence.getHighest> {
       return Store.$presence.getHighest(this.jid);
+    },
+
+    statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
+      return Store.$activity.getActivity(this.jid);
     }
   },
 

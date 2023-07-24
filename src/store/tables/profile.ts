@@ -41,7 +41,6 @@ type ProfileEntryInformation = {
   contact: ProfileEntryInformationContact;
   lastActive: ProfileEntryInformationLastActive | null;
   location: ProfileEntryInformationLocation;
-  activity: ProfileEntryInformationActivity | null;
 };
 
 type ProfileEntryInformationContact = {
@@ -62,11 +61,6 @@ type ProfileEntryInformationLocation = {
 type ProfileEntryInformationLocationTimezone = {
   name: string;
   offset: number;
-};
-
-type ProfileEntryInformationActivity = {
-  icon: string | null;
-  text: string;
 };
 
 type ProfileEntrySecurity = {
@@ -165,7 +159,6 @@ const $profile = defineStore("profile", {
           this.loadProfileVCard(bareJID),
           this.loadProfileLast(bareJID, fullJIDHighest),
           this.loadProfileTime(bareJID, fullJIDHighest),
-          this.loadProfileActivity(bareJID, fullJIDHighest),
           this.loadProfileVerification(bareJID),
           this.loadProfileEncryption(bareJID)
         ]);
@@ -208,19 +201,6 @@ const $profile = defineStore("profile", {
 
       // Set local profile time
       return this.setProfileTime(bareJID, entityTimeResponse);
-    },
-
-    async loadProfileActivity(
-      bareJID: JID,
-      fullJIDHighest: JID
-    ): Promise<ProfileEntry> {
-      // Load user activity
-      // TODO: only if remote client supports it (w/ CAPS)
-      // TODO: load activity on fullJIDHighest (??)
-
-      // Set local profile activity
-      // TODO: from server data
-      return this.setProfileActivity(bareJID, "(no status)", "👨‍💻");
     },
 
     async loadProfileVerification(bareJID: JID): Promise<ProfileEntry> {
@@ -343,29 +323,6 @@ const $profile = defineStore("profile", {
       return profile;
     },
 
-    setProfileActivity(
-      jid: JID,
-      text: string,
-      icon: string | null
-    ): ProfileEntry {
-      const profile = this.assert(jid),
-        information = this.ensureProfileInformation(profile);
-
-      // Update data in store
-      this.$patch(() => {
-        information.activity = information.activity || {
-          icon: null,
-          text: ""
-        };
-
-        // TODO: set icon from activity text
-        information.activity.icon = icon;
-        information.activity.text = text;
-      });
-
-      return profile;
-    },
-
     setProfileVerification(
       jid: JID,
       verification?: ProfileEntrySecurityVerification
@@ -429,8 +386,7 @@ const $profile = defineStore("profile", {
             timezone: null
           },
 
-          lastActive: null,
-          activity: null
+          lastActive: null
         };
       }
 
