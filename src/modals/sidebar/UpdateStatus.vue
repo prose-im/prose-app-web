@@ -12,6 +12,7 @@
 base-modal(
   @close="$emit('close')"
   @confirm="onConfirm"
+  :confirm-loading="loading"
   confirm-label="Edit Status"
   class="m-update-status"
   size="large"
@@ -98,6 +99,13 @@ const EXAMPLE_STATUSES = [
 
 export default {
   name: "UpdateStatus",
+
+  props: {
+    loading: {
+      type: Boolean,
+      default: false
+    }
+  },
 
   emits: ["close", "update"],
 

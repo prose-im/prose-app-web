@@ -8,63 +8,19 @@
  * IMPORTS
  * ************************************************************************* */
 
-// NPM
-import { $pres } from "strophe.js";
-
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
-import BrokerBuilderCaps from "@/broker/builders/caps";
 import { IQType } from "@/broker/stanzas/iq";
-import { PresenceShow } from "@/broker/stanzas/presence";
-import { NS_PING, NS_CAPS } from "@/broker/stanzas/xmlns";
+import { NS_PING } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
-
-/**************************************************************************
- * CONSTANTS
- * ************************************************************************* */
-
-const PRIORITY_DEFAULT = 1;
 
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
 
 class BrokerModuleConnection extends BrokerModule {
-  sendPresence(show?: PresenceShow): void {
-    // XMPP: Instant Messaging and Presence
-    // https://xmpp.org/rfcs/rfc6121.html#presence
-    const stanza = $pres();
-
-    // Append presence priority
-    stanza.c("priority", {}, `${PRIORITY_DEFAULT}`);
-
-    // Append presence show? (if any)
-    if (show !== undefined) {
-      stanza.c("show", {}, show);
-    }
-
-    // Append entity capabilities
-    {
-      const capsAttributes = BrokerBuilderCaps.attributes();
-
-      stanza.c("c", {
-        xmlns: NS_CAPS,
-        hash: capsAttributes.hash,
-        node: capsAttributes.node,
-        ver: capsAttributes.verification
-      });
-
-      // Done, go back to root
-      stanza.up();
-    }
-
-    this._client.emit(stanza);
-
-    logger.info("Sent presence to server");
-  }
-
   sendPing(): void {
     // XEP-0199: XMPP Ping
     // https://xmpp.org/extensions/xep-0199.html

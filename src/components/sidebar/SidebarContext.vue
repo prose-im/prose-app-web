@@ -71,6 +71,7 @@
 
   update-status(
     v-if="modals.updateStatus.visible"
+    :loading="modals.updateStatus.loading"
     @update="onModalUpdateStatusUpdate"
     @close="onModalUpdateStatusClose"
   )
@@ -150,7 +151,8 @@ export default {
 
       modals: {
         updateStatus: {
-          visible: false
+          visible: false,
+          loading: false
         },
 
         signOut: {
@@ -336,7 +338,7 @@ export default {
         Store.$presence.setLocalShow(show);
 
         // Send Do Not Disturb presence
-        Broker.$connection.sendPresence(show);
+        Broker.$status.sendPresence(show);
 
         // Show confirm alert?
         if (alertText !== undefined) {
@@ -440,19 +442,31 @@ export default {
       this.popups.accountSettings.visible = false;
     },
 
-    onModalUpdateStatusUpdate(icon: string, text?: string): void {
-      // TODO: update there
-      console.error("==> update status : " + icon + " | " + text);
+    async onModalUpdateStatusUpdate(icon: string, text?: string): void {
+      if (this.modals.updateStatus.loading !== true) {
+        this.modals.updateStatus.loading = true;
 
-      // TODO: will publish as '<undefined/>'->'<other/>'->:text={icon} + \
-      //   '<text/>'->:text={text}(optional)
+        try {
+          // Send updated activity status
+          await Broker.$status.sendActivity(icon, text);
 
-      BaseAlert.success(
-        "Status updated",
-        "Other users will now your new status"
-      );
+          BaseAlert.success(
+            "Status updated",
+            "Other users will now your new status"
+          );
 
-      this.modals.updateStatus.visible = false;
+          this.modals.updateStatus.visible = false;
+        } catch (error) {
+          this.$log.error("Failed updating status", error);
+
+          BaseAlert.error(
+            "Status not updated",
+            "Status failed to save. Try again?"
+          );
+        } finally {
+          this.modals.updateStatus.loading = false;
+        }
+      }
     },
 
     onModalUpdateStatusClose(): void {

@@ -360,7 +360,7 @@ class BrokerClient {
 
   private __setupConnection(): void {
     // Send initial presence
-    Broker.$connection.sendPresence(Store.$presence.getLocalShow());
+    Broker.$status.sendPresence(Store.$presence.getLocalShow());
   }
 
   private __clearConnection(disconnect = true): void {

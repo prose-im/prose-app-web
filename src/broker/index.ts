@@ -16,6 +16,7 @@ import BrokerModuleConnection from "@/broker/modules/connection";
 import BrokerModuleMAM from "@/broker/modules/mam";
 import BrokerModuleProfile from "@/broker/modules/profile";
 import BrokerModuleRoster from "@/broker/modules/roster";
+import BrokerModuleStatus from "@/broker/modules/status";
 
 /**************************************************************************
  * CLASS
@@ -29,6 +30,7 @@ class Broker {
   readonly $mam: BrokerModuleMAM;
   readonly $profile: BrokerModuleProfile;
   readonly $roster: BrokerModuleRoster;
+  readonly $status: BrokerModuleStatus;
 
   constructor() {
     // Initialize client
@@ -40,6 +42,7 @@ class Broker {
     this.$mam = new BrokerModuleMAM(this.client);
     this.$profile = new BrokerModuleProfile(this.client);
     this.$roster = new BrokerModuleRoster(this.client);
+    this.$status = new BrokerModuleStatus(this.client);
   }
 }
 
