@@ -102,13 +102,13 @@ const $presence = defineStore("presence", {
         if (highest.type === null && highest.resource) {
           const fullJID = jid.full;
           // Build JID in the form of: '[local]@[domain]/[resource]'
-          return toJID(
-            new FullJID(`${fullJID.node}@${fullJID.domain}/${highest.resource}`)
-          );
+          return new FullJID(
+            `${fullJID.node}@${fullJID.domain}/${highest.resource}`
+          ).toJID();
         }
 
         // Return bare JID, as none is online (identity function)
-        return toJID(jid.bare());
+        return jid;
       };
     }
   },

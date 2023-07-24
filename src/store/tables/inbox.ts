@@ -155,7 +155,7 @@ const $inbox = defineStore("inbox", {
 
           // Emit IPC inserted event
           EventBus.emit("message:inserted", {
-            jid: toJID(jid),
+            jid: jid.toJID(),
             message
           } as EventMessageGeneric);
         }
@@ -204,7 +204,7 @@ const $inbox = defineStore("inbox", {
 
         // Emit IPC updated event
         EventBus.emit("message:updated", {
-          jid: toJID(jid),
+          jid: jid.toJID(),
           message: existingMessage,
           original: originalMessage
         } as EventMessageGeneric);
@@ -242,7 +242,7 @@ const $inbox = defineStore("inbox", {
 
         // Emit IPC retracted event
         EventBus.emit("message:retracted", {
-          jid: toJID(jid),
+          jid: jid.toJID(),
           message: existingMessage
         } as EventMessageGeneric);
 

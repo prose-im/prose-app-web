@@ -8,12 +8,4 @@ function isFullJID(jid: JID): jid is { full: FullJID; free(): void } {
   return jid.full !== undefined;
 }
 
-function toJID(jid: FullJID | BareJID): JID {
-  if (jid instanceof FullJID) {
-    return JID.withFull(jid);
-  } else {
-    return JID.withBare(jid);
-  }
-}
-
-export { isBareJID, isFullJID, toJID };
+export { isBareJID, isFullJID };
