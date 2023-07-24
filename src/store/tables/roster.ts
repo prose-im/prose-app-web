@@ -12,6 +12,9 @@
 import { defineStore } from "pinia";
 import { BareJID, JID } from "@prose-im/prose-core-client-wasm";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 import { RosterItemGroup } from "@/broker/modules/roster";
@@ -123,6 +126,11 @@ const $roster = defineStore("roster", {
         const roster = await Broker.$roster.loadRoster();
 
         roster.items.forEach(rosterItem => {
+          Store.$activity.setActivity(
+            rosterItem.jid.toJID(),
+            rosterItem.activity
+          );
+
           // Append roster entry
           // Important: JID must be stored as string so that persistence works.
           const entry = {

@@ -65,13 +65,6 @@ class BrokerEventMessage extends BrokerEventIngestor {
             break;
           }
 
-          case NS_ACTIVITY: {
-            // Pass to activity handler
-            this.__handlePubsubEventActivity(fromJID, items);
-
-            break;
-          }
-
           default: {
             logger.debug(
               `Ignoring unhandled pubsub event from: '${fromJID}' with ` +
@@ -100,7 +93,10 @@ class BrokerEventMessage extends BrokerEventIngestor {
     }
   }
 
-  private __handlePubsubEventAvatarMetadata(fromJID: BareJID, items: Cash): void {
+  private __handlePubsubEventAvatarMetadata(
+    fromJID: BareJID,
+    items: Cash
+  ): void {
     // XEP-0084: User Avatar
     // https://xmpp.org/extensions/xep-0084.html
 
@@ -150,42 +146,6 @@ class BrokerEventMessage extends BrokerEventIngestor {
               `'${fromJID}' with ID: '${itemID}'`
           );
         }
-      }
-    }
-  }
-
-  private __handlePubsubEventActivity(fromJID: JID, items: Cash): void {
-    // XEP-0108: User Activity
-    // https://xmpp.org/extensions/xep-0108.html
-
-    const itemElement = items.find("item").first(),
-      activityElement = itemElement.find("activity").first();
-
-    if (activityElement.length > 0) {
-      // Acquire item identifier
-      const itemID = itemElement.attr("id") || null;
-
-      // Acquire icon and optional text
-      // Notice: Prose only supports unknown activities mapping to an emoji \
-      //   icon, with an optional text. Full RPID support is not offered \
-      //   within the UI (and not intended to be in the future).
-      const icon = activityElement.find("undefined other").text() || null,
-        text = activityElement.find("text").text() || null;
-
-      if (itemID !== null && icon !== null) {
-        // Update activity in store
-        Store.$activity.setActivity(fromJID, itemID, {
-          icon,
-          text: text || undefined
-        });
-      } else {
-        // Clear activity in store
-        Store.$activity.setActivity(fromJID, null);
-
-        logger.warn(
-          `Dropping empty or icon-less user activity from: '${fromJID}', ` +
-            `maybe due to RPID not being supported`
-        );
       }
     }
   }

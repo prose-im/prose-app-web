@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { JID, UserActivity } from "@prose-im/prose-core-client-wasm";
 import { defineStore } from "pinia";
 
 /**************************************************************************
@@ -74,37 +74,25 @@ const $activity = defineStore("activity", {
       return this.entries[bareJIDString];
     },
 
-    setActivity(
-      jid: JID,
-      id: string | null,
-      status?: {
-        icon: string;
-        text?: string;
-      }
-    ): ActivityEntry {
+    setActivity(jid: JID, status?: UserActivity): ActivityEntry {
       // Assert activity
       const activity = this.assert(jid);
 
-      if (id !== null && status !== undefined) {
+      if (status) {
         // Only mutate if activity unique identifier changed
-        if (id !== activity.id) {
-          this.$patch(() => {
-            activity.id = id;
-            activity.status = { icon: status.icon };
+        this.$patch(() => {
+          activity.status = { icon: status.icon };
 
-            if (status.text) {
-              activity.status.text = status.text;
-            }
-          });
-        }
+          if (status.text) {
+            activity.status.text = status.text;
+          }
+        });
       } else {
         // Only clear if a previous activity is set
-        if (activity.id) {
-          this.$patch(() => {
-            delete activity.id;
-            delete activity.status;
-          });
-        }
+        this.$patch(() => {
+          delete activity.id;
+          delete activity.status;
+        });
       }
 
       return activity;

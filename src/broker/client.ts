@@ -519,9 +519,7 @@ class BrokerClient implements ProseClientDelegate {
   }
 
   private __setupContext(): void {
-    this.jid = this.__connection
-      ? new FullJID(this.__connection.jid)
-      : undefined;
+    this.jid = this.__credentials?.jid;
 
     Store.$session.setConnected(true);
     Store.$session.setConnecting(false);
