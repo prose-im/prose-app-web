@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-core-client-wasm";
 import { defineStore } from "pinia";
 
 /**************************************************************************
