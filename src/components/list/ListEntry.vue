@@ -22,7 +22,7 @@ div(
       name="icon"
     )
 
-  .c-list-entry__label
+  .c-list-entry__label.u-ellipsis
     slot
 
   .c-list-entry__details(
@@ -78,8 +78,7 @@ $c: ".c-list-entry";
 
   #{$c}__label {
     font-size: 14px;
-    display: flex;
-    align-items: center;
+    line-height: 18px;
     flex: 1;
   }
 

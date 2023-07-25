@@ -42,7 +42,7 @@
       )
 
   .c-sidebar-context__current
-    p.c-sidebar-context__team.u-bold
+    p.c-sidebar-context__team.u-bold.u-ellipsis
       | (no team)
 
     p.c-sidebar-context__status(
@@ -51,8 +51,9 @@
       span.c-sidebar-context__status-icon
         | {{ statusActivity.status.icon }}
 
-      span.c-sidebar-context__status-text(
+      span.c-sidebar-context__status-text.u-ellipsis(
         v-if="statusActivity.status.text"
+        :title="statusActivity.status.text"
       )
         | {{ statusActivity.status.text }}
 
@@ -561,14 +562,14 @@ export default {
 $c: ".c-sidebar-context";
 
 // VARIABLES
-$current-status-define-padding-sides: 5px;
+$current-status-define-padding-inline: 5px;
+$current-status-define-padding-block: 2px;
 
 .c-sidebar-context {
   display: flex;
   align-items: center;
 
   #{$c}__avatar {
-    margin-inline-end: 13px;
     flex: 0 0 auto;
     position: relative;
 
@@ -595,7 +596,12 @@ $current-status-define-padding-sides: 5px;
   }
 
   #{$c}__current {
+    margin-inline-start: (13px - $current-status-define-padding-inline);
+    margin-inline-end: (6px - $current-status-define-padding-inline);
+    padding-inline: $current-status-define-padding-inline;
+    padding-block: $current-status-define-padding-block;
     flex: 1;
+    overflow: hidden;
 
     #{$c}__team {
       color: $color-text-primary;
@@ -603,7 +609,10 @@ $current-status-define-padding-sides: 5px;
     }
 
     #{$c}__status {
-      margin-block-start: 4px;
+      line-height: 16px;
+      margin-block-start: 5px;
+      display: flex;
+      align-items: center;
 
       #{$c}__status-text,
       #{$c}__status-define {
@@ -612,11 +621,12 @@ $current-status-define-padding-sides: 5px;
 
       #{$c}__status-icon {
         font-size: 15px;
-        margin-inline-end: 5px;
+        flex: 0 0 auto;
       }
 
       #{$c}__status-text {
         color: $color-text-secondary;
+        margin-inline-start: 5px;
 
         &:before {
           content: "“";
@@ -629,8 +639,10 @@ $current-status-define-padding-sides: 5px;
 
       #{$c}__status-define {
         color: $color-base-purple-normal;
-        margin-inline: (-1 * $current-status-define-padding-sides);
-        padding: 2px $current-status-define-padding-sides;
+        margin-inline: (-1 * $current-status-define-padding-inline);
+        margin-block: (-1 * $current-status-define-padding-block);
+        padding: $current-status-define-padding-block
+          $current-status-define-padding-inline;
         border-radius: 3px;
         transition: background-color 100ms linear;
 
@@ -646,7 +658,6 @@ $current-status-define-padding-sides: 5px;
   }
 
   #{$c}__actions {
-    margin-inline-start: 6px;
     margin-inline-end: (-1 * $size-base-action-padding-sides);
     flex: 0 0 auto;
 
