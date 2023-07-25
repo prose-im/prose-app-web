@@ -166,6 +166,8 @@ $c: ".c-inbox-userinfo-security";
   #{$c}__details {
     fill: rgba($color-base-grey-dark, 0.65);
     cursor: pointer;
+    pointer-events: none;
+    opacity: 0.4;
 
     &:hover {
       fill: rgba($color-base-grey-dark, 0.8);
