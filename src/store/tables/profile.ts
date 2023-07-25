@@ -22,7 +22,6 @@ import {
 
 // PROJECT: FILTERS
 import dateFilters from "@/filters/date";
-import { bare } from "@/utilities/jid";
 
 // PROJECT: STORES
 import Store from "@/store";
