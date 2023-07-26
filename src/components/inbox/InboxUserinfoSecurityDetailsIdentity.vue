@@ -9,56 +9,29 @@
      ********************************************************************** -->
 
 <template lang="pug">
-div(
-  :class=`[
-    "c-inbox-userinfo-security-details-identity",
-    {
-      "c-inbox-userinfo-security-details-identity--verified": isVerified,
-      "c-inbox-userinfo-security-details-identity--unknown": !isVerified
-    }
-  ]`
-)
-  .c-inbox-userinfo-security-details-identity__quickie
-    span.c-inbox-userinfo-security-details-identity__quickie-badge
-      base-icon(
-        :name="isVerified ? 'checkmark.seal.fill' : 'xmark.seal.fill'"
-        size="15px"
-        class="c-inbox-userinfo-security-details-identity__quickie-icon"
-      )
+.c-inbox-userinfo-security-details-identity
+  div(
+    :class=`[
+      "c-inbox-userinfo-security-details-identity__quickie",
+      {
+        [spacingBlockClass]: spacingBlockClass,
+        [spacingInlineClass]: spacingInlineClass
+      }
+    ]`
+  )
+    base-badge-details(
+      :details="quickieDetails"
+    )
 
-    .c-inbox-userinfo-security-details-identity__quickie-text
-      p.c-inbox-userinfo-security-details-identity__quickie-title.u-medium
-        template(
-          v-if="isVerified"
-        )
-          | Looks like this is the real
-
-        template(
-          v-else
-        )
-          | Beware! It might not be the real
-
-        base-space
-
-        | {{ userName }}
-
-      p.c-inbox-userinfo-security-details-identity__quickie-label.u-regular
-        | Prose checked on the identity server for matches.
-
-        base-space
-
-        span.u-medium(
-          v-if="isVerified"
-        )
-          | It could verify this user.
-
-        span.u-medium(
-          v-else
-        )
-          | It could not verify this user.
-
-  .c-inbox-userinfo-security-details-identity__disclaimer.u-regular(
+  div(
     v-if="identityUrl"
+    :class=`[
+      "c-inbox-userinfo-security-details-identity__disclaimer",
+      "u-regular",
+      {
+        [spacingInlineClass]: spacingInlineClass
+      }
+    ]`
   )
     | User data is verified on your identity server, which is
 
@@ -83,8 +56,15 @@ import { JID } from "@xmpp/jid";
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
 
+// PROJECT: COMPONENTS
+import { Detail as BadgeDetail } from "@/components/base/BaseBadgeDetails.vue";
+
 // PROJECT: STORES
 import Store from "@/store";
+
+// CONSTANTS
+const QUICKIE_DESCRIPTION_PREFIX =
+  "Prose checked on the identity server for matches.";
 
 export default {
   name: "InboxUserinfoSecurityDetailsIdentity",
@@ -93,10 +73,42 @@ export default {
     jid: {
       type: Object as PropType<JID>,
       required: true
+    },
+
+    spacingBlockClass: {
+      type: String,
+      default: null
+    },
+
+    spacingInlineClass: {
+      type: String,
+      default: null
     }
   },
 
   computed: {
+    quickieDetails(): Array<BadgeDetail> {
+      let detail;
+
+      if (this.isVerified === true) {
+        detail = {
+          icon: "checkmark.seal.fill",
+          color: "green",
+          title: `Looks like this is the real ${this.userName}`,
+          label: `${QUICKIE_DESCRIPTION_PREFIX} It could verify this user.`
+        };
+      } else {
+        detail = {
+          icon: "xmark.seal.fill",
+          color: "grey",
+          title: `Beware! It might not be the real ${this.userName}`,
+          label: `${QUICKIE_DESCRIPTION_PREFIX} It could not verify this user.`
+        };
+      }
+
+      return [detail];
+    },
+
     isVerified(): boolean {
       return this.profile.security && this.profile.security.verification
         ? true
@@ -139,49 +151,8 @@ $c: ".c-inbox-userinfo-security-details-identity";
 $quickie-icon-size: 26px;
 
 .c-inbox-userinfo-security-details-identity {
-  #{$c}__quickie,
-  #{$c}__disclaimer {
-    padding-inline: 14px;
-  }
-
   #{$c}__quickie {
     background-color: $color-background-secondary;
-    padding-block: 10px;
-    display: flex;
-    align-items: flex-start;
-
-    #{$c}__quickie-badge {
-      width: $quickie-icon-size;
-      height: $quickie-icon-size;
-      margin-inline-end: 10px;
-      margin-block-start: 2px;
-      border-radius: $quickie-icon-size;
-      flex: 0 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      #{$c}__quickie-icon {
-        fill: $color-white;
-      }
-    }
-
-    #{$c}__quickie-text {
-      flex: 1;
-
-      #{$c}__quickie-title {
-        color: $color-text-primary;
-        font-size: 12.5px;
-        line-height: 14px;
-      }
-
-      #{$c}__quickie-label {
-        color: $color-text-secondary;
-        font-size: 12px;
-        line-height: 13px;
-        margin-block-start: 4px;
-      }
-    }
   }
 
   #{$c}__disclaimer {
@@ -194,24 +165,6 @@ $quickie-icon-size: 26px;
     a {
       &:hover {
         text-decoration: underline;
-      }
-    }
-  }
-
-  // --> BOOLEANS <--
-
-  &--verified {
-    #{$c}__quickie {
-      #{$c}__quickie-badge {
-        background-color: $color-base-green-normal;
-      }
-    }
-  }
-
-  &--unknown {
-    #{$c}__quickie {
-      #{$c}__quickie-badge {
-        background-color: $color-base-grey-normal;
       }
     }
   }

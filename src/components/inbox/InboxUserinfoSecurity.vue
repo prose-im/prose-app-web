@@ -26,7 +26,16 @@ list-disclosure(
     template(
       v-slot:default
     )
-      | {{ entry.title }}
+      span(
+        :class=`[
+          "c-inbox-userinfo-security__label",
+          {
+            "u-medium": entry.critical,
+            "c-inbox-userinfo-security__label--critical": entry.critical
+          }
+        ]`
+      )
+        | {{ entry.title }}
 
     template(
       v-slot:icon
@@ -60,6 +69,8 @@ list-disclosure(
           component(
             :is="detailsPopover.component"
             :jid="jid"
+            spacing-block-class="c-inbox-userinfo-security__details-popover-spacing-block"
+            spacing-inline-class="c-inbox-userinfo-security__details-popover-spacing-inline"
           )
 </template>
 
@@ -131,7 +142,28 @@ export default {
           });
         }
 
-        if (this.profile.security.encryption) {
+        if (
+          !this.profile.security.encryption ||
+          !this.profile.security.encryption.connectionProtocol
+        ) {
+          // No encryption whatsoever (insecure!)
+          entries.push({
+            id: "encryption",
+            kind: "insecure",
+            title: "Insecure channel",
+            icon: "lock.slash.fill",
+            critical: true
+          });
+        } else if (!this.profile.security.encryption.messageEndToEndMethod) {
+          // Okay-level of encryption (C2S)
+          entries.push({
+            id: "encryption",
+            kind: "safe",
+            title: "Partially encrypted",
+            icon: "lock.fill"
+          });
+        } else {
+          // Best level of encryption (C2S + E2E)
           entries.push({
             id: "encryption",
             kind: "secure",
@@ -139,13 +171,6 @@ export default {
               `Encrypted ` +
               `(${this.profile.security.encryption.messageEndToEndMethod})`,
             icon: "lock.fill"
-          });
-        } else {
-          entries.push({
-            id: "encryption",
-            kind: "insecure",
-            title: "Not encrypted",
-            icon: "lock.slash.fill"
           });
         }
       }
@@ -221,8 +246,18 @@ $c: ".c-inbox-userinfo-security";
       fill: $color-base-blue-dark;
     }
 
+    &--encryption-safe {
+      fill: $color-base-grey-dark;
+    }
+
     &--encryption-insecure {
       fill: $color-base-red-normal;
+    }
+  }
+
+  #{$c}__label {
+    &--critical {
+      color: $color-base-red-normal;
     }
   }
 
@@ -264,6 +299,14 @@ $c: ".c-inbox-userinfo-security";
       z-index: 1;
       overflow: hidden;
       cursor: default;
+
+      #{$c}__details-popover-spacing-block {
+        padding-block: 10px;
+      }
+
+      #{$c}__details-popover-spacing-inline {
+        padding-inline: 14px;
+      }
     }
   }
 }
