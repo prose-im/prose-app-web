@@ -171,14 +171,14 @@ $quickie-icon-size: 26px;
 
       #{$c}__quickie-title {
         color: $color-text-primary;
-        font-size: 12px;
+        font-size: 12.5px;
         line-height: 14px;
       }
 
       #{$c}__quickie-label {
         color: $color-text-secondary;
-        font-size: 11px;
-        line-height: 12px;
+        font-size: 12px;
+        line-height: 13px;
         margin-block-start: 4px;
       }
     }
@@ -186,7 +186,7 @@ $quickie-icon-size: 26px;
 
   #{$c}__disclaimer {
     color: $color-text-primary;
-    font-size: 11px;
+    font-size: 11.5px;
     line-height: 13px;
     border-block-start: 1px solid $color-border-tertiary;
     padding-block: 8px;
