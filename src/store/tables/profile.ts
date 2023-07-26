@@ -76,8 +76,8 @@ type ProfileEntrySecurityVerification = {
 };
 
 type ProfileEntrySecurityEncryption = {
-  connectionProtocol: string;
-  messageEndToEndMethod: string;
+  connectionProtocol?: string;
+  messageEndToEndMethod?: string;
 };
 
 /**************************************************************************
@@ -224,7 +224,10 @@ const $profile = defineStore("profile", {
       //   messageEndToEndMethod: "OMEMO"
       // });
 
-      return this.setProfileEncryption(bareJID, undefined);
+      // TODO: those are fixtures
+      return this.setProfileEncryption(bareJID, {
+        connectionProtocol: "TLS1.3"
+      });
     },
 
     setProfileVCard(jid: JID, vCardResponse: LoadVCardResponse): ProfileEntry {
@@ -414,5 +417,9 @@ const $profile = defineStore("profile", {
  * EXPORTS
  * ************************************************************************* */
 
-export type { ProfileEntry, ProfileEntryInformationContact };
+export type {
+  ProfileEntry,
+  ProfileEntryInformationContact,
+  ProfileEntrySecurityEncryption
+};
 export default $profile;
