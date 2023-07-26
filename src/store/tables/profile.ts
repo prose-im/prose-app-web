@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { JID, BareJID } from "@prose-im/prose-core-client-wasm";
 import { defineStore } from "pinia";
 
 // PROJECT: BROKER
@@ -173,7 +173,7 @@ const $profile = defineStore("profile", {
       return Promise.resolve(profile);
     },
 
-    async loadProfileVCard(bareJID: JID): Promise<ProfileEntry> {
+    async loadProfileVCard(bareJID: BareJID): Promise<ProfileEntry> {
       // Load vCard data for JID
       const profileResponse = await Broker.$profile.loadVCard(bareJID);
 
@@ -236,8 +236,11 @@ const $profile = defineStore("profile", {
       });
     },
 
-    setProfileVCard(jid: JID, vCardResponse: LoadVCardResponse): ProfileEntry {
-      const profile = this.assert(jid),
+    setProfileVCard(
+      jid: BareJID,
+      vCardResponse: LoadVCardResponse
+    ): ProfileEntry {
+      const profile = this.assert(jid.toJID()),
         information = this.ensureProfileInformation(profile);
 
       // Update data in store

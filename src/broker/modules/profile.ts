@@ -13,20 +13,19 @@ import { Cash } from "cash-dom";
 import { $iq, Strophe } from "strophe.js";
 import xmppID from "@xmpp/id";
 import xmppTime from "@xmpp/time";
-import { BareJID, FullJID } from "@prose-im/prose-core-client-wasm";
-import sha1 from "crypto-js/sha1";
+import {
+  BareJID,
+  FullJID,
+  JID,
+  UserProfile,
+  Job,
+  Address
+} from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
 import { IQType } from "@/broker/stanzas/iq";
-import {
-  NS_VCARD4,
-  NS_LAST,
-  NS_TIME,
-  NS_AVATAR_DATA,
-  NS_AVATAR_METADATA,
-  NS_PUBSUB
-} from "@/broker/stanzas/xmlns";
+import { NS_VCARD4, NS_LAST, NS_TIME } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -80,8 +79,7 @@ interface LoadEntityTimeResponse {
 }
 
 interface LoadAvatarDataResponse {
-  encoding: string;
-  data: string;
+  dataURL: string;
 }
 
 interface SaveAvatarRequest {
@@ -124,13 +122,7 @@ class BrokerModuleProfile extends BrokerModule {
 
     logger.info(`Will load vCard profile for: '${jid}'`);
 
-    const response = await this._client.request(
-      $iq({ to: jid, type: IQType.Get, id: xmppID() }).c("vcard", {
-        xmlns: NS_VCARD4
-      })
-    );
-
-    return this.__respondLoadVCard(response);
+    return (await this._client.client?.loadUserProfile(jid)) || {};
   }
 
   async loadLastActivity(fullJID: FullJID): Promise<LoadLastActivityResponse> {
@@ -163,23 +155,18 @@ class BrokerModuleProfile extends BrokerModule {
     return this.__respondLoadEntityTime(response);
   }
 
-  async loadAvatarData(
-    jid: BareJID,
-    id: string
-  ): Promise<LoadAvatarDataResponse | void> {
+  async loadAvatarData(jid: BareJID): Promise<LoadAvatarDataResponse | void> {
     // XEP-0084: User Avatar
     // https://xmpp.org/extensions/xep-0084.html
 
     logger.info(`Will load avatar for: '${jid}'`);
 
-    const response = await this._client.request(
-      $iq({ to: jid, type: IQType.Get, id: xmppID() })
-        .c("pubsub", { xmlns: NS_PUBSUB })
-        .c("items", { node: NS_AVATAR_DATA })
-        .c("item", { id })
-    );
+    let dataURL = await this._client.client?.loadAvatarDataURL(jid);
+    if (dataURL) {
+      return { dataURL };
+    }
 
-    return this.__respondLoadAvatarData(response);
+    return undefined;
   }
 
   async saveVCard(jid: JID, vCard: SaveVCardRequest): Promise<void> {
@@ -188,12 +175,24 @@ class BrokerModuleProfile extends BrokerModule {
 
     logger.info(`Will save vCard profile for: '${jid}'`, vCard);
 
-    const stanza = $iq({ to: jid, type: IQType.Set, id: xmppID() });
+    const job = new Job();
+    job.title = vCard.job?.title;
+    job.role = vCard.job?.role;
+    job.organization = vCard.job?.organization;
 
-    // Make vCard element and append to stanza
-    this.__makeStanzaVCard(stanza, vCard);
+    const address = new Address();
+    address.city = vCard.address?.city;
+    address.country = vCard.address?.country;
 
-    await this._client.request(stanza);
+    const profile = new UserProfile();
+    profile.fullName = vCard.fullName;
+    profile.firstName = vCard.firstName;
+    profile.lastName = vCard.lastName;
+    profile.url = vCard.url;
+    profile.email = vCard.email;
+    profile.phone = vCard.phone;
+
+    await this._client.client?.saveUserProfile(profile);
   }
 
   async saveAvatar(jid: JID, avatar: SaveAvatarRequest): Promise<void> {
@@ -201,88 +200,10 @@ class BrokerModuleProfile extends BrokerModule {
     // https://xmpp.org/extensions/xep-0084.html
 
     logger.info(`Will save avatar for: '${jid}'`);
-
-    // #1. Compute stable SHA-1 of avatar data (from binary)
-    const id = sha1(avatar.data.binary);
-
-    // #2. Publish avatar data to PEP node
-    await this._client.request(
-      $iq({ to: jid, type: IQType.Set, id: xmppID() })
-        .c("pubsub", { xmlns: NS_PUBSUB })
-        .c("publish", { node: NS_AVATAR_DATA })
-        .c("item", { id })
-        .c("data", { xmlns: NS_AVATAR_DATA }, avatar.data.base64)
+    await this._client.client?.saveAvatar(
+      avatar.data.base64,
+      avatar.metadata.type
     );
-
-    // #3. Publish avatar metadata to PEP node
-    await this._client.request(
-      $iq({ to: jid, type: IQType.Set, id: xmppID() })
-        .c("pubsub", { xmlns: NS_PUBSUB })
-        .c("publish", { node: NS_AVATAR_METADATA })
-        .c("item", { id })
-        .c("metadata", { xmlns: NS_AVATAR_METADATA })
-        .c("info", {
-          id: id,
-          type: avatar.metadata.type,
-          bytes: avatar.metadata.bytes,
-          height: avatar.metadata.height,
-          width: avatar.metadata.width
-        })
-    );
-  }
-
-  private __respondLoadVCard(response: Cash): LoadVCardResponse {
-    const responseData: LoadVCardResponse = {};
-
-    const vCardElement = response.find("vcard").first();
-
-    // Append name data
-    responseData.fullName = vCardElement.find("fn text").text() || undefined;
-    responseData.firstName = vCardElement.find("n given").text() || undefined;
-    responseData.lastName = vCardElement.find("n surname").text() || undefined;
-
-    // Append contact data
-    responseData.url = vCardElement.find("url uri").text() || undefined;
-    responseData.email = vCardElement.find("email text").text() || undefined;
-
-    // Acquire phone URI
-    const phoneURI = vCardElement.find("tel uri").text();
-
-    if (phoneURI) {
-      const phoneURIMatch = phoneURI.match(PHONE_URI_REGEX);
-
-      if (phoneURIMatch && phoneURIMatch[1]) {
-        responseData.phone = phoneURIMatch[1];
-      }
-    }
-
-    // Append job data
-    const jobTitle = vCardElement.find("title text").text(),
-      jobRole = vCardElement.find("role text").text(),
-      jobOrganization = vCardElement.find("org text").text();
-
-    if (jobTitle || jobRole || jobOrganization) {
-      responseData.job = {
-        title: jobTitle || undefined,
-        role: jobRole || undefined,
-        organization: jobOrganization || undefined
-      };
-    }
-
-    // Append address data
-    const vCardAddressElement = vCardElement.find("adr").first();
-
-    const addressLocality = vCardAddressElement.find("locality").text(),
-      addressCountry = vCardAddressElement.find("country").text();
-
-    if (addressLocality || addressCountry) {
-      responseData.address = {
-        city: addressLocality || undefined,
-        country: addressCountry || undefined
-      };
-    }
-
-    return responseData;
   }
 
   private __respondLoadLastActivity(response: Cash): LoadLastActivityResponse {
@@ -305,21 +226,6 @@ class BrokerModuleProfile extends BrokerModule {
       tzo: timeElement.find("tzo").text() || xmppTime.offset(),
       utc: timeElement.find("utc").text() || xmppTime.datetime()
     };
-  }
-
-  private __respondLoadAvatarData(
-    response: Cash
-  ): LoadAvatarDataResponse | void {
-    const dataElement = response.find("pubsub items item data").first();
-
-    if (dataElement.length > 0) {
-      return {
-        encoding: "base64",
-        data: dataElement.text()
-      };
-    }
-
-    return undefined;
   }
 
   private __makeStanzaVCard(

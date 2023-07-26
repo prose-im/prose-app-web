@@ -321,6 +321,10 @@ class BrokerClient implements ProseClientDelegate {
     Store.$roster.emitContactChanged(jid);
   }
 
+  avatarChanged(jid: BareJID): void {
+    Store.$avatar.load(jid);
+  }
+
   async messagesAppended(conversation: BareJID, messageIDs: string[]) {
     let messages =
       (await this.client?.loadMessagesWithIDs(conversation, messageIDs)) || [];
