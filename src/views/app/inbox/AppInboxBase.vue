@@ -162,7 +162,7 @@ $content-padding-sides: 14px;
 
     #{$c}__userinfo {
       border-inline-start: 1px solid $color-border-secondary;
-      width: 240px;
+      width: $size-inbox-userinfo-width;
       overflow-x: hidden;
       overflow-y: auto;
       flex: 0 0 auto;

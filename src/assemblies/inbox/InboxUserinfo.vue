@@ -169,9 +169,6 @@ export default {
 <style lang="scss">
 $c: ".a-inbox-userinfo";
 
-// VARIABLES
-$userinfo-item-padding-sides: 15px;
-
 .a-inbox-userinfo {
   padding: 20px 0;
   overflow-x: hidden;
@@ -189,7 +186,7 @@ $userinfo-item-padding-sides: 15px;
 
     #{$c}__block-header,
     #{$c}__block-item {
-      padding-inline: $userinfo-item-padding-sides;
+      padding-inline: $size-inbox-userinfo-item-padding-sides;
     }
   }
 }

@@ -36,7 +36,7 @@ list-disclosure(
         :name="entry.icon"
         :class=`[
           "c-inbox-userinfo-security__icon",
-          "c-inbox-userinfo-security__icon--" + entry.id
+          "c-inbox-userinfo-security__icon--" + entry.id + "-" + entry.kind
         ]`
         size="16px"
       )
@@ -44,11 +44,23 @@ list-disclosure(
     template(
       v-slot:details
     )
-      base-icon(
-        name="info.circle"
-        size="13px"
-        class="c-inbox-userinfo-security__details"
-      )
+      a.c-inbox-userinfo-security__details
+        base-icon(
+          @click="onDetailsIconClick(entry.id)"
+          name="info.circle"
+          size="13px"
+          class="c-inbox-userinfo-security__details-icon"
+        )
+
+        base-popover(
+          v-if="detailsPopover.id === entry.id"
+          v-click-away="onDetailsPopoverClickAway"
+          class="c-inbox-userinfo-security__details-popover"
+        )
+          component(
+            :is="detailsPopover.component"
+            :jid="jid"
+          )
 </template>
 
 <!-- **********************************************************************
@@ -57,8 +69,12 @@ list-disclosure(
 
 <script lang="ts">
 // NPM
-import { PropType } from "vue";
+import { shallowRef, PropType } from "vue";
 import { JID } from "@xmpp/jid";
+
+// PROJECT: COMPONENTS
+import InboxUserinfoSecurityDetailsIdentity from "@/components/inbox/InboxUserinfoSecurityDetailsIdentity.vue";
+import InboxUserinfoSecurityDetailsEncryption from "@/components/inbox/InboxUserinfoSecurityDetailsEncryption.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -83,6 +99,17 @@ export default {
     }
   },
 
+  data() {
+    return {
+      // --> STATE <--
+
+      detailsPopover: {
+        id: "",
+        component: null
+      }
+    };
+  },
+
   computed: {
     entries() {
       const entries = [];
@@ -90,13 +117,15 @@ export default {
       if (this.profile.security) {
         if (this.profile.security.verification) {
           entries.push({
-            id: "identity-verified",
+            id: "identity",
+            kind: "verified",
             title: "Identity verified",
             icon: "checkmark.seal.fill"
           });
         } else {
           entries.push({
-            id: "identity-unknown",
+            id: "identity",
+            kind: "unknown",
             title: "Identity unknown",
             icon: "xmark.seal.fill"
           });
@@ -104,7 +133,8 @@ export default {
 
         if (this.profile.security.encryption) {
           entries.push({
-            id: "encryption-secure",
+            id: "encryption",
+            kind: "secure",
             title:
               `Encrypted ` +
               `(${this.profile.security.encryption.messageEndToEndMethod})`,
@@ -112,7 +142,8 @@ export default {
           });
         } else {
           entries.push({
-            id: "encryption-insecure",
+            id: "encryption",
+            kind: "insecure",
             title: "Not encrypted",
             icon: "lock.slash.fill"
           });
@@ -132,6 +163,38 @@ export default {
 
     onToggle(visible: boolean): void {
       Store.$layout.setInboxUserinfoSectionSecurity(visible);
+    },
+
+    onDetailsIconClick(id: string): void {
+      let component;
+
+      switch (id) {
+        case "identity": {
+          component = InboxUserinfoSecurityDetailsIdentity;
+
+          break;
+        }
+
+        case "encryption": {
+          component = InboxUserinfoSecurityDetailsEncryption;
+
+          break;
+        }
+
+        default: {
+          component = null;
+        }
+      }
+
+      if (component !== null) {
+        this.detailsPopover.id = id;
+        this.detailsPopover.component = shallowRef(component);
+      }
+    },
+
+    onDetailsPopoverClickAway(): void {
+      this.detailsPopover.id = "";
+      this.detailsPopover.component = null;
     }
   }
 };
@@ -164,17 +227,43 @@ $c: ".c-inbox-userinfo-security";
   }
 
   #{$c}__details {
-    fill: rgba($color-base-grey-dark, 0.65);
-    cursor: pointer;
-    pointer-events: none;
-    opacity: 0.4;
+    position: relative;
 
-    &:hover {
-      fill: rgba($color-base-grey-dark, 0.8);
+    #{$c}__details-icon {
+      fill: rgba($color-base-grey-dark, 0.65);
+      cursor: pointer;
+      display: block;
+
+      &:hover {
+        fill: rgba($color-base-grey-dark, 0.8);
+      }
+
+      &:active {
+        fill: $color-base-grey-dark;
+      }
     }
 
-    &:active {
-      fill: $color-base-grey-dark;
+    #{$c}__details-popover {
+      color: $color-text-primary;
+      width: (
+        $size-inbox-userinfo-width -
+          (
+            2 *
+              (
+                $size-inbox-userinfo-item-padding-sides -
+                  $size-base-popover-list-inset-block-edge-offset
+              )
+          )
+      );
+      padding: 0;
+      position: absolute;
+      inset-inline-end: (-1 * $size-base-popover-list-inset-block-edge-offset);
+      inset-block-end: calc(
+        100% + #{$size-base-popover-list-inset-block-edge-offset}
+      );
+      z-index: 1;
+      overflow: hidden;
+      cursor: default;
     }
   }
 }

@@ -1,5 +1,6 @@
 {
   "hosts": {
-    "websocket": "wss://chat.prose.org/websocket/"
+    "websocket": "wss://chat.prose.org/websocket/",
+    "identity": "https://id.prose.org"
   }
 }
