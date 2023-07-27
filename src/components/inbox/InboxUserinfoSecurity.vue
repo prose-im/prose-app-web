@@ -31,6 +31,7 @@ list-disclosure(
           "c-inbox-userinfo-security__label",
           {
             "u-medium": entry.critical,
+            "c-inbox-userinfo-security__label--important": entry.important,
             "c-inbox-userinfo-security__label--critical": entry.critical
           }
         ]`
@@ -146,6 +147,15 @@ export default {
           !this.profile.security.encryption ||
           !this.profile.security.encryption.connectionProtocol
         ) {
+          // No connection available (might be insecure?)
+          entries.push({
+            id: "encryption",
+            kind: "unknown",
+            title: "Unknown security",
+            icon: "exclamationmark.lock.fill",
+            important: true
+          });
+        } else if (!this.profile.security.encryption.secureProtocol) {
           // No encryption whatsoever (insecure!)
           entries.push({
             id: "encryption",
@@ -250,12 +260,20 @@ $c: ".c-inbox-userinfo-security";
       fill: $color-base-grey-dark;
     }
 
+    &--encryption-unknown {
+      fill: $color-base-orange-normal;
+    }
+
     &--encryption-insecure {
       fill: $color-base-red-normal;
     }
   }
 
   #{$c}__label {
+    &--important {
+      color: $color-base-orange-normal;
+    }
+
     &--critical {
       color: $color-base-red-normal;
     }

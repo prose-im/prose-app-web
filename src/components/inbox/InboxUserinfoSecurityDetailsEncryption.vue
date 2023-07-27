@@ -68,21 +68,29 @@ export default {
       const details = [];
 
       // Append client-to-server encryption status
-      if (encryption.connectionProtocol) {
+      if (!encryption.connectionProtocol) {
+        details.push({
+          icon: "key.fill",
+          color: "orange",
+          title: "Unknown server encryption status",
+          label:
+            "Security of sent messages cannot be guaranteed at the moment, as you are not connected to your server."
+        });
+      } else if (!encryption.secureProtocol) {
+        details.push({
+          icon: "key.fill",
+          color: "red",
+          title: `Connected to server with no encryption (via ${encryption.connectionProtocol})`,
+          label:
+            "This is very insecure! Anyone tapping the network can see everything you send and receive."
+        });
+      } else {
         details.push({
           icon: "key.fill",
           color: "green",
           title: `Connected to server over ${encryption.connectionProtocol}`,
           label:
             "Someone tapping the network will not be able to read what is sent. Perfect!"
-        });
-      } else {
-        details.push({
-          icon: "key.fill", // TODO
-          color: "red",
-          title: "Connected to server with no encryption",
-          label:
-            "This is very insecure! Anyone tapping the network can see everything you send and receive."
         });
       }
 
@@ -97,7 +105,7 @@ export default {
         });
       } else {
         details.push({
-          icon: "lock.fill", // TODO
+          icon: "lock.fill",
           color: "grey",
           title: "Messages are not end-to-end encrypted",
           label:
