@@ -50,9 +50,16 @@ interface PendingRequest {
   timeout: ReturnType<typeof setTimeout>;
 }
 
-// Notice: Strophe types do not define the 'connection' property
+// Notice: Strophe types do not define the 'connected' property
 interface ConnectionWithConnected extends Strophe.Connection {
   connected: boolean;
+}
+
+// Notice: Strophe types do not define the 'options' property
+interface ConnectionWithOptions extends Strophe.Connection {
+  options: {
+    protocol: string;
+  };
 }
 
 /**************************************************************************
@@ -382,6 +389,12 @@ class BrokerClient {
 
     Store.$session.setConnected(true);
     Store.$session.setConnecting(false);
+
+    Store.$session.setProtocol(
+      (
+        this.__connection as ConnectionWithOptions
+      )?.options.protocol.toUpperCase()
+    );
   }
 
   private __resumeContext(): void {
@@ -399,6 +412,7 @@ class BrokerClient {
     // Mark as disconnected (this is permanent)
     Store.$session.setConnected(false);
     Store.$session.setConnecting(false);
+    Store.$session.setProtocol("");
 
     // Unassign JID
     this.jid = undefined;
@@ -419,6 +433,9 @@ class BrokerClient {
     this.__connection = new Strophe.Connection(relayHost, {
       protocol: "wss"
     });
+
+    // Configure connection
+    this.__connection.maxRetries = 0;
 
     // Bind handlers
     this.__connection.rawInput = this.__onInput.bind(this);
