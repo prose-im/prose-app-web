@@ -23,6 +23,9 @@ import {
 // PROJECT: FILTERS
 import dateFilters from "@/filters/date";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
@@ -76,6 +79,7 @@ type ProfileEntrySecurityVerification = {
 };
 
 type ProfileEntrySecurityEncryption = {
+  secureProtocol?: boolean;
   connectionProtocol?: string;
   messageEndToEndMethod?: string;
 };
@@ -106,6 +110,8 @@ interface ProfileEntry {
 const LOCAL_STATES = {
   loaded: {} as { [jid: string]: boolean }
 };
+
+const SECURE_PROTOCOLS = ["HTTPS", "WSS"];
 
 /**************************************************************************
  * TABLE
@@ -224,9 +230,9 @@ const $profile = defineStore("profile", {
       //   messageEndToEndMethod: "OMEMO"
       // });
 
-      // TODO: those are fixtures
       return this.setProfileEncryption(bareJID, {
-        connectionProtocol: "TLS1.3"
+        secureProtocol: SECURE_PROTOCOLS.includes(Store.$session.protocol),
+        connectionProtocol: Store.$session.protocol || undefined
       });
     },
 
@@ -363,6 +369,7 @@ const $profile = defineStore("profile", {
 
         if (encryption !== undefined) {
           profile.security.encryption = {
+            secureProtocol: encryption.secureProtocol,
             connectionProtocol: encryption.connectionProtocol,
             messageEndToEndMethod: encryption.messageEndToEndMethod
           };
