@@ -29,7 +29,9 @@ const $session = defineStore("session", {
   state: () => {
     return {
       connected: false,
-      connecting: false
+      connecting: false,
+
+      protocol: ""
     };
   },
 
@@ -47,7 +49,15 @@ const $session = defineStore("session", {
       this.setGeneric("connecting", this.connecting, connecting);
     },
 
-    setGeneric(key: string, previousValue: boolean, nextValue: boolean): void {
+    setProtocol(protocol = ""): void {
+      this.setGeneric("protocol", this.protocol, protocol);
+    },
+
+    setGeneric<ValueType>(
+      key: string,
+      previousValue: ValueType,
+      nextValue: ValueType
+    ): void {
       // Check if will change
       const willChange = previousValue !== nextValue ? true : false;
 
