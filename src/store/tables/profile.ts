@@ -118,7 +118,7 @@ const SECURE_PROTOCOLS = ["HTTPS", "WSS"];
  * ************************************************************************* */
 
 const $profile = defineStore("profile", {
-  persist: true,
+  persist: false,
 
   state: (): Profile => {
     return {
