@@ -234,8 +234,9 @@ class BrokerClient implements ProseClientDelegate {
     }, afterDelay);
   }
 
-  logout(): void {
-    this.__connection?.disconnect("logout");
+  async logout(): Promise<void> {
+    await this.client?.disconnect();
+    await this.client?.deleteCachedData();
   }
 
   emit(builder: Strophe.Builder) {
