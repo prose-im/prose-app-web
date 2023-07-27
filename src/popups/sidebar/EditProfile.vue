@@ -65,7 +65,12 @@ base-popup(
 <script lang="ts">
 // NPM
 import { shallowRef } from "vue";
-import { JID } from "@prose-im/prose-core-client-wasm";
+import {
+  JID,
+  UserProfile,
+  Job,
+  Address
+} from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -85,7 +90,7 @@ import { ProfileEntry } from "@/store/tables/profile";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { SaveVCardRequest, SaveAvatarRequest } from "@/broker/modules/profile";
+import { SaveAvatarRequest } from "@/broker/modules/profile";
 
 // TYPES
 type FormValueString = { inner: string };
@@ -290,42 +295,28 @@ export default {
       }
     },
 
-    formsToVCardData(
+    formsToUserProfile(
       formIdentity: FormIdentity,
       formProfile: FormProfile
-    ): SaveVCardRequest {
-      const vCardData: SaveVCardRequest = {};
+    ): UserProfile {
+      const job = new Job();
+      job.title = formProfile.jobTitle.inner || undefined;
+      job.organization = formProfile.jobOrganization.inner || undefined;
 
-      // Assign data from identity form
-      if (formIdentity.nameFirst.inner && formIdentity.nameLast.inner) {
-        vCardData.fullName = [
-          formIdentity.nameFirst.inner,
-          formIdentity.nameLast.inner
-        ].join(" ");
-      }
+      const address = new Address();
+      address.city = formProfile.locationCity.inner || undefined;
+      address.country = formProfile.locationCountry.inner || undefined;
 
-      vCardData.firstName = formIdentity.nameFirst.inner || undefined;
-      vCardData.lastName = formIdentity.nameLast.inner || undefined;
+      const profile = new UserProfile();
+      profile.firstName = formIdentity.nameFirst.inner || undefined;
+      profile.lastName = formIdentity.nameLast.inner || undefined;
+      //profile.url = vCard.url;
+      profile.email = formIdentity.email.inner || undefined;
+      profile.phone = formIdentity.phone.inner || undefined;
+      profile.job = job;
+      profile.address = address;
 
-      vCardData.email = formIdentity.email.inner || undefined;
-      vCardData.phone = formIdentity.phone.inner || undefined;
-
-      // Assign data from profile form
-      if (formProfile.jobTitle.inner || formProfile.jobOrganization.inner) {
-        vCardData.job = {
-          title: formProfile.jobTitle.inner || undefined,
-          organization: formProfile.jobOrganization.inner || undefined
-        };
-      }
-
-      if (formProfile.locationCity.inner || formProfile.locationCountry.inner) {
-        vCardData.address = {
-          city: formProfile.locationCity.inner || undefined,
-          country: formProfile.locationCountry.inner || undefined
-        };
-      }
-
-      return vCardData;
+      return profile;
     },
 
     avatarUpdateToData(avatarUpdate: StateAvatarUpdate): SaveAvatarRequest {
@@ -357,7 +348,7 @@ export default {
         this.saving = true;
 
         // Generate vCard save data
-        const vCardData = this.formsToVCardData(
+        const vCardData = this.formsToUserProfile(
           this.formSections.identity.properties.form,
           this.formSections.profile.properties.form
         );

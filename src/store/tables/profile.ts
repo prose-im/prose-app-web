@@ -9,13 +9,12 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, BareJID } from "@prose-im/prose-core-client-wasm";
+import { JID, BareJID, UserProfile } from "@prose-im/prose-core-client-wasm";
 import { defineStore } from "pinia";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
 import {
-  LoadVCardResponse,
   LoadLastActivityResponse,
   LoadEntityTimeResponse
 } from "@/broker/modules/profile";
@@ -236,12 +235,21 @@ const $profile = defineStore("profile", {
       });
     },
 
-    setProfileVCard(
-      jid: BareJID,
-      vCardResponse: LoadVCardResponse
-    ): ProfileEntry {
+    setProfileVCard(jid: BareJID, vCardResponse?: UserProfile): ProfileEntry {
       const profile = this.assert(jid.toJID()),
         information = this.ensureProfileInformation(profile);
+
+      if (!vCardResponse) {
+        this.$patch(() => {
+          delete profile.name;
+          delete profile.employment;
+          information.contact.email = null;
+          information.contact.phone = null;
+          information.location.city = null;
+          information.location.country = null;
+        });
+        return profile;
+      }
 
       // Update data in store
       this.$patch(() => {
@@ -250,13 +258,6 @@ const $profile = defineStore("profile", {
           profile.name = {
             first: vCardResponse.firstName || "",
             last: vCardResponse.lastName || ""
-          };
-        } else if (vCardResponse.fullName) {
-          const fullNameSplit = vCardResponse.fullName.split(" ");
-
-          profile.name = {
-            first: fullNameSplit[0] || "",
-            last: fullNameSplit[1] || ""
           };
         } else {
           delete profile.name;

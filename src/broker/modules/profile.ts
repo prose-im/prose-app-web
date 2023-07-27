@@ -17,9 +17,7 @@ import {
   BareJID,
   FullJID,
   JID,
-  UserProfile,
-  Job,
-  Address
+  UserProfile
 } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
@@ -37,36 +35,8 @@ import logger from "@/utilities/logger";
 const SECOND_TO_MILLISECONDS = 1000; // 1 second
 
 /**************************************************************************
- * TYPES
- * ************************************************************************* */
-
-type SaveVCardRequest = LoadVCardResponse;
-
-/**************************************************************************
  * INTERFACES
  * ************************************************************************* */
-
-interface LoadVCardResponse {
-  fullName?: string;
-  firstName?: string;
-  lastName?: string;
-  url?: string;
-  email?: string;
-  phone?: string;
-  job?: LoadVCardResponseJob;
-  address?: LoadVCardResponseAddress;
-}
-
-interface LoadVCardResponseJob {
-  title?: string;
-  role?: string;
-  organization?: string;
-}
-
-interface LoadVCardResponseAddress {
-  city?: string;
-  country?: string;
-}
 
 interface LoadLastActivityResponse {
   timestamp: number;
@@ -104,13 +74,13 @@ interface SaveAvatarRequestMetadata {
  * ************************************************************************* */
 
 class BrokerModuleProfile extends BrokerModule {
-  async loadVCard(jid: BareJID): Promise<LoadVCardResponse> {
+  async loadVCard(jid: BareJID): Promise<UserProfile | undefined> {
     // XEP-0292: vCard4 Over XMPP
     // https://xmpp.org/extensions/xep-0292.html
 
     logger.info(`Will load vCard profile for: '${jid}'`);
 
-    return (await this._client.client?.loadUserProfile(jid)) || {};
+    return await this._client.client?.loadUserProfile(jid);
   }
 
   async loadLastActivity(fullJID: FullJID): Promise<LoadLastActivityResponse> {
@@ -157,30 +127,11 @@ class BrokerModuleProfile extends BrokerModule {
     return undefined;
   }
 
-  async saveVCard(jid: JID, vCard: SaveVCardRequest): Promise<void> {
+  async saveVCard(jid: JID, profile: UserProfile): Promise<void> {
     // XEP-0292: vCard4 Over XMPP
     // https://xmpp.org/extensions/xep-0292.html
 
-    logger.info(`Will save vCard profile for: '${jid}'`, vCard);
-
-    const job = new Job();
-    job.title = vCard.job?.title;
-    job.role = vCard.job?.role;
-    job.organization = vCard.job?.organization;
-
-    const address = new Address();
-    address.city = vCard.address?.city;
-    address.country = vCard.address?.country;
-
-    const profile = new UserProfile();
-    profile.firstName = vCard.firstName;
-    profile.lastName = vCard.lastName;
-    profile.url = vCard.url;
-    profile.email = vCard.email;
-    profile.phone = vCard.phone;
-    profile.job = job;
-    profile.address = address;
-
+    logger.info(`Will save vCard profile for: '${jid}'`, profile);
     await this._client.client?.saveUserProfile(profile);
   }
 
@@ -223,11 +174,9 @@ class BrokerModuleProfile extends BrokerModule {
  * ************************************************************************* */
 
 export type {
-  LoadVCardResponse,
   LoadLastActivityResponse,
   LoadEntityTimeResponse,
   LoadAvatarDataResponse,
-  SaveVCardRequest,
   SaveAvatarRequest
 };
 export default BrokerModuleProfile;
