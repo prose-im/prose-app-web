@@ -185,12 +185,13 @@ class BrokerModuleProfile extends BrokerModule {
     address.country = vCard.address?.country;
 
     const profile = new UserProfile();
-    profile.fullName = vCard.fullName;
     profile.firstName = vCard.firstName;
     profile.lastName = vCard.lastName;
     profile.url = vCard.url;
     profile.email = vCard.email;
     profile.phone = vCard.phone;
+    profile.job = job;
+    profile.address = address;
 
     await this._client.client?.saveUserProfile(profile);
   }
