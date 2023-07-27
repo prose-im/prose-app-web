@@ -12,7 +12,6 @@
 import BrokerClient from "@/broker/client";
 
 import BrokerModuleChat from "@/broker/modules/chat";
-import BrokerModuleConnection from "@/broker/modules/connection";
 import BrokerModuleMAM from "@/broker/modules/mam";
 import BrokerModuleProfile from "@/broker/modules/profile";
 import BrokerModuleRoster from "@/broker/modules/roster";
@@ -26,7 +25,6 @@ class Broker {
   readonly client: BrokerClient;
 
   readonly $chat: BrokerModuleChat;
-  readonly $connection: BrokerModuleConnection;
   readonly $mam: BrokerModuleMAM;
   readonly $profile: BrokerModuleProfile;
   readonly $roster: BrokerModuleRoster;
@@ -38,7 +36,6 @@ class Broker {
 
     // Bootstrap all modules (for client)
     this.$chat = new BrokerModuleChat(this.client);
-    this.$connection = new BrokerModuleConnection(this.client);
     this.$mam = new BrokerModuleMAM(this.client);
     this.$profile = new BrokerModuleProfile(this.client);
     this.$roster = new BrokerModuleRoster(this.client);

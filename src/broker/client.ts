@@ -405,7 +405,6 @@ class BrokerClient implements ProseClientDelegate {
         // Trigger connected hooks
         this.__bindReceivers();
         this.__raiseConnectLifecycle();
-        this.__setupConnection();
 
         break;
       }
@@ -502,11 +501,6 @@ class BrokerClient implements ProseClientDelegate {
 
       delete this.__connectLifecycle;
     }
-  }
-
-  private __setupConnection(): void {
-    // Send initial presence
-    Broker.$connection.sendInitialPresence();
   }
 
   private __clearConnection(disconnect = true): void {
