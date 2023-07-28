@@ -256,9 +256,7 @@ export default {
 
     async syncVCard(): Promise<void> {
       // Load profile vCard
-      const profile = await Store.$profile.loadProfileVCard(
-        this.selfJID.bare()
-      );
+      const profile = await Store.$profile.loadUserProfile(this.selfJID.bare());
 
       // Apply new profile data to form
       this.vCardDataToForms(profile);
@@ -361,7 +359,7 @@ export default {
 
         try {
           // Save vCard data
-          await Broker.$profile.saveVCard(this.selfJID, vCardData);
+          await Broker.$profile.saveUserProfile(this.selfJID, vCardData);
 
           // Save avatar data? (if non-empty)
           if (avatarData !== null) {

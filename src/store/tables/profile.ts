@@ -161,7 +161,8 @@ const $profile = defineStore("profile", {
 
         // Load all profile parts at once
         await Promise.all([
-          this.loadProfileVCard(bareJID),
+          this.loadUserProfile(bareJID),
+
           this.loadProfileLast(bareJID, fullJIDHighest),
           this.loadProfileTime(bareJID, fullJIDHighest),
           this.loadProfileVerification(bareJID),
@@ -172,12 +173,12 @@ const $profile = defineStore("profile", {
       return Promise.resolve(profile);
     },
 
-    async loadProfileVCard(bareJID: BareJID): Promise<ProfileEntry> {
+    async loadUserProfile(bareJID: BareJID): Promise<ProfileEntry> {
       // Load vCard data for JID
-      const profileResponse = await Broker.$profile.loadVCard(bareJID);
+      const profileResponse = await Broker.$profile.loadUserProfile(bareJID);
 
       // Set local profile vCard data
-      return this.setProfileVCard(bareJID, profileResponse);
+      return this.setUserProfile(bareJID, profileResponse);
     },
 
     async loadProfileLast(
@@ -235,11 +236,11 @@ const $profile = defineStore("profile", {
       });
     },
 
-    setProfileVCard(jid: BareJID, vCardResponse?: UserProfile): ProfileEntry {
+    setUserProfile(jid: BareJID, userProfile?: UserProfile): ProfileEntry {
       const profile = this.assert(jid.toJID()),
         information = this.ensureProfileInformation(profile);
 
-      if (!vCardResponse) {
+      if (!userProfile) {
         this.$patch(() => {
           delete profile.name;
           delete profile.employment;
@@ -254,10 +255,10 @@ const $profile = defineStore("profile", {
       // Update data in store
       this.$patch(() => {
         // #1. Store name
-        if (vCardResponse.firstName || vCardResponse.lastName) {
+        if (userProfile.firstName || userProfile.lastName) {
           profile.name = {
-            first: vCardResponse.firstName || "",
-            last: vCardResponse.lastName || ""
+            first: userProfile.firstName || "",
+            last: userProfile.lastName || ""
           };
         } else {
           delete profile.name;
@@ -265,32 +266,32 @@ const $profile = defineStore("profile", {
 
         // #2. Store employment
         if (
-          vCardResponse.job &&
-          (vCardResponse.job.title ||
-            vCardResponse.job.role ||
-            vCardResponse.job.organization)
+          userProfile.job &&
+          (userProfile.job.title ||
+            userProfile.job.role ||
+            userProfile.job.organization)
         ) {
           profile.employment = {};
 
-          if (vCardResponse.job.title) {
-            profile.employment.title = vCardResponse.job.title;
-          } else if (vCardResponse.job.role) {
-            profile.employment.title = vCardResponse.job.role;
+          if (userProfile.job.title) {
+            profile.employment.title = userProfile.job.title;
+          } else if (userProfile.job.role) {
+            profile.employment.title = userProfile.job.role;
           }
 
-          if (vCardResponse.job.organization) {
-            profile.employment.organization = vCardResponse.job.organization;
+          if (userProfile.job.organization) {
+            profile.employment.organization = userProfile.job.organization;
           }
         } else {
           delete profile.employment;
         }
 
         // #3. Store information
-        information.contact.email = vCardResponse.email || null;
-        information.contact.phone = vCardResponse.phone || null;
+        information.contact.email = userProfile.email || null;
+        information.contact.phone = userProfile.phone || null;
 
-        information.location.city = vCardResponse.address?.city || null;
-        information.location.country = vCardResponse.address?.country || null;
+        information.location.city = userProfile.address?.city || null;
+        information.location.country = userProfile.address?.country || null;
       });
 
       return profile;

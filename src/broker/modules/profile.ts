@@ -74,7 +74,7 @@ interface SaveAvatarRequestMetadata {
  * ************************************************************************* */
 
 class BrokerModuleProfile extends BrokerModule {
-  async loadVCard(jid: BareJID): Promise<UserProfile | undefined> {
+  async loadUserProfile(jid: BareJID): Promise<UserProfile | undefined> {
     // XEP-0292: vCard4 Over XMPP
     // https://xmpp.org/extensions/xep-0292.html
 
@@ -127,7 +127,7 @@ class BrokerModuleProfile extends BrokerModule {
     return undefined;
   }
 
-  async saveVCard(jid: JID, profile: UserProfile): Promise<void> {
+  async saveUserProfile(jid: JID, profile: UserProfile): Promise<void> {
     // XEP-0292: vCard4 Over XMPP
     // https://xmpp.org/extensions/xep-0292.html
 
