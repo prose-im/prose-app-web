@@ -9,44 +9,22 @@
  * ************************************************************************* */
 
 // NPM
-import { Cash } from "cash-dom";
-import { $iq } from "strophe.js";
-import xmppID from "@xmpp/id";
-import xmppTime from "@xmpp/time";
 import {
   BareJID,
-  FullJID,
   JID,
-  UserProfile
+  UserProfile,
+  UserMetadata
 } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
-import { IQType } from "@/broker/stanzas/iq";
-import { NS_LAST, NS_TIME } from "@/broker/stanzas/xmlns";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 
 /**************************************************************************
- * CONSTANTS
- * ************************************************************************* */
-
-const SECOND_TO_MILLISECONDS = 1000; // 1 second
-
-/**************************************************************************
  * INTERFACES
  * ************************************************************************* */
-
-interface LoadLastActivityResponse {
-  timestamp: number;
-  text?: string;
-}
-
-interface LoadEntityTimeResponse {
-  tzo: string;
-  utc: string;
-}
 
 interface LoadAvatarDataResponse {
   dataURL: string;
@@ -83,34 +61,8 @@ class BrokerModuleProfile extends BrokerModule {
     return await this._client.client?.loadUserProfile(jid);
   }
 
-  async loadLastActivity(fullJID: FullJID): Promise<LoadLastActivityResponse> {
-    // XEP-0012: Last Activity
-    // https://xmpp.org/extensions/xep-0012.html
-
-    logger.info(`Will load last activity for: '${fullJID}'`);
-
-    const response = await this._client.request(
-      $iq({ to: fullJID, type: IQType.Get, id: xmppID() }).c("query", {
-        xmlns: NS_LAST
-      })
-    );
-
-    return this.__respondLoadLastActivity(response);
-  }
-
-  async loadEntityTime(fullJID: FullJID): Promise<LoadEntityTimeResponse> {
-    // XEP-0202: Entity Time
-    // https://xmpp.org/extensions/xep-0202.html
-
-    logger.info(`Will load entity time for: '${fullJID}'`);
-
-    const response = await this._client.request(
-      $iq({ to: fullJID, type: IQType.Get, id: xmppID() }).c("time", {
-        xmlns: NS_TIME
-      })
-    );
-
-    return this.__respondLoadEntityTime(response);
+  async loadUserMetadata(jid: BareJID): Promise<UserMetadata | undefined> {
+    return await this._client.client?.loadUserMetadata(jid);
   }
 
   async loadAvatarData(jid: BareJID): Promise<LoadAvatarDataResponse | void> {
@@ -145,38 +97,11 @@ class BrokerModuleProfile extends BrokerModule {
       avatar.metadata.type
     );
   }
-
-  private __respondLoadLastActivity(response: Cash): LoadLastActivityResponse {
-    const queryElement = response.find("query").first();
-
-    // Read seconds count (as timestamp)
-    return {
-      timestamp:
-        Date.now() -
-        parseInt(queryElement.attr("seconds") || "0") * SECOND_TO_MILLISECONDS,
-      text: queryElement.text() || undefined
-    };
-  }
-
-  private __respondLoadEntityTime(response: Cash): LoadEntityTimeResponse {
-    const timeElement = response.find("time").first();
-
-    // Read time data (or fallback to local time)
-    return {
-      tzo: timeElement.find("tzo").text() || xmppTime.offset(),
-      utc: timeElement.find("utc").text() || xmppTime.datetime()
-    };
-  }
 }
 
 /**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
-export type {
-  LoadLastActivityResponse,
-  LoadEntityTimeResponse,
-  LoadAvatarDataResponse,
-  SaveAvatarRequest
-};
+export type { LoadAvatarDataResponse, SaveAvatarRequest };
 export default BrokerModuleProfile;

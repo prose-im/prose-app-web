@@ -9,21 +9,16 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, BareJID, UserProfile } from "@prose-im/prose-core-client-wasm";
+import {
+  JID,
+  BareJID,
+  UserProfile,
+  UserMetadata
+} from "@prose-im/prose-core-client-wasm";
 import { defineStore } from "pinia";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import {
-  LoadLastActivityResponse,
-  LoadEntityTimeResponse
-} from "@/broker/modules/profile";
-
-// PROJECT: FILTERS
-import dateFilters from "@/filters/date";
-
-// PROJECT: STORES
-import Store from "@/store";
 
 /**************************************************************************
  * TYPES
@@ -110,8 +105,6 @@ const LOCAL_STATES = {
   loaded: {} as { [jid: string]: boolean }
 };
 
-const SECURE_PROTOCOLS = ["HTTPS", "WSS"];
-
 /**************************************************************************
  * TABLE
  * ************************************************************************* */
@@ -162,11 +155,7 @@ const $profile = defineStore("profile", {
         // Load all profile parts at once
         await Promise.all([
           this.loadUserProfile(bareJID),
-
-          this.loadProfileLast(bareJID, fullJIDHighest),
-          this.loadProfileTime(bareJID, fullJIDHighest),
-          this.loadProfileVerification(bareJID),
-          this.loadProfileEncryption(bareJID)
+          this.loadUserMetadata(bareJID)
         ]);
       }
 
@@ -181,59 +170,10 @@ const $profile = defineStore("profile", {
       return this.setUserProfile(bareJID, profileResponse);
     },
 
-    async loadProfileLast(
-      bareJID: JID,
-      fullJIDHighest: JID
-    ): Promise<ProfileEntry> {
-      // Load last activity time
-      // TODO: only if remote client supports it (w/ CAPS)
-      const lastActivityResponse = await Broker.$profile.loadLastActivity(
-        fullJIDHighest
-      );
+    async loadUserMetadata(bareJID: BareJID): Promise<void> {
+      const metadata = await Broker.$profile.loadUserMetadata(bareJID);
 
-      // Set local profile last active time
-      return this.setProfileLast(bareJID, lastActivityResponse);
-    },
-
-    async loadProfileTime(
-      bareJID: JID,
-      fullJIDHighest: JID
-    ): Promise<ProfileEntry> {
-      // Load user timezone
-      // TODO: only if remote client supports it (w/ CAPS)
-      const entityTimeResponse = await Broker.$profile.loadEntityTime(
-        fullJIDHighest
-      );
-
-      // Set local profile time
-      return this.setProfileTime(bareJID, entityTimeResponse);
-    },
-
-    async loadProfileVerification(bareJID: JID): Promise<ProfileEntry> {
-      // Set local profile verification status
-      // TODO: from server data
-      // return this.setProfileVerification(bareJID, {
-      //   fingerprint: "0000",
-      //   email: bareJID.toString(),
-      //   phone: null,
-      //   identity: null
-      // });
-
-      return this.setProfileVerification(bareJID, undefined);
-    },
-
-    async loadProfileEncryption(bareJID: JID): Promise<ProfileEntry> {
-      // Set local profile encryption status
-      // TODO: from server data
-      // return this.setProfileEncryption(bareJID, {
-      //   connectionProtocol: "TLS1.3",
-      //   messageEndToEndMethod: "OMEMO"
-      // });
-
-      return this.setProfileEncryption(bareJID, {
-        secureProtocol: SECURE_PROTOCOLS.includes(Store.$session.protocol),
-        connectionProtocol: Store.$session.protocol || undefined
-      });
+      this.setUserMetadata(bareJID, metadata);
     },
 
     setUserProfile(jid: BareJID, userProfile?: UserProfile): ProfileEntry {
@@ -297,93 +237,65 @@ const $profile = defineStore("profile", {
       return profile;
     },
 
-    setProfileLast(
-      jid: JID,
-      lastActivityResponse: LoadLastActivityResponse
-    ): ProfileEntry {
-      const profile = this.assert(jid),
-        information = this.ensureProfileInformation(profile);
-
-      // Update data in store
-      this.$patch(() => {
-        information.lastActive = {
-          timestamp: lastActivityResponse.timestamp
-        };
-      });
-
-      return profile;
-    },
-
-    setProfileTime(
-      jid: JID,
-      entityTimeResponse: LoadEntityTimeResponse
-    ): ProfileEntry {
-      const profile = this.assert(jid),
+    setUserMetadata(jid: BareJID, metadata: UserMetadata | undefined) {
+      const profile = this.assert(jid.toJID()),
         information = this.ensureProfileInformation(profile),
         location = this.ensureProfileInformationLocation(information);
 
+      if (!metadata) {
+        this.$patch(() => {
+          information.lastActive = null;
+          location.timezone = null;
+
+          profile.security = profile.security || {};
+          delete profile.security.verification;
+          delete profile.security.encryption;
+        });
+        return profile;
+      }
+
       // Update data in store
       this.$patch(() => {
-        if (entityTimeResponse.tzo !== null) {
+        if (metadata.lastActivity) {
+          information.lastActive = {
+            timestamp: Number(metadata.lastActivity.utcTimestamp) * 1000
+          };
+        } else {
+          information.lastActive = null;
+        }
+
+        if (metadata.localTime) {
           location.timezone = {
-            name: `UTC${entityTimeResponse.tzo}`,
-            offset: dateFilters.tzoToOffset(entityTimeResponse.tzo)
+            name: metadata.localTime.formattedTimezoneOffset,
+            offset: metadata.localTime.timezoneOffset / 60
           };
         } else {
           location.timezone = null;
         }
-      });
 
-      return profile;
-    },
-
-    setProfileVerification(
-      jid: JID,
-      verification?: ProfileEntrySecurityVerification
-    ): ProfileEntry {
-      const profile = this.assert(jid);
-
-      // Update data in store
-      this.$patch(() => {
         profile.security = profile.security || {};
-
-        if (verification !== undefined) {
+        if (metadata.verification) {
           profile.security.verification = {
-            fingerprint: verification.fingerprint,
-            email: verification.email,
-            phone: verification.phone,
-            identity: verification.identity
+            fingerprint: metadata.verification.fingerprint || null,
+            email: metadata.verification.email || null,
+            phone: metadata.verification.phone || null,
+            identity: metadata.verification.identity || null
           };
         } else {
           delete profile.security.verification;
         }
-      });
 
-      return profile;
-    },
-
-    setProfileEncryption(
-      jid: JID,
-      encryption: ProfileEntrySecurityEncryption
-    ): ProfileEntry {
-      const profile = this.assert(jid);
-
-      // Update data in store
-      this.$patch(() => {
         profile.security = profile.security || {};
-
-        if (encryption !== undefined) {
+        if (metadata.encryption) {
           profile.security.encryption = {
-            secureProtocol: encryption.secureProtocol,
-            connectionProtocol: encryption.connectionProtocol,
-            messageEndToEndMethod: encryption.messageEndToEndMethod
+            secureProtocol: metadata.encryption.secureProtocol,
+            connectionProtocol: metadata.encryption.connectionProtocol,
+            messageEndToEndMethod: metadata.encryption.messageEndToEndMethod
           };
         } else {
           delete profile.security.encryption;
         }
       });
-
-      return profile;
     },
 
     ensureProfileInformation(profile: ProfileEntry): ProfileEntryInformation {
