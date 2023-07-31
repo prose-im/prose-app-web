@@ -26,15 +26,6 @@ list-button(
     )
 
   template(
-    v-if="unreadCount > 0"
-    v-slot:details
-  )
-    base-count(
-      :count="unreadCount"
-      :color="countColor"
-    )
-
-  template(
     v-slot:default
   )
     span.c-sidebar-main-item-user__name
@@ -47,6 +38,34 @@ list-button(
       class="c-sidebar-main-item-user__presence"
       available-only
     )
+
+    base-tooltip(
+      v-if="statusActivity.status"
+      :bypassed="!statusActivity.status.text"
+      align="left"
+      class="c-sidebar-main-item-user__activity"
+    )
+      template(
+        v-slot:tooltip
+      )
+        | {{ statusActivity.status.text }}
+
+      template(
+        v-slot:default
+      )
+        span(
+          class="c-sidebar-main-item-user__activity-icon"
+        )
+          | {{ statusActivity.status.icon }}
+
+  template(
+    v-if="unreadCount > 0"
+    v-slot:details
+  )
+    base-count(
+      :count="unreadCount"
+      :color="countColor"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -57,6 +76,9 @@ list-button(
 // NPM
 import { PropType } from "vue";
 import { JID } from "@xmpp/jid";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 export default {
   name: "SidebarMainItemUser",
@@ -95,6 +117,10 @@ export default {
       }
 
       return 0;
+    },
+
+    statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
+      return Store.$activity.getActivity(this.jid);
     }
   },
 
@@ -126,6 +152,15 @@ $c: ".c-sidebar-main-item-user";
   #{$c}__presence {
     margin-inline-start: 5px;
     margin-block-start: 2px;
+  }
+
+  #{$c}__activity {
+    margin-inline-start: 7px;
+    margin-block-start: 1px;
+
+    #{$c}__activity-icon {
+      font-size: 16px;
+    }
   }
 }
 </style>
