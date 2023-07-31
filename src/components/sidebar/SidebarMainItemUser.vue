@@ -155,7 +155,7 @@ $c: ".c-sidebar-main-item-user";
   }
 
   #{$c}__activity {
-    margin-inline-start: 7px;
+    margin-inline-start: 9px;
     margin-block-start: 1px;
 
     #{$c}__activity-icon {
