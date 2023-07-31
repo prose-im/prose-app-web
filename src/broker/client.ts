@@ -18,8 +18,8 @@ import {
   ProseConnectionEventHandler,
   ProseClientDelegate,
   ConnectionError,
-  FullJID,
-  BareJID
+  Availability,
+  JID
 } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
@@ -153,14 +153,14 @@ class StropheJSConnection implements ProseConnection {
 }
 
 class BrokerClient implements ProseClientDelegate {
-  jid?: FullJID;
+  jid?: JID;
 
   private readonly __ingestors: BrokerEvent;
   client?: ProseClient;
 
   private __connection?: Strophe.Connection;
   private __connectLifecycle?: ConnectLifecycle;
-  private __credentials?: { jid: FullJID; password: string };
+  private __credentials?: { jid: JID; password: string };
   private __boundReceivers: Array<StropheHandler> = [];
   private __pendingRequests: { [id: string]: PendingRequest } = {};
   private __reconnectTimeout?: ReturnType<typeof setTimeout>;
@@ -170,7 +170,7 @@ class BrokerClient implements ProseClientDelegate {
     this.__ingestors = new BrokerEvent(this);
   }
 
-  async authenticate(jid: FullJID, password: string): Promise<void> {
+  async authenticate(jid: JID, password: string): Promise<void> {
     // Incomplete parameters?
     if (!password) {
       throw new Error("Please provide a password");
@@ -199,7 +199,7 @@ class BrokerClient implements ProseClientDelegate {
     this.client = client;
 
     try {
-      await client.connect(jid, password);
+      await client.connect(jid, password, Availability.Available);
     } catch (error) {
       console.log("Something went wrong", error);
       this.__clearContext();
@@ -303,12 +303,10 @@ class BrokerClient implements ProseClientDelegate {
     console.log("Client disconnected");
   }
 
-  async composingUsersChanged(conversation: BareJID) {
+  async composingUsersChanged(conversation: JID) {
     console.log("Composing users changed");
     let composingUsers =
-      (await this.client?.loadComposingUsersInConversation(
-        conversation.toJID()
-      )) || [];
+      (await this.client?.loadComposingUsersInConversation(conversation)) || [];
     Store.$inbox.setStatesChatstate(
       conversation,
       composingUsers.find(jid => jid.equals(conversation))
@@ -317,27 +315,27 @@ class BrokerClient implements ProseClientDelegate {
     );
   }
 
-  contactChanged(jid: BareJID) {
+  contactChanged(jid: JID) {
     Store.$roster.emitContactChanged(jid);
   }
 
-  avatarChanged(jid: BareJID): void {
+  avatarChanged(jid: JID): void {
     Store.$avatar.load(jid);
   }
 
-  async messagesAppended(conversation: BareJID, messageIDs: string[]) {
+  async messagesAppended(conversation: JID, messageIDs: string[]) {
     let messages =
       (await this.client?.loadMessagesWithIDs(conversation, messageIDs)) || [];
     Store.$inbox.insertMessages(conversation, messages);
   }
 
-  messagesDeleted(conversation: BareJID, messageIDs: string[]) {
+  messagesDeleted(conversation: JID, messageIDs: string[]) {
     for (const messageID of messageIDs) {
       Store.$inbox.retractMessage(conversation, messageID);
     }
   }
 
-  async messagesUpdated(conversation: BareJID, messageIDs: string[]) {
+  async messagesUpdated(conversation: JID, messageIDs: string[]) {
     const messages =
       (await this.client?.loadMessagesWithIDs(conversation, messageIDs)) || [];
     for (const message of messages) {
@@ -553,7 +551,7 @@ class BrokerClient implements ProseClientDelegate {
     this.__credentials = undefined;
   }
 
-  private async __connect(jid: FullJID, password: string): Promise<void> {
+  private async __connect(jid: JID, password: string): Promise<void> {
     // Acquire relay host
     const relayHost = CONFIG.hosts.websocket || null;
 

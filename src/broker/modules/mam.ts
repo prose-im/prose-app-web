@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { BareJID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -22,7 +22,7 @@ import Store from "@/store";
  * ************************************************************************* */
 
 class BrokerModuleMAM extends BrokerModule {
-  async loadLatestMessages(conversation: BareJID) {
+  async loadLatestMessages(conversation: JID) {
     if (!this._client.client) {
       return;
     }

@@ -15,7 +15,7 @@ import {
   createWebHistory,
   createRouter
 } from "vue-router";
-import init, { FullJID } from "@prose-im/prose-core-client-wasm";
+import init, { JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: VIEWS
 import StartLogin from "@/views/start/StartLogin.vue";
@@ -150,7 +150,7 @@ class Router {
 
     if (credentials.jid) {
       Broker.client
-        .authenticate(new FullJID(credentials.jid), credentials.password)
+        .authenticate(new JID(credentials.jid), credentials.password)
         .catch(() => {
           // Ignore authentication errors here
         });

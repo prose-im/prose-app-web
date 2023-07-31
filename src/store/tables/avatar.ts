@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, BareJID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-core-client-wasm";
 import { defineStore } from "pinia";
 import mitt from "mitt";
 
@@ -79,20 +79,19 @@ const $avatar = defineStore("avatar", {
     },
 
     assert(jid: JID): AvatarDataURL | undefined {
-      const bareJIDString = jid.bare().toString();
-      return this.entries[bareJIDString];
+      return this.entries[jid.toString()];
     },
 
-    async load(jid: BareJID): Promise<void> {
-      const bareJIDString = jid.toString();
+    async load(jid: JID): Promise<void> {
+      const jidString = jid.toString();
 
       // Not already loading? Load now.
-      if (LOCAL_STATES.loading[bareJIDString]) {
+      if (LOCAL_STATES.loading[jidString]) {
         return;
       }
 
       // Mark as loading
-      LOCAL_STATES.loading[bareJIDString] = true;
+      LOCAL_STATES.loading[jidString] = true;
 
       // Load avatar data
       const avatarResponse = await Broker.$profile.loadAvatarData(jid);
@@ -100,26 +99,26 @@ const $avatar = defineStore("avatar", {
       if (avatarResponse) {
         // Set avatar data
         this.$patch(() => {
-          this.entries[bareJIDString] = avatarResponse.dataURL;
+          this.entries[jidString] = avatarResponse.dataURL;
         });
 
         // Emit IPC changed event
         EventBus.emit("avatar:changed", {
-          jid: jid.toJID()
+          jid: jid
         } as EventAvatarGeneric);
       } else {
         // Set avatar data
         this.$patch(() => {
-          delete this.entries[bareJIDString];
+          delete this.entries[jidString];
         });
 
         EventBus.emit("avatar:flushed", {
-          jid: jid.toJID()
+          jid: jid
         } as EventAvatarGeneric);
       }
 
       // Remove loading marker
-      delete LOCAL_STATES.loading[bareJIDString];
+      delete LOCAL_STATES.loading[jidString];
     }
   }
 });

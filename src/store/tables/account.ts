@@ -10,11 +10,10 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { FullJID, JID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { toJID } from "@/utilities/jid";
 
 /**************************************************************************
  * TABLE
@@ -62,11 +61,10 @@ const $account = defineStore("account", {
       password: string,
       remember = true
     ): Promise<void> {
-      let jid: FullJID;
-      const fullRawJID = rawJID + "/web";
+      let jid: JID;
 
       try {
-        jid = new FullJID(fullRawJID);
+        jid = new JID(rawJID);
       } catch (e) {
         throw new Error("Please provide a valid Jabber ID");
       }
@@ -78,11 +76,11 @@ const $account = defineStore("account", {
       if (remember === true) {
         this.$patch(state => {
           // Assign account credentials
-          state.credentials.jid = fullRawJID;
+          state.credentials.jid = rawJID;
           state.credentials.password = password;
 
           // Assign last account marker
-          state.last.jid = fullRawJID;
+          state.last.jid = rawJID;
           state.last.timestamp = Date.now();
         });
       }

@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { BareJID, JID, Message } from "@prose-im/prose-core-client-wasm";
+import { JID, Message } from "@prose-im/prose-core-client-wasm";
 import cloneDeep from "lodash.clonedeep";
 import mitt from "mitt";
 import { defineStore } from "pinia";
@@ -17,7 +17,6 @@ import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/mess
 
 // PROJECT: BROKER
 import { MessageChatState } from "@/broker/stanzas/message";
-import { toJID } from "@/utilities/jid";
 
 /**************************************************************************
  * TYPES
@@ -81,19 +80,19 @@ const $inbox = defineStore("inbox", {
   getters: {
     getMessages: function () {
       return (jid: JID): Array<Message> => {
-        return this.assert(jid.bare()).messages.list;
+        return this.assert(jid).messages.list;
       };
     },
 
     getMessage: function () {
       return (jid: JID, id: string): Message | void => {
-        return this.assert(jid.bare()).messages.byId[id] || undefined;
+        return this.assert(jid).messages.byId[id] || undefined;
       };
     },
 
     getStates: function () {
       return (jid: JID): Array<Message> => {
-        return this.assert(jid.bare()).states;
+        return this.assert(jid).states;
       };
     }
   },
@@ -104,7 +103,7 @@ const $inbox = defineStore("inbox", {
       return EventBus;
     },
 
-    assert(jid: BareJID): InboxEntry {
+    assert(jid: JID): InboxEntry {
       const jidString = jid.toString(),
         entries = this.entries;
 
@@ -131,11 +130,11 @@ const $inbox = defineStore("inbox", {
       return entries[jidString];
     },
 
-    insertMessage(jid: BareJID, message: Message) {
+    insertMessage(jid: JID, message: Message) {
       this.insertMessages(jid, [message]);
     },
 
-    insertMessages(jid: BareJID, messages: Array<Message>) {
+    insertMessages(jid: JID, messages: Array<Message>) {
       const container = this.assert(jid).messages;
 
       messages.forEach(message => {
@@ -155,14 +154,14 @@ const $inbox = defineStore("inbox", {
 
           // Emit IPC inserted event
           EventBus.emit("message:inserted", {
-            jid: jid.toJID(),
+            jid: jid,
             message
           } as EventMessageGeneric);
         }
       });
     },
 
-    updateMessage(jid: BareJID, id: string, message: Message): boolean {
+    updateMessage(jid: JID, id: string, message: Message): boolean {
       const container = this.assert(jid).messages;
 
       if (!message.id) {
@@ -204,7 +203,7 @@ const $inbox = defineStore("inbox", {
 
         // Emit IPC updated event
         EventBus.emit("message:updated", {
-          jid: jid.toJID(),
+          jid: jid,
           message: existingMessage,
           original: originalMessage
         } as EventMessageGeneric);
@@ -217,7 +216,7 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
-    retractMessage(jid: BareJID, id: string): boolean {
+    retractMessage(jid: JID, id: string): boolean {
       const container = this.assert(jid).messages;
 
       // Acquire message from store
@@ -242,7 +241,7 @@ const $inbox = defineStore("inbox", {
 
         // Emit IPC retracted event
         EventBus.emit("message:retracted", {
-          jid: jid.toJID(),
+          jid: jid,
           message: existingMessage
         } as EventMessageGeneric);
 
@@ -254,7 +253,7 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
-    setStatesChatstate(jid: BareJID, chatstate: MessageChatState) {
+    setStatesChatstate(jid: JID, chatstate: MessageChatState) {
       this.assert(jid).states.chatstate = chatstate;
     }
   }

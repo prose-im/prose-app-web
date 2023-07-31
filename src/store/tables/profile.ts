@@ -11,7 +11,6 @@
 // NPM
 import {
   JID,
-  BareJID,
   UserProfile,
   UserMetadata
 } from "@prose-im/prose-core-client-wasm";
@@ -128,56 +127,54 @@ const $profile = defineStore("profile", {
 
   actions: {
     assert(jid: JID): ProfileEntry {
-      const bareJIDString = jid.toString();
+      const jidString = jid.toString();
 
       // Assign new profile entry for JID?
-      if (!(bareJIDString in this.entries)) {
+      if (!(jidString in this.entries)) {
         this.$patch(state => {
           // Insert empty data
-          state.entries[bareJIDString] = {};
+          state.entries[jidString] = {};
         });
       }
 
-      return this.entries[bareJIDString];
+      return this.entries[jidString];
     },
 
-    async load(fullJIDHighest: JID, reload = false): Promise<ProfileEntry> {
+    async load(jid: JID, reload = false): Promise<ProfileEntry> {
       // Assert profile data
-      const profile = this.assert(fullJIDHighest);
-
-      const bareJID = fullJIDHighest.bare(),
-        bareJIDString = bareJID.toString();
+      const profile = this.assert(jid);
+      const jidString = jid.toString();
 
       // Load profile? (or reload)
-      if (LOCAL_STATES.loaded[bareJIDString] !== true || reload === true) {
-        LOCAL_STATES.loaded[bareJIDString] = true;
+      if (LOCAL_STATES.loaded[jidString] !== true || reload === true) {
+        LOCAL_STATES.loaded[jidString] = true;
 
         // Load all profile parts at once
         await Promise.all([
-          this.loadUserProfile(bareJID),
-          this.loadUserMetadata(bareJID)
+          this.loadUserProfile(jid),
+          this.loadUserMetadata(jid)
         ]);
       }
 
       return Promise.resolve(profile);
     },
 
-    async loadUserProfile(bareJID: BareJID): Promise<ProfileEntry> {
+    async loadUserProfile(jid: JID): Promise<ProfileEntry> {
       // Load vCard data for JID
-      const profileResponse = await Broker.$profile.loadUserProfile(bareJID);
+      const profileResponse = await Broker.$profile.loadUserProfile(jid);
 
       // Set local profile vCard data
-      return this.setUserProfile(bareJID, profileResponse);
+      return this.setUserProfile(jid, profileResponse);
     },
 
-    async loadUserMetadata(bareJID: BareJID): Promise<void> {
-      const metadata = await Broker.$profile.loadUserMetadata(bareJID);
+    async loadUserMetadata(jid: JID): Promise<void> {
+      const metadata = await Broker.$profile.loadUserMetadata(jid);
 
-      this.setUserMetadata(bareJID, metadata);
+      this.setUserMetadata(jid, metadata);
     },
 
-    setUserProfile(jid: BareJID, userProfile?: UserProfile): ProfileEntry {
-      const profile = this.assert(jid.toJID()),
+    setUserProfile(jid: JID, userProfile?: UserProfile): ProfileEntry {
+      const profile = this.assert(jid),
         information = this.ensureProfileInformation(profile);
 
       if (!userProfile) {
@@ -237,8 +234,8 @@ const $profile = defineStore("profile", {
       return profile;
     },
 
-    setUserMetadata(jid: BareJID, metadata: UserMetadata | undefined) {
-      const profile = this.assert(jid.toJID()),
+    setUserMetadata(jid: JID, metadata: UserMetadata | undefined) {
+      const profile = this.assert(jid),
         information = this.ensureProfileInformation(profile),
         location = this.ensureProfileInformationLocation(information);
 

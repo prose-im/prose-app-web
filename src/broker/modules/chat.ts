@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { BareJID, JID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -28,15 +28,15 @@ class BrokerModuleMessage extends BrokerModule {
   }
 
   async updateMessage(
-    to: BareJID,
+    to: JID,
     body: string,
     messageID: MessageID
   ): Promise<void> {
-    await this._client.client?.updateMessage(to.toJID(), messageID, body);
+    await this._client.client?.updateMessage(to, messageID, body);
   }
 
-  async retractMessage(id: MessageID, to: BareJID): Promise<void> {
-    await this._client.client?.retractMessage(to.toJID(), id);
+  async retractMessage(id: MessageID, to: JID): Promise<void> {
+    await this._client.client?.retractMessage(to, id);
     logger.info(`Retracted message #${id} sent to: '${to}'`);
   }
 
@@ -53,11 +53,7 @@ class BrokerModuleMessage extends BrokerModule {
     }
 
     for (const reaction of reactions) {
-      await this._client.client.toggleReactionToMessage(
-        to.bare(),
-        id,
-        reaction
-      );
+      await this._client.client.toggleReactionToMessage(to, id, reaction);
     }
   }
 }

@@ -195,13 +195,13 @@ export default {
     },
 
     generateTextualPalette(jid: JID): string {
-      const bareJIDString = jid.bare().toString();
+      const jidString = jid.toString();
 
       // Compute JID fingerprint
       let jidFingerprint = 0;
 
-      for (let i = 0; i < bareJIDString.length; i++) {
-        jidFingerprint += bareJIDString.charCodeAt(i);
+      for (let i = 0; i < jidString.length; i++) {
+        jidFingerprint += jidString.charCodeAt(i);
       }
 
       // Acquire color based on JID fingerprint
@@ -234,7 +234,7 @@ export default {
         }
       }
 
-      const node = jid.bare().node;
+      const node = jid.node;
 
       // #2. Extract initials from JID (fallback)
       if (node && node.length >= 1) {

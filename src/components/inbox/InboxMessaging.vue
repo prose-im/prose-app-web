@@ -312,7 +312,7 @@ export default {
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
       runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
-      runtime.MessagingContext.setAccountJID(this.selfJID.bare().toString());
+      runtime.MessagingContext.setAccountJID(this.selfJID.toString());
     },
 
     setupEvents(runtime: MessagingRuntime): void {
@@ -366,7 +366,7 @@ export default {
 
     identifyPartyRemote(runtime: MessagingRuntime): void {
       // Identify remote party
-      runtime.MessagingStore.identify(this.jid.bare().toString(), {
+      runtime.MessagingStore.identify(this.jid.toString(), {
         name: Store.$roster.getEntryName(this.jid),
         avatar: Store.$avatar.getAvatarDataUrl(this.jid)
       });
@@ -491,11 +491,7 @@ export default {
         }
 
         // Load all messages
-        // Notice: only load messages after last loaded identifier
-        // const result = await Broker.$mam.loadMessages(this.jid, {
-        //   afterId: lastResultIdFromArchive
-        // });
-        await Broker.$mam.loadLatestMessages(this.jid.bare());
+        await Broker.$mam.loadLatestMessages(this.jid);
 
         const frameRuntime = this.frame();
 
@@ -543,10 +539,7 @@ export default {
           frameRuntime.MessagingStore.loader("backwards", true);
 
           // TODO: this one is not working
-          // await Broker.$mam.loadMessages(this.jid, {
-          //   beforeId: firstResultIdFromArchive
-          // });
-          await Broker.$mam.loadLatestMessages(this.jid.bare());
+          await Broker.$mam.loadLatestMessages(this.jid);
 
           // Mark backwards loading as complete
           frameRuntime.MessagingStore.loader("backwards", false);
@@ -859,14 +852,14 @@ export default {
     },
 
     onStoreMessageInserted(event: EventMessageGeneric): void {
-      if (this.jid.bare().equals(event.jid.bare()) === true) {
+      if (this.jid.equals(event.jid) === true) {
         // Insert into view
         this.frame()?.MessagingStore.insert(event.message);
       }
     },
 
     onStoreMessageUpdated(event: EventMessageGeneric): void {
-      if (this.jid.bare().equals(event.jid.bare()) === true) {
+      if (this.jid.equals(event.jid) === true) {
         // Update in view
         // Notice: use identifier from original message as reference, if any, \
         //   otherwise fallback on the actual message. This is done as the \
@@ -880,7 +873,7 @@ export default {
     },
 
     onStoreMessageRetracted(event: EventMessageGeneric): void {
-      if (this.jid.bare().equals(event.jid.bare()) === true) {
+      if (this.jid.equals(event.jid) === true) {
         // Retract from view
         this.frame()?.MessagingStore.retract(event.message.id);
       }

@@ -108,11 +108,11 @@ export default {
     unreadCount() {
       // TODO: those are fixtures, this data should come somewhere from the \
       //   store, based on the user JID!
-      if (this.jid.bare().node?.startsWith("m") === true) {
+      if (this.jid.node?.startsWith("m") === true) {
         return 8;
       }
 
-      if (this.jid.bare().node?.startsWith("s") === true) {
+      if (this.jid.node?.startsWith("s") === true) {
         return 15;
       }
 

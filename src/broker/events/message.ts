@@ -10,7 +10,7 @@
 
 // NPM
 import { default as $, Cash } from "cash-dom";
-import { BareJID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-core-client-wasm";
 import xmppID from "@xmpp/id";
 import xmppTime from "@xmpp/time";
 
@@ -40,11 +40,11 @@ class BrokerEventMessage extends BrokerEventIngestor {
       chatstate = (element.prop("tagName") as MessageChatState) || null;
 
     if (from !== null && chatstate !== null) {
-      Store.$inbox.setStatesChatstate(new BareJID(from), chatstate);
+      Store.$inbox.setStatesChatstate(new JID(from), chatstate);
     }
   }
 
-  private __handleFastenRetract(fromJID: BareJID, messageId: string): void {
+  private __handleFastenRetract(fromJID: JID, messageId: string): void {
     // XEP-0424: Message Retraction
     // https://xmpp.org/extensions/xep-0424.html
 

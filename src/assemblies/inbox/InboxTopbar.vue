@@ -231,7 +231,7 @@ export default {
 
       // Build popover items
       const items: Array<PopoverItem> = Array.from(historyRawJIDs)
-        .map(historyRawJID => jid(historyRawJID))
+        .map(historyRawJID => new JID(historyRawJID))
         .map(historyJID => {
           return {
             type: PopoverItemType.Button,

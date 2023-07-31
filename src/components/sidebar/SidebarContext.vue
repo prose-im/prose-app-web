@@ -195,7 +195,7 @@ export default {
 
           properties: {
             type: "user",
-            name: this.jid.bare().node,
+            name: this.jid.node,
             address: this.jid.toString()
           }
         },

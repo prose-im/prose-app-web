@@ -44,7 +44,7 @@ class BrokerModuleStatus extends BrokerModule {
       }
       // TODO: We should load our own status from the store as another
       // session might change it.
-      Store.$activity.setActivity(this._client.jid.toJID(), activity);
+      Store.$activity.setActivity(this._client.jid, activity);
     }
   }
 }

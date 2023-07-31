@@ -10,7 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { BareJID, JID, Availability } from "@prose-im/prose-core-client-wasm";
+import { JID, Availability } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -99,15 +99,13 @@ const $roster = defineStore("roster", {
 
     getEntry: function () {
       return (jid: JID): RosterEntry | void => {
-        const bareJIDString = jid.bare().toString();
-
-        return this.byJID[bareJIDString] || undefined;
+        return this.byJID[jid.toString()] || undefined;
       };
     },
 
     getEntryName: function () {
       return (jid: JID): string => {
-        return this.getEntry(jid)?.name || jid.bare().node;
+        return this.getEntry(jid)?.name || jid.node || jid.toString();
       };
     }
   },
@@ -165,7 +163,7 @@ const $roster = defineStore("roster", {
       return EventBus;
     },
 
-    emitContactChanged(jid: BareJID) {
+    emitContactChanged(jid: JID) {
       EventBus.emit("contact:changed", jid);
     }
   }

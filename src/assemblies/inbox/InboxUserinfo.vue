@@ -91,13 +91,7 @@ export default {
     },
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
-      return Store.$profile.getProfile(this.jid.bare());
-    },
-
-    fullJIDHighestOnline(): ReturnType<
-      typeof Store.$presence.getHighestOnlineJID
-    > {
-      return Store.$presence.getHighestOnlineJID(this.jid);
+      return Store.$profile.getProfile(this.jid);
     }
   },
 
@@ -146,7 +140,7 @@ export default {
 
         // Load profile
         // TODO: refresh transient values every now and then
-        await Store.$profile.load(this.fullJIDHighestOnline);
+        await Store.$profile.load(this.jid);
       }
     },
 

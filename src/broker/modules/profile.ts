@@ -10,7 +10,6 @@
 
 // NPM
 import {
-  BareJID,
   JID,
   UserProfile,
   UserMetadata
@@ -52,7 +51,7 @@ interface SaveAvatarRequestMetadata {
  * ************************************************************************* */
 
 class BrokerModuleProfile extends BrokerModule {
-  async loadUserProfile(jid: BareJID): Promise<UserProfile | undefined> {
+  async loadUserProfile(jid: JID): Promise<UserProfile | undefined> {
     // XEP-0292: vCard4 Over XMPP
     // https://xmpp.org/extensions/xep-0292.html
 
@@ -61,11 +60,11 @@ class BrokerModuleProfile extends BrokerModule {
     return await this._client.client?.loadUserProfile(jid);
   }
 
-  async loadUserMetadata(jid: BareJID): Promise<UserMetadata | undefined> {
+  async loadUserMetadata(jid: JID): Promise<UserMetadata | undefined> {
     return await this._client.client?.loadUserMetadata(jid);
   }
 
-  async loadAvatarData(jid: BareJID): Promise<LoadAvatarDataResponse | void> {
+  async loadAvatarData(jid: JID): Promise<LoadAvatarDataResponse | void> {
     // XEP-0084: User Avatar
     // https://xmpp.org/extensions/xep-0084.html
 

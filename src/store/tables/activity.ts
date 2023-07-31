@@ -61,17 +61,17 @@ const $activity = defineStore("activity", {
 
   actions: {
     assert(jid: JID): ActivityEntry {
-      const bareJIDString = jid.bare().toString();
+      const jidString = jid.toString();
 
       // Assign new activity entry for JID?
-      if (!(bareJIDString in this.entries)) {
+      if (!(jidString in this.entries)) {
         this.$patch(state => {
           // Insert empty data
-          state.entries[bareJIDString] = {};
+          state.entries[jidString] = {};
         });
       }
 
-      return this.entries[bareJIDString];
+      return this.entries[jidString];
     },
 
     setActivity(jid: JID, status?: UserActivity): ActivityEntry {
