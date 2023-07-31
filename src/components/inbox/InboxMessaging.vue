@@ -503,6 +503,7 @@ export default {
           // Mark forwards loading as complete
           frameRuntime.MessagingStore.loader("forwards", false);
 
+          // TODO: Fix backwards loading after updating core lib
           // Mark backwards loading as complete?
           // if (result.complete === true) {
           //   frameRuntime.MessagingStore.loader("backwards", false);
@@ -516,8 +517,9 @@ export default {
       }
     },
 
-    async seekMoreMessages(): void {
+    async seekMoreMessages(): Promise<void> {
       // Can seek now? (connected and not stale)
+      // TODO: Fix condition after updating core lib
       if (
         true
         // Store.$session.connected === true &&

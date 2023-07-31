@@ -11,7 +11,7 @@
 // NPM
 import { default as $, Cash } from "cash-dom";
 import { Strophe } from "strophe.js";
-import init, {
+import {
   ProseClient,
   ProseConnectionProvider,
   ProseConnection,
@@ -23,7 +23,6 @@ import init, {
 } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: BROKER
-import Broker from "@/broker";
 import BrokerEvent from "@/broker/events";
 import { IQType } from "@/broker/stanzas/iq";
 

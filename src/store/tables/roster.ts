@@ -10,7 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { BareJID, JID } from "@prose-im/prose-core-client-wasm";
+import { BareJID, JID, Availability } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -46,6 +46,7 @@ interface Roster {
 
 interface RosterEntry {
   jid: string;
+  availability: Availability;
   group: RosterItemGroup;
   name: string;
 }
@@ -123,20 +124,18 @@ const $roster = defineStore("roster", {
           byJID: RosterByJID = {};
 
         // Load roster
-        const roster = await Broker.$roster.loadRoster();
+        const contacts = await Broker.$roster.loadContacts();
 
-        roster.items.forEach(rosterItem => {
-          Store.$activity.setActivity(
-            rosterItem.jid.toJID(),
-            rosterItem.activity
-          );
+        contacts.forEach(contact => {
+          Store.$activity.setActivity(contact.jid, contact.activity);
 
           // Append roster entry
           // Important: JID must be stored as string so that persistence works.
           const entry = {
-            jid: rosterItem.jid.toString(),
+            jid: contact.jid.toString(),
+            availability: contact.availability,
             group: RosterItemGroup.Team,
-            name: rosterItem.name
+            name: contact.name
           };
 
           entries.push(entry);

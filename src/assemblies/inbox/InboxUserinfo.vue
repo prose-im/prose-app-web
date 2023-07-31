@@ -125,7 +125,6 @@ export default {
 
     // Bind handlers
     Store.$session.events().on("connected", this.onStoreConnected);
-    Store.$session.events().on("protocol", this.onStoreProtocol);
 
     // Synchronize vCard eagerly
     this.syncVCardEager();
@@ -134,7 +133,6 @@ export default {
   beforeUnmount() {
     // Unbind handlers
     Store.$session.events().off("connected", this.onStoreConnected);
-    Store.$session.events().off("protocol", this.onStoreProtocol);
   },
 
   methods: {
@@ -152,10 +150,6 @@ export default {
       }
     },
 
-    async syncEncryption(): Promise<void> {
-      await Store.$profile.loadProfileEncryption(this.jid.bare());
-    },
-
     // --> EVENT LISTENERS <--
 
     onStoreConnected(connected: boolean): void {
@@ -163,11 +157,6 @@ export default {
         // Synchronize vCard eagerly (if stale)
         this.syncVCardEager();
       }
-    },
-
-    onStoreProtocol(): void {
-      // Reload encryption details
-      this.syncEncryption();
     }
   }
 };

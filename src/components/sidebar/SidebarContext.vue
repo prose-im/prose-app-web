@@ -115,7 +115,7 @@
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { JID, Availability } from "@prose-im/prose-core-client-wasm";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -135,7 +135,6 @@ import AccountSettings from "@/popups/sidebar/AccountSettings.vue";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { PresenceShow } from "@/broker/stanzas/presence";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -220,21 +219,21 @@ export default {
               type: PopoverItemType.Button,
               label: "Available",
               click: this.onAvatarPopoverAvailabilityAvailableClick,
-              emphasis: this.presenceLocalShow === undefined
+              emphasis: this.localAvailability === undefined
             },
 
             {
               type: PopoverItemType.Button,
               label: "Busy (Do not disturb)",
               click: this.onAvatarPopoverAvailabilityBusyClick,
-              emphasis: this.presenceLocalShow === PresenceShow.DoNotDisturb
+              emphasis: this.localAvailability === Availability.DoNotDisturb
             },
 
             {
               type: PopoverItemType.Button,
               label: "Away (Invisible)",
               click: this.onAvatarPopoverAvailabilityAwayClick,
-              emphasis: this.presenceLocalShow === PresenceShow.ExtendedAway
+              emphasis: this.localAvailability === Availability.Away
             }
           ]
         },
@@ -336,8 +335,10 @@ export default {
       ];
     },
 
-    presenceLocalShow(): ReturnType<typeof Store.$presence.getLocalShow> {
-      return Store.$presence.getLocalShow();
+    localAvailability(): ReturnType<
+      typeof Store.$presence.getLocalAvailability
+    > {
+      return Store.$presence.getLocalAvailability();
     },
 
     statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
@@ -353,15 +354,15 @@ export default {
     // --> HELPERS <--
 
     toggleAvatarPopoverAvailability(
-      show?: PresenceShow,
+      availability: Availability,
       alertText?: string
     ): void {
-      if (this.presenceLocalShow !== show) {
+      if (this.localAvailability !== availability) {
         // Store last selected availability
-        Store.$presence.setLocalShow(show);
+        Store.$presence.setLocalAvailability(availability);
 
         // Send Do Not Disturb presence
-        Broker.$status.sendPresence(show);
+        Broker.$status.setAvailability(availability);
 
         // Show confirm alert?
         if (alertText !== undefined) {
@@ -396,7 +397,7 @@ export default {
 
       // Toggle availability
       this.toggleAvatarPopoverAvailability(
-        undefined,
+        Availability.Available,
         "You are now seen as available"
       );
     },
@@ -407,7 +408,7 @@ export default {
 
       // Toggle availability ('Do Not Disturb' goes for 'Busy')
       this.toggleAvatarPopoverAvailability(
-        PresenceShow.DoNotDisturb,
+        Availability.DoNotDisturb,
         "You are now seen as busy"
       );
     },
@@ -418,7 +419,7 @@ export default {
 
       // Toggle availability ('Extended Away' goes for 'Invisible')
       this.toggleAvatarPopoverAvailability(
-        PresenceShow.ExtendedAway,
+        Availability.Away,
         "You are now invisible"
       );
     },

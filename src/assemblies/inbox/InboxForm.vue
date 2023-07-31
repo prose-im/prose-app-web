@@ -128,7 +128,6 @@ import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { MessageChatState } from "@/broker/stanzas/message";
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
