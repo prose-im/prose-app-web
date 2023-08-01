@@ -15,7 +15,6 @@ import mitt from "mitt";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { LoadAvatarDataResponse } from "@/broker/modules/profile";
 
 /**************************************************************************
  * TYPES

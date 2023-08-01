@@ -183,19 +183,19 @@ export default {
       return Store.$layout;
     },
 
-    itemFavorites(): RosterList {
+    itemFavorites(): RosterDisplayItem[] {
       return this.intoRosterDisplayItems(
         Store.$roster.getList(RosterItemGroup.Favorite)
       );
     },
 
-    itemTeamMembers(): RosterList {
+    itemTeamMembers(): RosterDisplayItem[] {
       return this.intoRosterDisplayItems(
         Store.$roster.getList(RosterItemGroup.Team)
       );
     },
 
-    itemOtherContacts(): RosterList {
+    itemOtherContacts(): RosterDisplayItem[] {
       return this.intoRosterDisplayItems(
         Store.$roster.getList(RosterItemGroup.Other)
       );

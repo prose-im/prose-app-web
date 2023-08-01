@@ -13,10 +13,16 @@ import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
-import { MessageID, MessageReaction } from "@/broker/stanzas/message";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+
+/**************************************************************************
+ * TYPES
+ * ************************************************************************* */
+
+export type MessageID = string;
+export type MessageReaction = string;
 
 /**************************************************************************
  * CLASS
