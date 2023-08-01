@@ -73,7 +73,7 @@
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-sdk-js";
 import Latin1 from "crypto-js/enc-latin1";
 import Base64 from "crypto-js/enc-base64";
 import { readAndCompressImage } from "browser-image-resizer";

@@ -69,7 +69,7 @@
 // NPM
 import { shallowRef, PropType } from "vue";
 import xmppID from "@xmpp/id";
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-sdk-js";
 import {
   Messaging as MessagingRuntime,
   Platform as MessagingPlatform,

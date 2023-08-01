@@ -9,11 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import {
-  JID,
-  UserProfile,
-  UserMetadata
-} from "@prose-im/prose-core-client-wasm";
+import { JID, UserProfile, UserMetadata } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";

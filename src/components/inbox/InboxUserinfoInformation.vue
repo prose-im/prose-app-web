@@ -59,7 +59,7 @@ list-disclosure(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID, Availability } from "@prose-im/prose-core-client-wasm";
+import { JID, Availability } from "@prose-im/prose-sdk-js";
 import { getCountryCode, getCountryName } from "crisp-countries-languages";
 
 // PROJECT: STORES

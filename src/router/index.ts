@@ -15,7 +15,7 @@ import {
   createWebHistory,
   createRouter
 } from "vue-router";
-import init, { JID } from "@prose-im/prose-core-client-wasm";
+import init, { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: VIEWS
 import StartLogin from "@/views/start/StartLogin.vue";

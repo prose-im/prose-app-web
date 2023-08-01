@@ -15,7 +15,7 @@ import {
   ConnectionError,
   Availability,
   JID
-} from "@prose-im/prose-core-client-wasm";
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";

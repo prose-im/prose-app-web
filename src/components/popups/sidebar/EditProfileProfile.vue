@@ -22,7 +22,7 @@
 <script lang="ts">
 // NPM
 import { shallowRef, PropType } from "vue";
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-sdk-js";
 import { countries } from "crisp-countries-languages";
 
 // PROJECT: COMPONENTS

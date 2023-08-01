@@ -29,7 +29,7 @@ span(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID, Availability } from "@prose-im/prose-core-client-wasm";
+import { JID, Availability } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";

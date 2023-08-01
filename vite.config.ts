@@ -100,7 +100,7 @@ export default {
 
   optimizeDeps: {
     // Workaround for https://github.com/vitejs/vite/issues/8427
-    exclude: ['@prose-im/prose-core-client-wasm']
+    exclude: ["@prose-im/prose-sdk-js"]
   },
 
   css: {

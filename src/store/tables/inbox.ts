@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, Message } from "@prose-im/prose-core-client-wasm";
+import { JID, Message } from "@prose-im/prose-sdk-js";
 import cloneDeep from "lodash.clonedeep";
 import mitt from "mitt";
 import { defineStore } from "pinia";

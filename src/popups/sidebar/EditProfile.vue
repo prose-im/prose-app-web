@@ -65,12 +65,7 @@ base-popup(
 <script lang="ts">
 // NPM
 import { shallowRef } from "vue";
-import {
-  JID,
-  UserProfile,
-  Job,
-  Address
-} from "@prose-im/prose-core-client-wasm";
+import { JID, UserProfile, Job, Address } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";

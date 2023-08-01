@@ -35,7 +35,7 @@ div(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";

@@ -10,7 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { JID, Availability } from "@prose-im/prose-core-client-wasm";
+import { JID, Availability } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";

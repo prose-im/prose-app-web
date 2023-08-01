@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, UserActivity } from "@prose-im/prose-core-client-wasm";
+import { JID, UserActivity } from "@prose-im/prose-sdk-js";
 import { defineStore } from "pinia";
 
 /**************************************************************************

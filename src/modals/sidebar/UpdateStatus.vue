@@ -87,7 +87,7 @@ base-modal(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";

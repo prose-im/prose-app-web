@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { UserActivity, Availability } from "@prose-im/prose-core-client-wasm";
+import { UserActivity, Availability } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";

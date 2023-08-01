@@ -82,7 +82,7 @@ list-disclosure(
 <script lang="ts">
 // NPM
 import { shallowRef, PropType } from "vue";
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import InboxUserinfoSecurityDetailsIdentity from "@/components/inbox/InboxUserinfoSecurityDetailsIdentity.vue";

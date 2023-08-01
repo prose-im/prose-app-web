@@ -46,7 +46,7 @@
 
 <script lang="ts">
 // NPM
-import { JID } from "@prose-im/prose-core-client-wasm";
+import { JID } from "@prose-im/prose-sdk-js";
 
 export default {
   name: "SidebarContextAccount",
