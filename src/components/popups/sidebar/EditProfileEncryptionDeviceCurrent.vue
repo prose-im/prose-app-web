@@ -62,15 +62,11 @@
 // PACKAGE
 import * as projectPackage from "@/../package.json";
 
-// PROJECT: BROKER
-import {
-  VERSION_NAME,
-  VERSION_SYSTEM,
-  VERSION_REVISION_FALLBACK
-} from "@/broker/stanzas/iq";
-
 // CONSTANTS
 const OMEMO_VERSION = "0.8.3"; // TODO: from local OMEMO library version tag
+const VERSION_NAME = "Prose";
+const VERSION_SYSTEM = "Web";
+const VERSION_REVISION_FALLBACK = "0.0.0";
 
 export default {
   name: "EditProfileEncryptionDeviceCurrent",
