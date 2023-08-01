@@ -44,14 +44,20 @@ const RECONNECT_INTERVAL = 5000; // 5 seconds
  * CLASS
  * ************************************************************************* */
 
-class BrokerClient implements ProseClientDelegate {
+class BrokerClient {
   jid?: JID;
 
   client?: ProseClient;
 
+  private __delegate: ClientDelegate;
   private __connectLifecycle?: ConnectLifecycle;
   private __credentials?: { jid: JID; password: string };
   private __reconnectTimeout?: ReturnType<typeof setTimeout>;
+
+  constructor() {
+    // Initialize delegate
+    this.__delegate = new ClientDelegate();
+  }
 
   async authenticate(jid: JID, password: string): Promise<void> {
     // Incomplete parameters?
@@ -75,7 +81,7 @@ class BrokerClient implements ProseClientDelegate {
       password
     };
 
-    const client = await ProseClient.init(this);
+    const client = await ProseClient.init(this.__delegate);
     this.client = client;
 
     try {
@@ -139,48 +145,61 @@ class BrokerClient implements ProseClientDelegate {
       clearTimeout(this.__reconnectTimeout);
     }
   }
+}
 
+class ClientDelegate implements ProseClientDelegate {
   clientConnected() {
     console.log("Client connected");
   }
 
-  clientDisconnected(error?: ConnectionError) {
+  clientDisconnected(_client: ProseClient, _error?: ConnectionError) {
     console.log("Client disconnected");
   }
 
-  async composingUsersChanged(conversation: JID) {
+  async composingUsersChanged(client: ProseClient, conversation: JID) {
     console.log("Composing users changed");
-    let composingUsers =
-      (await this.client?.loadComposingUsersInConversation(conversation)) || [];
+    let composingUsers = await client.loadComposingUsersInConversation(
+      conversation
+    );
     Store.$inbox.setComposing(
       conversation,
       composingUsers.find(jid => jid.equals(conversation))
     );
   }
 
-  contactChanged(jid: JID) {
+  contactChanged(_client: ProseClient, jid: JID) {
     Store.$roster.emitContactChanged(jid);
   }
 
-  avatarChanged(jid: JID): void {
+  avatarChanged(_client: ProseClient, jid: JID): void {
     Store.$avatar.load(jid);
   }
 
-  async messagesAppended(conversation: JID, messageIDs: string[]) {
-    let messages =
-      (await this.client?.loadMessagesWithIDs(conversation, messageIDs)) || [];
+  async messagesAppended(
+    client: ProseClient,
+    conversation: JID,
+    messageIDs: string[]
+  ) {
+    let messages = await client.loadMessagesWithIDs(conversation, messageIDs);
     Store.$inbox.insertMessages(conversation, messages);
   }
 
-  messagesDeleted(conversation: JID, messageIDs: string[]) {
+  messagesDeleted(
+    _client: ProseClient,
+    conversation: JID,
+    messageIDs: string[]
+  ) {
     for (const messageID of messageIDs) {
       Store.$inbox.retractMessage(conversation, messageID);
     }
   }
 
-  async messagesUpdated(conversation: JID, messageIDs: string[]) {
-    const messages =
-      (await this.client?.loadMessagesWithIDs(conversation, messageIDs)) || [];
+  async messagesUpdated(
+    client: ProseClient,
+    conversation: JID,
+    messageIDs: string[]
+  ) {
+    const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
     for (const message of messages) {
       Store.$inbox.updateMessage(conversation, message.id, message);
     }
