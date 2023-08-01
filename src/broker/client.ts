@@ -14,6 +14,7 @@ import {
   ProseClientDelegate,
   ConnectionError,
   Availability,
+  ProseClientConfig,
   JID
 } from "@prose-im/prose-sdk-js";
 
@@ -23,20 +24,12 @@ import Store from "@/store";
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 
-/**************************************************************************
- * INTERFACES
- * ************************************************************************* */
-
-interface ConnectLifecycle {
-  success: (value: void) => void;
-  failure: (error: Error) => void;
-}
+// PROJECT: BROKER
+import mitt from "mitt";
 
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
-
-const REQUEST_TIMEOUT_DEFAULT = 10000; // 10 seconds
 
 const RECONNECT_INTERVAL = 5000; // 5 seconds
 
@@ -50,13 +43,18 @@ class BrokerClient {
   client?: ProseClient;
 
   private __delegate: ClientDelegate;
-  private __connectLifecycle?: ConnectLifecycle;
   private __credentials?: { jid: JID; password: string };
   private __reconnectTimeout?: ReturnType<typeof setTimeout>;
 
   constructor() {
     // Initialize delegate
     this.__delegate = new ClientDelegate();
+    this.__delegate
+      .events()
+      .on("client:connected", () => this.onClientConnected());
+    this.__delegate
+      .events()
+      .on("client:disconnected", () => this.onClientDisconnected());
   }
 
   async authenticate(jid: JID, password: string): Promise<void> {
@@ -65,13 +63,8 @@ class BrokerClient {
       throw new Error("Please provide a password");
     }
 
-    // Another connection pending?
-    if (this.__connectLifecycle) {
-      throw new Error("Another connection is pending");
-    }
-
     // Another connection active?
-    if (this.__connection) {
+    if (Store.$session.isConnected() || Store.$session.isConnecting()) {
       throw new Error("Another connection already exist");
     }
 
@@ -81,22 +74,10 @@ class BrokerClient {
       password
     };
 
-    const client = await ProseClient.init(this.__delegate);
-    this.client = client;
-
-    try {
-      await client.connect(jid, password, Availability.Available);
-    } catch (error) {
-      console.log("Something went wrong", error);
-      this.__clearContext();
-      return;
-    }
-
     // Setup context
     this.jid = this.__credentials?.jid;
 
-    Store.$session.setConnected(true);
-    Store.$session.setConnecting(false);
+    await this.__connect(jid, password);
   }
 
   reconnect(afterDelay = 0): void {
@@ -105,7 +86,7 @@ class BrokerClient {
     if (credentials === undefined) {
       throw new Error("Cannot reconnect: credentials are not set");
     }
-    if (this.__connection !== undefined) {
+    if (Store.$session.isConnected() || Store.$session.isConnecting()) {
       throw new Error("Cannot reconnect: connection is active");
     }
 
@@ -123,21 +104,50 @@ class BrokerClient {
   }
 
   async logout(): Promise<void> {
-    await this.client?.disconnect();
-    await this.client?.deleteCachedData();
-  }
-
-  private __clearContext(): void {
-    // Mark as disconnected (this is permanent)
-    Store.$session.setConnected(false);
-    Store.$session.setConnecting(false);
-    Store.$session.setProtocol("");
-
     // Unassign JID
     this.jid = undefined;
 
     // Void stored credentials
     this.__credentials = undefined;
+
+    await this.client?.disconnect();
+    await this.client?.deleteCachedData();
+  }
+
+  private onClientConnected() {
+    console.log("Client connected");
+    Store.$session.setConnected(true);
+    Store.$session.setConnecting(false);
+  }
+
+  private onClientDisconnected() {
+    console.log("Client disconnected");
+    Store.$session.setConnected(false);
+    Store.$session.setConnecting(false);
+
+    if (!this.__credentials) {
+      return;
+    }
+
+    this.reconnect(RECONNECT_INTERVAL);
+  }
+
+  private async __connect(jid: JID, password: string): Promise<void> {
+    Store.$session.setConnecting(true);
+
+    const config = new ProseClientConfig();
+    config.pingInterval = 5;
+    config.logReceivedStanzas = true;
+    config.logSentStanzas = true;
+
+    const client = await ProseClient.init(this.__delegate, config);
+    this.client = client;
+
+    try {
+      await client.connect(jid, password, Availability.Available);
+    } catch (error) {
+      console.log("Something went wrong", error);
+    }
   }
 
   private __cancelScheduledReconnectTimer(): void {
@@ -148,12 +158,18 @@ class BrokerClient {
 }
 
 class ClientDelegate implements ProseClientDelegate {
+  private __eventBus = mitt();
+
+  events(): ReturnType<typeof mitt> {
+    return this.__eventBus;
+  }
+
   clientConnected() {
-    console.log("Client connected");
+    this.__eventBus.emit("client:connected");
   }
 
   clientDisconnected(_client: ProseClient, _error?: ConnectionError) {
-    console.log("Client disconnected");
+    this.__eventBus.emit("client:disconnected");
   }
 
   async composingUsersChanged(client: ProseClient, conversation: JID) {
