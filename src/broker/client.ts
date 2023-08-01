@@ -26,6 +26,7 @@ import logger from "@/utilities/logger";
 
 // PROJECT: BROKER
 import mitt from "mitt";
+import { JSConnectionProvider } from "./connection";
 
 /**************************************************************************
  * CONSTANTS
@@ -136,11 +137,15 @@ class BrokerClient {
     Store.$session.setConnecting(true);
 
     const config = new ProseClientConfig();
-    config.pingInterval = 5;
-    config.logReceivedStanzas = true;
-    config.logSentStanzas = true;
+    config.pingInterval = 60;
+    config.logReceivedStanzas = false;
+    config.logSentStanzas = false;
 
-    const client = await ProseClient.init(this.__delegate, config);
+    const client = await ProseClient.init(
+      new JSConnectionProvider(),
+      this.__delegate,
+      config
+    );
     this.client = client;
 
     try {
