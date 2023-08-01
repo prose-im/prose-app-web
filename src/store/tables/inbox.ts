@@ -15,9 +15,6 @@ import mitt from "mitt";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
 
-// PROJECT: BROKER
-import { MessageChatState } from "@/broker/stanzas/message";
-
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
@@ -28,7 +25,7 @@ type InboxEntryMessages = {
 };
 
 type InboxEntryStates = {
-  chatstate: MessageChatState;
+  composing: boolean;
 };
 
 type EventMessageGeneric = {
@@ -91,7 +88,7 @@ const $inbox = defineStore("inbox", {
     },
 
     getStates: function () {
-      return (jid: JID): Array<Message> => {
+      return (jid: JID): Array<InboxEntryStates> => {
         return this.assert(jid).states;
       };
     }
@@ -121,7 +118,7 @@ const $inbox = defineStore("inbox", {
 
             states: {
               // TODO: do not store this in persistance layer
-              chatstate: MessageChatState.Inactive
+              composing: false
             }
           };
         });
@@ -253,8 +250,8 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
-    setStatesChatstate(jid: JID, chatstate: MessageChatState) {
-      this.assert(jid).states.chatstate = chatstate;
+    setComposing(jid: JID, composing: boolean) {
+      this.assert(jid).states.composing = composing;
     }
   }
 });

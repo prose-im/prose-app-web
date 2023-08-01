@@ -21,12 +21,7 @@ transition(
     base-space
 
     template(
-      v-if="chatstate === 'paused'"
-    )
-      | stopped typing.
-
-    template(
-      v-else
+      v-if="composing"
     )
       | is typing…
 </template>
@@ -43,9 +38,6 @@ import { JID } from "@prose-im/prose-core-client-wasm";
 // PROJECT: STORES
 import Store from "@/store";
 
-// PROJECT: BROKER
-import { MessageChatState } from "@/broker/stanzas/message";
-
 export default {
   name: "InboxFormChatstate",
 
@@ -55,24 +47,15 @@ export default {
       required: true
     },
 
-    chatstate: {
-      type: String as PropType<MessageChatState>,
-      default: MessageChatState.Inactive
+    composing: {
+      type: Boolean,
+      default: false
     }
   },
 
   computed: {
     isVisible(): boolean {
-      switch (this.chatstate) {
-        case MessageChatState.Composing:
-        case MessageChatState.Paused: {
-          return true;
-        }
-
-        default: {
-          return false;
-        }
-      }
+      return this.composing;
     },
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {

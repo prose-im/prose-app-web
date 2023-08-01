@@ -39,7 +39,7 @@ layout-toolbar(
     )
       inbox-form-chatstate(
         :jid="jid"
-        :chatstate="states.chatstate"
+        :composing="states.composing"
         class="a-inbox-form__compose-chatstate"
       )
 

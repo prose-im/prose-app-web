@@ -231,11 +231,9 @@ class BrokerClient implements ProseClientDelegate {
     console.log("Composing users changed");
     let composingUsers =
       (await this.client?.loadComposingUsersInConversation(conversation)) || [];
-    Store.$inbox.setStatesChatstate(
+    Store.$inbox.setComposing(
       conversation,
       composingUsers.find(jid => jid.equals(conversation))
-        ? MessageChatState.Composing
-        : MessageChatState.Active
     );
   }
 
