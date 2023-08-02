@@ -32,7 +32,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-core-views": "0.23.0",
+    "@prose-im/prose-core-views": "0.23.1",
     "@xmpp/id": "0.13.x",
     "@xmpp/jid": "0.13.x",
     "@xmpp/time": "0.13.x",
@@ -55,7 +55,7 @@
     "vue-logger-plugin": "2.2.x",
     "vue3-click-away": "1.2.x",
     "vue3-emoji-picker": "1.1.x",
-    "v-hotkey": "0.9.x"
+    "v-hotkey3": "0.1.x"
   },
   "devDependencies": {
     "@types/node": "18.11.x",

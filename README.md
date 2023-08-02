@@ -6,7 +6,7 @@
 
 Copyright 2023, Prose Foundation - Released under the [Mozilla Public License 2.0](./LICENSE.md).
 
-_Tested at NodeJS version: `v14.21.1`_
+_Tested at NodeJS version: `v20.5.0`_
 
 ## Architecture
 

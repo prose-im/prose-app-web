@@ -11,7 +11,7 @@
 // NPM
 import { App } from "vue";
 import VueClickAway from "vue3-click-away";
-import VueHotkey from "v-hotkey";
+import VueHotkey from "v-hotkey3";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -25,15 +25,9 @@ class BootstrapPlugins {
     // Vue Logger
     app.use(logger);
 
-    // Vue directives (normal)
+    // Vue directives
     app.use(VueClickAway);
-
-    // Vue directives (manual)
-    app.directive("hotkey", {
-      beforeMount: VueHotkey.directive.bind,
-      updated: VueHotkey.directive.componentUpdated,
-      unmounted: VueHotkey.directive.unbind
-    });
+    app.use(VueHotkey);
   }
 }
 
