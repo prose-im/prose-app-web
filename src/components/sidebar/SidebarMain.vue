@@ -295,7 +295,7 @@ export default {
       }
     },
 
-    onContactChanged(jid: JID): void {
+    onContactChanged(): void {
       this.isRosterSyncStale = true;
       this.syncRosterEager();
     }

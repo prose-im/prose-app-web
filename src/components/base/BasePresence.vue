@@ -76,6 +76,8 @@ export default {
           return "unavailable";
         case Availability.DoNotDisturb:
           return "dnd";
+        default:
+          throw new Error(`Unexpected availability ${availability}`);
       }
     }
   }

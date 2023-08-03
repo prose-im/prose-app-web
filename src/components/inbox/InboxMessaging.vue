@@ -465,7 +465,7 @@ export default {
       (this.$refs.container as HTMLElement).click();
     },
 
-    async syncMessagesEager(): void {
+    async syncMessagesEager(): Promise<void> {
       // Can synchronize now? (connected)
       if (
         this.isMessageSyncStale === true &&
@@ -473,22 +473,6 @@ export default {
       ) {
         // Mark synchronization as non-stale
         this.isMessageSyncStale = false;
-
-        // Find last message with an archive identifier
-        let lastResultIdFromArchive = undefined;
-
-        if (this.messages.length > 0) {
-          for (let i = this.messages.length - 1; i >= 0; i--) {
-            const archiveId = this.messages[i].archiveId || undefined;
-
-            if (archiveId !== undefined) {
-              lastResultIdFromArchive = archiveId;
-
-              // Stop as soon as last archive identifier was found
-              break;
-            }
-          }
-        }
 
         // Load all messages
         await Broker.$mam.loadLatestMessages(this.jid);

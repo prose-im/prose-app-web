@@ -173,13 +173,17 @@ class ClientDelegate implements ProseClientDelegate {
     this.__eventBus.emit("client:connected");
   }
 
-  clientDisconnected(_client: ProseClient, _error?: ConnectionError) {
+  clientDisconnected(_client: ProseClient, error?: ConnectionError) {
+    if (error) {
+      const message = "message" in error ? error.message : "<no message>";
+      console.log(`Client disconnected. Reason: ${error.code}. ${message}`);
+    }
     this.__eventBus.emit("client:disconnected");
   }
 
   async composingUsersChanged(client: ProseClient, conversation: JID) {
     console.log("Composing users changed");
-    let composingUsers = await client.loadComposingUsersInConversation(
+    const composingUsers = await client.loadComposingUsersInConversation(
       conversation
     );
     Store.$inbox.setComposing(
@@ -201,7 +205,7 @@ class ClientDelegate implements ProseClientDelegate {
     conversation: JID,
     messageIDs: string[]
   ) {
-    let messages = await client.loadMessagesWithIDs(conversation, messageIDs);
+    const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
     Store.$inbox.insertMessages(conversation, messages);
   }
 
