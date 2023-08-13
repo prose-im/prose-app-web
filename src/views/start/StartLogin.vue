@@ -74,7 +74,6 @@ export default {
             name: "app"
           });
         } catch (error) {
-          console.error(error)
           // Show error alert
           BaseAlert.error(
             "Cannot authenticate",
