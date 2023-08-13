@@ -11,11 +11,11 @@
 import path from "path";
 import merge from "lodash.merge";
 import vue from "@vitejs/plugin-vue";
+import viteWasmPlugin from "vite-plugin-wasm";
 import vitePugPlugin from "vite-plugin-pug-transformer";
 import { viteStaticCopy as viteStaticCopyPlugin } from "vite-plugin-static-copy";
 import { createSvgIconsPlugin as viteSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { getInstalledPathSync } from "get-installed-path";
-import wasm from "vite-plugin-wasm";
 
 import commonConfig from "./config/common";
 import developmentConfig from "./config/development";
@@ -48,6 +48,7 @@ export default {
     host: "localhost",
     port: 3010,
     strictPort: true,
+
     fs: {
       strict: false
     }
@@ -78,7 +79,7 @@ export default {
   plugins: [
     vue(),
     vitePugPlugin({}),
-    wasm(),
+    viteWasmPlugin(),
 
     viteStaticCopyPlugin({
       targets: [
