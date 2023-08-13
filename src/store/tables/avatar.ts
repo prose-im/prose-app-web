@@ -55,7 +55,7 @@ const LOCAL_STATES = {
  * ************************************************************************* */
 
 const $avatar = defineStore("avatar", {
-  persist: false,
+  persist: true,
 
   state: (): Avatar => {
     return {
