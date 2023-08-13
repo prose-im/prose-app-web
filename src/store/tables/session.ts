@@ -45,16 +45,8 @@ const $session = defineStore("session", {
       this.setGeneric("connected", this.connected, connected);
     },
 
-    isConnected(): boolean {
-      return this.connected;
-    },
-
     setConnecting(connecting: boolean): void {
       this.setGeneric("connecting", this.connecting, connecting);
-    },
-
-    isConnecting(): boolean {
-      return this.connecting;
     },
 
     setProtocol(protocol = ""): void {

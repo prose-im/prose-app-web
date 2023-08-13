@@ -65,7 +65,10 @@ class BrokerClient {
     }
 
     // Another connection active?
-    if (Store.$session.isConnected() || Store.$session.isConnecting()) {
+    if (
+      Store.$session.connected === true ||
+      Store.$session.connecting === true
+    ) {
       throw new Error("Another connection already exist");
     }
 
@@ -87,7 +90,11 @@ class BrokerClient {
     if (credentials === undefined) {
       throw new Error("Cannot reconnect: credentials are not set");
     }
-    if (Store.$session.isConnected() || Store.$session.isConnecting()) {
+
+    if (
+      Store.$session.connected === true ||
+      Store.$session.connecting === true
+    ) {
       throw new Error("Cannot reconnect: connection is active");
     }
 
