@@ -66,7 +66,7 @@ const EventBus = mitt();
  * ************************************************************************* */
 
 const $inbox = defineStore("inbox", {
-  persist: true,
+  persist: false,
 
   state: (): Inbox => {
     return {

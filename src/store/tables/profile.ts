@@ -105,7 +105,7 @@ const LOCAL_STATES = {
  * ************************************************************************* */
 
 const $profile = defineStore("profile", {
-  persist: true,
+  persist: false,
 
   state: (): Profile => {
     return {
