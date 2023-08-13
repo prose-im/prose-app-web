@@ -33,7 +33,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-sdk-js": "https://github.com/prose-im/prose-core-client/releases/download/0.1.12/prose-im-prose-sdk-js-0.1.12.tgz",
+    "@prose-im/prose-sdk-js": "0.1.13",
     "@prose-im/prose-core-views": "0.23.1",
     "@xmpp/id": "0.13.x",
     "@xmpp/time": "0.13.x",
