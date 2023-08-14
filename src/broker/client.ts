@@ -11,8 +11,6 @@
 // NPM
 import {
   ProseClient,
-  ProseClientDelegate,
-  ConnectionError,
   Availability,
   ProseClientConfig,
   JID
@@ -25,8 +23,8 @@ import Store from "@/store";
 import logger from "@/utilities/logger";
 
 // PROJECT: BROKER
-import mitt from "mitt";
-import { JSConnectionProvider } from "./connection";
+import BrokerDelegate from "./delegate";
+import BrokerConnection from "./connection";
 
 /**************************************************************************
  * CONSTANTS
@@ -42,20 +40,16 @@ class BrokerClient {
   jid?: JID;
   client?: ProseClient;
 
-  private __delegate: ClientDelegate;
+  private __delegate: BrokerDelegate;
   private __credentials?: { jid: JID; password: string };
   private __reconnectTimeout?: ReturnType<typeof setTimeout>;
 
   constructor() {
     // Initialize delegate
-    this.__delegate = new ClientDelegate();
+    this.__delegate = new BrokerDelegate();
 
-    this.__delegate
-      .events()
-      .on("client:connected", () => this.__onClientConnected());
-    this.__delegate
-      .events()
-      .on("client:disconnected", () => this.__onClientDisconnected());
+    // Bind all delegate event handlers
+    this.__bindDelegateEvents(this.__delegate);
   }
 
   async authenticate(jid: JID, password: string): Promise<void> {
@@ -122,12 +116,12 @@ class BrokerClient {
     await this.client?.deleteCachedData();
   }
 
-  private __onClientConnected() {
+  private __onClientConnected(): void {
     Store.$session.setConnected(true);
     Store.$session.setConnecting(false);
   }
 
-  private __onClientDisconnected() {
+  private __onClientDisconnected(): void {
     Store.$session.setConnected(false);
     Store.$session.setConnecting(false);
 
@@ -139,6 +133,7 @@ class BrokerClient {
   }
 
   private async __connect(jid: JID, password: string): Promise<void> {
+    // Mark as connecting
     Store.$session.setConnecting(true);
 
     // Initialize client configuration
@@ -150,7 +145,7 @@ class BrokerClient {
 
     // Initialize client
     const client = await ProseClient.init(
-      new JSConnectionProvider(),
+      new BrokerConnection(),
       this.__delegate,
       config
     );
@@ -165,91 +160,20 @@ class BrokerClient {
     }
   }
 
+  private __bindDelegateEvents(delegate: BrokerDelegate): void {
+    const events: { [event: string]: () => void } = {
+      "client:connected": this.__onClientConnected,
+      "client:disconnected": this.__onClientDisconnected
+    };
+
+    for (const eventName in events) {
+      delegate.events().on(eventName, events[eventName].bind(this));
+    }
+  }
+
   private __cancelScheduledReconnectTimer(): void {
     if (this.__reconnectTimeout !== undefined) {
       clearTimeout(this.__reconnectTimeout);
-    }
-  }
-}
-
-// TODO: can this be located somewhere else?
-class ClientDelegate implements ProseClientDelegate {
-  private __eventBus = mitt();
-
-  events(): ReturnType<typeof mitt> {
-    return this.__eventBus;
-  }
-
-  clientConnected() {
-    this.__eventBus.emit("client:connected");
-  }
-
-  clientDisconnected(_client: ProseClient, error?: ConnectionError) {
-    if (error) {
-      const message = "message" in error ? error.message : "<no message>";
-
-      logger.warn(`Client disconnected. Reason: ${error.code}. ${message}`);
-    }
-
-    this.__eventBus.emit("client:disconnected");
-  }
-
-  async composingUsersChanged(client: ProseClient, conversation: JID) {
-    const composingUsers = await client.loadComposingUsersInConversation(
-      conversation
-    );
-
-    logger.info(
-      `Composing users changed: ${composingUsers.join(", ") || "(none)"}`
-    );
-
-    const conversationComposingUser = composingUsers.find(jid => {
-      return jid.equals(conversation);
-    });
-
-    Store.$inbox.setComposing(
-      conversation,
-      conversationComposingUser ? true : false
-    );
-  }
-
-  contactChanged(_client: ProseClient, jid: JID) {
-    Store.$roster.emitContactChanged(jid);
-  }
-
-  avatarChanged(_client: ProseClient, jid: JID): void {
-    Store.$avatar.load(jid);
-  }
-
-  async messagesAppended(
-    client: ProseClient,
-    conversation: JID,
-    messageIDs: string[]
-  ) {
-    const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
-
-    Store.$inbox.insertMessages(conversation, messages);
-  }
-
-  messagesDeleted(
-    _client: ProseClient,
-    conversation: JID,
-    messageIDs: string[]
-  ) {
-    for (const messageID of messageIDs) {
-      Store.$inbox.retractMessage(conversation, messageID);
-    }
-  }
-
-  async messagesUpdated(
-    client: ProseClient,
-    conversation: JID,
-    messageIDs: string[]
-  ) {
-    const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
-
-    for (const message of messages) {
-      Store.$inbox.updateMessage(conversation, message.id, message);
     }
   }
 }

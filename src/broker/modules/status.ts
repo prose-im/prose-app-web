@@ -25,6 +25,7 @@ class BrokerModuleStatus extends BrokerModule {
   async setAvailability(availability: Availability): Promise<void> {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#presence
+
     await this._client.client?.setAvailability(availability);
   }
 
@@ -41,7 +42,7 @@ class BrokerModuleStatus extends BrokerModule {
         activity = new UserActivity(icon, text);
       }
 
-      // TODO: We should load our own status from the store as another
+      // TODO: we should load our own status from the store as another
       // session might change it.
       Store.$activity.setActivity(this._client.jid, activity);
     }

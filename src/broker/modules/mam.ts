@@ -26,6 +26,9 @@ import logger from "@/utilities/logger";
 
 class BrokerModuleMAM extends BrokerModule {
   async loadLatestMessages(conversation: JID) {
+    // XEP-0313: Message Archive Management
+    // https://xmpp.org/extensions/xep-0313.html
+
     try {
       const messages = await this._client.client?.loadLatestMessages(
         conversation,
@@ -36,8 +39,8 @@ class BrokerModuleMAM extends BrokerModule {
       if (messages !== undefined) {
         Store.$inbox.insertMessages(conversation, messages);
       }
-    } catch (err) {
-      logger.error("Failed to load messages from MAM:", err);
+    } catch (error) {
+      logger.error("Failed to load messages from MAM:", error);
     }
   }
 }

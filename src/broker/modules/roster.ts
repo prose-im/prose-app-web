@@ -38,6 +38,7 @@ class BrokerModuleRoster extends BrokerModule {
   async loadContacts(): Promise<Contact[]> {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-get
+
     logger.info("Will load roster");
 
     if (!this._client.client) {

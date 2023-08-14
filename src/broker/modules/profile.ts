@@ -57,6 +57,10 @@ class BrokerModuleProfile extends BrokerModule {
   }
 
   async loadUserMetadata(jid: JID): Promise<UserMetadata | undefined> {
+    // XEP-0012: Last Activity + XEP-0202: Entity Time
+    // https://xmpp.org/extensions/xep-0012.html + \
+    //   https://xmpp.org/extensions/xep-0202.html
+
     return await this._client.client?.loadUserMetadata(jid);
   }
 
@@ -79,6 +83,7 @@ class BrokerModuleProfile extends BrokerModule {
     // https://xmpp.org/extensions/xep-0292.html
 
     logger.info(`Will save vCard profile for: '${jid}'`, profile);
+
     await this._client.client?.saveUserProfile(profile);
   }
 
@@ -87,6 +92,7 @@ class BrokerModuleProfile extends BrokerModule {
     // https://xmpp.org/extensions/xep-0084.html
 
     logger.info(`Will save avatar for: '${jid}'`);
+
     await this._client.client?.saveAvatar(
       avatar.data.base64,
       avatar.metadata.type

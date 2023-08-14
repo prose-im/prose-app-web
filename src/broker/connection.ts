@@ -27,13 +27,7 @@ import logger from "@/utilities/logger";
  * CLASS
  * ************************************************************************* */
 
-export class JSConnectionProvider implements ProseConnectionProvider {
-  provideConnection(config: ProseClientConfig): ProseConnection {
-    return new StropheJSConnection(config);
-  }
-}
-
-export class StropheJSConnection implements ProseConnection {
+class BrokerConnectionStrophe implements ProseConnection {
   private readonly __config: ProseClientConfig;
   private readonly __connection: Strophe.Connection;
 
@@ -43,38 +37,68 @@ export class StropheJSConnection implements ProseConnection {
     // Assign configuration
     this.__config = config;
 
-    // Initialize connection
+    // Acquire relay host
     const relayHost = CONFIG.hosts.websocket || null;
 
     if (!relayHost) {
       throw new Error("No relay host to connect to");
     }
 
+    // Create connection
     this.__connection = new Strophe.Connection(relayHost, { protocol: "wss" });
 
+    // Configure connection
     this.__connection.maxRetries = 0;
 
-    this.__connection.rawInput = data => {
-      if (this.__config.logReceivedStanzas === true) {
-        logger.debug("(in)", data);
-      }
-
-      if (this.__eventHandler !== undefined) {
-        this.__eventHandler.handleStanza(data);
-      }
-    };
+    // Bind handlers
+    this.__connection.rawInput = this.__onInput.bind(this);
+    this.__connection.rawOutput = this.__onOutput.bind(this);
   }
 
-  async connect(jid: string, password: string) {
-    return new Promise<void>((resolve, reject) => {
+  async connect(jid: string, password: string): Promise<void> {
+    return new Promise((resolve, reject) => {
       this.__connection.connect(jid, password, status => {
         switch (status) {
+          // [CONNECTING] The connection is currently being made
           case Strophe.Status.CONNECTING: {
             logger.debug("Connecting…");
 
             break;
           }
 
+          // [DISCONNECTING] The connection is currently being terminated
+          case Strophe.Status.DISCONNECTING: {
+            logger.debug("Disconnecting…");
+
+            break;
+          }
+
+          // [DISCONNECTED] The connection has been terminated
+          case Strophe.Status.DISCONNECTED: {
+            logger.warn("Disconnected");
+
+            this.__eventHandler?.handleDisconnect();
+
+            break;
+          }
+
+          // [CONNECTED] The connection has succeeded
+          case Strophe.Status.CONNECTED: {
+            logger.info("Connected");
+
+            resolve();
+
+            break;
+          }
+
+          // [AUTHFAIL] The authentication attempt failed
+          case Strophe.Status.AUTHFAIL: {
+            logger.error("Authentication failure");
+
+            break;
+          }
+
+          // [CONNFAIL] The connection attempt failed
           case Strophe.Status.CONNFAIL: {
             logger.error("Connection failure");
 
@@ -83,54 +107,102 @@ export class StropheJSConnection implements ProseConnection {
             break;
           }
 
-          case Strophe.Status.DISCONNECTING: {
-            logger.debug("Disconnecting…");
+          // [CONNTIMEOUT] The connection has timed out
+          case Strophe.Status.CONNTIMEOUT: {
+            logger.error("Connection timed out");
 
             break;
           }
 
-          case Strophe.Status.DISCONNECTED: {
-            logger.warn("Disconnected");
-
-            setTimeout(() => this.__eventHandler?.handleDisconnect());
+          // [ERROR] An error has occurred
+          case Strophe.Status.ERROR: {
+            logger.error("Connection error");
 
             break;
           }
 
-          case Strophe.Status.CONNECTED: {
-            logger.info("Connected");
-
-            resolve();
+          // [AUTHENTICATING] The connection is authenticating
+          case Strophe.Status.AUTHENTICATING: {
+            logger.debug("Authenticating…");
 
             break;
+          }
+
+          // [ATTACHED] The connection has been attached
+          case Strophe.Status.ATTACHED: {
+            logger.info("Connection has been attached to");
+
+            break;
+          }
+
+          // [REDIRECT] The connection has been redirected
+          case Strophe.Status.REDIRECT: {
+            logger.info("Connection has been redirected");
+
+            break;
+          }
+
+          // [OTHER] Unhandled connection event received
+          default: {
+            logger.warn("Received unhandled connection event");
           }
         }
       });
     });
   }
 
-  disconnect() {
+  disconnect(): void {
     this.__connection.disconnect("logout");
   }
 
-  sendStanza(stanza: string) {
-    if (this.__config.logSentStanzas === true) {
-      logger.debug("(out)", stanza);
-    }
-
+  sendStanza(stanza: string): void {
+    // Parse stanza into DOM
     const element = new DOMParser().parseFromString(
       stanza,
       "text/xml"
     ).firstElementChild;
 
     if (!element) {
+      logger.warn("Cannot parse stanza:", stanza);
+
       throw new Error("Failed to parse stanza");
     }
 
     this.__connection.send(element);
   }
 
-  setEventHandler(handler: ProseConnectionEventHandler) {
+  setEventHandler(handler: ProseConnectionEventHandler): void {
     this.__eventHandler = handler;
   }
+
+  private __onInput(data: string): void {
+    // Trace raw input?
+    if (this.__config.logReceivedStanzas === true) {
+      logger.debug("(in)", data);
+    }
+
+    // Pass to event handler?
+    if (this.__eventHandler !== undefined) {
+      this.__eventHandler.handleStanza(data);
+    }
+  }
+
+  private __onOutput(data: string): void {
+    // Trace raw output?
+    if (this.__config.logSentStanzas === true) {
+      logger.debug("(out)", data);
+    }
+  }
 }
+
+class BrokerConnection implements ProseConnectionProvider {
+  provideConnection(config: ProseClientConfig): ProseConnection {
+    return new BrokerConnectionStrophe(config);
+  }
+}
+
+/**************************************************************************
+ * EXPORTS
+ * ************************************************************************* */
+
+export default BrokerConnection;
