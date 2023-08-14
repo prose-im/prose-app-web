@@ -219,7 +219,7 @@ export default {
               type: PopoverItemType.Button,
               label: "Available",
               click: this.onAvatarPopoverAvailabilityAvailableClick,
-              emphasis: this.localAvailability === undefined
+              emphasis: this.localAvailability === Availability.Available
             },
 
             {
