@@ -16,14 +16,7 @@ transition(
   .c-inbox-form-chatstate(
     v-if="isVisible"
   )
-    | {{ rosterName }}
-
-    base-space
-
-    template(
-      v-if="composing"
-    )
-      | is typing…
+    | {{ rosterName }} is typing…
 </template>
 
 <!-- **********************************************************************

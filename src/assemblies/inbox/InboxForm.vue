@@ -198,19 +198,19 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    setUserIsComposing(isComposing: boolean): void {
+    propagateChatState(composing: boolean): void {
       // Propagate new chat state?
-      if (isComposing !== this.isUserComposing) {
-        this.isUserComposing = isComposing;
+      if (composing !== this.isUserComposing) {
+        this.isUserComposing = composing;
 
-        Broker.$chat.setUserIsComposing(this.jid, isComposing);
+        Broker.$chat.sendChatState(this.jid, composing);
       }
     },
 
     scheduleChatStateComposeTimeout(): void {
       this.chatStateComposeTimeout = setTimeout(() => {
         // Propagate paused chat state
-        this.setUserIsComposing(false);
+        this.propagateChatState(false);
       }, CHATSTATE_COMPOSE_INACTIVE_DELAY);
     },
 
@@ -269,7 +269,7 @@ export default {
       const isComposing = value.length > 0;
 
       // Propagate new chat state (as needed)
-      this.setUserIsComposing(isComposing);
+      this.propagateChatState(isComposing);
 
       // Re-schedule compose timeout?
       if (isComposing === true) {
