@@ -119,11 +119,12 @@ class Router {
   }
 
   private async __initializeWasmModule() {
-    if (this.__wasmModuleInitialized) {
-      return;
+    // Not already initialized?
+    if (this.__wasmModuleInitialized !== true) {
+      this.__wasmModuleInitialized = true;
+
+      await init();
     }
-    this.__wasmModuleInitialized = true;
-    await init();
   }
 
   private __guardAuthenticated() {

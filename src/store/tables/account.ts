@@ -50,6 +50,7 @@ const $account = defineStore("account", {
             "No JID defined in credentials (this should never happen)"
           );
         }
+
         return new JID(localJID);
       };
     }

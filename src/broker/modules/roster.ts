@@ -41,7 +41,7 @@ class BrokerModuleRoster extends BrokerModule {
     logger.info("Will load roster");
 
     if (!this._client.client) {
-      return Promise.reject("No client");
+      return Promise.reject("No client available");
     }
 
     return await this._client.client.loadContacts();

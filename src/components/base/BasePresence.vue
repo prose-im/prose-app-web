@@ -34,6 +34,14 @@ import { JID, Availability } from "@prose-im/prose-sdk-js";
 // PROJECT: STORES
 import Store from "@/store";
 
+// CONSTANTS
+const AVAILABILITY_LABELS = {
+  [Availability.Available]: "available",
+  [Availability.Away]: "away",
+  [Availability.Unavailable]: "unavailable",
+  [Availability.DoNotDisturb]: "dnd"
+};
+
 export default {
   name: "BasePresence",
 
@@ -65,20 +73,14 @@ export default {
 
   computed: {
     availability(): string {
-      const availability = Store.$presence.getAvailability(this.jid);
+      const availability = Store.$presence.getAvailability(this.jid),
+        availabilityLabel = AVAILABILITY_LABELS[availability] || null;
 
-      switch (availability) {
-        case Availability.Available:
-          return "available";
-        case Availability.Away:
-          return "away";
-        case Availability.Unavailable:
-          return "unavailable";
-        case Availability.DoNotDisturb:
-          return "dnd";
-        default:
-          throw new Error(`Unexpected availability ${availability}`);
+      if (availabilityLabel === null) {
+        throw new Error(`Unexpected availability: ${availability}`);
       }
+
+      return availabilityLabel;
     }
   }
 };
@@ -121,7 +123,7 @@ $availabilities: (
     }
   }
 
-  // --> AVAILABILITY <--
+  // --> AVAILABILITIES <--
 
   @each $availability, $color in $availabilities {
     &--#{$availability} {

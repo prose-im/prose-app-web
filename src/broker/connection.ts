@@ -1,3 +1,14 @@
+/*
+ * This file is part of prose-app-web
+ *
+ * Copyright 2023, Prose Foundation
+ */
+
+/**************************************************************************
+ * IMPORTS
+ * ************************************************************************* */
+
+// NPM
 import { Strophe } from "strophe.js";
 import {
   ProseConnection,
@@ -5,6 +16,16 @@ import {
   ProseClientConfig,
   ProseConnectionEventHandler
 } from "@prose-im/prose-sdk-js";
+
+// PROJECT: COMMONS
+import CONFIG from "@/commons/config";
+
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
+/**************************************************************************
+ * CLASS
+ * ************************************************************************* */
 
 export class JSConnectionProvider implements ProseConnectionProvider {
   provideConnection(config: ProseClientConfig): ProseConnection {
@@ -15,20 +36,30 @@ export class JSConnectionProvider implements ProseConnectionProvider {
 export class StropheJSConnection implements ProseConnection {
   private readonly __config: ProseClientConfig;
   private readonly __connection: Strophe.Connection;
+
   private __eventHandler?: ProseConnectionEventHandler;
 
   constructor(config: ProseClientConfig) {
+    // Assign configuration
     this.__config = config;
-    this.__connection = new Strophe.Connection(
-      "wss://chat.prose.org/websocket/",
-      { protocol: "wss" }
-    );
+
+    // Initialize connection
+    const relayHost = CONFIG.hosts.websocket || null;
+
+    if (!relayHost) {
+      throw new Error("No relay host to connect to");
+    }
+
+    this.__connection = new Strophe.Connection(relayHost, { protocol: "wss" });
+
     this.__connection.maxRetries = 0;
+
     this.__connection.rawInput = data => {
-      if (this.__config.logReceivedStanzas) {
-        console.info("(in)", data);
+      if (this.__config.logReceivedStanzas === true) {
+        logger.debug("(in)", data);
       }
-      if (this.__eventHandler) {
+
+      if (this.__eventHandler !== undefined) {
         this.__eventHandler.handleStanza(data);
       }
     };
@@ -37,19 +68,42 @@ export class StropheJSConnection implements ProseConnection {
   async connect(jid: string, password: string) {
     return new Promise<void>((resolve, reject) => {
       this.__connection.connect(jid, password, status => {
-        if (status === Strophe.Status.CONNECTING) {
-          console.log("Strophe is connecting.");
-        } else if (status === Strophe.Status.CONNFAIL) {
-          console.log("Strophe failed to connect.");
-          reject(new Error("Something went wrong."));
-        } else if (status === Strophe.Status.DISCONNECTING) {
-          console.log("Strophe is disconnecting.");
-        } else if (status === Strophe.Status.DISCONNECTED) {
-          console.log("Strophe is disconnected.");
-          setTimeout(() => this.__eventHandler?.handleDisconnect());
-        } else if (status === Strophe.Status.CONNECTED) {
-          console.log("Strophe is connected.");
-          resolve();
+        switch (status) {
+          case Strophe.Status.CONNECTING: {
+            logger.debug("Connecting…");
+
+            break;
+          }
+
+          case Strophe.Status.CONNFAIL: {
+            logger.error("Connection failure");
+
+            reject(new Error("Something went wrong"));
+
+            break;
+          }
+
+          case Strophe.Status.DISCONNECTING: {
+            logger.debug("Disconnecting…");
+
+            break;
+          }
+
+          case Strophe.Status.DISCONNECTED: {
+            logger.warn("Disconnected");
+
+            setTimeout(() => this.__eventHandler?.handleDisconnect());
+
+            break;
+          }
+
+          case Strophe.Status.CONNECTED: {
+            logger.info("Connected");
+
+            resolve();
+
+            break;
+          }
         }
       });
     });
@@ -60,8 +114,8 @@ export class StropheJSConnection implements ProseConnection {
   }
 
   sendStanza(stanza: string) {
-    if (this.__config.logSentStanzas) {
-      console.info("(out)", stanza);
+    if (this.__config.logSentStanzas === true) {
+      logger.debug("(out)", stanza);
     }
 
     const element = new DOMParser().parseFromString(

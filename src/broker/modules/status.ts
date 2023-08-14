@@ -31,17 +31,16 @@ class BrokerModuleStatus extends BrokerModule {
   async sendActivity(icon?: string, text?: string): Promise<void> {
     // XEP-0108: User Activity
     // https://xmpp.org/extensions/xep-0108.html
-    if (!this._client.client) {
-      return;
-    }
 
-    await this._client.client.sendActivity(icon, text);
+    await this._client.client?.sendActivity(icon, text);
 
     if (this._client.jid) {
       let activity: UserActivity | undefined;
+
       if (icon && text) {
         activity = new UserActivity(icon, text);
       }
+
       // TODO: We should load our own status from the store as another
       // session might change it.
       Store.$activity.setActivity(this._client.jid, activity);

@@ -17,26 +17,27 @@ import BrokerModule from "@/broker/modules";
 // PROJECT: UTILITIES
 import Store from "@/store";
 
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
 
 class BrokerModuleMAM extends BrokerModule {
   async loadLatestMessages(conversation: JID) {
-    if (!this._client.client) {
-      return;
-    }
-
     try {
-      const messages = await this._client.client.loadLatestMessages(
+      const messages = await this._client.client?.loadLatestMessages(
         conversation,
         undefined,
         true
       );
 
-      Store.$inbox.insertMessages(conversation, messages);
+      if (messages !== undefined) {
+        Store.$inbox.insertMessages(conversation, messages);
+      }
     } catch (err) {
-      console.error("Failed to load messages.", err);
+      logger.error("Failed to load messages from MAM:", err);
     }
   }
 }

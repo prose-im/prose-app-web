@@ -297,6 +297,7 @@ export default {
 
     onContactChanged(): void {
       this.isRosterSyncStale = true;
+
       this.syncRosterEager();
     }
   }

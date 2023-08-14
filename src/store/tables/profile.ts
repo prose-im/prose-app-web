@@ -173,59 +173,61 @@ const $profile = defineStore("profile", {
       const profile = this.assert(jid),
         information = this.ensureProfileInformation(profile);
 
+      // Reset or update user profile?
       if (!userProfile) {
+        // Reset data in store
         this.$patch(() => {
           delete profile.name;
           delete profile.employment;
+
           information.contact.email = null;
           information.contact.phone = null;
           information.location.city = null;
           information.location.country = null;
         });
-        return profile;
+      } else {
+        // Update data in store
+        this.$patch(() => {
+          // #1. Store name
+          if (userProfile.firstName || userProfile.lastName) {
+            profile.name = {
+              first: userProfile.firstName || "",
+              last: userProfile.lastName || ""
+            };
+          } else {
+            delete profile.name;
+          }
+
+          // #2. Store employment
+          if (
+            userProfile.job &&
+            (userProfile.job.title ||
+              userProfile.job.role ||
+              userProfile.job.organization)
+          ) {
+            profile.employment = {};
+
+            if (userProfile.job.title) {
+              profile.employment.title = userProfile.job.title;
+            } else if (userProfile.job.role) {
+              profile.employment.title = userProfile.job.role;
+            }
+
+            if (userProfile.job.organization) {
+              profile.employment.organization = userProfile.job.organization;
+            }
+          } else {
+            delete profile.employment;
+          }
+
+          // #3. Store information
+          information.contact.email = userProfile.email || null;
+          information.contact.phone = userProfile.phone || null;
+
+          information.location.city = userProfile.address?.city || null;
+          information.location.country = userProfile.address?.country || null;
+        });
       }
-
-      // Update data in store
-      this.$patch(() => {
-        // #1. Store name
-        if (userProfile.firstName || userProfile.lastName) {
-          profile.name = {
-            first: userProfile.firstName || "",
-            last: userProfile.lastName || ""
-          };
-        } else {
-          delete profile.name;
-        }
-
-        // #2. Store employment
-        if (
-          userProfile.job &&
-          (userProfile.job.title ||
-            userProfile.job.role ||
-            userProfile.job.organization)
-        ) {
-          profile.employment = {};
-
-          if (userProfile.job.title) {
-            profile.employment.title = userProfile.job.title;
-          } else if (userProfile.job.role) {
-            profile.employment.title = userProfile.job.role;
-          }
-
-          if (userProfile.job.organization) {
-            profile.employment.organization = userProfile.job.organization;
-          }
-        } else {
-          delete profile.employment;
-        }
-
-        // #3. Store information
-        information.contact.email = userProfile.email || null;
-        information.contact.phone = userProfile.phone || null;
-
-        information.location.city = userProfile.address?.city || null;
-        information.location.country = userProfile.address?.country || null;
-      });
 
       return profile;
     },
@@ -235,60 +237,64 @@ const $profile = defineStore("profile", {
         information = this.ensureProfileInformation(profile),
         location = this.ensureProfileInformationLocation(information);
 
+      // Reset or update user metadata?
       if (!metadata) {
+        // Reset data in store
         this.$patch(() => {
           information.lastActive = null;
           location.timezone = null;
 
           profile.security = profile.security || {};
+
           delete profile.security.verification;
           delete profile.security.encryption;
         });
-        return profile;
+      } else {
+        // Update data in store
+        this.$patch(() => {
+          // #1. Store last activity + local time
+          if (metadata.lastActivity) {
+            information.lastActive = {
+              timestamp: Number(metadata.lastActivity.utcTimestamp) * 1000
+            };
+          } else {
+            information.lastActive = null;
+          }
+
+          if (metadata.localTime) {
+            location.timezone = {
+              name: metadata.localTime.formattedTimezoneOffset,
+              offset: metadata.localTime.timezoneOffset / 60
+            };
+          } else {
+            location.timezone = null;
+          }
+
+          // #2. Store security details
+          profile.security = profile.security || {};
+
+          if (metadata.verification) {
+            profile.security.verification = {
+              fingerprint: metadata.verification.fingerprint || null,
+              email: metadata.verification.email || null,
+              phone: metadata.verification.phone || null,
+              identity: metadata.verification.identity || null
+            };
+          } else {
+            delete profile.security.verification;
+          }
+
+          if (metadata.encryption) {
+            profile.security.encryption = {
+              secureProtocol: metadata.encryption.secureProtocol,
+              connectionProtocol: metadata.encryption.connectionProtocol,
+              messageEndToEndMethod: metadata.encryption.messageEndToEndMethod
+            };
+          } else {
+            delete profile.security.encryption;
+          }
+        });
       }
-
-      // Update data in store
-      this.$patch(() => {
-        if (metadata.lastActivity) {
-          information.lastActive = {
-            timestamp: Number(metadata.lastActivity.utcTimestamp) * 1000
-          };
-        } else {
-          information.lastActive = null;
-        }
-
-        if (metadata.localTime) {
-          location.timezone = {
-            name: metadata.localTime.formattedTimezoneOffset,
-            offset: metadata.localTime.timezoneOffset / 60
-          };
-        } else {
-          location.timezone = null;
-        }
-
-        profile.security = profile.security || {};
-        if (metadata.verification) {
-          profile.security.verification = {
-            fingerprint: metadata.verification.fingerprint || null,
-            email: metadata.verification.email || null,
-            phone: metadata.verification.phone || null,
-            identity: metadata.verification.identity || null
-          };
-        } else {
-          delete profile.security.verification;
-        }
-
-        profile.security = profile.security || {};
-        if (metadata.encryption) {
-          profile.security.encryption = {
-            secureProtocol: metadata.encryption.secureProtocol,
-            connectionProtocol: metadata.encryption.connectionProtocol,
-            messageEndToEndMethod: metadata.encryption.messageEndToEndMethod
-          };
-        } else {
-          delete profile.security.encryption;
-        }
-      });
     },
 
     ensureProfileInformation(profile: ProfileEntry): ProfileEntryInformation {

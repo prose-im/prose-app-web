@@ -234,11 +234,9 @@ export default {
         }
       }
 
-      const node = jid.node;
-
       // #2. Extract initials from JID (fallback)
-      if (node && node.length >= 1) {
-        return node.substring(0, 2);
+      if (jid.node && jid.node.length >= 1) {
+        return jid.node.substring(0, 2);
       }
 
       // No initials extracted

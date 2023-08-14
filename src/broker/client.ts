@@ -40,7 +40,6 @@ const RECONNECT_INTERVAL = 5000; // 5 seconds
 
 class BrokerClient {
   jid?: JID;
-
   client?: ProseClient;
 
   private __delegate: ClientDelegate;
@@ -50,12 +49,13 @@ class BrokerClient {
   constructor() {
     // Initialize delegate
     this.__delegate = new ClientDelegate();
+
     this.__delegate
       .events()
-      .on("client:connected", () => this.onClientConnected());
+      .on("client:connected", () => this.__onClientConnected());
     this.__delegate
       .events()
-      .on("client:disconnected", () => this.onClientDisconnected());
+      .on("client:disconnected", () => this.__onClientDisconnected());
   }
 
   async authenticate(jid: JID, password: string): Promise<void> {
@@ -122,14 +122,12 @@ class BrokerClient {
     await this.client?.deleteCachedData();
   }
 
-  private onClientConnected() {
-    console.log("Client connected");
+  private __onClientConnected() {
     Store.$session.setConnected(true);
     Store.$session.setConnecting(false);
   }
 
-  private onClientDisconnected() {
-    console.log("Client disconnected");
+  private __onClientDisconnected() {
     Store.$session.setConnected(false);
     Store.$session.setConnecting(false);
 
@@ -143,22 +141,27 @@ class BrokerClient {
   private async __connect(jid: JID, password: string): Promise<void> {
     Store.$session.setConnecting(true);
 
+    // Initialize client configuration
     const config = new ProseClientConfig();
-    config.pingInterval = 60;
-    config.logReceivedStanzas = false;
-    config.logSentStanzas = false;
 
+    config.pingInterval = 60;
+    config.logReceivedStanzas = true;
+    config.logSentStanzas = true;
+
+    // Initialize client
     const client = await ProseClient.init(
       new JSConnectionProvider(),
       this.__delegate,
       config
     );
+
     this.client = client;
 
+    // Connect client
     try {
       await client.connect(jid, password, Availability.Available);
     } catch (error) {
-      console.log("Something went wrong", error);
+      logger.error("Something went wrong", error);
     }
   }
 
@@ -169,6 +172,7 @@ class BrokerClient {
   }
 }
 
+// TODO: can this be located somewhere else?
 class ClientDelegate implements ProseClientDelegate {
   private __eventBus = mitt();
 
@@ -183,19 +187,29 @@ class ClientDelegate implements ProseClientDelegate {
   clientDisconnected(_client: ProseClient, error?: ConnectionError) {
     if (error) {
       const message = "message" in error ? error.message : "<no message>";
-      console.log(`Client disconnected. Reason: ${error.code}. ${message}`);
+
+      logger.warn(`Client disconnected. Reason: ${error.code}. ${message}`);
     }
+
     this.__eventBus.emit("client:disconnected");
   }
 
   async composingUsersChanged(client: ProseClient, conversation: JID) {
-    console.log("Composing users changed");
     const composingUsers = await client.loadComposingUsersInConversation(
       conversation
     );
+
+    logger.info(
+      `Composing users changed: ${composingUsers.join(", ") || "(none)"}`
+    );
+
+    const conversationComposingUser = composingUsers.find(jid => {
+      return jid.equals(conversation);
+    });
+
     Store.$inbox.setComposing(
       conversation,
-      composingUsers.find(jid => jid.equals(conversation))
+      conversationComposingUser ? true : false
     );
   }
 
@@ -213,6 +227,7 @@ class ClientDelegate implements ProseClientDelegate {
     messageIDs: string[]
   ) {
     const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
+
     Store.$inbox.insertMessages(conversation, messages);
   }
 
@@ -232,6 +247,7 @@ class ClientDelegate implements ProseClientDelegate {
     messageIDs: string[]
   ) {
     const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
+
     for (const message of messages) {
       Store.$inbox.updateMessage(conversation, message.id, message);
     }

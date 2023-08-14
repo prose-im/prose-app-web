@@ -202,6 +202,7 @@ export default {
       // Propagate new chat state?
       if (isComposing !== this.isUserComposing) {
         this.isUserComposing = isComposing;
+
         Broker.$chat.setUserIsComposing(this.jid, isComposing);
       }
     },
@@ -271,7 +272,7 @@ export default {
       this.setUserIsComposing(isComposing);
 
       // Re-schedule compose timeout?
-      if (isComposing) {
+      if (isComposing === true) {
         this.scheduleChatStateComposeTimeout();
       }
     },

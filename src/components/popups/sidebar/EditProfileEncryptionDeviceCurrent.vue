@@ -63,10 +63,13 @@
 import * as projectPackage from "@/../package.json";
 
 // CONSTANTS
-const OMEMO_VERSION = "0.8.3"; // TODO: from local OMEMO library version tag
+// TODO: import this from the JS SDK?
 const VERSION_NAME = "Prose";
 const VERSION_SYSTEM = "Web";
 const VERSION_REVISION_FALLBACK = "0.0.0";
+
+// TODO: import this from the JS SDK?
+const OMEMO_VERSION = "0.8.3"; // TODO: from local OMEMO library version tag
 
 export default {
   name: "EditProfileEncryptionDeviceCurrent",

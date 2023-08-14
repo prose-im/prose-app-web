@@ -54,12 +54,8 @@ class BrokerModuleMessage extends BrokerModule {
   }
 
   async sendReactions(id: MessageID, to: JID, reactions: Set<MessageReaction>) {
-    if (!this._client.client) {
-      return;
-    }
-
     for (const reaction of reactions) {
-      await this._client.client.toggleReactionToMessage(to, id, reaction);
+      await this._client.client?.toggleReactionToMessage(to, id, reaction);
     }
   }
 }
