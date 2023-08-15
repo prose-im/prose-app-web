@@ -302,16 +302,16 @@ export default {
       // TODO: profile.url = vCard.url;
 
       // Assign job
-      profile.job = new Job();
-
-      profile.job.title = formProfile.jobTitle.inner || undefined;
-      profile.job.organization = formProfile.jobOrganization.inner || undefined;
+      const job = new Job();
+      job.title = formProfile.jobTitle.inner || undefined;
+      job.organization = formProfile.jobOrganization.inner || undefined;
+      profile.job = job;
 
       // Assign address
-      profile.address = new Address();
-
-      profile.address.city = formProfile.locationCity.inner || undefined;
-      profile.address.country = formProfile.locationCountry.inner || undefined;
+      const address = new Address();
+      address.city = formProfile.locationCity.inner || undefined;
+      address.country = formProfile.locationCountry.inner || undefined;
+      profile.address = address;
 
       return profile;
     },
