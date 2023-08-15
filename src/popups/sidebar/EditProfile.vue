@@ -303,14 +303,18 @@ export default {
 
       // Assign job
       const job = new Job();
+
       job.title = formProfile.jobTitle.inner || undefined;
       job.organization = formProfile.jobOrganization.inner || undefined;
+
       profile.job = job;
 
       // Assign address
       const address = new Address();
+
       address.city = formProfile.locationCity.inner || undefined;
       address.country = formProfile.locationCountry.inner || undefined;
+
       profile.address = address;
 
       return profile;
