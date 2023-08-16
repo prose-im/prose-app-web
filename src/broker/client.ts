@@ -23,14 +23,21 @@ import Store from "@/store";
 import logger from "@/utilities/logger";
 
 // PROJECT: BROKER
-import BrokerDelegate from "./delegate";
-import BrokerConnection from "./connection";
+import {
+  VERSION_NAME,
+  VERSION_SYSTEM,
+  VERSION_REVISION
+} from "@/broker/context";
+import BrokerDelegate from "@/broker/delegate";
+import BrokerConnection from "@/broker/connection";
 
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
 const RECONNECT_INTERVAL = 5000; // 5 seconds
+
+const PING_INTERVAL_SECONDS = 60; // 1 minute
 
 /**************************************************************************
  * CLASS
@@ -136,18 +143,11 @@ class BrokerClient {
     // Mark as connecting
     Store.$session.setConnecting(true);
 
-    // Initialize client configuration
-    const config = new ProseClientConfig();
-
-    config.pingInterval = 60;
-    config.logReceivedStanzas = true;
-    config.logSentStanzas = true;
-
     // Initialize client
     const client = await ProseClient.init(
       new BrokerConnection(),
       this.__delegate,
-      config
+      this.__configuration()
     );
 
     this.client = client;
@@ -158,6 +158,22 @@ class BrokerClient {
     } catch (error) {
       logger.error("Something went wrong", error);
     }
+  }
+
+  private __configuration(): ProseClientConfig {
+    const config = new ProseClientConfig();
+
+    // Configure connection
+    config.pingInterval = PING_INTERVAL_SECONDS;
+    config.logReceivedStanzas = true;
+    config.logSentStanzas = true;
+
+    // Configure client identity
+    config.clientName = VERSION_NAME;
+    config.clientVersion = VERSION_REVISION;
+    config.clientOS = VERSION_SYSTEM;
+
+    return config;
   }
 
   private __bindDelegateEvents(delegate: BrokerDelegate): void {
