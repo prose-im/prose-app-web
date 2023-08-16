@@ -56,11 +56,11 @@ class BrokerModuleMessage extends BrokerModule {
     logger.info(`Retracted message #${id} sent to: '${to}'`);
   }
 
-  async sendChatState(conversation: JID, composing: boolean): Promise<void> {
+  async sendChatState(to: JID, composing: boolean): Promise<void> {
     // XEP-0085: Chat State Notifications
     // https://xmpp.org/extensions/xep-0085.html
 
-    await this._client.client?.setUserIsComposing(conversation, composing);
+    await this._client.client?.setUserIsComposing(to, composing);
   }
 
   async sendReactions(id: MessageID, to: JID, reactions: Set<MessageReaction>) {
