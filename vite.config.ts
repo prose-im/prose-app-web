@@ -99,7 +99,15 @@ export default {
     viteStaticCopyPlugin({
       targets: [
         {
-          src: path.join(PROSE_CORE_VIEWS_PATH, "dist", "*"),
+          src: path.join(
+            // Optional override to use a local 'prose-core-view' build
+            process.env.PROSE_CORE_VIEWS_PATH
+              ? path.join(__dirname, process.env.PROSE_CORE_VIEWS_PATH)
+              : PROSE_CORE_VIEWS_PATH,
+            "dist",
+            "*"
+          ),
+
           dest: "includes/views"
         }
       ]
