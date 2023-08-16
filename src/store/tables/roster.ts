@@ -10,14 +10,17 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { JID, Availability } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  Availability,
+  Group as RosterGroup
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { RosterItemGroup } from "@/broker/modules/roster";
 import mitt from "mitt";
 
 /**************************************************************************
@@ -27,7 +30,7 @@ import mitt from "mitt";
 type RosterList = Array<RosterEntry>;
 
 type RosterByGroup = {
-  [group in RosterItemGroup]?: RosterList;
+  [group in RosterGroup]?: RosterList;
 };
 
 type RosterByJID = {
@@ -47,7 +50,7 @@ interface Roster {
 interface RosterEntry {
   jid: string;
   availability: Availability;
-  group: RosterItemGroup;
+  group: RosterGroup;
   name: string;
   isMe: boolean;
 }
@@ -81,7 +84,7 @@ const $roster = defineStore("roster", {
 
   getters: {
     getList: function () {
-      return (group?: RosterItemGroup): RosterList => {
+      return (group?: RosterGroup): RosterList => {
         // Acquire list in group
         const list =
           group !== undefined

@@ -129,7 +129,7 @@
 
 <script lang="ts">
 // NPM
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, Group as RosterGroup } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -140,9 +140,6 @@ import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
 import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
 import SidebarMainItemSection from "@/components/sidebar/SidebarMainItemSection.vue";
 import SidebarMainItemAdd from "@/components/sidebar/SidebarMainItemAdd.vue";
-
-// PROJECT: BROKER
-import { RosterItemGroup } from "@/broker/modules/roster";
 
 // INTERFACES
 interface RosterDisplayItem {
@@ -185,19 +182,19 @@ export default {
 
     itemFavorites(): RosterDisplayItem[] {
       return this.intoRosterDisplayItems(
-        Store.$roster.getList(RosterItemGroup.Favorite)
+        Store.$roster.getList(RosterGroup.Favorite)
       );
     },
 
     itemTeamMembers(): RosterDisplayItem[] {
       return this.intoRosterDisplayItems(
-        Store.$roster.getList(RosterItemGroup.Team)
+        Store.$roster.getList(RosterGroup.Team)
       );
     },
 
     itemOtherContacts(): RosterDisplayItem[] {
       return this.intoRosterDisplayItems(
-        Store.$roster.getList(RosterItemGroup.Other)
+        Store.$roster.getList(RosterGroup.Other)
       );
     }
   },

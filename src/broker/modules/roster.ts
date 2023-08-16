@@ -18,19 +18,6 @@ import BrokerModule from "@/broker/modules";
 import logger from "@/utilities/logger";
 
 /**************************************************************************
- * ENUMERATIONS
- * ************************************************************************* */
-
-enum RosterItemGroup {
-  // Favorites.
-  Favorite = "favorite",
-  // Team members.
-  Team = "team",
-  // Other contacts.
-  Other = "other"
-}
-
-/**************************************************************************
  * CLASS
  * ************************************************************************* */
 
@@ -53,5 +40,4 @@ class BrokerModuleRoster extends BrokerModule {
  * EXPORTS
  * ************************************************************************* */
 
-export { RosterItemGroup };
 export default BrokerModuleRoster;
