@@ -46,6 +46,12 @@ To build Prose for a development environment (that is, a live development server
 npm run dev
 ```
 
+Note that if it is desired to build against a local `prose-core-client` containing a built `prose-sdk-js` package, you may pass a `PROSE_CORE_CLIENT_PATH` environment variable with the relative path to the core client library:
+
+```
+PROSE_CORE_CLIENT_PATH="../prose-core-client" npm run dev
+```
+
 ## Design
 
 _👉 The Prose Web app reference design [can be found there](https://github.com/prose-im/prose-medley/blob/master/designs/app/prose-app-web.sketch)._
