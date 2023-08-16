@@ -73,7 +73,22 @@ export default {
   },
 
   resolve: {
-    alias: [{ find: "@/", replacement: path.join(__dirname, "src/") }]
+    alias: [
+      { find: "@/", replacement: path.join(__dirname, "src/") },
+
+      {
+        // Optional override to use a local 'prose-sdk-js' build
+        find: "@prose-im/prose-sdk-js",
+
+        replacement: process.env.PROSE_CORE_CLIENT_PATH
+          ? path.join(
+              __dirname,
+              process.env.PROSE_CORE_CLIENT_PATH,
+              "bindings/prose-sdk-js/pkg/"
+            )
+          : "@prose-im/prose-sdk-js"
+      }
+    ]
   },
 
   plugins: [
