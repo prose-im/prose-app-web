@@ -40,17 +40,29 @@ npm run build
 
 ### Development target
 
+#### Develop with release core (default)
+
 To build Prose for a development environment (that is, a live development server streaming changes live), hit:
 
 ```
 npm run dev
 ```
 
-Note that if it is desired to build against a local `prose-core-client` containing a built `prose-sdk-js` package, you may pass a `PROSE_CORE_CLIENT_PATH` environment variable with the relative path to the core client library:
+#### Develop with local core
+
+If it is desired to build against a local `prose-core-client` containing a built `prose-sdk-js` package, you may pass a `PROSE_CORE_CLIENT_PATH` environment variable with the relative path to the core client library:
 
 ```
 PROSE_CORE_CLIENT_PATH="../prose-core-client" npm run dev
 ```
+
+On a second terminal, you may also watch for changes in the `prose-core-client` repository:
+
+```
+find crates bindings/prose-sdk-js/src Cargo.toml | entr -r cargo xtask wasm-pack build --dev
+```
+
+Any change happening in the core will trigger a compilation run, which itself will trigger a HMR event in the Web app (this may reload the whole app).
 
 ## Design
 
