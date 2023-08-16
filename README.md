@@ -50,7 +50,7 @@ npm run dev
 
 #### 🔬 Develop with a local core (advanced)
 
-**`prose-core-client`:**
+##### Client
 
 If it is desired to build against a local `prose-core-client` containing a built `prose-sdk-js` package, you may pass a `PROSE_CORE_CLIENT_PATH` environment variable with the relative path to the core client library:
 
@@ -66,7 +66,7 @@ find crates bindings/prose-sdk-js/src Cargo.toml | entr -r cargo xtask wasm-pack
 
 Any change happening in the core will trigger a compilation run, which itself will trigger a HMR event in the Web app (this may reload the whole app).
 
-**`prose-core-views`:**
+##### Views
 
 If you would like to source a local `prose-core-views` build, you may pass a `PROSE_CORE_VIEWS_PATH` environment variable with the relative path to the core views library:
 
