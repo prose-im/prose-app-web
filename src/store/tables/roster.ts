@@ -52,7 +52,6 @@ interface RosterEntry {
   availability: Availability;
   group: RosterGroup;
   name: string;
-  isMe: boolean;
 }
 
 /**************************************************************************
@@ -86,13 +85,12 @@ const $roster = defineStore("roster", {
     getList: function () {
       return (group?: RosterGroup): RosterList => {
         // Acquire list in group
-        const list =
-          group !== undefined
-            ? this.byGroup[group] || []
-            : // Acquire global list (all groups)
-              this.list;
+        if (group !== undefined) {
+          return this.byGroup[group] || [];
+        }
 
-        return list.filter(contact => !contact.isMe);
+        // Acquire global list (all groups)
+        return this.list;
       };
     },
 
@@ -138,18 +136,17 @@ const $roster = defineStore("roster", {
             jid: contact.jid.toString(),
             availability: contact.availability,
             group: contact.group,
-            name: contact.name,
-            isMe: contact.isMe
+            name: contact.name
           };
 
           entries.push(entry);
 
           // Append entry into its group
-          const byGroupEntries = byGroup[entry.group] || [];
+          const byGroupEntries = byGroup[entry.group as RosterGroup] || [];
 
           byGroupEntries.push(entry);
 
-          byGroup[entry.group] = byGroupEntries;
+          byGroup[entry.group as RosterGroup] = byGroupEntries;
 
           // Append entry to per-JID storage
           byJID[entry.jid] = entry;
