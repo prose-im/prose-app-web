@@ -14,6 +14,9 @@ import { JID } from "@prose-im/prose-sdk-js";
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
 
+// PROJECT: STORES
+import { fromCoreMessage as inboxMessageFromCore } from "@/store/tables/inbox";
+
 // PROJECT: UTILITIES
 import Store from "@/store";
 
@@ -37,7 +40,13 @@ class BrokerModuleMAM extends BrokerModule {
       );
 
       if (messages !== undefined) {
-        Store.$inbox.insertMessages(jid, messages);
+        Store.$inbox.insertMessages(
+          jid,
+
+          messages.map(message => {
+            return inboxMessageFromCore(message);
+          })
+        );
       }
     } catch (error) {
       logger.error("Failed to load messages from MAM:", error);

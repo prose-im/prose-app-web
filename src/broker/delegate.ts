@@ -18,6 +18,7 @@ import {
 
 // PROJECT: STORES
 import Store from "@/store";
+import { fromCoreMessage as inboxMessageFromCore } from "@/store/tables/inbox";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -87,7 +88,13 @@ class BrokerDelegate implements ProseClientDelegate {
   ): Promise<void> {
     const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
 
-    Store.$inbox.insertMessages(conversation, messages);
+    Store.$inbox.insertMessages(
+      conversation,
+
+      messages.map(message => {
+        return inboxMessageFromCore(message);
+      })
+    );
   }
 
   messagesDeleted(
@@ -108,7 +115,11 @@ class BrokerDelegate implements ProseClientDelegate {
     const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
 
     for (const message of messages) {
-      Store.$inbox.updateMessage(conversation, message.id, message);
+      Store.$inbox.updateMessage(
+        conversation,
+        message.id,
+        inboxMessageFromCore(message)
+      );
     }
   }
 }
