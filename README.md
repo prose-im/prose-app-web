@@ -52,7 +52,7 @@ npm run dev
 
 ##### ⚙️ Client core
 
-If it is desired to build against a local [prose-core-client](https://github.com/prose-im/prose-core-client) containing a built `prose-sdk-js` package, you may pass a `PROSE_CORE_CLIENT_PATH` environment variable with the relative path to the core client library:
+If it is desired to build against a local `prose-core-client` ([repository](https://github.com/prose-im/prose-core-client)) containing a built `prose-sdk-js` package, you may pass a `PROSE_CORE_CLIENT_PATH` environment variable with the relative path to the core client library:
 
 ```
 PROSE_CORE_CLIENT_PATH="../prose-core-client" npm run dev
@@ -68,7 +68,7 @@ Any change happening in the core will trigger a compilation run, which itself wi
 
 ##### 💬 Views core
 
-If you would like to source a local [prose-core-views](https://github.com/prose-im/prose-core-views) build, you may pass a `PROSE_CORE_VIEWS_PATH` environment variable with the relative path to the core views library:
+If you would like to source a local `prose-core-views` ([repository](https://github.com/prose-im/prose-core-views)) build, you may pass a `PROSE_CORE_VIEWS_PATH` environment variable with the relative path to the core views library:
 
 ```
 PROSE_CORE_VIEWS_PATH="../prose-core-views" npm run dev
