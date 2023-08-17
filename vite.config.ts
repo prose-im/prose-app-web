@@ -25,13 +25,25 @@ import productionConfig from "./config/production";
  * CONSTANTS
  * ************************************************************************* */
 
-const PROSE_CORE_VIEWS_PATH = getInstalledPathSync(
+const PROSE_CORE_VIEWS_LOCAL_PATH = getInstalledPathSync(
   "@prose-im/prose-core-views",
 
   {
     local: true
   }
 );
+
+const PROSE_CORE_VIEWS_OVERRIDE_PATH = process.env.PROSE_CORE_VIEWS_PATH
+  ? path.join(__dirname, process.env.PROSE_CORE_VIEWS_PATH)
+  : null;
+
+const PROSE_SDK_JS_OVERRIDE_PATH = process.env.PROSE_CORE_CLIENT_PATH
+  ? path.join(
+      __dirname,
+      process.env.PROSE_CORE_CLIENT_PATH,
+      "bindings/prose-sdk-js/pkg/"
+    )
+  : null;
 
 const ASSETS_ICONS_PATH = path.join(__dirname, "src/assets/images/icons/");
 
@@ -77,25 +89,17 @@ export default {
       { find: "@/", replacement: path.join(__dirname, "src/") },
 
       {
-        // Optional override to use a local 'prose-sdk-js' build
+        // Use optional override to use a local 'prose-sdk-js' build
         find: "@prose-im/prose-sdk-js",
-
-        replacement: process.env.PROSE_CORE_CLIENT_PATH
-          ? path.join(
-              __dirname,
-              process.env.PROSE_CORE_CLIENT_PATH,
-              "bindings/prose-sdk-js/pkg/"
-            )
-          : "@prose-im/prose-sdk-js"
+        replacement: PROSE_SDK_JS_OVERRIDE_PATH || "@prose-im/prose-sdk-js"
       },
 
       {
-        // Optional override to use a local 'prose-core-views' build
+        // Use optional override to use a local 'prose-core-views' build
         find: "@prose-im/prose-core-views",
 
-        replacement: process.env.PROSE_CORE_VIEWS_PATH
-          ? path.join(__dirname, process.env.PROSE_CORE_VIEWS_PATH)
-          : "@prose-im/prose-core-views"
+        replacement:
+          PROSE_CORE_VIEWS_OVERRIDE_PATH || "@prose-im/prose-core-views"
       }
     ]
   },
@@ -109,10 +113,8 @@ export default {
       targets: [
         {
           src: path.join(
-            // Optional override to use a local 'prose-core-view' build
-            process.env.PROSE_CORE_VIEWS_PATH
-              ? path.join(__dirname, process.env.PROSE_CORE_VIEWS_PATH)
-              : PROSE_CORE_VIEWS_PATH,
+            // Use optional override to use a local 'prose-core-view' build
+            PROSE_CORE_VIEWS_OVERRIDE_PATH || PROSE_CORE_VIEWS_LOCAL_PATH,
             "dist",
             "*"
           ),
