@@ -54,7 +54,7 @@ class BrokerConnectionStrophe implements ProseConnection {
     this.__connection.rawInput = this.__onInput.bind(this);
     this.__connection.rawOutput = this.__onOutput.bind(this);
 
-    this.__bindDummyHandlers(this.__connection);
+    this.__bindDummyHandler(this.__connection);
   }
 
   async connect(jid: string, password: string): Promise<void> {
@@ -196,20 +196,16 @@ class BrokerConnectionStrophe implements ProseConnection {
     }
   }
 
-  private __bindDummyHandlers(connection: Strophe.Connection): void {
-    ["presence", "message", "iq"].forEach(handlerName => {
-      // Generate dummy handler function
-      // Notice: this is required so that Strophe.js thinks that all received \
-      //   stanza types are handled and processed. If a stanza does not get \
-      //   processed, Strophe.js usually automatically replies with an error.
-      const handlerFn = () => {
-        // Important: return true so that the handler is kept alive at each \
-        //   received stanza.
-        return true;
-      };
-
-      // Bind handler
-      connection.addHandler(handlerFn, "", handlerName);
+  private __bindDummyHandler(connection: Strophe.Connection): void {
+    // Bind dummy handler function on '*' stanza types
+    // Notice: this is required so that Strophe.js thinks that all received \
+    //   stanza types are handled and processed. If a stanza does not get \
+    //   processed, Strophe.js usually automatically replies with an error, \
+    //   which is undesired as stanzas already get handled by the Prose JS SDK.
+    connection.addHandler(() => {
+      // Important: return true so that the handler is kept alive at each \
+      //   received stanza.
+      return true;
     });
   }
 }
