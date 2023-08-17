@@ -10,9 +10,9 @@ _Tested at NodeJS version: `v20.5.0`_
 
 ## Architecture
 
-The Prose Web app consists mostly of VueJS views, bound to core libraries, namely the [views](https://github.com/prose-im/prose-core-views), that are common to all platforms Prose runs on.
+The Prose Web app consists mostly of VueJS views, bound to core libraries, namely the [client](https://github.com/prose-im/prose-core-client) and [views](https://github.com/prose-im/prose-core-views) cores, that are common to all platforms Prose runs on.
 
-The app uses its own internal client to connect to XMPP. It calls programmatic methods in order to interact with its internal database and the network. It binds as well to an event bus to receive network events, or update events from the store. Messages are shown in their own view, which is provided by the core views library.
+The app uses the core client library to connect to XMPP. It calls programmatic methods in order to interact with its internal database and the network. It binds as well to an event bus to receive network events, or update events from the store. Messages are shown in their own view, which is provided by the core views library.
 
 This decoupling makes things extremely clean, and enables common code sharing between platforms (eg. Web, macOS, etc.).
 
@@ -52,7 +52,7 @@ npm run dev
 
 ##### ⚙️ Client core
 
-If it is desired to build against a local `prose-core-client` containing a built `prose-sdk-js` package, you may pass a `PROSE_CORE_CLIENT_PATH` environment variable with the relative path to the core client library:
+If it is desired to build against a local [prose-core-client](https://github.com/prose-im/prose-core-client) containing a built `prose-sdk-js` package, you may pass a `PROSE_CORE_CLIENT_PATH` environment variable with the relative path to the core client library:
 
 ```
 PROSE_CORE_CLIENT_PATH="../prose-core-client" npm run dev
@@ -68,7 +68,7 @@ Any change happening in the core will trigger a compilation run, which itself wi
 
 ##### 💬 Views core
 
-If you would like to source a local `prose-core-views` build, you may pass a `PROSE_CORE_VIEWS_PATH` environment variable with the relative path to the core views library:
+If you would like to source a local [prose-core-views](https://github.com/prose-im/prose-core-views) build, you may pass a `PROSE_CORE_VIEWS_PATH` environment variable with the relative path to the core views library:
 
 ```
 PROSE_CORE_VIEWS_PATH="../prose-core-views" npm run dev
