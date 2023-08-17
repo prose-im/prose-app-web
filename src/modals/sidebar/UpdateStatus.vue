@@ -102,7 +102,7 @@ const EXAMPLE_STATUSES = [
   ["🌮", "Eating lunch"],
   ["🍽️", "Eating dinner"],
   ["🧑‍💻", "Focusing on code"],
-  ["🏝️", "Vacationning"],
+  ["🏝️", "Vacationing"],
   ["🎉", "It's my birthday!"],
   ["🛏️", "Taking a nap"],
   ["📆", "In a meeting"],
