@@ -68,7 +68,6 @@
 <script lang="ts">
 // NPM
 import { shallowRef, PropType } from "vue";
-import xmppID from "@xmpp/id";
 import { JID } from "@prose-im/prose-sdk-js";
 import {
   Messaging as MessagingRuntime,
@@ -590,8 +589,6 @@ export default {
 
       // Apply reaction changes?
       if (shouldPropagate === true) {
-        // TODO: update store
-
         // Send reaction to network
         Broker.$chat.sendReactions(messageId, this.jid, reactions);
       }
@@ -620,33 +617,22 @@ export default {
       this.triggerContainerClick();
     },
 
-    onModalEditMessageEdit(
-      { messageId, messageType }: { messageId: string; messageType: string },
+    async onModalEditMessageEdit(
+      { messageId }: { messageId: string },
       text: string
-    ): void {
+    ): Promise<void> {
       const frameRuntime = this.frame();
 
-      // Generate new message ID
-      const updatedMessageId = xmppID();
-
-      // Update in store
-      const wasUpdated = Store.$inbox.updateMessage(this.jid, messageId, {
-        id: updatedMessageId,
-        type: messageType,
-        content: text
-      });
-
-      // Message updated in store? Proceed actual network edit & acknowledge
-      if (wasUpdated === true) {
+      try {
         // Send update to network
-        Broker.$chat.updateMessage(this.jid, text, {
-          original: messageId,
-          replacement: updatedMessageId
-        });
+        await Broker.$chat.updateMessage(this.jid, text, messageId);
 
         // Acknowledge update
         BaseAlert.info("Message edited", "The message has been updated");
-      } else {
+      } catch (error) {
+        // Alert of copy error
+        this.$log.error(`Could not edit message #${messageId}`, error);
+
         BaseAlert.error(
           "Cannot edit message",
           "The message could not be updated"
@@ -667,14 +653,18 @@ export default {
       this.frame()?.MessagingStore.highlight(null);
     },
 
-    onModalRemoveMessageRemove({ messageId }: { messageId: string }): void {
+    async onModalRemoveMessageRemove({
+      messageId
+    }: {
+      messageId: string;
+    }): Promise<void> {
       // Remove from store
       const wasRemoved = Store.$inbox.retractMessage(this.jid, messageId);
 
       // Message removed in store? Proceed actual network removal & acknowledge
       if (wasRemoved === true) {
         // Send removal to network
-        Broker.$chat.retractMessage(messageId, this.jid);
+        await Broker.$chat.retractMessage(messageId, this.jid);
 
         // Acknowledge removal
         BaseAlert.info("Message removed", "The message has been deleted");
@@ -723,7 +713,7 @@ export default {
           this.hidePopover();
         } catch (error) {
           // Alert of copy error
-          this.$log.info(
+          this.$log.error(
             `Could not copy message text: ${messageData.content}`,
             error
           );
@@ -783,8 +773,6 @@ export default {
 
           // Show edit modal
           this.modals.editMessage.context.messageId = messageId;
-          this.modals.editMessage.context.messageType = messageData.type;
-
           this.modals.editMessage.originalText = messageData.content;
 
           this.modals.editMessage.visible = true;
