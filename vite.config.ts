@@ -87,6 +87,15 @@ export default {
               "bindings/prose-sdk-js/pkg/"
             )
           : "@prose-im/prose-sdk-js"
+      },
+
+      {
+        // Optional override to use a local 'prose-core-views' build
+        find: "@prose-im/prose-core-views",
+
+        replacement: process.env.PROSE_CORE_VIEWS_PATH
+          ? path.join(__dirname, process.env.PROSE_CORE_VIEWS_PATH)
+          : "@prose-im/prose-core-views"
       }
     ]
   },
