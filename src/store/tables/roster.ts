@@ -10,11 +10,18 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { JID } from "@xmpp/jid";
+import {
+  JID,
+  Availability,
+  Group as RosterGroup
+} from "@prose-im/prose-sdk-js";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { RosterItemGroup } from "@/broker/modules/roster";
+import mitt from "mitt";
 
 /**************************************************************************
  * TYPES
@@ -23,7 +30,7 @@ import { RosterItemGroup } from "@/broker/modules/roster";
 type RosterList = Array<RosterEntry>;
 
 type RosterByGroup = {
-  [group in RosterItemGroup]?: RosterList;
+  [group in RosterGroup]?: RosterList;
 };
 
 type RosterByJID = {
@@ -42,8 +49,10 @@ interface Roster {
 
 interface RosterEntry {
   jid: string;
-  group: RosterItemGroup;
+  availability: Availability;
+  group: RosterGroup;
   name: string;
+  isMe: boolean;
 }
 
 /**************************************************************************
@@ -53,6 +62,8 @@ interface RosterEntry {
 const LOCAL_STATES = {
   loaded: false
 };
+
+const EventBus = mitt();
 
 /**************************************************************************
  * TABLE
@@ -73,14 +84,15 @@ const $roster = defineStore("roster", {
 
   getters: {
     getList: function () {
-      return (group?: RosterItemGroup): RosterList => {
+      return (group?: RosterGroup): RosterList => {
         // Acquire list in group
-        if (group !== undefined) {
-          return this.byGroup[group] || [];
-        }
+        const list =
+          group !== undefined
+            ? this.byGroup[group] || []
+            : // Acquire global list (all groups)
+              this.list;
 
-        // Acquire global list (all groups)
-        return this.list;
+        return list.filter(contact => !contact.isMe);
       };
     },
 
@@ -92,15 +104,13 @@ const $roster = defineStore("roster", {
 
     getEntry: function () {
       return (jid: JID): RosterEntry | void => {
-        const bareJIDString = jid.bare().toString();
-
-        return this.byJID[bareJIDString] || undefined;
+        return this.byJID[jid.toString()] || undefined;
       };
     },
 
     getEntryName: function () {
       return (jid: JID): string => {
-        return this.getEntry(jid)?.name || jid.local;
+        return this.getEntry(jid)?.name || jid.node || jid.toString();
       };
     }
   },
@@ -117,25 +127,29 @@ const $roster = defineStore("roster", {
           byJID: RosterByJID = {};
 
         // Load roster
-        const roster = await Broker.$roster.loadRoster();
+        const contacts = await Broker.$roster.loadContacts();
 
-        roster.items.forEach(rosterItem => {
+        contacts.forEach(contact => {
+          Store.$activity.setActivity(contact.jid, contact.activity);
+
           // Append roster entry
           // Important: JID must be stored as string so that persistence works.
           const entry = {
-            jid: rosterItem.jid.toString(),
-            group: rosterItem.group,
-            name: rosterItem.name ? rosterItem.name : rosterItem.jid.local
+            jid: contact.jid.toString(),
+            availability: contact.availability,
+            group: contact.group,
+            name: contact.name,
+            isMe: contact.isMe
           };
 
           entries.push(entry);
 
           // Append entry into its group
-          const byGroupEntries = byGroup[rosterItem.group] || [];
+          const byGroupEntries = byGroup[entry.group] || [];
 
           byGroupEntries.push(entry);
 
-          byGroup[rosterItem.group] = byGroupEntries;
+          byGroup[entry.group] = byGroupEntries;
 
           // Append entry to per-JID storage
           byJID[entry.jid] = entry;
@@ -149,6 +163,14 @@ const $roster = defineStore("roster", {
       }
 
       return Promise.resolve(this.list);
+    },
+
+    events(): ReturnType<typeof mitt> {
+      return EventBus;
+    },
+
+    markContactChanged(jid: JID) {
+      EventBus.emit("contact:changed", jid);
     }
   }
 });

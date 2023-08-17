@@ -9,22 +9,11 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@xmpp/jid";
+import { JID, UserProfile, UserMetadata } from "@prose-im/prose-sdk-js";
 import { defineStore } from "pinia";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import {
-  LoadVCardResponse,
-  LoadLastActivityResponse,
-  LoadEntityTimeResponse
-} from "@/broker/modules/profile";
-
-// PROJECT: FILTERS
-import dateFilters from "@/filters/date";
-
-// PROJECT: STORES
-import Store from "@/store";
 
 /**************************************************************************
  * TYPES
@@ -111,14 +100,12 @@ const LOCAL_STATES = {
   loaded: {} as { [jid: string]: boolean }
 };
 
-const SECURE_PROTOCOLS = ["HTTPS", "WSS"];
-
 /**************************************************************************
  * TABLE
  * ************************************************************************* */
 
 const $profile = defineStore("profile", {
-  persist: true,
+  persist: false,
 
   state: (): Profile => {
     return {
@@ -136,249 +123,178 @@ const $profile = defineStore("profile", {
 
   actions: {
     assert(jid: JID): ProfileEntry {
-      const bareJIDString = jid.bare().toString();
+      const jidString = jid.toString();
 
       // Assign new profile entry for JID?
-      if (!(bareJIDString in this.entries)) {
+      if (!(jidString in this.entries)) {
         this.$patch(state => {
           // Insert empty data
-          state.entries[bareJIDString] = {};
+          state.entries[jidString] = {};
         });
       }
 
-      return this.entries[bareJIDString];
+      return this.entries[jidString];
     },
 
-    async load(fullJIDHighest: JID, reload = false): Promise<ProfileEntry> {
+    async load(jid: JID, reload = false): Promise<ProfileEntry> {
       // Assert profile data
-      const profile = this.assert(fullJIDHighest);
-
-      const bareJID = fullJIDHighest.bare(),
-        bareJIDString = bareJID.toString();
+      const profile = this.assert(jid);
+      const jidString = jid.toString();
 
       // Load profile? (or reload)
-      if (LOCAL_STATES.loaded[bareJIDString] !== true || reload === true) {
-        LOCAL_STATES.loaded[bareJIDString] = true;
+      if (LOCAL_STATES.loaded[jidString] !== true || reload === true) {
+        LOCAL_STATES.loaded[jidString] = true;
 
         // Load all profile parts at once
         await Promise.all([
-          this.loadProfileVCard(bareJID),
-          this.loadProfileLast(bareJID, fullJIDHighest),
-          this.loadProfileTime(bareJID, fullJIDHighest),
-          this.loadProfileVerification(bareJID),
-          this.loadProfileEncryption(bareJID)
+          this.loadUserProfile(jid),
+          this.loadUserMetadata(jid)
         ]);
       }
 
       return Promise.resolve(profile);
     },
 
-    async loadProfileVCard(bareJID: JID): Promise<ProfileEntry> {
+    async loadUserProfile(jid: JID): Promise<ProfileEntry> {
       // Load vCard data for JID
-      const profileResponse = await Broker.$profile.loadVCard(bareJID);
+      const profileResponse = await Broker.$profile.loadUserProfile(jid);
 
       // Set local profile vCard data
-      return this.setProfileVCard(bareJID, profileResponse);
+      return this.setUserProfile(jid, profileResponse);
     },
 
-    async loadProfileLast(
-      bareJID: JID,
-      fullJIDHighest: JID
-    ): Promise<ProfileEntry> {
-      // Load last activity time
-      // TODO: only if remote client supports it (w/ CAPS)
-      const lastActivityResponse = await Broker.$profile.loadLastActivity(
-        fullJIDHighest
-      );
+    async loadUserMetadata(jid: JID): Promise<void> {
+      const metadata = await Broker.$profile.loadUserMetadata(jid);
 
-      // Set local profile last active time
-      return this.setProfileLast(bareJID, lastActivityResponse);
+      this.setUserMetadata(jid, metadata);
     },
 
-    async loadProfileTime(
-      bareJID: JID,
-      fullJIDHighest: JID
-    ): Promise<ProfileEntry> {
-      // Load user timezone
-      // TODO: only if remote client supports it (w/ CAPS)
-      const entityTimeResponse = await Broker.$profile.loadEntityTime(
-        fullJIDHighest
-      );
-
-      // Set local profile time
-      return this.setProfileTime(bareJID, entityTimeResponse);
-    },
-
-    async loadProfileVerification(bareJID: JID): Promise<ProfileEntry> {
-      // Set local profile verification status
-      // TODO: from server data
-      // return this.setProfileVerification(bareJID, {
-      //   fingerprint: "0000",
-      //   email: bareJID.toString(),
-      //   phone: null,
-      //   identity: null
-      // });
-
-      return this.setProfileVerification(bareJID, undefined);
-    },
-
-    async loadProfileEncryption(bareJID: JID): Promise<ProfileEntry> {
-      // Set local profile encryption status
-      // TODO: from server data
-      // return this.setProfileEncryption(bareJID, {
-      //   connectionProtocol: "TLS1.3",
-      //   messageEndToEndMethod: "OMEMO"
-      // });
-
-      return this.setProfileEncryption(bareJID, {
-        secureProtocol: SECURE_PROTOCOLS.includes(Store.$session.protocol),
-        connectionProtocol: Store.$session.protocol || undefined
-      });
-    },
-
-    setProfileVCard(jid: JID, vCardResponse: LoadVCardResponse): ProfileEntry {
+    setUserProfile(jid: JID, userProfile?: UserProfile): ProfileEntry {
       const profile = this.assert(jid),
         information = this.ensureProfileInformation(profile);
 
-      // Update data in store
-      this.$patch(() => {
-        // #1. Store name
-        if (vCardResponse.firstName || vCardResponse.lastName) {
-          profile.name = {
-            first: vCardResponse.firstName || "",
-            last: vCardResponse.lastName || ""
-          };
-        } else if (vCardResponse.fullName) {
-          const fullNameSplit = vCardResponse.fullName.split(" ");
-
-          profile.name = {
-            first: fullNameSplit[0] || "",
-            last: fullNameSplit[1] || ""
-          };
-        } else {
+      // Reset or update user profile?
+      if (!userProfile) {
+        // Reset data in store
+        this.$patch(() => {
           delete profile.name;
-        }
-
-        // #2. Store employment
-        if (
-          vCardResponse.job &&
-          (vCardResponse.job.title ||
-            vCardResponse.job.role ||
-            vCardResponse.job.organization)
-        ) {
-          profile.employment = {};
-
-          if (vCardResponse.job.title) {
-            profile.employment.title = vCardResponse.job.title;
-          } else if (vCardResponse.job.role) {
-            profile.employment.title = vCardResponse.job.role;
-          }
-
-          if (vCardResponse.job.organization) {
-            profile.employment.organization = vCardResponse.job.organization;
-          }
-        } else {
           delete profile.employment;
-        }
 
-        // #3. Store information
-        information.contact.email = vCardResponse.email || null;
-        information.contact.phone = vCardResponse.phone || null;
+          information.contact.email = null;
+          information.contact.phone = null;
+          information.location.city = null;
+          information.location.country = null;
+        });
+      } else {
+        // Update data in store
+        this.$patch(() => {
+          // #1. Store name
+          if (userProfile.firstName || userProfile.lastName) {
+            profile.name = {
+              first: userProfile.firstName || "",
+              last: userProfile.lastName || ""
+            };
+          } else {
+            delete profile.name;
+          }
 
-        information.location.city = vCardResponse.address?.city || null;
-        information.location.country = vCardResponse.address?.country || null;
-      });
+          // #2. Store employment
+          if (
+            userProfile.job &&
+            (userProfile.job.title ||
+              userProfile.job.role ||
+              userProfile.job.organization)
+          ) {
+            profile.employment = {};
+
+            if (userProfile.job.title) {
+              profile.employment.title = userProfile.job.title;
+            } else if (userProfile.job.role) {
+              profile.employment.title = userProfile.job.role;
+            }
+
+            if (userProfile.job.organization) {
+              profile.employment.organization = userProfile.job.organization;
+            }
+          } else {
+            delete profile.employment;
+          }
+
+          // #3. Store information
+          information.contact.email = userProfile.email || null;
+          information.contact.phone = userProfile.phone || null;
+
+          information.location.city = userProfile.address?.city || null;
+          information.location.country = userProfile.address?.country || null;
+        });
+      }
 
       return profile;
     },
 
-    setProfileLast(
-      jid: JID,
-      lastActivityResponse: LoadLastActivityResponse
-    ): ProfileEntry {
-      const profile = this.assert(jid),
-        information = this.ensureProfileInformation(profile);
-
-      // Update data in store
-      this.$patch(() => {
-        information.lastActive = {
-          timestamp: lastActivityResponse.timestamp
-        };
-      });
-
-      return profile;
-    },
-
-    setProfileTime(
-      jid: JID,
-      entityTimeResponse: LoadEntityTimeResponse
-    ): ProfileEntry {
+    setUserMetadata(jid: JID, metadata: UserMetadata | undefined) {
       const profile = this.assert(jid),
         information = this.ensureProfileInformation(profile),
         location = this.ensureProfileInformationLocation(information);
 
-      // Update data in store
-      this.$patch(() => {
-        if (entityTimeResponse.tzo !== null) {
-          location.timezone = {
-            name: `UTC${entityTimeResponse.tzo}`,
-            offset: dateFilters.tzoToOffset(entityTimeResponse.tzo)
-          };
-        } else {
+      // Reset or update user metadata?
+      if (!metadata) {
+        // Reset data in store
+        this.$patch(() => {
+          information.lastActive = null;
           location.timezone = null;
-        }
-      });
 
-      return profile;
-    },
+          profile.security = profile.security || {};
 
-    setProfileVerification(
-      jid: JID,
-      verification?: ProfileEntrySecurityVerification
-    ): ProfileEntry {
-      const profile = this.assert(jid);
-
-      // Update data in store
-      this.$patch(() => {
-        profile.security = profile.security || {};
-
-        if (verification !== undefined) {
-          profile.security.verification = {
-            fingerprint: verification.fingerprint,
-            email: verification.email,
-            phone: verification.phone,
-            identity: verification.identity
-          };
-        } else {
           delete profile.security.verification;
-        }
-      });
-
-      return profile;
-    },
-
-    setProfileEncryption(
-      jid: JID,
-      encryption?: ProfileEntrySecurityEncryption
-    ): ProfileEntry {
-      const profile = this.assert(jid);
-
-      // Update data in store
-      this.$patch(() => {
-        profile.security = profile.security || {};
-
-        if (encryption !== undefined) {
-          profile.security.encryption = {
-            secureProtocol: encryption.secureProtocol,
-            connectionProtocol: encryption.connectionProtocol,
-            messageEndToEndMethod: encryption.messageEndToEndMethod
-          };
-        } else {
           delete profile.security.encryption;
-        }
-      });
+        });
+      } else {
+        // Update data in store
+        this.$patch(() => {
+          // #1. Store last activity + local time
+          if (metadata.lastActivity) {
+            information.lastActive = {
+              timestamp: Number(metadata.lastActivity.utcTimestamp) * 1000
+            };
+          } else {
+            information.lastActive = null;
+          }
 
-      return profile;
+          if (metadata.localTime) {
+            location.timezone = {
+              name: metadata.localTime.formattedTimezoneOffset,
+              offset: metadata.localTime.timezoneOffset / 60
+            };
+          } else {
+            location.timezone = null;
+          }
+
+          // #2. Store security details
+          profile.security = profile.security || {};
+
+          if (metadata.verification) {
+            profile.security.verification = {
+              fingerprint: metadata.verification.fingerprint || null,
+              email: metadata.verification.email || null,
+              phone: metadata.verification.phone || null,
+              identity: metadata.verification.identity || null
+            };
+          } else {
+            delete profile.security.verification;
+          }
+
+          if (metadata.encryption) {
+            profile.security.encryption = {
+              secureProtocol: metadata.encryption.secureProtocol,
+              connectionProtocol: metadata.encryption.connectionProtocol,
+              messageEndToEndMethod: metadata.encryption.messageEndToEndMethod
+            };
+          } else {
+            delete profile.security.encryption;
+          }
+        });
+      }
     },
 
     ensureProfileInformation(profile: ProfileEntry): ProfileEntryInformation {

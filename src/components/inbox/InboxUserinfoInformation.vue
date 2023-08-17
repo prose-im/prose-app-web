@@ -59,7 +59,7 @@ list-disclosure(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@xmpp/jid";
+import { JID, Availability } from "@prose-im/prose-sdk-js";
 import { getCountryCode, getCountryName } from "crisp-countries-languages";
 
 // PROJECT: STORES
@@ -118,7 +118,9 @@ export default {
 
         if (this.profile.information.lastActive) {
           const activePrefix =
-            this.highestPresence.type === null ? "Active" : "Last seen";
+            this.availability != Availability.Unavailable
+              ? "Active"
+              : "Last seen";
 
           entries.push({
             id: "active",
@@ -198,8 +200,8 @@ export default {
       return Store.$profile.getProfile(this.jid);
     },
 
-    highestPresence(): ReturnType<typeof Store.$presence.getHighest> {
-      return Store.$presence.getHighest(this.jid);
+    availability(): Availability {
+      return Store.$presence.getAvailability(this.jid);
     },
 
     statusActivity(): ReturnType<typeof Store.$activity.getActivity> {

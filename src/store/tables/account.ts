@@ -10,7 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { jid, JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -51,29 +51,37 @@ const $account = defineStore("account", {
           );
         }
 
-        return jid(localJID);
+        return new JID(localJID);
       };
     }
   },
 
   actions: {
     async login(
-      rawJid: string,
+      rawJID: string,
       password: string,
       remember = true
     ): Promise<void> {
+      let jid: JID;
+
+      try {
+        jid = new JID(rawJID);
+      } catch (e) {
+        throw new Error("Please provide a valid Jabber ID");
+      }
+
       // Connect and authenticate to server
-      await Broker.client.authenticate(jid(rawJid), password);
+      await Broker.client.authenticate(jid, password);
 
       // Store credentials? (if success)
       if (remember === true) {
         this.$patch(state => {
           // Assign account credentials
-          state.credentials.jid = rawJid;
+          state.credentials.jid = rawJID;
           state.credentials.password = password;
 
           // Assign last account marker
-          state.last.jid = rawJid;
+          state.last.jid = rawJID;
           state.last.timestamp = Date.now();
         });
       }

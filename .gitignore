@@ -12,6 +12,7 @@ dist
 
 # Editor
 .nova
+.idea
 
 # macOS
 .DS_Store

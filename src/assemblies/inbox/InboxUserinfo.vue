@@ -49,7 +49,7 @@
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -92,12 +92,6 @@ export default {
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
-    },
-
-    fullJIDHighestOnline(): ReturnType<
-      typeof Store.$presence.getHighestOnlineJID
-    > {
-      return Store.$presence.getHighestOnlineJID(this.jid);
     }
   },
 
@@ -125,7 +119,6 @@ export default {
 
     // Bind handlers
     Store.$session.events().on("connected", this.onStoreConnected);
-    Store.$session.events().on("protocol", this.onStoreProtocol);
 
     // Synchronize vCard eagerly
     this.syncVCardEager();
@@ -134,7 +127,6 @@ export default {
   beforeUnmount() {
     // Unbind handlers
     Store.$session.events().off("connected", this.onStoreConnected);
-    Store.$session.events().off("protocol", this.onStoreProtocol);
   },
 
   methods: {
@@ -148,12 +140,8 @@ export default {
 
         // Load profile
         // TODO: refresh transient values every now and then
-        await Store.$profile.load(this.fullJIDHighestOnline);
+        await Store.$profile.load(this.jid);
       }
-    },
-
-    async syncEncryption(): Promise<void> {
-      await Store.$profile.loadProfileEncryption(this.jid.bare());
     },
 
     // --> EVENT LISTENERS <--
@@ -163,11 +151,6 @@ export default {
         // Synchronize vCard eagerly (if stale)
         this.syncVCardEager();
       }
-    },
-
-    onStoreProtocol(): void {
-      // Reload encryption details
-      this.syncEncryption();
     }
   }
 };

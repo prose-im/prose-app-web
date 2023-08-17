@@ -22,7 +22,7 @@
 <script lang="ts">
 // NPM
 import { shallowRef, PropType } from "vue";
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import {

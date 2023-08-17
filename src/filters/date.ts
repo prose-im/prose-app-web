@@ -15,8 +15,6 @@ const SECOND_TO_DAYS = 86400; // 1 day
 
 const MINUTE_TO_MILLISECONDS = 60000; // 1 minute
 
-const HOUR_TO_MINUTES = 60; // 1 hour
-
 /**************************************************************************
  * FILTERS
  ***************************************************************************/
@@ -75,17 +73,6 @@ class FilterDate {
       minute: "numeric",
       hour12: true
     }).format(localDate);
-  }
-
-  tzoToOffset(tzo: string): number {
-    const tzoParts = tzo.split(":");
-
-    // Provided TZO is invalid?
-    if (tzoParts.length !== 2 || !tzoParts[0] || !tzoParts[1]) {
-      throw new Error(`Cannot parse invalid date TZO: '${tzo}'`);
-    }
-
-    return parseInt(tzoParts[0]) * HOUR_TO_MINUTES + parseInt(tzoParts[1]);
   }
 }
 

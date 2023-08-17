@@ -59,17 +59,15 @@
      ********************************************************************** -->
 
 <script lang="ts">
-// PACKAGE
-import * as projectPackage from "@/../package.json";
-
 // PROJECT: BROKER
 import {
   VERSION_NAME,
   VERSION_SYSTEM,
-  VERSION_REVISION_FALLBACK
-} from "@/broker/stanzas/iq";
+  VERSION_REVISION
+} from "@/broker/context";
 
 // CONSTANTS
+// TODO: import this from the JS SDK?
 const OMEMO_VERSION = "0.8.3"; // TODO: from local OMEMO library version tag
 
 export default {
@@ -82,9 +80,7 @@ export default {
       snapshot: {
         platform: "web",
         system: VERSION_SYSTEM,
-        client: `${VERSION_NAME} ${
-          projectPackage.version || VERSION_REVISION_FALLBACK
-        }`,
+        client: `${VERSION_NAME} ${VERSION_REVISION}`,
 
         security: {
           label: `OMEMO v${OMEMO_VERSION}`,

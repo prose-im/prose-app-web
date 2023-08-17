@@ -46,7 +46,7 @@
 
 <script lang="ts">
 // NPM
-import { jid } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-sdk-js";
 
 export default {
   name: "SidebarContextAccount",
@@ -74,7 +74,7 @@ export default {
 
   computed: {
     addressJID() {
-      return jid(this.address);
+      return new JID(this.address);
     }
   }
 };

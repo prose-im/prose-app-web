@@ -9,14 +9,11 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@xmpp/jid";
+import { JID, Message as CoreMessage } from "@prose-im/prose-sdk-js";
 import cloneDeep from "lodash.clonedeep";
 import mitt from "mitt";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
-
-// PROJECT: BROKER
-import { MessageChatState } from "@/broker/stanzas/message";
 
 /**************************************************************************
  * TYPES
@@ -28,7 +25,7 @@ type InboxEntryMessages = {
 };
 
 type InboxEntryStates = {
-  chatstate: MessageChatState;
+  composing: boolean;
 };
 
 type EventMessageGeneric = {
@@ -65,11 +62,33 @@ interface InboxEntryMessage extends MessagingStoreMessageData {
 const EventBus = mitt();
 
 /**************************************************************************
+ * METHODS
+ * ************************************************************************* */
+
+const fromCoreMessage = function (message: CoreMessage): InboxEntryMessage {
+  return {
+    id: message.id,
+    archiveId: message.archiveId,
+    type: message.type,
+    date: message.date,
+    from: message.from,
+    content: message.content,
+
+    reactions: message.reactions.map(reaction => {
+      return {
+        reaction: reaction.reaction,
+        authors: reaction.authors.map(jid => jid.toString())
+      };
+    })
+  };
+};
+
+/**************************************************************************
  * TABLE
  * ************************************************************************* */
 
 const $inbox = defineStore("inbox", {
-  persist: true,
+  persist: false,
 
   state: (): Inbox => {
     return {
@@ -104,7 +123,7 @@ const $inbox = defineStore("inbox", {
     },
 
     assert(jid: JID): InboxEntry {
-      const jidString = jid.bare().toString(),
+      const jidString = jid.toString(),
         entries = this.entries;
 
       // Assign new inbox entry?
@@ -114,14 +133,11 @@ const $inbox = defineStore("inbox", {
           entries[jidString] = {
             messages: {
               list: [],
-
-              // TODO: do not store this in persistance layer
-              byId: {} // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
+              byId: {}
             },
 
             states: {
-              // TODO: do not store this in persistance layer
-              chatstate: MessageChatState.Inactive
+              composing: false
             }
           };
         });
@@ -138,23 +154,26 @@ const $inbox = defineStore("inbox", {
       const container = this.assert(jid).messages;
 
       messages.forEach(message => {
-        if (!message.id) {
+        // Acquire message identifier
+        const messageId = message.id;
+
+        if (!messageId) {
           throw new Error("Cannot insert a message with no identifier");
         }
 
         // Attempt to update first?
-        const wasUpdated = this.updateMessage(jid, message.id, message);
+        const wasUpdated = this.updateMessage(jid, messageId, message);
 
         // Should insert message? (does not exist)
         if (wasUpdated !== true) {
           this.$patch(() => {
-            container.byId[message.id] = message;
+            container.byId[messageId] = message;
             container.list.push(message);
           });
 
           // Emit IPC inserted event
           EventBus.emit("message:inserted", {
-            jid,
+            jid: jid,
             message
           } as EventMessageGeneric);
         }
@@ -164,7 +183,10 @@ const $inbox = defineStore("inbox", {
     updateMessage(jid: JID, id: string, message: InboxEntryMessage): boolean {
       const container = this.assert(jid).messages;
 
-      if (!message.id) {
+      // Acquire message identifier
+      const messageId = message.id;
+
+      if (!messageId) {
         throw new Error("Cannot update a message with no identifier");
       }
 
@@ -182,28 +204,15 @@ const $inbox = defineStore("inbox", {
           Object.assign(existingMessage, message);
 
           // Update existing message identifier (w/ replacement identifier)
-          existingMessage.id = message.id;
+          existingMessage.id = messageId;
 
           // Store existing message at new identifier
-          container.byId[message.id] = existingMessage;
-
-          // TODO: remove temporary fix of lost reference when store is \
-          //   restored
-          const foundListMessage = container.list.find(listMessage => {
-            return listMessage.id === existingMessage.id;
-          });
-
-          if (foundListMessage) {
-            Object.assign(foundListMessage, message);
-
-            // Update found list message identifier (w/ replacement identifier)
-            foundListMessage.id = message.id;
-          }
+          container.byId[messageId] = existingMessage;
         });
 
         // Emit IPC updated event
         EventBus.emit("message:updated", {
-          jid,
+          jid: jid,
           message: existingMessage,
           original: originalMessage
         } as EventMessageGeneric);
@@ -241,7 +250,7 @@ const $inbox = defineStore("inbox", {
 
         // Emit IPC retracted event
         EventBus.emit("message:retracted", {
-          jid,
+          jid: jid,
           message: existingMessage
         } as EventMessageGeneric);
 
@@ -253,8 +262,8 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
-    setStatesChatstate(jid: JID, chatstate: MessageChatState) {
-      this.assert(jid).states.chatstate = chatstate;
+    setComposing(jid: JID, composing: boolean) {
+      this.assert(jid).states.composing = composing;
     }
   }
 });
@@ -264,4 +273,5 @@ const $inbox = defineStore("inbox", {
  * ************************************************************************* */
 
 export type { InboxEntryMessage, EventMessageGeneric };
+export { fromCoreMessage };
 export default $inbox;

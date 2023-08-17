@@ -123,7 +123,7 @@ layout-toolbar(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { jid, JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -231,7 +231,7 @@ export default {
 
       // Build popover items
       const items: Array<PopoverItem> = Array.from(historyRawJIDs)
-        .map(historyRawJID => jid(historyRawJID))
+        .map(historyRawJID => new JID(historyRawJID))
         .map(historyJID => {
           return {
             type: PopoverItemType.Button,

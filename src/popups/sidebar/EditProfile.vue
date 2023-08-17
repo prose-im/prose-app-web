@@ -65,7 +65,7 @@ base-popup(
 <script lang="ts">
 // NPM
 import { shallowRef } from "vue";
-import { JID } from "@xmpp/jid";
+import { JID, UserProfile, Job, Address } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -85,7 +85,7 @@ import { ProfileEntry } from "@/store/tables/profile";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { SaveVCardRequest, SaveAvatarRequest } from "@/broker/modules/profile";
+import { SaveAvatarRequest } from "@/broker/modules/profile";
 
 // TYPES
 type FormValueString = { inner: string };
@@ -251,7 +251,7 @@ export default {
 
     async syncVCard(): Promise<void> {
       // Load profile vCard
-      const profile = await Store.$profile.loadProfileVCard(this.selfJID);
+      const profile = await Store.$profile.loadUserProfile(this.selfJID);
 
       // Apply new profile data to form
       this.vCardDataToForms(profile);
@@ -288,42 +288,36 @@ export default {
       }
     },
 
-    formsToVCardData(
+    formsToUserProfile(
       formIdentity: FormIdentity,
       formProfile: FormProfile
-    ): SaveVCardRequest {
-      const vCardData: SaveVCardRequest = {};
+    ): UserProfile {
+      const profile = new UserProfile();
 
-      // Assign data from identity form
-      if (formIdentity.nameFirst.inner && formIdentity.nameLast.inner) {
-        vCardData.fullName = [
-          formIdentity.nameFirst.inner,
-          formIdentity.nameLast.inner
-        ].join(" ");
-      }
+      // Assign base information
+      profile.firstName = formIdentity.nameFirst.inner || undefined;
+      profile.lastName = formIdentity.nameLast.inner || undefined;
+      profile.email = formIdentity.email.inner || undefined;
+      profile.phone = formIdentity.phone.inner || undefined;
+      // TODO: profile.url = vCard.url;
 
-      vCardData.firstName = formIdentity.nameFirst.inner || undefined;
-      vCardData.lastName = formIdentity.nameLast.inner || undefined;
+      // Assign job
+      const job = new Job();
 
-      vCardData.email = formIdentity.email.inner || undefined;
-      vCardData.phone = formIdentity.phone.inner || undefined;
+      job.title = formProfile.jobTitle.inner || undefined;
+      job.organization = formProfile.jobOrganization.inner || undefined;
 
-      // Assign data from profile form
-      if (formProfile.jobTitle.inner || formProfile.jobOrganization.inner) {
-        vCardData.job = {
-          title: formProfile.jobTitle.inner || undefined,
-          organization: formProfile.jobOrganization.inner || undefined
-        };
-      }
+      profile.job = job;
 
-      if (formProfile.locationCity.inner || formProfile.locationCountry.inner) {
-        vCardData.address = {
-          city: formProfile.locationCity.inner || undefined,
-          country: formProfile.locationCountry.inner || undefined
-        };
-      }
+      // Assign address
+      const address = new Address();
 
-      return vCardData;
+      address.city = formProfile.locationCity.inner || undefined;
+      address.country = formProfile.locationCountry.inner || undefined;
+
+      profile.address = address;
+
+      return profile;
     },
 
     avatarUpdateToData(avatarUpdate: StateAvatarUpdate): SaveAvatarRequest {
@@ -355,7 +349,7 @@ export default {
         this.saving = true;
 
         // Generate vCard save data
-        const vCardData = this.formsToVCardData(
+        const vCardData = this.formsToUserProfile(
           this.formSections.identity.properties.form,
           this.formSections.profile.properties.form
         );
@@ -368,7 +362,7 @@ export default {
 
         try {
           // Save vCard data
-          await Broker.$profile.saveVCard(this.selfJID, vCardData);
+          await Broker.$profile.saveUserProfile(this.selfJID, vCardData);
 
           // Save avatar data? (if non-empty)
           if (avatarData !== null) {

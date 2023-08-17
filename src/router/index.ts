@@ -15,7 +15,7 @@ import {
   createWebHistory,
   createRouter
 } from "vue-router";
-import { jid } from "@xmpp/jid";
+import init, { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: VIEWS
 import StartLogin from "@/views/start/StartLogin.vue";
@@ -46,6 +46,7 @@ enum NavigateState {
 class Router {
   private readonly __router: VueRouter;
 
+  private __wasmModuleInitialized = false;
   private __lastNavigateStatePosition = 0;
   private __pendingNavigateState: NavigateState | null = null;
 
@@ -64,9 +65,13 @@ class Router {
           name: "start.login",
           component: StartLogin,
 
-          beforeEnter: () => {
-            // Ensure that user is not already logged-in
-            this.__guardAnonymous();
+          beforeEnter: (to, from, next) => {
+            this.__initializeWasmModule().then(() => {
+              // Ensure that user is not already logged-in
+              this.__guardAnonymous();
+
+              next();
+            });
           }
         },
 
@@ -77,12 +82,16 @@ class Router {
           name: "app",
           component: AppBase,
 
-          beforeEnter: () => {
-            // Ensure that user is logged-in
-            this.__guardAuthenticated();
+          beforeEnter: (to, from, next) => {
+            this.__initializeWasmModule().then(() => {
+              // Ensure that user is logged-in
+              this.__guardAuthenticated();
 
-            // Setup broker client (resume session)
-            this.__setupBrokerClient();
+              // Setup broker client (resume session)
+              this.__setupBrokerClient();
+
+              next();
+            });
           },
 
           children: [
@@ -109,6 +118,15 @@ class Router {
     app.use(this.__router);
   }
 
+  private async __initializeWasmModule() {
+    // Not already initialized?
+    if (this.__wasmModuleInitialized !== true) {
+      this.__wasmModuleInitialized = true;
+
+      await init();
+    }
+  }
+
   private __guardAuthenticated() {
     // Ensure that user is logged in (redirect to base if not)
     if (!Store.$account.credentials.jid) {
@@ -133,7 +151,7 @@ class Router {
 
     if (credentials.jid) {
       Broker.client
-        .authenticate(jid(credentials.jid), credentials.password)
+        .authenticate(new JID(credentials.jid), credentials.password)
         .catch(() => {
           // Ignore authentication errors here
         });

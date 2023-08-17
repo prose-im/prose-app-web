@@ -39,7 +39,7 @@ layout-toolbar(
     )
       inbox-form-chatstate(
         :jid="jid"
-        :chatstate="states.chatstate"
+        :composing="states.composing"
         class="a-inbox-form__compose-chatstate"
       )
 
@@ -113,7 +113,7 @@ layout-toolbar(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import {
@@ -128,7 +128,6 @@ import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import { MessageChatState } from "@/broker/stanzas/message";
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
@@ -154,7 +153,7 @@ export default {
       isActionFormattingPopoverVisible: false,
       isActionEmojisPopoverVisible: false,
 
-      chatStateLast: MessageChatState.Active,
+      isUserComposing: false,
       chatStateComposeTimeout: null as null | ReturnType<typeof setTimeout>
     };
   },
@@ -199,19 +198,19 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    propagateChatState(chatState: MessageChatState): void {
+    propagateChatState(composing: boolean): void {
       // Propagate new chat state?
-      if (chatState !== this.chatStateLast) {
-        this.chatStateLast = chatState;
+      if (composing !== this.isUserComposing) {
+        this.isUserComposing = composing;
 
-        Broker.$chat.sendChatState(this.jid, chatState);
+        Broker.$chat.sendChatState(this.jid, composing);
       }
     },
 
     scheduleChatStateComposeTimeout(): void {
       this.chatStateComposeTimeout = setTimeout(() => {
         // Propagate paused chat state
-        this.propagateChatState(MessageChatState.Paused);
+        this.propagateChatState(false);
       }, CHATSTATE_COMPOSE_INACTIVE_DELAY);
     },
 
@@ -267,30 +266,29 @@ export default {
       this.unscheduleChatStateComposeTimeout();
 
       // Acquire current chat state
-      const newChatState =
-        value.length > 0 ? MessageChatState.Composing : MessageChatState.Active;
+      const isComposing = value.length > 0;
 
       // Propagate new chat state (as needed)
-      this.propagateChatState(newChatState);
+      this.propagateChatState(isComposing);
 
       // Re-schedule compose timeout?
-      if (newChatState === MessageChatState.Composing) {
+      if (isComposing === true) {
         this.scheduleChatStateComposeTimeout();
       }
     },
 
-    onSubmit(): void {
+    async onSubmit(): Promise<void> {
       const message = this.message.trim();
 
       if (message) {
         // Clear compose chat state timeout (as needed)
         this.unscheduleChatStateComposeTimeout();
 
-        // Force-mark last chat state as 'active' (implicit)
-        this.chatStateLast = MessageChatState.Active;
+        // Mark user as not composing anymore.
+        this.isUserComposing = false;
 
         // Send message
-        Broker.$chat.sendMessage(this.jid, message);
+        await Broker.$chat.sendMessage(this.jid, message);
 
         // Clear message field
         this.message = "";

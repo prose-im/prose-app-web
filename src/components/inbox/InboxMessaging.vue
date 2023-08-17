@@ -68,8 +68,7 @@
 <script lang="ts">
 // NPM
 import { shallowRef, PropType } from "vue";
-import xmppID from "@xmpp/id";
-import { jid, JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-sdk-js";
 import {
   Messaging as MessagingRuntime,
   Platform as MessagingPlatform,
@@ -366,7 +365,7 @@ export default {
 
     identifyPartyRemote(runtime: MessagingRuntime): void {
       // Identify remote party
-      runtime.MessagingStore.identify(this.jid.bare().toString(), {
+      runtime.MessagingStore.identify(this.jid.toString(), {
         name: Store.$roster.getEntryName(this.jid),
         avatar: Store.$avatar.getAvatarDataUrl(this.jid)
       });
@@ -465,7 +464,7 @@ export default {
       (this.$refs.container as HTMLElement).click();
     },
 
-    async syncMessagesEager(): void {
+    async syncMessagesEager(): Promise<void> {
       // Can synchronize now? (connected)
       if (
         this.isMessageSyncStale === true &&
@@ -474,27 +473,8 @@ export default {
         // Mark synchronization as non-stale
         this.isMessageSyncStale = false;
 
-        // Find last message with an archive identifier
-        let lastResultIdFromArchive = undefined;
-
-        if (this.messages.length > 0) {
-          for (let i = this.messages.length - 1; i >= 0; i--) {
-            const archiveId = this.messages[i].archiveId || undefined;
-
-            if (archiveId !== undefined) {
-              lastResultIdFromArchive = archiveId;
-
-              // Stop as soon as last archive identifier was found
-              break;
-            }
-          }
-        }
-
         // Load all messages
-        // Notice: only load messages after last loaded identifier
-        const result = await Broker.$mam.loadMessages(this.jid, {
-          afterId: lastResultIdFromArchive
-        });
+        await Broker.$mam.loadLatestMessages(this.jid);
 
         const frameRuntime = this.frame();
 
@@ -502,10 +482,11 @@ export default {
           // Mark forwards loading as complete
           frameRuntime.MessagingStore.loader("forwards", false);
 
+          // TODO: Fix backwards loading after updating core lib
           // Mark backwards loading as complete?
-          if (result.complete === true) {
-            frameRuntime.MessagingStore.loader("backwards", false);
-          }
+          // if (result.complete === true) {
+          //   frameRuntime.MessagingStore.loader("backwards", false);
+          // }
         } else {
           this.$log.warn(
             `Could not show loaders in message frame runtime upon eagerly ` +
@@ -515,12 +496,14 @@ export default {
       }
     },
 
-    async seekMoreMessages(): void {
+    async seekMoreMessages(): Promise<void> {
       // Can seek now? (connected and not stale)
+      // TODO: Fix condition after updating core lib
       if (
-        Store.$session.connected === true &&
-        this.isMessageSyncStale !== true &&
-        this.isMessageSyncMoreLoading !== true
+        true
+        // Store.$session.connected === true &&
+        // this.isMessageSyncStale !== true &&
+        // this.isMessageSyncMoreLoading !== true
       ) {
         const frameRuntime = this.frame();
 
@@ -539,9 +522,7 @@ export default {
           frameRuntime.MessagingStore.loader("backwards", true);
 
           // TODO: this one is not working
-          await Broker.$mam.loadMessages(this.jid, {
-            beforeId: firstResultIdFromArchive
-          });
+          await Broker.$mam.loadLatestMessages(this.jid);
 
           // Mark backwards loading as complete
           frameRuntime.MessagingStore.loader("backwards", false);
@@ -608,8 +589,6 @@ export default {
 
       // Apply reaction changes?
       if (shouldPropagate === true) {
-        // TODO: update store
-
         // Send reaction to network
         Broker.$chat.sendReactions(messageId, this.jid, reactions);
       }
@@ -638,33 +617,22 @@ export default {
       this.triggerContainerClick();
     },
 
-    onModalEditMessageEdit(
-      { messageId, messageType }: { messageId: string; messageType: string },
+    async onModalEditMessageEdit(
+      { messageId }: { messageId: string },
       text: string
-    ): void {
+    ): Promise<void> {
       const frameRuntime = this.frame();
 
-      // Generate new message ID
-      const updatedMessageId = xmppID();
-
-      // Update in store
-      const wasUpdated = Store.$inbox.updateMessage(this.jid, messageId, {
-        id: updatedMessageId,
-        type: messageType,
-        content: text
-      });
-
-      // Message updated in store? Proceed actual network edit & acknowledge
-      if (wasUpdated === true) {
+      try {
         // Send update to network
-        Broker.$chat.updateMessage(this.jid, text, {
-          original: messageId,
-          replacement: updatedMessageId
-        });
+        await Broker.$chat.updateMessage(this.jid, text, messageId);
 
         // Acknowledge update
         BaseAlert.info("Message edited", "The message has been updated");
-      } else {
+      } catch (error) {
+        // Alert of copy error
+        this.$log.error(`Could not edit message #${messageId}`, error);
+
         BaseAlert.error(
           "Cannot edit message",
           "The message could not be updated"
@@ -685,14 +653,18 @@ export default {
       this.frame()?.MessagingStore.highlight(null);
     },
 
-    onModalRemoveMessageRemove({ messageId }: { messageId: string }): void {
+    async onModalRemoveMessageRemove({
+      messageId
+    }: {
+      messageId: string;
+    }): Promise<void> {
       // Remove from store
       const wasRemoved = Store.$inbox.retractMessage(this.jid, messageId);
 
       // Message removed in store? Proceed actual network removal & acknowledge
       if (wasRemoved === true) {
         // Send removal to network
-        Broker.$chat.retractMessage(messageId, this.jid);
+        await Broker.$chat.retractMessage(messageId, this.jid);
 
         // Acknowledge removal
         BaseAlert.info("Message removed", "The message has been deleted");
@@ -741,7 +713,7 @@ export default {
           this.hidePopover();
         } catch (error) {
           // Alert of copy error
-          this.$log.info(
+          this.$log.error(
             `Could not copy message text: ${messageData.content}`,
             error
           );
@@ -801,8 +773,6 @@ export default {
 
           // Show edit modal
           this.modals.editMessage.context.messageId = messageId;
-          this.modals.editMessage.context.messageType = messageData.type;
-
           this.modals.editMessage.originalText = messageData.content;
 
           this.modals.editMessage.visible = true;
@@ -950,7 +920,10 @@ export default {
           });
 
           // Message from self? Append private actions.
-          if (this.selfJID.equals(jid(messageData.from)) === true) {
+          if (
+            messageData.from &&
+            this.selfJID.equals(new JID(messageData.from)) === true
+          ) {
             items.push(
               {
                 type: PopoverItemType.Divider

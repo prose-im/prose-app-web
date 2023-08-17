@@ -13,8 +13,7 @@ span(
   :class=`[
     "c-base-presence",
     "c-base-presence--" + size,
-    "c-base-presence--" + type,
-    "c-base-presence--" + show,
+    "c-base-presence--" + availability,
     {
       "c-base-presence--active": active,
       "c-base-presence--available-only": availableOnly
@@ -30,14 +29,18 @@ span(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@xmpp/jid";
+import { JID, Availability } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
 
 // CONSTANTS
-const TYPE_DEFAULT = "available";
-const SHOW_DEFAULT = "none";
+const AVAILABILITY_LABELS = {
+  [Availability.Available]: "available",
+  [Availability.Away]: "away",
+  [Availability.Unavailable]: "unavailable",
+  [Availability.DoNotDisturb]: "dnd"
+};
 
 export default {
   name: "BasePresence",
@@ -69,16 +72,15 @@ export default {
   },
 
   computed: {
-    type(): string {
-      return (this.highest.type as string) || TYPE_DEFAULT;
-    },
+    availability(): string {
+      const availability = Store.$presence.getAvailability(this.jid),
+        availabilityLabel = AVAILABILITY_LABELS[availability] || null;
 
-    show(): string {
-      return (this.highest.show as string) || SHOW_DEFAULT;
-    },
+      if (availabilityLabel === null) {
+        throw new Error(`Unexpected availability: ${availability}`);
+      }
 
-    highest(): ReturnType<typeof Store.$presence.getHighest> {
-      return Store.$presence.getHighest(this.jid);
+      return availabilityLabel;
     }
   }
 };
@@ -98,14 +100,11 @@ $sizes: (
   "large": 12px
 );
 
-$type-shows: (
-  "available": (
-    "none": $color-base-green-normal,
-    "chat": $color-base-green-normal,
-    "away": $color-base-orange-normal,
-    "xa": $color-base-grey-normal,
-    "dnd": $color-base-red-normal
-  )
+$availabilities: (
+  "available": $color-base-green-normal,
+  "away": $color-base-orange-normal,
+  "unavailable": $color-base-grey-normal,
+  "dnd": $color-base-red-normal
 );
 
 .c-base-presence {
@@ -124,17 +123,15 @@ $type-shows: (
     }
   }
 
-  // --> TYPES + SHOWS <--
+  // --> AVAILABILITIES <--
 
-  @each $type, $shows in $type-shows {
-    &--#{$type} {
+  @each $availability, $color in $availabilities {
+    &--#{$availability} {
       background-color: $color-base-grey-dark;
       border: 0 none;
 
-      @each $show, $color in $shows {
-        &#{$c}--#{$show} {
-          background-color: $color;
-        }
+      &#{$c}--#{$availability} {
+        background-color: $color;
       }
 
       &#{$c}--active {

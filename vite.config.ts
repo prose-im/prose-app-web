@@ -11,6 +11,7 @@
 import path from "path";
 import merge from "lodash.merge";
 import vue from "@vitejs/plugin-vue";
+import viteWasmPlugin from "vite-plugin-wasm";
 import vitePugPlugin from "vite-plugin-pug-transformer";
 import { viteStaticCopy as viteStaticCopyPlugin } from "vite-plugin-static-copy";
 import { createSvgIconsPlugin as viteSvgIconsPlugin } from "vite-plugin-svg-icons";
@@ -24,13 +25,25 @@ import productionConfig from "./config/production";
  * CONSTANTS
  * ************************************************************************* */
 
-const PROSE_CORE_VIEWS_PATH = getInstalledPathSync(
+const PROSE_CORE_VIEWS_LOCAL_PATH = getInstalledPathSync(
   "@prose-im/prose-core-views",
 
   {
     local: true
   }
 );
+
+const PROSE_CORE_VIEWS_OVERRIDE_PATH = process.env.PROSE_CORE_VIEWS_PATH
+  ? path.join(__dirname, process.env.PROSE_CORE_VIEWS_PATH)
+  : null;
+
+const PROSE_SDK_JS_OVERRIDE_PATH = process.env.PROSE_CORE_CLIENT_PATH
+  ? path.join(
+      __dirname,
+      process.env.PROSE_CORE_CLIENT_PATH,
+      "bindings/prose-sdk-js/pkg/"
+    )
+  : null;
 
 const ASSETS_ICONS_PATH = path.join(__dirname, "src/assets/images/icons/");
 
@@ -46,7 +59,11 @@ export default {
   server: {
     host: "localhost",
     port: 3010,
-    strictPort: true
+    strictPort: true,
+
+    fs: {
+      strict: false
+    }
   },
 
   preview: {
@@ -68,17 +85,40 @@ export default {
   },
 
   resolve: {
-    alias: [{ find: "@/", replacement: path.join(__dirname, "src/") }]
+    alias: [
+      { find: "@/", replacement: path.join(__dirname, "src/") },
+
+      {
+        // Use optional override to use a local 'prose-sdk-js' build
+        find: "@prose-im/prose-sdk-js",
+        replacement: PROSE_SDK_JS_OVERRIDE_PATH || "@prose-im/prose-sdk-js"
+      },
+
+      {
+        // Use optional override to use a local 'prose-core-views' build
+        find: "@prose-im/prose-core-views",
+
+        replacement:
+          PROSE_CORE_VIEWS_OVERRIDE_PATH || "@prose-im/prose-core-views"
+      }
+    ]
   },
 
   plugins: [
     vue(),
     vitePugPlugin({}),
+    viteWasmPlugin(),
 
     viteStaticCopyPlugin({
       targets: [
         {
-          src: path.join(PROSE_CORE_VIEWS_PATH, "dist", "*"),
+          src: path.join(
+            // Use optional override to use a local 'prose-core-view' build
+            PROSE_CORE_VIEWS_OVERRIDE_PATH || PROSE_CORE_VIEWS_LOCAL_PATH,
+            "dist",
+            "*"
+          ),
+
           dest: "includes/views"
         }
       ]
@@ -92,6 +132,11 @@ export default {
       svgoOptions: false
     })
   ],
+
+  optimizeDeps: {
+    // Workaround for https://github.com/vitejs/vite/issues/8427
+    exclude: ["@prose-im/prose-sdk-js"]
+  },
 
   css: {
     devSourcemap: false,

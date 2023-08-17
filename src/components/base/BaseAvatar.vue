@@ -35,7 +35,7 @@ div(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -195,13 +195,13 @@ export default {
     },
 
     generateTextualPalette(jid: JID): string {
-      const bareJIDString = jid.bare().toString();
+      const jidString = jid.toString();
 
       // Compute JID fingerprint
       let jidFingerprint = 0;
 
-      for (let i = 0; i < bareJIDString.length; i++) {
-        jidFingerprint += bareJIDString.charCodeAt(i);
+      for (let i = 0; i < jidString.length; i++) {
+        jidFingerprint += jidString.charCodeAt(i);
       }
 
       // Acquire color based on JID fingerprint
@@ -235,8 +235,8 @@ export default {
       }
 
       // #2. Extract initials from JID (fallback)
-      if (jid.local && jid.local.length >= 1) {
-        return jid.local.substring(0, 2);
+      if (jid.node && jid.node.length >= 1) {
+        return jid.node.substring(0, 2);
       }
 
       // No initials extracted

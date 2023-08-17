@@ -87,7 +87,7 @@ base-modal(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@xmpp/jid";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -102,7 +102,7 @@ const EXAMPLE_STATUSES = [
   ["🌮", "Eating lunch"],
   ["🍽️", "Eating dinner"],
   ["🧑‍💻", "Focusing on code"],
-  ["🏝️", "Vacationning"],
+  ["🏝️", "Vacationing"],
   ["🎉", "It's my birthday!"],
   ["🛏️", "Taking a nap"],
   ["📆", "In a meeting"],
