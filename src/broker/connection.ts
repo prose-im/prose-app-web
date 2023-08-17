@@ -165,9 +165,9 @@ class BrokerConnectionStrophe implements ProseConnection {
     ).firstElementChild;
 
     if (!element) {
-      logger.warn("Cannot parse stanza:", stanza);
+      logger.error("Cannot parse stanza to send:", stanza);
 
-      throw new Error("Failed to parse stanza");
+      throw new Error("Failed to send stanza");
     }
 
     this.__connection.send(element);

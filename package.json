@@ -35,7 +35,6 @@
   "dependencies": {
     "@prose-im/prose-sdk-js": "0.1.18",
     "@prose-im/prose-core-views": "0.23.1",
-    "@xmpp/id": "0.13.x",
     "lodash.camelcase": "4.3.x",
     "lodash.upperfirst": "4.3.x",
     "lodash.clonedeep": "4.5.x",
@@ -59,7 +58,6 @@
   "devDependencies": {
     "@types/node": "18.11.x",
     "@types/strophe.js": "1.2.x",
-    "@types/xmpp__id": "0.13.x",
     "@types/lodash.camelcase": "4.3.x",
     "@types/lodash.upperfirst": "4.3.x",
     "@types/lodash.clonedeep": "4.5.x",

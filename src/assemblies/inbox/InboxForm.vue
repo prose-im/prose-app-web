@@ -277,7 +277,7 @@ export default {
       }
     },
 
-    onSubmit(): void {
+    async onSubmit(): Promise<void> {
       const message = this.message.trim();
 
       if (message) {
@@ -288,7 +288,7 @@ export default {
         this.isUserComposing = false;
 
         // Send message
-        Broker.$chat.sendMessage(this.jid, message);
+        await Broker.$chat.sendMessage(this.jid, message);
 
         // Clear message field
         this.message = "";

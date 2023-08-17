@@ -28,7 +28,7 @@ import logger from "@/utilities/logger";
  * ************************************************************************* */
 
 class BrokerModuleMAM extends BrokerModule {
-  async loadLatestMessages(jid: JID) {
+  async loadLatestMessages(jid: JID): Promise<void> {
     // XEP-0313: Message Archive Management
     // https://xmpp.org/extensions/xep-0313.html
 
