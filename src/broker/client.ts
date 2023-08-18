@@ -154,7 +154,11 @@ class BrokerClient {
 
     // Connect client
     try {
-      await client.connect(jid, password, Availability.Available);
+      await client.connect(
+        jid,
+        password,
+        Store.$presence.getLocalAvailability()
+      );
     } catch (error) {
       logger.error("Something went wrong", error);
     }

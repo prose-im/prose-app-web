@@ -14,6 +14,7 @@ import { defineStore } from "pinia";
 
 // PROJECT: STORES
 import Store from "@/store";
+import Broker from "@/broker";
 
 /**************************************************************************
  * INTERFACES
@@ -55,6 +56,9 @@ const $presence = defineStore("presence", {
 
     getAvailability: function () {
       return (jid: JID): Availability => {
+        if (Broker.client.jid && Broker.client.jid.equals(jid)) {
+          return this.getLocalAvailability();
+        }
         return (
           Store.$roster.getEntry(jid)?.availability || AVAILABILITY_DEFAULT
         );
