@@ -56,9 +56,10 @@ const $presence = defineStore("presence", {
 
     getAvailability: function () {
       return (jid: JID): Availability => {
-        if (Broker.client.jid && Broker.client.jid.equals(jid)) {
+        if (Broker.client.jid && Broker.client.jid.equals(jid) === true) {
           return this.getLocalAvailability();
         }
+
         return (
           Store.$roster.getEntry(jid)?.availability || AVAILABILITY_DEFAULT
         );
