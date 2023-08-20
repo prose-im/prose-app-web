@@ -74,7 +74,7 @@ export default {
 
     borderRadius() {
       // Acquire numeric size
-      const sizeNumeric = parseInt(this.height.replace("px", ""), 10);
+      const sizeNumeric = parseInt(this.height.replace("px", ""));
 
       // Compute numeric border radius
       const borderRadiusNumeric = Math.ceil(

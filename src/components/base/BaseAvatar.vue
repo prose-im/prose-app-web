@@ -171,7 +171,7 @@ export default {
     },
 
     sizeNumeric(): number {
-      return parseInt(this.size.replace("px", ""), 10);
+      return parseInt(this.size.replace("px", ""));
     },
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {

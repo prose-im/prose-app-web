@@ -62,7 +62,7 @@ export default {
   computed: {
     iconSize(): string {
       // Acquire numeric size
-      const sizeNumeric = parseInt(this.size.replace("px", ""), 10);
+      const sizeNumeric = parseInt(this.size.replace("px", ""));
 
       // Compute numeric icon size
       const iconSizeNumeric = Math.ceil(sizeNumeric * SIZE_TO_ICON_SIZE_RATIO);
