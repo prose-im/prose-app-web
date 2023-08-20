@@ -26,13 +26,9 @@ class BrokerModuleRoster extends BrokerModule {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-get
 
-    logger.info("Will load roster");
+    logger.info("Will load roster (or reload)");
 
-    if (!this._client.client) {
-      return Promise.reject("No client available");
-    }
-
-    return await this._client.client.loadContacts();
+    return (await this._client.client?.loadContacts()) || [];
   }
 }
 

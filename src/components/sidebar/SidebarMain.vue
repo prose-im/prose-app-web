@@ -232,7 +232,7 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    async syncRosterEager(): void {
+    async syncRosterEager(forceReload = false): Promise<void> {
       // Can synchronize now? (connected)
       if (
         this.isRosterSyncStale === true &&
@@ -244,7 +244,7 @@ export default {
         // Load roster
         this.isRosterLoading = true;
 
-        await Store.$roster.load();
+        await Store.$roster.load(forceReload);
 
         this.isRosterLoading = false;
       }
@@ -293,9 +293,11 @@ export default {
     },
 
     onContactChanged(): void {
+      // Mark roster as state (should reload)
       this.isRosterSyncStale = true;
 
-      this.syncRosterEager();
+      // Forcibly reload roster
+      this.syncRosterEager(true);
     }
   }
 };

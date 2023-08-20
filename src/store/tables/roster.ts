@@ -114,7 +114,7 @@ const $roster = defineStore("roster", {
   },
 
   actions: {
-    async load(reload = true): Promise<RosterList> {
+    async load(reload = false): Promise<RosterList> {
       // Load roster? (or reload)
       if (LOCAL_STATES.loaded === false || reload === true) {
         LOCAL_STATES.loaded = true;
