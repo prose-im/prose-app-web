@@ -68,8 +68,8 @@
     )
 
     sidebar-main-item-add(
+      @click="onTeamMembersAddClick"
       title="Add a member"
-      disabled
     )
 
   list-disclosure(
@@ -86,8 +86,8 @@
     )
 
     sidebar-main-item-add(
+      @click="onOtherContactsAddClick"
       title="Connect with someone"
-      disabled
     )
 
   list-disclosure(
@@ -121,6 +121,13 @@
       title="Add a group"
       disabled
     )
+
+  add-contact(
+    v-if="modals.addContact.visible"
+    @add="onModalAddContactAdd"
+    @close="onModalAddContactClose"
+    :mode="modals.addContact.mode"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -141,6 +148,12 @@ import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.
 import SidebarMainItemSection from "@/components/sidebar/SidebarMainItemSection.vue";
 import SidebarMainItemAdd from "@/components/sidebar/SidebarMainItemAdd.vue";
 
+// PROJECT: MODALS
+import {
+  default as AddContact,
+  Mode as AddContactMode
+} from "@/modals/sidebar/AddContact.vue";
+
 // INTERFACES
 interface RosterDisplayItem {
   jid: JID;
@@ -154,7 +167,8 @@ export default {
     SidebarMainItemUser,
     SidebarMainItemChannel,
     SidebarMainItemSection,
-    SidebarMainItemAdd
+    SidebarMainItemAdd,
+    AddContact
   },
 
   props: {
@@ -171,7 +185,14 @@ export default {
       activeJID: null,
 
       isRosterSyncStale: true,
-      isRosterLoading: false
+      isRosterLoading: false,
+
+      modals: {
+        addContact: {
+          visible: false,
+          mode: null as AddContactMode | null
+        }
+      }
     };
   },
 
@@ -273,8 +294,18 @@ export default {
       Store.$layout.setSidebarSectionTeamMembers(visible);
     },
 
+    onTeamMembersAddClick(): void {
+      this.modals.addContact.mode = AddContactMode.Member;
+      this.modals.addContact.visible = true;
+    },
+
     onOtherContactsToggle(visible: boolean): void {
       Store.$layout.setSidebarSectionOtherContacts(visible);
+    },
+
+    onOtherContactsAddClick(): void {
+      this.modals.addContact.mode = AddContactMode.Other;
+      this.modals.addContact.visible = true;
     },
 
     onGroupsToggle(visible: boolean): void {
@@ -298,6 +329,17 @@ export default {
 
       // Forcibly reload roster
       this.syncRosterEager(true);
+    },
+
+    onModalAddContactAdd(jid: JID, name: string): void {
+      // TODO
+      console.error("=> add contact jid = " + jid.toString());
+      console.error("=> add contact name = " + name);
+    },
+
+    onModalAddContactClose(): void {
+      this.modals.addContact.visible = false;
+      this.modals.addContact.mode = null;
     }
   }
 };
