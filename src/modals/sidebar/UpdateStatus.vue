@@ -41,6 +41,7 @@ base-modal(
 
     form-field(
       v-model="status.text"
+      @submit="onConfirm"
       placeholder="What is your status?"
       type="text"
       name="status"
@@ -48,6 +49,7 @@ base-modal(
       align="left"
       ref="text"
       class="m-update-status__text"
+      submittable
       autofocus
     )
 
