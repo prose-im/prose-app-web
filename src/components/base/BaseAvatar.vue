@@ -101,6 +101,11 @@ export default {
     square: {
       type: Boolean,
       default: false
+    },
+
+    circle: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -158,13 +163,19 @@ export default {
     },
 
     borderRadius(): string {
-      // Acquire numeric size (size should be zero if square requested)
-      const sizeNumeric = this.square === true ? 0 : this.sizeNumeric;
+      // Acquire border radius numeric value
+      let borderRadiusNumeric;
 
-      // Compute numeric border radius
-      const borderRadiusNumeric = Math.ceil(
-        sizeNumeric * SIZE_TO_BORDER_RADIUS_RATIO
-      );
+      if (this.square === true) {
+        borderRadiusNumeric = 0;
+      } else if (this.circle === true) {
+        borderRadiusNumeric = this.sizeNumeric;
+      } else {
+        // Compute numeric border radius
+        borderRadiusNumeric = Math.ceil(
+          this.sizeNumeric * SIZE_TO_BORDER_RADIUS_RATIO
+        );
+      }
 
       // Return pixel-sized border radius
       return `${borderRadiusNumeric}px`;
