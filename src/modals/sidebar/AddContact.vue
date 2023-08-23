@@ -164,7 +164,7 @@ export default {
     },
 
     isVerified(): boolean {
-      return this.hasIdentity === true && this.identity.name;
+      return this.hasIdentity === true && this.identity.name ? true : false;
     },
 
     noticeIcon(): string {
