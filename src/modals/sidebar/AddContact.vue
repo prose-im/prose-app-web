@@ -12,6 +12,7 @@
 base-modal(
   @close="$emit('close')"
   @confirm="onConfirm"
+  :confirm-loading="loading"
   confirm-label="Send Request"
   class="m-add-contact"
   size="large"
@@ -58,6 +59,7 @@ base-modal(
 
     form-field(
       v-model="contact.jid"
+      @change="onAddressChange"
       @submit="onConfirm"
       class="m-add-contact__form-field"
       placeholder="Enter contact address…"
@@ -125,6 +127,9 @@ export enum Mode {
   Other = "other"
 }
 
+// CONSTANTS
+const IDENTITY_ACQUIRE_DELAY = 500; // 1/2 second
+
 export default {
   name: "AddContact",
 
@@ -132,6 +137,11 @@ export default {
     mode: {
       type: String as PropType<Mode>,
       required: true
+    },
+
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -146,11 +156,14 @@ export default {
       },
 
       identity: {
+        id: 0,
         name: "",
         jid: null as JID | null
       },
 
-      fetching: false
+      fetching: false,
+
+      identityAcquireTimeout: null as null | ReturnType<typeof setTimeout>
     };
   },
 
@@ -175,18 +188,87 @@ export default {
   },
 
   methods: {
-    onConfirm(): void {
-      const jid = this.contact.jid ? new JID(this.contact.jid) : null;
+    // --> HELPERS <--
 
-      if (!jid) {
+    async acquireIdentity(jid: JID | null): Promise<void> {
+      const localId = ++this.identity.id;
+
+      if (jid !== null) {
+        this.fetching = true;
+
+        // Load identity
+        // TODO: await profile loading method
+
+        // Assign JID and name (after loading profile)
+        // Important: only proceed if local identifier matches last current \
+        //   identifier, as this load could have been slower than expected, \
+        //   thus it could have been replaced by a newer load.
+        if (localId === this.identity.id) {
+          // TODO: assign real name there, or none if JID doesnt exist
+          this.identity.jid = jid;
+          this.identity.name = jid.node || "";
+        }
+      } else {
+        this.fetching = false;
+
+        // Reset JID and name (immediately)
+        this.identity.jid = null;
+        this.identity.name = "";
+      }
+    },
+
+    // --> EVENT LISTENERS <--
+
+    async onAddressChange(address: string): Promise<void> {
+      if (this.identityAcquireTimeout !== null) {
+        clearTimeout(this.identityAcquireTimeout);
+      }
+
+      if (address) {
+        this.identityAcquireTimeout = setTimeout(async () => {
+          this.identityAcquireTimeout = null;
+
+          // Acquire parsed JID
+          // Notice: this might fail if the user-provided JID is invalid or \
+          //   not yet fully complete.
+          let jid: JID | null;
+
+          try {
+            jid = new JID(address);
+          } catch (_) {
+            jid = null;
+          }
+
+          await this.acquireIdentity(jid);
+        }, IDENTITY_ACQUIRE_DELAY);
+      } else {
+        await this.acquireIdentity(null);
+      }
+    },
+
+    onConfirm(): void {
+      const jidUnsafeString = this.contact.jid || null;
+
+      if (jidUnsafeString === null) {
         BaseAlert.warning("Address required", "Please enter an address");
       } else {
-        const name =
-          this.identity.jid && jid.equals(this.identity.jid) === true
-            ? this.identity.name
-            : "";
+        try {
+          // Attempt to parse JID (this might fail, in which case the JID \
+          //   needs to be considered invalid)
+          const jid = new JID(jidUnsafeString);
 
-        this.$emit("add", jid, name);
+          const name =
+            this.identity.jid && jid.equals(this.identity.jid) === true
+              ? this.identity.name
+              : "";
+
+          this.$emit("add", jid, name);
+        } catch (_) {
+          BaseAlert.warning(
+            "Invalid address",
+            "Make sure this address is valid"
+          );
+        }
       }
     }
   }

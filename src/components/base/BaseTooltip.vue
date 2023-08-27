@@ -75,7 +75,7 @@ export default {
     return {
       // --> STATE <--
 
-      mouseOverApplyTimeout: null,
+      mouseOverApplyTimeout: null as null | ReturnType<typeof setTimeout>,
 
       // --> DATA <--
 

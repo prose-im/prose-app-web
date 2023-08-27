@@ -168,7 +168,7 @@ export default {
     }
   },
 
-  emits: ["update:modelValue", "keystroke", "submit"],
+  emits: ["update:modelValue", "keystroke", "change", "submit"],
 
   data() {
     return {
@@ -258,8 +258,9 @@ export default {
         inputValue = Number(inputValue);
       }
 
-      // Update model value
+      // Update model value and send change event
       this.$emit("update:modelValue", inputValue);
+      this.$emit("change", inputValue);
     },
 
     onFieldFocus(): void {

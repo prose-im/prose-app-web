@@ -127,6 +127,7 @@
     @add="onModalAddContactAdd"
     @close="onModalAddContactClose"
     :mode="modals.addContact.mode"
+    :loading="modals.addContact.loading"
   )
 </template>
 
@@ -143,6 +144,7 @@ import Store from "@/store";
 import { RosterList } from "@/store/tables/roster";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
 import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
 import SidebarMainItemSection from "@/components/sidebar/SidebarMainItemSection.vue";
@@ -190,6 +192,7 @@ export default {
       modals: {
         addContact: {
           visible: false,
+          loading: false,
           mode: null as AddContactMode | null
         }
       }
@@ -331,10 +334,25 @@ export default {
       this.syncRosterEager(true);
     },
 
-    onModalAddContactAdd(jid: JID, name: string): void {
-      // TODO
-      console.error("=> add contact jid = " + jid.toString());
-      console.error("=> add contact name = " + name);
+    async onModalAddContactAdd(jid: JID, name: string): Promise<void> {
+      if (this.modals.addContact.loading !== true) {
+        this.modals.addContact.loading = true;
+
+        try {
+          // Add contact
+          // TODO: await Broker.$contact.addContact(jid, name);
+
+          BaseAlert.success("Contact added", "Contact has been added");
+
+          this.modals.addContact.visible = false;
+        } catch (error) {
+          this.$log.error("Failed adding contact", error);
+
+          BaseAlert.error("Contact not added", `${name} could not be added`);
+        } finally {
+          this.modals.addContact.loading = false;
+        }
+      }
     },
 
     onModalAddContactClose(): void {
