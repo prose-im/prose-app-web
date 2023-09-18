@@ -29,13 +29,6 @@ export type MessageReaction = string;
  * ************************************************************************* */
 
 class BrokerModuleMessage extends BrokerModule {
-  async sendMessage(to: JID, body: string): Promise<void> {
-    // XMPP: Instant Messaging and Presence
-    // https://xmpp.org/rfcs/rfc6121.html#message
-
-    await this._client.client?.sendMessage(to, body);
-  }
-
   async updateMessage(
     to: JID,
     body: string,

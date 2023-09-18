@@ -94,31 +94,18 @@
     @toggle="onGroupsToggle"
     :expanded="layout.sidebar.sections.groups"
     :list-class="disclosureListClass"
-    title="Groups"
+    title="Channels"
     expanded
   )
     sidebar-main-item-channel(
-      name="bugs"
-      disabled
-    )
-
-    sidebar-main-item-channel(
-      name="constellation"
-      disabled
-    )
-
-    sidebar-main-item-channel(
-      name="general"
-      disabled
-    )
-
-    sidebar-main-item-channel(
-      name="support"
-      disabled
+      v-for="channel in itemChannels"
+      :id="channel.room.id"
+      :name="channel.room.name"
+      :active="channel.room.id === selectedRoomID"
     )
 
     sidebar-main-item-add(
-      title="Add a group"
+      title="Add a channel"
       disabled
     )
 
@@ -141,7 +128,7 @@ import { JID, Group as RosterGroup } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
-import { RosterList } from "@/store/tables/roster";
+import { RosterList, SidebarRoomEntry } from "@/store/tables/roster";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -184,7 +171,8 @@ export default {
     return {
       // --> STATE <--
 
-      activeJID: null,
+      activeJID: null as JID | null,
+      selectedRoomID: null as string | null,
 
       isRosterSyncStale: true,
       isRosterLoading: false,
@@ -220,6 +208,10 @@ export default {
       return this.intoRosterDisplayItems(
         Store.$roster.getList(RosterGroup.Other)
       );
+    },
+
+    itemChannels(): SidebarRoomEntry[] {
+      return Store.$roster.getChannels();
     }
   },
 
@@ -229,7 +221,11 @@ export default {
 
       handler(value) {
         if (value.name && value.name.startsWith("app.inbox")) {
-          this.activeJID = new JID(value.params.jid);
+          if (value.params.jid) {
+            this.activeJID = new JID(value.params.jid);
+          } else if (value.params.roomID) {
+            this.selectedRoomID = value.params.roomID;
+          }
         } else {
           this.activeJID = null;
         }

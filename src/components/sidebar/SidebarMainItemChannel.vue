@@ -10,6 +10,7 @@
 
 <template lang="pug">
 list-button(
+  @click="onButtonClick"
   :active="active"
   :disabled="disabled"
   class="c-sidebar-main-item-channel"
@@ -38,6 +39,11 @@ export default {
   name: "SidebarMainItemChannel",
 
   props: {
+    id: {
+      type: String,
+      required: true
+    },
+
     name: {
       type: String,
       required: true
@@ -51,6 +57,17 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onButtonClick(): void {
+      this.$router.push({
+        name: "app.inbox",
+        params: { roomID: this.id }
+      });
     }
   }
 };

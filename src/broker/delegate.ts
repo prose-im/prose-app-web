@@ -115,6 +115,10 @@ class BrokerDelegate implements ProseClientDelegate {
     const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
 
     for (const message of messages) {
+      if (!message.id) {
+        continue;
+      }
+
       Store.$inbox.updateMessage(
         conversation,
         message.id,

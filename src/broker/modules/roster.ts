@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { Contact } from "@prose-im/prose-sdk-js";
+import { Contact, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -29,6 +29,10 @@ class BrokerModuleRoster extends BrokerModule {
     logger.info("Will load roster (or reload)");
 
     return (await this._client.client?.loadContacts()) || [];
+  }
+
+  async loadConnectedRooms(): Promise<Room[]> {
+    return (await this._client.client?.loadConnectedRooms()) || [];
   }
 }
 

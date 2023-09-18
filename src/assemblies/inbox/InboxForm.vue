@@ -288,7 +288,8 @@ export default {
         this.isUserComposing = false;
 
         // Send message
-        await Broker.$chat.sendMessage(this.jid, message);
+        const room = Store.$roster.getRoomByID(this.jid.toString());
+        await room?.sendMessage(message);
 
         // Clear message field
         this.message = "";

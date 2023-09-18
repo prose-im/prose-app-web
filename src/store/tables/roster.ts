@@ -13,7 +13,9 @@ import { defineStore } from "pinia";
 import {
   JID,
   Availability,
-  Group as RosterGroup
+  Group as RosterGroup,
+  Room,
+  RoomID
 } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
@@ -45,6 +47,7 @@ interface Roster {
   list: RosterList;
   byGroup: RosterByGroup;
   byJID: RosterByJID;
+  channels: SidebarRoomEntry[];
 }
 
 interface RosterEntry {
@@ -52,6 +55,10 @@ interface RosterEntry {
   availability: Availability;
   group: RosterGroup;
   name: string;
+}
+
+interface SidebarRoomEntry {
+  room: Room;
 }
 
 /**************************************************************************
@@ -77,7 +84,8 @@ const $roster = defineStore("roster", {
 
       // TODO: do not store this in persistance layer
       byGroup: {}, // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
-      byJID: {} // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
+      byJID: {}, // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
+      channels: []
     };
   },
 
@@ -94,9 +102,15 @@ const $roster = defineStore("roster", {
       };
     },
 
-    getGroups: function () {
-      return (): RosterByGroup => {
-        return this.byGroup;
+    getChannels: function () {
+      return (): SidebarRoomEntry[] => {
+        return this.channels;
+      };
+    },
+
+    getRoomByID: function () {
+      return (roomID: RoomID): Room | undefined => {
+        return this.channels.find(entry => entry.room.id == roomID)?.room;
       };
     },
 
@@ -122,7 +136,8 @@ const $roster = defineStore("roster", {
         // Initialize entries
         const entries: RosterList = [],
           byGroup: RosterByGroup = {},
-          byJID: RosterByJID = {};
+          byJID: RosterByJID = {},
+          channels: SidebarRoomEntry[] = [];
 
         // Load roster
         const contacts = await Broker.$roster.loadContacts();
@@ -152,10 +167,30 @@ const $roster = defineStore("roster", {
           byJID[entry.jid] = entry;
         });
 
+        const rooms = await Broker.$roster.loadConnectedRooms();
+
+        rooms.forEach(room => {
+          switch (room.kind) {
+            case "direct-message":
+              break;
+            case "group":
+              break;
+            case "private-channel":
+              channels.push({ room: room });
+              break;
+            case "public-channel":
+              channels.push({ room: room });
+              break;
+          }
+        });
+
         this.$patch(state => {
           state.list = entries;
           state.byGroup = byGroup;
           state.byJID = byJID;
+          state.channels = channels.sort((lhs, rhs) => {
+            return lhs.room.name.localeCompare(rhs.room.name);
+          });
         });
       }
 

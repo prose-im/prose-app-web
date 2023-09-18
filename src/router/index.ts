@@ -96,7 +96,7 @@ class Router {
 
           children: [
             {
-              path: "inbox/:jid/",
+              path: "inbox/:roomID/",
               name: "app.inbox",
               component: AppInboxBase
             }
