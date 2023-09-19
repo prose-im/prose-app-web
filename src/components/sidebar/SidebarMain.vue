@@ -91,14 +91,33 @@
     )
 
   list-disclosure(
-    @toggle="onGroupsToggle"
-    :expanded="layout.sidebar.sections.groups"
+      @toggle="onGroupsToggle"
+      :expanded="layout.sidebar.sections.groups"
+      :list-class="disclosureListClass"
+      title="Groups"
+      expanded
+    )
+      sidebar-main-item-channel(
+        v-for="channel in itemGroups"
+        :id="channel.room.id"
+        :name="channel.room.name"
+        :active="channel.room.id === selectedRoomID"
+      )
+
+      sidebar-main-item-add(
+        title="Add a channel"
+        disabled
+      )
+
+  list-disclosure(
+    @toggle="onChannelsToggle"
+    :expanded="layout.sidebar.sections.channels"
     :list-class="disclosureListClass"
     title="Channels"
     expanded
   )
     sidebar-main-item-channel(
-      v-for="channel in itemChannels"
+      v-for="channel in itemPublicChannels"
       :id="channel.room.id"
       :name="channel.room.name"
       :active="channel.room.id === selectedRoomID"
@@ -129,6 +148,8 @@ import { JID, Group as RosterGroup } from "@prose-im/prose-sdk-js";
 // PROJECT: STORES
 import Store from "@/store";
 import { RosterList, SidebarRoomEntry } from "@/store/tables/roster";
+
+import Broker from "@/broker";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -210,8 +231,14 @@ export default {
       );
     },
 
-    itemChannels(): SidebarRoomEntry[] {
-      return Store.$roster.getChannels();
+    itemGroups(): SidebarRoomEntry[] {
+      return Store.$roster.getGroups();
+    },
+
+    itemPublicChannels(): SidebarRoomEntry[] {
+      return Store.$roster
+        .getPublicChannels()
+        .concat(Store.$roster.getPrivateChannels());
     }
   },
 
@@ -238,7 +265,7 @@ export default {
 
     // Bind connected handler
     Store.$session.events().on("connected", this.onStoreConnected);
-    Store.$roster.events().on("contact:changed", this.onContactChanged);
+    Store.$roster.events().on("rooms:changed", this.onRoomsChanged);
 
     // Synchronize roster eagerly
     this.syncRosterEager();
@@ -311,10 +338,14 @@ export default {
       Store.$layout.setSidebarSectionGroups(visible);
     },
 
-    onStoreConnected(connected: boolean): void {
+    onChannelsToggle(visible: boolean): void {
+      Store.$layout.setSidebarSectionGroups(visible);
+    },
+
+    async onStoreConnected(connected: boolean): Promise<void> {
       if (connected === true) {
         // Synchronize roster eagerly
-        this.syncRosterEager();
+        await Broker.$roster.startObservingRooms();
       } else {
         // Mark synchronization as stale (will re-synchronize when connection \
         //   is restored)
@@ -322,7 +353,7 @@ export default {
       }
     },
 
-    onContactChanged(): void {
+    onRoomsChanged(): void {
       // Mark roster as state (should reload)
       this.isRosterSyncStale = true;
 

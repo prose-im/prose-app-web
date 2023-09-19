@@ -73,6 +73,10 @@ class BrokerDelegate implements ProseClientDelegate {
     );
   }
 
+  roomsChanged(client: ProseClient): void {
+    Store.$roster.markRoomsChanged();
+  }
+
   contactChanged(_client: ProseClient, jid: JID): void {
     Store.$roster.markContactChanged(jid);
   }

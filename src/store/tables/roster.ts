@@ -15,11 +15,9 @@ import {
   Availability,
   Group as RosterGroup,
   Room,
-  RoomID
+  RoomID,
+  RoomType
 } from "@prose-im/prose-sdk-js";
-
-// PROJECT: STORES
-import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -47,7 +45,13 @@ interface Roster {
   list: RosterList;
   byGroup: RosterByGroup;
   byJID: RosterByJID;
-  channels: SidebarRoomEntry[];
+
+  directMessages: SidebarRoomEntry[];
+  groups: SidebarRoomEntry[];
+  privateChannels: SidebarRoomEntry[];
+  publicChannels: SidebarRoomEntry[];
+  genericRooms: SidebarRoomEntry[];
+  roomsMap: Map<RoomID, Room>;
 }
 
 interface RosterEntry {
@@ -76,7 +80,7 @@ const EventBus = mitt();
  * ************************************************************************* */
 
 const $roster = defineStore("roster", {
-  persist: true,
+  persist: false,
 
   state: (): Roster => {
     return {
@@ -85,7 +89,12 @@ const $roster = defineStore("roster", {
       // TODO: do not store this in persistance layer
       byGroup: {}, // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
       byJID: {}, // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
-      channels: []
+      directMessages: [],
+      groups: [],
+      publicChannels: [],
+      privateChannels: [],
+      genericRooms: [],
+      roomsMap: new Map()
     };
   },
 
@@ -102,15 +111,39 @@ const $roster = defineStore("roster", {
       };
     },
 
-    getChannels: function () {
+    getDirectMessages: function () {
       return (): SidebarRoomEntry[] => {
-        return this.channels;
+        return this.directMessages;
+      };
+    },
+
+    getGroups: function () {
+      return (): SidebarRoomEntry[] => {
+        return this.groups;
+      };
+    },
+
+    getPrivateChannels: function () {
+      return (): SidebarRoomEntry[] => {
+        return this.privateChannels;
+      };
+    },
+
+    getPublicChannels: function () {
+      return (): SidebarRoomEntry[] => {
+        return this.publicChannels;
+      };
+    },
+
+    getGenericRooms: function () {
+      return (): SidebarRoomEntry[] => {
+        return this.genericRooms;
       };
     },
 
     getRoomByID: function () {
       return (roomID: RoomID): Room | undefined => {
-        return this.channels.find(entry => entry.room.id == roomID)?.room;
+        return this.roomsMap.get(roomID);
       };
     },
 
@@ -130,69 +163,60 @@ const $roster = defineStore("roster", {
   actions: {
     async load(reload = false): Promise<RosterList> {
       // Load roster? (or reload)
-      if (LOCAL_STATES.loaded === false || reload === true) {
-        LOCAL_STATES.loaded = true;
-
-        // Initialize entries
-        const entries: RosterList = [],
-          byGroup: RosterByGroup = {},
-          byJID: RosterByJID = {},
-          channels: SidebarRoomEntry[] = [];
-
-        // Load roster
-        const contacts = await Broker.$roster.loadContacts();
-
-        contacts.forEach(contact => {
-          Store.$activity.setActivity(contact.jid, contact.activity);
-
-          // Append roster entry
-          // Important: JID must be stored as string so that persistence works.
-          const entry = {
-            jid: contact.jid.toString(),
-            availability: contact.availability,
-            group: contact.group,
-            name: contact.name
-          };
-
-          entries.push(entry);
-
-          // Append entry into its group
-          const byGroupEntries = byGroup[entry.group as RosterGroup] || [];
-
-          byGroupEntries.push(entry);
-
-          byGroup[entry.group as RosterGroup] = byGroupEntries;
-
-          // Append entry to per-JID storage
-          byJID[entry.jid] = entry;
-        });
-
-        const rooms = await Broker.$roster.loadConnectedRooms();
-
-        rooms.forEach(room => {
-          switch (room.kind) {
-            case "direct-message":
-              break;
-            case "group":
-              break;
-            case "private-channel":
-              channels.push({ room: room });
-              break;
-            case "public-channel":
-              channels.push({ room: room });
-              break;
-          }
-        });
-
-        this.$patch(state => {
-          state.list = entries;
-          state.byGroup = byGroup;
-          state.byJID = byJID;
-          state.channels = channels.sort((lhs, rhs) => {
-            return lhs.room.name.localeCompare(rhs.room.name);
-          });
-        });
+      if (LOCAL_STATES.loaded === true && reload === false) {
+        return Promise.resolve(this.list);
       }
+
+      LOCAL_STATES.loaded = true;
+
+      // Initialize entries
+      const directMessages: SidebarRoomEntry[] = [],
+        groups: SidebarRoomEntry[] = [],
+        privateChannels: SidebarRoomEntry[] = [],
+        publicChannels: SidebarRoomEntry[] = [],
+        genericRooms: SidebarRoomEntry[] = [],
+        roomsMap = new Map<RoomID, Room>();
+
+      // Load rooms
+      const rooms = await Broker.$roster.loadConnectedRooms();
+
+      rooms.forEach(room => {
+        switch (room.type) {
+          case RoomType.DirectMessage:
+            directMessages.push({ room: room });
+            break;
+          case RoomType.Group:
+            groups.push({ room: room });
+            break;
+          case RoomType.PrivateChannel:
+            privateChannels.push({ room: room });
+            break;
+          case RoomType.PublicChannel:
+            publicChannels.push({ room: room });
+            break;
+          case RoomType.Generic:
+            genericRooms.push({ room: room });
+            break;
+        }
+
+        roomsMap.set(room.id, room);
+      });
+
+      const compareRooms = (
+        lhs: SidebarRoomEntry,
+        rhs: SidebarRoomEntry
+      ): number => {
+        return lhs.room.name.localeCompare(rhs.room.name);
+      };
+
+      this.$patch(state => {
+        state.directMessages = directMessages.sort(compareRooms);
+        state.groups = groups.sort(compareRooms);
+        state.privateChannels = privateChannels.sort(compareRooms);
+        state.publicChannels = publicChannels.sort(compareRooms);
+        state.genericRooms = genericRooms.sort(compareRooms);
+        state.roomsMap = roomsMap;
+      });
 
       return Promise.resolve(this.list);
     },
@@ -203,6 +227,10 @@ const $roster = defineStore("roster", {
 
     markContactChanged(jid: JID) {
       EventBus.emit("contact:changed", jid);
+    },
+
+    markRoomsChanged() {
+      EventBus.emit("rooms:changed");
     }
   }
 });

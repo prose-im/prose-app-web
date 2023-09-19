@@ -22,6 +22,10 @@ import logger from "@/utilities/logger";
  * ************************************************************************* */
 
 class BrokerModuleRoster extends BrokerModule {
+  async startObservingRooms(): Promise<void> {
+    await this._client.client?.startObservingRooms();
+  }
+
   async loadContacts(): Promise<Contact[]> {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-get
