@@ -38,7 +38,7 @@ layout-toolbar(
       @submit.prevent="onSubmit"
     )
       inbox-form-chatstate(
-        :jid="jid"
+        :room="room"
         :composing="states.composing"
         class="a-inbox-form__compose-chatstate"
       )
@@ -113,7 +113,7 @@ layout-toolbar(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import {
@@ -138,8 +138,8 @@ export default {
   components: { InboxFormChatstate },
 
   props: {
-    jid: {
-      type: Object as PropType<JID>,
+    room: {
+      type: Object as PropType<Room>,
       required: true
     }
   },
@@ -182,11 +182,12 @@ export default {
     },
 
     states(): ReturnType<typeof Store.$inbox.getStates> {
-      return Store.$inbox.getStates(this.jid);
+      return [];
+      //return Store.$inbox.getStates(this.jid);
     },
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
-      return Store.$roster.getEntryName(this.jid);
+      return this.$props.room.name;
     }
   },
 
@@ -198,12 +199,11 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    propagateChatState(composing: boolean): void {
+    async propagateChatState(composing: boolean): Promise<void> {
       // Propagate new chat state?
       if (composing !== this.isUserComposing) {
         this.isUserComposing = composing;
-
-        Broker.$chat.sendChatState(this.jid, composing);
+        await this.$props.room.setUserIsComposing(composing);
       }
     },
 
@@ -288,8 +288,7 @@ export default {
         this.isUserComposing = false;
 
         // Send message
-        const room = Store.$roster.getRoomByID(this.jid.toString());
-        await room?.sendMessage(message);
+        await this.$props.room.sendMessage(message);
 
         // Clear message field
         this.message = "";

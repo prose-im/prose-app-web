@@ -62,7 +62,7 @@ layout-toolbar(
       )
 
       span.u-bold
-        | {{ rosterName }}
+        | {{ room.name }}
 
   template(
     v-slot:right
@@ -78,7 +78,7 @@ layout-toolbar(
       )
 
       span.u-regular
-        | {{ jid }}
+        | {{ truncatedJID }}
 
     base-separator(
       class="a-inbox-topbar__separator"
@@ -122,8 +122,8 @@ layout-toolbar(
 
 <script lang="ts">
 // NPM
+import { JID, Room, RoomID } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -147,6 +147,10 @@ export default {
     jid: {
       type: Object as PropType<JID>,
       required: true
+    },
+    room: {
+      type: Object as PropType<Room>,
+      required: true
     }
   },
 
@@ -167,8 +171,12 @@ export default {
       return Store.$history;
     },
 
-    rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
-      return Store.$roster.getEntryName(this.jid);
+    truncatedJID(): string {
+      let jid = this.$props.jid.toString();
+      if (jid.length < 15) {
+        return jid;
+      }
+      return jid.slice(0, 14) + "…";
     },
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
@@ -216,14 +224,14 @@ export default {
 
           if (
             adjacentRoute.name.startsWith("app.inbox") &&
-            adjacentRoute.params.jid
+            adjacentRoute.params.roomID
           ) {
             // Make sure not to push current route JID
             if (
               !currentRoute.name.startsWith("app.inbox") ||
-              currentRoute.params.jid !== adjacentRoute.params.jid
+              currentRoute.params.roomID !== adjacentRoute.params.roomID
             ) {
-              historyRawJIDs.add(adjacentRoute.params.jid);
+              historyRawJIDs.add(adjacentRoute.params.roomID);
             }
           }
         }
@@ -266,13 +274,13 @@ export default {
       this.isActionHistoryPopoverVisible = false;
     },
 
-    onActionHistoryPopoverEntryClick(jid: JID): void {
+    onActionHistoryPopoverEntryClick(roomID: RoomID): void {
       // Go to conversation
       this.$router.push({
         name: "app.inbox",
 
         params: {
-          jid: jid.toString()
+          roomID: roomID
         }
       });
 

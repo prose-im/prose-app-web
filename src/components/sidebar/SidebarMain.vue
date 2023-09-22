@@ -54,59 +54,32 @@
     )
 
   list-disclosure(
-    @toggle="onTeamMembersToggle"
-    :expanded="layout.sidebar.sections.teamMembers"
-    :list-class="disclosureListClass"
-    title="Team members"
-    expanded
-  )
-    sidebar-main-item-user(
-      v-for="itemTeamMember in itemTeamMembers"
-      :jid="itemTeamMember.jid"
-      :name="itemTeamMember.name"
-      :active="activeJID && itemTeamMember.jid.equals(activeJID)"
-    )
-
-    sidebar-main-item-add(
-      @click="onTeamMembersAddClick"
-      title="Add a member"
-    )
-
-  list-disclosure(
-    @toggle="onOtherContactsToggle"
-    :expanded="layout.sidebar.sections.otherContacts"
-    :list-class="disclosureListClass"
-    title="Other contacts"
-  )
-    sidebar-main-item-user(
-      v-for="itemOtherContact in itemOtherContacts"
-      :jid="itemOtherContact.jid"
-      :name="itemOtherContact.name"
-      :active="activeJID && itemOtherContact.jid.equals(activeJID)"
-    )
-
-    sidebar-main-item-add(
-      @click="onOtherContactsAddClick"
-      title="Connect with someone"
-    )
-
-  list-disclosure(
       @toggle="onGroupsToggle"
       :expanded="layout.sidebar.sections.groups"
       :list-class="disclosureListClass"
-      title="Groups"
+      title="Direct Messages"
       expanded
     )
-      sidebar-main-item-channel(
-        v-for="channel in itemGroups"
-        :id="channel.room.id"
-        :name="channel.room.name"
-        :active="channel.room.id === selectedRoomID"
+      template(
+        v-for="room in itemDirectMessages"
       )
+        sidebar-main-item-user(
+          v-if="room.type === ROOM_TYPE_DIRECTMESSAGE"
+          :jid="room.members[0]"
+          :name="room.name"
+          :active="room.id === selectedRoomID"
+        )
+
+        sidebar-main-item-channel(
+          v-if="room.type === ROOM_TYPE_GROUP"
+          :id="room.id"
+          :name="room.name"
+          :active="room.id === selectedRoomID"
+        )
 
       sidebar-main-item-add(
-        title="Add a channel"
-        disabled
+        @click="onTeamMembersAddClick"
+        title="Open a direct message"
       )
 
   list-disclosure(
@@ -117,15 +90,15 @@
     expanded
   )
     sidebar-main-item-channel(
-      v-for="channel in itemPublicChannels"
-      :id="channel.room.id"
-      :name="channel.room.name"
-      :active="channel.room.id === selectedRoomID"
+      v-for="room in itemChannels"
+      :id="room.id"
+      :name="room.name"
+      :active="room.id === selectedRoomID"
     )
 
     sidebar-main-item-add(
-      title="Add a channel"
-      disabled
+      @click="onOtherContactsAddClick"
+      title="Add channels"
     )
 
   add-contact(
@@ -143,20 +116,25 @@
 
 <script lang="ts">
 // NPM
-import { JID, Group as RosterGroup } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  Room,
+  RoomType,
+  Group as RosterGroup
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
-import { RosterList, SidebarRoomEntry } from "@/store/tables/roster";
+import { RosterList } from "@/store/tables/roster";
 
 import Broker from "@/broker";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
-import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
+import SidebarMainItemAdd from "@/components/sidebar/SidebarMainItemAdd.vue";
 import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
 import SidebarMainItemSection from "@/components/sidebar/SidebarMainItemSection.vue";
-import SidebarMainItemAdd from "@/components/sidebar/SidebarMainItemAdd.vue";
+import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
 
 // PROJECT: MODALS
 import {
@@ -198,6 +176,9 @@ export default {
       isRosterSyncStale: true,
       isRosterLoading: false,
 
+      ROOM_TYPE_DIRECTMESSAGE: RoomType.DirectMessage,
+      ROOM_TYPE_GROUP: RoomType.Group,
+
       modals: {
         addContact: {
           visible: false,
@@ -231,14 +212,12 @@ export default {
       );
     },
 
-    itemGroups(): SidebarRoomEntry[] {
-      return Store.$roster.getGroups();
+    itemDirectMessages(): Room[] {
+      return Store.$roster.getDirectMessages();
     },
 
-    itemPublicChannels(): SidebarRoomEntry[] {
-      return Store.$roster
-        .getPublicChannels()
-        .concat(Store.$roster.getPrivateChannels());
+    itemChannels(): Room[] {
+      return Store.$roster.getChannels();
     }
   },
 

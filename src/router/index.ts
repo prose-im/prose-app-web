@@ -9,18 +9,18 @@
  * ************************************************************************* */
 
 // NPM
+import init, { JID, RoomID } from "@prose-im/prose-sdk-js";
 import { App } from "vue";
 import {
   Router as VueRouter,
-  createWebHistory,
-  createRouter
+  createRouter,
+  createWebHistory
 } from "vue-router";
-import init, { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: VIEWS
-import StartLogin from "@/views/start/StartLogin.vue";
 import AppBase from "@/views/app/AppBase.vue";
 import AppInboxBase from "@/views/app/inbox/AppInboxBase.vue";
+import StartLogin from "@/views/start/StartLogin.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -98,7 +98,32 @@ class Router {
             {
               path: "inbox/:roomID/",
               name: "app.inbox",
-              component: AppInboxBase
+              component: AppInboxBase,
+              props: route => {
+                const room = Store.$roster.getRoomByID(
+                  route.params.roomID as RoomID
+                );
+                if (!room) {
+                  const availableRooms = Store.$roster.getAvailableRoomIDs();
+                  let errorMessage = `Could not find room '${route.params.roomID}'.`;
+
+                  if (availableRooms.length == 0) {
+                    errorMessage += " There are no rooms available.";
+                  } else {
+                    errorMessage += ` Available rooms are ${availableRooms.join(
+                      ", "
+                    )}`;
+                  }
+                  console.error(errorMessage);
+                }
+                return { room: room };
+              },
+              beforeEnter: (_to, _from, next) => {
+                Broker.client
+                  .awaitConnection()
+                  .then(() => Broker.$roster.startObservingRooms())
+                  .then(next);
+              }
             }
           ]
         },

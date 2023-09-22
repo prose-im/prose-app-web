@@ -9,12 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import {
-  ProseClient,
-  Availability,
-  ProseClientConfig,
-  JID
-} from "@prose-im/prose-sdk-js";
+import { JID, ProseClient, ProseClientConfig } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -23,13 +18,13 @@ import Store from "@/store";
 import logger from "@/utilities/logger";
 
 // PROJECT: BROKER
+import BrokerConnection from "@/broker/connection";
 import {
   VERSION_NAME,
-  VERSION_SYSTEM,
-  VERSION_REVISION
+  VERSION_REVISION,
+  VERSION_SYSTEM
 } from "@/broker/context";
 import BrokerDelegate from "@/broker/delegate";
-import BrokerConnection from "@/broker/connection";
 
 /**************************************************************************
  * CONSTANTS
@@ -50,6 +45,7 @@ class BrokerClient {
   private __delegate: BrokerDelegate;
   private __credentials?: { jid: JID; password: string };
   private __reconnectTimeout?: ReturnType<typeof setTimeout>;
+  private __isConnected = false;
 
   constructor() {
     // Initialize delegate
@@ -83,6 +79,22 @@ class BrokerClient {
     this.jid = this.__credentials?.jid;
 
     await this.__connect(jid, password);
+  }
+
+  async awaitConnection(): Promise<void> {
+    if (this.__isConnected) {
+      return Promise.resolve();
+    }
+
+    const delegate = this.__delegate;
+
+    return new Promise(resolve => {
+      const handler = () => {
+        delegate.events().off("client:connected", handler);
+        resolve();
+      };
+      delegate.events().on("client:connected", handler);
+    });
   }
 
   reconnect(afterDelay = 0): void {
@@ -124,11 +136,13 @@ class BrokerClient {
   }
 
   private __onClientConnected(): void {
+    this.__isConnected = true;
     Store.$session.setConnected(true);
     Store.$session.setConnecting(false);
   }
 
   private __onClientDisconnected(): void {
+    this.__isConnected = false;
     Store.$session.setConnected(false);
     Store.$session.setConnecting(false);
 

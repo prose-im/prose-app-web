@@ -26,7 +26,7 @@ transition(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
+import { Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -35,8 +35,8 @@ export default {
   name: "InboxFormChatstate",
 
   props: {
-    jid: {
-      type: Object as PropType<JID>,
+    room: {
+      type: Object as PropType<Room>,
       required: true
     },
 
@@ -52,7 +52,7 @@ export default {
     },
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
-      return Store.$roster.getEntryName(this.jid);
+      return this.$props.room.name;
     }
   }
 };

@@ -67,30 +67,26 @@
 
 <script lang="ts">
 // NPM
-import { shallowRef, PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
 import {
-  Messaging as MessagingRuntime,
-  Platform as MessagingPlatform,
-  Theme as MessagingTheme,
   Modifier as MessagingModifier,
+  Platform as MessagingPlatform,
+  Messaging as MessagingRuntime,
   SeekDirection as MessagingSeekDirection,
-  EventMessageActionsView,
-  EventMessageReactionsView,
-  EventMessageReactionsReact,
-  EventMessageHistorySeek
+  Theme as MessagingTheme
 } from "@prose-im/prose-core-views/types/messaging";
+import { JID, Room } from "@prose-im/prose-sdk-js";
+import { PropType, shallowRef } from "vue";
 
 // PROJECT: STYLES
 import styleElementsFonts from "@/assets/stylesheets/elements/_elements.fonts.scss?inline";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
-import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 import {
   Item as PopoverItem,
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
+import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 
 // PROJECT: MODALS
 import EditMessage from "@/modals/inbox/EditMessage.vue";
@@ -98,11 +94,8 @@ import RemoveMessage from "@/modals/inbox/RemoveMessage.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
-import { EventMessageGeneric } from "@/store/tables/inbox";
-import { EventAvatarGeneric } from "@/store/tables/avatar";
 
 // PROJECT: BROKER
-import Broker from "@/broker";
 import { MessageReaction } from "@/broker/stanzas/message";
 
 // ENUMERATIONS
@@ -148,8 +141,8 @@ export default {
   components: { EditMessage, RemoveMessage },
 
   props: {
-    jid: {
-      type: Object as PropType<JID>,
+    room: {
+      type: Object as PropType<Room>,
       required: true
     }
   },
@@ -222,16 +215,16 @@ export default {
     },
 
     messages(): ReturnType<typeof Store.$inbox.getMessages> {
-      return Store.$inbox.getMessages(this.jid);
+      return Store.$inbox.getMessages(this.room.id);
     }
   },
 
   watch: {
-    jid: {
+    room: {
       immediate: true,
 
-      handler(newValue: JID, oldValue: JID) {
-        if (newValue && (!oldValue || newValue.equals(oldValue) === false)) {
+      handler(newValue: Room, oldValue: Room) {
+        if (newValue && (!oldValue || newValue.id != oldValue.id)) {
           // Mark as stale
           this.isMessageSyncStale = true;
 
@@ -330,8 +323,8 @@ export default {
 
     setupStore(runtime: MessagingRuntime): void {
       // Identify both parties
-      this.identifyPartyLocal(runtime);
-      this.identifyPartyRemote(runtime);
+      //this.identifyPartyLocal(runtime);
+      //this.identifyPartyRemote(runtime);
 
       // Mark as initializing?
       if (this.isMessageSyncStale === true) {
@@ -466,34 +459,40 @@ export default {
 
     async syncMessagesEager(): Promise<void> {
       // Can synchronize now? (connected)
-      if (
-        this.isMessageSyncStale === true &&
-        Store.$session.connected === true
-      ) {
-        // Mark synchronization as non-stale
-        this.isMessageSyncStale = false;
+      // if (
+      //   this.isMessageSyncStale === true &&
+      //   Store.$session.connected === true
+      // ) {
+      // Mark synchronization as non-stale
+      this.isMessageSyncStale = false;
 
-        // Load all messages
-        await Broker.$mam.loadLatestMessages(this.jid);
+      const messages = await this.$props.room.loadLatestMessages(
+        undefined,
+        true
+      );
+      Store.$inbox.insertCoreMessages(this.$props.room.id, messages);
 
-        const frameRuntime = this.frame();
-
-        if (frameRuntime !== null) {
-          // Mark forwards loading as complete
-          frameRuntime.MessagingStore.loader("forwards", false);
-
-          // TODO: Fix backwards loading after updating core lib
-          // Mark backwards loading as complete?
-          // if (result.complete === true) {
-          //   frameRuntime.MessagingStore.loader("backwards", false);
-          // }
-        } else {
-          this.$log.warn(
-            `Could not show loaders in message frame runtime upon eagerly ` +
-              `synchronizing messages, as it is not ready yet for: ${this.jid}`
-          );
-        }
-      }
+      // Load all messages
+      //       await Broker.$mam.loadLatestMessages(this.jid);
+      //
+      //       const frameRuntime = this.frame();
+      //
+      //       if (frameRuntime !== null) {
+      //         // Mark forwards loading as complete
+      //         frameRuntime.MessagingStore.loader("forwards", false);
+      //
+      //         // TODO: Fix backwards loading after updating core lib
+      //         // Mark backwards loading as complete?
+      //         // if (result.complete === true) {
+      //         //   frameRuntime.MessagingStore.loader("backwards", false);
+      //         // }
+      //       } else {
+      //         this.$log.warn(
+      //           `Could not show loaders in message frame runtime upon eagerly ` +
+      //             `synchronizing messages, as it is not ready yet for: ${this.jid}`
+      //         );
+      //       }
+      // }
     },
 
     async seekMoreMessages(): Promise<void> {
@@ -522,7 +521,11 @@ export default {
           frameRuntime.MessagingStore.loader("backwards", true);
 
           // TODO: this one is not working
-          await Broker.$mam.loadLatestMessages(this.jid);
+          const messages = await this.$props.room.loadLatestMessages(
+            undefined,
+            true
+          );
+          Store.$inbox.insertCoreMessages(this.$props.room.id, messages);
 
           // Mark backwards loading as complete
           frameRuntime.MessagingStore.loader("backwards", false);
@@ -537,11 +540,11 @@ export default {
       }
     },
 
-    sendMessageReaction(
+    async sendMessageReaction(
       mode: MessageReactionMode,
       messageId: string,
       reaction: MessageReaction
-    ): void {
+    ): Promise<void> {
       // Generate list of reactions
       const reactions: Set<MessageReaction> = new Set(),
         existingMessage = Store.$inbox.getMessage(this.jid, messageId);
@@ -590,7 +593,9 @@ export default {
       // Apply reaction changes?
       if (shouldPropagate === true) {
         // Send reaction to network
-        Broker.$chat.sendReactions(messageId, this.jid, reactions);
+        for (const reaction of reactions) {
+          await this.room.toggleReactionToMessage(messageId, reaction);
+        }
       }
     },
 
@@ -625,7 +630,7 @@ export default {
 
       try {
         // Send update to network
-        await Broker.$chat.updateMessage(this.jid, text, messageId);
+        await this.room.updateMessage(messageId, text);
 
         // Acknowledge update
         BaseAlert.info("Message edited", "The message has been updated");
@@ -659,12 +664,12 @@ export default {
       messageId: string;
     }): Promise<void> {
       // Remove from store
-      const wasRemoved = Store.$inbox.retractMessage(this.jid, messageId);
+      const wasRemoved = Store.$inbox.retractMessage(this.room.id, messageId);
 
       // Message removed in store? Proceed actual network removal & acknowledge
       if (wasRemoved === true) {
         // Send removal to network
-        await Broker.$chat.retractMessage(messageId, this.jid);
+        await this.room.retractMessage(messageId);
 
         // Acknowledge removal
         BaseAlert.info("Message removed", "The message has been deleted");
@@ -824,14 +829,14 @@ export default {
     },
 
     onStoreMessageInserted(event: EventMessageGeneric): void {
-      if (this.jid.equals(event.jid) === true) {
+      if (this.room.id === event.roomID) {
         // Insert into view
         this.frame()?.MessagingStore.insert(event.message);
       }
     },
 
     onStoreMessageUpdated(event: EventMessageGeneric): void {
-      if (this.jid.equals(event.jid) === true) {
+      if (this.room.id === event.roomID) {
         // Update in view
         // Notice: use identifier from original message as reference, if any, \
         //   otherwise fallback on the actual message. This is done as the \
@@ -845,13 +850,14 @@ export default {
     },
 
     onStoreMessageRetracted(event: EventMessageGeneric): void {
-      if (this.jid.equals(event.jid) === true) {
+      if (this.room.id === event.roomID) {
         // Retract from view
         this.frame()?.MessagingStore.retract(event.message.id);
       }
     },
 
     onStoreAvatarChangedOrFlushed({ jid }: EventAvatarGeneric): void {
+      return;
       // Check if should re-identify (if runtime is available)
       const frameRuntime = this.frame();
 

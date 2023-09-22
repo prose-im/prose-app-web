@@ -10,10 +10,11 @@
 
 // NPM
 import {
+  ConnectionError,
+  JID,
   ProseClient,
   ProseClientDelegate,
-  ConnectionError,
-  JID
+  Room
 } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
@@ -51,10 +52,7 @@ class BrokerDelegate implements ProseClientDelegate {
     this.__eventBus.emit("client:disconnected");
   }
 
-  async composingUsersChanged(
-    client: ProseClient,
-    conversation: JID
-  ): Promise<void> {
+  async composingUsersChanged(client: ProseClient, room: Room): Promise<void> {
     const composingUsers = await client.loadComposingUsersInConversation(
       conversation
     );
@@ -73,7 +71,7 @@ class BrokerDelegate implements ProseClientDelegate {
     );
   }
 
-  roomsChanged(client: ProseClient): void {
+  roomsChanged(_client: ProseClient): void {
     Store.$roster.markRoomsChanged();
   }
 
@@ -86,37 +84,30 @@ class BrokerDelegate implements ProseClientDelegate {
   }
 
   async messagesAppended(
-    client: ProseClient,
-    conversation: JID,
+    _client: ProseClient,
+    room: Room,
     messageIDs: string[]
   ): Promise<void> {
-    const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
-
-    Store.$inbox.insertMessages(
-      conversation,
-
-      messages.map(message => {
-        return inboxMessageFromCore(message);
-      })
-    );
+    const messages = await room.loadMessagesWithIDs(messageIDs);
+    Store.$inbox.insertCoreMessages(room.id, messages);
   }
 
   messagesDeleted(
     _client: ProseClient,
-    conversation: JID,
+    room: Room,
     messageIDs: string[]
   ): void {
     for (const messageID of messageIDs) {
-      Store.$inbox.retractMessage(conversation, messageID);
+      Store.$inbox.retractMessage(room.id, messageID);
     }
   }
 
   async messagesUpdated(
     client: ProseClient,
-    conversation: JID,
+    room: Room,
     messageIDs: string[]
   ): Promise<void> {
-    const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
+    const messages = await room.loadMessagesWithIDs(messageIDs);
 
     for (const message of messages) {
       if (!message.id) {
@@ -124,7 +115,7 @@ class BrokerDelegate implements ProseClientDelegate {
       }
 
       Store.$inbox.updateMessage(
-        conversation,
+        room.id,
         message.id,
         inboxMessageFromCore(message)
       );

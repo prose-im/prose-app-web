@@ -35,8 +35,8 @@ class BrokerModuleRoster extends BrokerModule {
     return (await this._client.client?.loadContacts()) || [];
   }
 
-  async loadConnectedRooms(): Promise<Room[]> {
-    return (await this._client.client?.loadConnectedRooms()) || [];
+  connectedRooms(): Room[] {
+    return this._client.client?.connectedRooms() || [];
   }
 }
 

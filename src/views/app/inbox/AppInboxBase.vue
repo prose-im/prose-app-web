@@ -12,6 +12,7 @@
 .v-app-inbox-base
   inbox-topbar(
     :jid="jid"
+    :room="room"
     class="v-app-inbox-base__topbar"
   )
 
@@ -20,12 +21,12 @@
       inbox-banner
 
       inbox-messaging(
-        :jid="jid"
+        :room="room"
         class="v-app-inbox-base__timeline"
       )
 
       inbox-form(
-        :jid="jid"
+        :room="room"
         class="v-app-inbox-base__form"
       )
 
@@ -42,7 +43,8 @@
 
 <script lang="ts">
 // NPM
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, Room } from "@prose-im/prose-sdk-js";
+import { PropType } from "vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -52,9 +54,9 @@ import InboxBanner from "@/components/inbox/InboxBanner.vue";
 import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
 
 // PROJECT: ASSEMBLIES
+import InboxForm from "@/assemblies/inbox/InboxForm.vue";
 import InboxTopbar from "@/assemblies/inbox/InboxTopbar.vue";
 import InboxUserinfo from "@/assemblies/inbox/InboxUserinfo.vue";
-import InboxForm from "@/assemblies/inbox/InboxForm.vue";
 
 export default {
   name: "AppInboxBase",
@@ -65,6 +67,13 @@ export default {
     InboxTopbar,
     InboxUserinfo,
     InboxForm
+  },
+
+  props: {
+    room: {
+      type: Object as PropType<Room>,
+      required: true
+    }
   },
 
   computed: {
