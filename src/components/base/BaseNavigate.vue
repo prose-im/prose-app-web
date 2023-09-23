@@ -31,7 +31,7 @@ ul.c-base-navigate
 export interface Section {
   id: string;
   title: string;
-  label: string;
+  label?: string;
   icon: string;
 }
 

@@ -28,7 +28,9 @@ a(
     span.c-base-navigate-section__text-title.u-medium
       | {{ title }}
 
-    span.c-base-navigate-section__text-label
+    span.c-base-navigate-section__text-label(
+      v-if="label"
+    )
       | {{ label }}
 
   base-icon(
@@ -52,14 +54,14 @@ export default {
       required: true
     },
 
-    label: {
+    icon: {
       type: String,
       required: true
     },
 
-    icon: {
+    label: {
       type: String,
-      required: true
+      default: ""
     },
 
     active: {
