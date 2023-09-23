@@ -20,6 +20,7 @@
     | {{ cancelLabel }}
 
   base-button(
+    v-if="confirm"
     @click="onConfirm"
     :tint="destructive ? 'red' : 'dark'"
     :loading="confirmLoading"
@@ -64,6 +65,11 @@ export default {
       default: false
     },
 
+    confirm: {
+      type: Boolean,
+      default: true
+    },
+
     destructive: {
       type: Boolean,
       default: false
@@ -76,7 +82,9 @@ export default {
     // --> EVENT LISTENERS <--
 
     onConfirm(): void {
-      this.$emit("confirm");
+      if (this.confirm === true) {
+        this.$emit("confirm");
+      }
     },
 
     onCancel(): void {
