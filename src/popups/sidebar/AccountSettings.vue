@@ -9,11 +9,32 @@
      ********************************************************************** -->
 
 <template lang="pug">
-base-popup(
-  @close="$emit('close')"
+layout-popup-navigate(
   class="p-account-settings"
-  popup-class="p-account-settings__popup"
+  actions-class="p-account-settings__actions"
 )
+  template(
+    v-slot:navigate
+  )
+    base-navigate(
+      @navigate="onSectionsNavigate"
+      :sections="sections"
+      :active-id="section"
+    )
+
+  template(
+    v-slot:form
+  )
+
+  template(
+    v-slot:actions
+  )
+    base-popup-actions(
+      @cancel="onClose"
+      :confirm="false"
+      cancel-label="Close"
+      class="p-account-settings__actions-controls"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -21,10 +42,75 @@ base-popup(
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
+
 export default {
   name: "AccountSettings",
 
-  emits: ["close"]
+  emits: ["close"],
+
+  data() {
+    return {
+      // --> STATE <--
+
+      section: null as string | null,
+
+      // --> DATA <--
+
+      sections: [
+        {
+          id: "general",
+          title: "General",
+          icon: "gearshape"
+        },
+
+        {
+          id: "accounts",
+          title: "Accounts",
+          icon: "person.2"
+        },
+
+        {
+          id: "notifications",
+          title: "Notifications",
+          icon: "bell"
+        },
+
+        {
+          id: "messages",
+          title: "Messages",
+          icon: "message"
+        },
+
+        {
+          id: "calls",
+          title: "Calls",
+          icon: "phone.arrow.up.right"
+        },
+
+        {
+          id: "advanced",
+          title: "Advanced",
+          icon: "dial.low"
+        }
+      ] as Array<NavigateSection>
+    };
+  },
+
+  methods: {
+    // --> HELPERS <--
+
+    onSectionsNavigate(sectionId: string): void {
+      this.section = sectionId;
+    },
+
+    // --> EVENT LISTENERS <--
+
+    onClose(): void {
+      this.$emit("close");
+    }
+  }
 };
 </script>
 
@@ -35,33 +121,13 @@ export default {
 <style lang="scss">
 $c: ".p-account-settings";
 
-// VARIABLES
-$popup-max-width: 600px;
-$popup-padding-sides: 16px;
-
-$popup-width-full-margin-sides: 14px;
-$popup-width-full-breakpoint: (
-  $popup-max-width + (2 * $popup-padding-sides) + $popup-width-full-margin-sides
-);
-
 .p-account-settings {
-  #{$c}__popup {
-    width: 100%;
-    max-width: $popup-max-width;
-    min-height: 200px;
-    padding-inline: $popup-padding-sides;
-    padding-block: 20px;
-  }
-}
+  #{$c}__actions {
+    display: flex;
+    align-items: center;
 
-// --> MEDIA-QUERIES <--
-
-@media (max-width: $popup-width-full-breakpoint) {
-  .p-account-settings {
-    #{$c}__popup {
-      width: calc(
-        100% - #{2 * $popup-padding-sides} - #{$popup-width-full-margin-sides}
-      );
+    #{$c}__actions-controls {
+      flex: 1;
     }
   }
 }
