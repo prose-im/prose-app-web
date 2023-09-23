@@ -9,53 +9,54 @@
      ********************************************************************** -->
 
 <template lang="pug">
-base-popup(
+layout-popup-navigate(
+  :locked="isPending"
   class="p-edit-profile"
-  popup-class="p-edit-profile__popup"
+  navigate-class="p-edit-profile__navigate"
+  form-class="p-edit-profile__form"
+  actions-class="p-edit-profile__actions"
 )
-  edit-profile-navigate(
-    @navigate="onNavigate"
-    @avatar="onAvatarUpdate"
-    :jid="selfJID"
-    :sections="navigateSections"
-    :section-initial="sectionInitial"
-    :pending="isPending"
-    class="p-edit-profile__navigate"
+  template(
+    v-slot:navigate
   )
-
-  .p-edit-profile__content
-    div(
-      :class=`[
-        "p-edit-profile__form",
-        {
-          "p-edit-profile__form--locked": isPending
-        }
-      ]`
+    edit-profile-navigate(
+      @navigate="onNavigate"
+      @avatar="onAvatarUpdate"
+      :jid="selfJID"
+      :sections="navigateSections"
+      :section-initial="sectionInitial"
+      :pending="isPending"
     )
-      component(
-        v-if="formSections[section]"
-        v-bind="formSections[section].properties"
-        :is="formSections[section].component"
-        :jid="selfJID"
-      )
 
-    .p-edit-profile__actions
-      base-spinner(
-        v-if="isPending"
-        size="10px"
-        border-width="1.5px"
-        class="p-edit-profile__actions-spinner"
-      )
+  template(
+    v-slot:form
+  )
+    component(
+      v-if="formSections[section]"
+      v-bind="formSections[section].properties"
+      :is="formSections[section].component"
+      :jid="selfJID"
+    )
 
-      base-popup-actions(
-        @confirm="onSave"
-        @cancel="onClose"
-        :confirm-disabled="fetching"
-        :confirm-loading="saving"
-        confirm-label="Save Profile"
-        cancel-label="Cancel"
-        class="p-edit-profile__actions-controls"
-      )
+  template(
+    v-slot:actions
+  )
+    base-spinner(
+      v-if="isPending"
+      size="10px"
+      border-width="1.5px"
+      class="p-edit-profile__actions-spinner"
+    )
+
+    base-popup-actions(
+      @confirm="onSave"
+      @cancel="onClose"
+      :confirm-disabled="fetching"
+      :confirm-loading="saving"
+      confirm-label="Save Profile"
+      cancel-label="Cancel"
+      class="p-edit-profile__actions-controls"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -403,103 +404,24 @@ export default {
 <style lang="scss">
 $c: ".p-edit-profile";
 
-// VARIABLES
-$popup-max-width: 760px;
-$popup-max-height: 650px;
-$popup-padding-inline: 22px;
-$popup-padding-block-start: ($popup-padding-inline + 6px);
-$popup-padding-block-end: $popup-padding-inline;
-
-$popup-width-full-margin-inline: 14px;
-$popup-width-full-breakpoint: (
-  $popup-max-width + $popup-width-full-margin-inline
-);
-
-$popup-height-full-margin-block: $popup-width-full-margin-inline;
-$popup-height-full-breakpoint: (
-  $popup-max-height + $popup-height-full-margin-block
-);
-
 .p-edit-profile {
-  #{$c}__popup {
-    width: 100%;
-    height: 100%;
-    max-width: $popup-max-width;
-    max-height: $popup-max-height;
-    overflow: hidden;
-    display: flex;
+  #{$c}__form {
+    #{$c}__form-offset-sides {
+      margin-inline: (-1 * $size-layout-popup-navigate-padding-inline);
+    }
   }
 
-  #{$c}__navigate {
-    border-right: 1px solid $color-border-secondary;
-    padding-inline: 12px;
-    padding-block: $popup-padding-block-start $popup-padding-block-end;
-    overflow: auto;
-    width: 200px;
-    flex: 0 0 auto;
-  }
-
-  #{$c}__content {
-    background-color: $color-background-secondary;
-    flex: 1;
+  #{$c}__actions {
     display: flex;
-    flex-direction: column;
+    align-items: center;
 
-    #{$c}__form,
-    #{$c}__actions {
-      padding-inline: $popup-padding-inline;
-    }
-
-    #{$c}__form {
-      padding-block-start: $popup-padding-block-start;
-      overflow: auto;
-      flex: 1;
-
-      #{$c}__form-offset-sides {
-        margin-inline: (-1 * $popup-padding-inline);
-      }
-
-      &--locked {
-        cursor: not-allowed;
-
-        > * {
-          pointer-events: none;
-        }
-      }
-    }
-
-    #{$c}__actions {
-      padding-block: $popup-padding-block-end;
+    #{$c}__actions-spinner {
+      margin-inline-end: 8px;
       flex: 0 0 auto;
-      align-items: center;
-      display: flex;
-
-      #{$c}__actions-spinner {
-        margin-inline-end: 8px;
-        flex: 0 0 auto;
-      }
-
-      #{$c}__actions-controls {
-        flex: 1;
-      }
     }
-  }
-}
 
-// --> MEDIA-QUERIES <--
-
-@media (max-width: $popup-width-full-breakpoint) {
-  .p-edit-profile {
-    #{$c}__popup {
-      width: calc(100% - #{$popup-width-full-margin-inline});
-    }
-  }
-}
-
-@media (max-height: $popup-height-full-breakpoint) {
-  .p-edit-profile {
-    #{$c}__popup {
-      height: calc(100% - #{$popup-height-full-margin-block});
+    #{$c}__actions-controls {
+      flex: 1;
     }
   }
 }
