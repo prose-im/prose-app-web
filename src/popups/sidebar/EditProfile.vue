@@ -12,7 +12,6 @@
 layout-popup-navigate(
   :locked="isPending"
   class="p-edit-profile"
-  navigate-class="p-edit-profile__navigate"
   form-class="p-edit-profile__form"
   actions-class="p-edit-profile__actions"
 )
