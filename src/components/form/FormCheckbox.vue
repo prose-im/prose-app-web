@@ -27,9 +27,15 @@ div(
     type="checkbox"
   )
 
-  label.c-form-checkbox__label.u-medium(
+  label.c-form-checkbox__label(
     v-if="$slots.default"
     @click="onLabelClick"
+    :class=[
+      {
+        "u-medium": hasLabelEmphasis,
+        "u-regular": !hasLabelEmphasis
+      }
+    ]
   )
     slot
 </template>
@@ -74,6 +80,12 @@ export default {
   },
 
   emits: ["update:modelValue"],
+
+  computed: {
+    hasLabelEmphasis(): boolean {
+      return this.size === "medium" ? true : false;
+    }
+  },
 
   methods: {
     // --> EVENT LISTENERS <--
@@ -199,8 +211,6 @@ $c: ".c-form-checkbox";
 
   #{$c}__label {
     color: $color-text-primary;
-    font-size: 15px;
-    padding-inline-start: 10px;
     flex: 1;
 
     &:hover {
@@ -215,12 +225,22 @@ $c: ".c-form-checkbox";
       width: $size-form-checkbox-small-size;
       height: $size-form-checkbox-small-size;
     }
+
+    #{$c}__label {
+      font-size: 13px;
+      padding-inline-start: 6px;
+    }
   }
 
   &--medium {
     #{$c}__input {
       width: $size-form-checkbox-medium-size;
       height: $size-form-checkbox-medium-size;
+    }
+
+    #{$c}__label {
+      font-size: 15px;
+      padding-inline-start: 10px;
     }
   }
 
