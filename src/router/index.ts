@@ -121,7 +121,7 @@ class Router {
               beforeEnter: (_to, _from, next) => {
                 Broker.client
                   .awaitConnection()
-                  .then(() => Broker.$roster.startObservingRooms())
+                  .then(() => Broker.$muc.startObservingRooms())
                   .then(next);
               }
             }

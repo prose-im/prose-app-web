@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { Contact, Room } from "@prose-im/prose-sdk-js";
+import { Contact } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -22,10 +22,6 @@ import logger from "@/utilities/logger";
  * ************************************************************************* */
 
 class BrokerModuleRoster extends BrokerModule {
-  async startObservingRooms(): Promise<void> {
-    await this._client.client?.startObservingRooms();
-  }
-
   async loadContacts(): Promise<Contact[]> {
     // XMPP: Instant Messaging and Presence
     // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-get
@@ -33,10 +29,6 @@ class BrokerModuleRoster extends BrokerModule {
     logger.info("Will load roster (or reload)");
 
     return (await this._client.client?.loadContacts()) || [];
-  }
-
-  connectedRooms(): Room[] {
-    return this._client.client?.connectedRooms() || [];
   }
 }
 

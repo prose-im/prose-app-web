@@ -324,7 +324,7 @@ export default {
     async onStoreConnected(connected: boolean): Promise<void> {
       if (connected === true) {
         // Synchronize roster eagerly
-        await Broker.$roster.startObservingRooms();
+        await Broker.$muc.startObservingRooms();
       } else {
         // Mark synchronization as stale (will re-synchronize when connection \
         //   is restored)
@@ -340,15 +340,19 @@ export default {
       this.syncRosterEager(true);
     },
 
-    async onModalAddContactAdd(jid: JID, name: string): Promise<void> {
+    async onModalAddContactAdd(jidstr: string): Promise<void> {
       if (this.modals.addContact.loading !== true) {
         this.modals.addContact.loading = true;
 
         try {
-          // Add contact
-          // TODO: await Broker.$contact.addContact(jid, name);
+          const jids = jidstr.split(",").map(str => new JID(str.trim()));
 
-          BaseAlert.success("Contact added", "Contact has been added");
+          // Add contact
+          console.error(jids);
+
+          await Broker.$muc.createGroup(jids);
+
+          BaseAlert.success("Group added", "Group has been added");
 
           this.modals.addContact.visible = false;
         } catch (error) {

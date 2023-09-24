@@ -121,6 +121,39 @@ const $roster = defineStore("roster", {
       };
     },
 
+    insertRoom: function (room: Room) {
+      const compareRooms = (lhs: Room, rhs: Room): number => {
+        return lhs.name.localeCompare(rhs.name);
+      };
+
+      return (room: Room) => {
+        this.$patch(state => {
+          switch (room.type) {
+            case RoomType.DirectMessage:
+              state.directMessages.push(room);
+              state.directMessages.sort(compareRooms);
+              break;
+            case RoomType.Group:
+              state.directMessages.push(room);
+              state.directMessages.sort(compareRooms);
+              break;
+            case RoomType.PrivateChannel:
+              state.channels.push(room);
+              state.channels.sort(compareRooms);
+              break;
+            case RoomType.PublicChannel:
+              state.channels.push(room);
+              state.channels.sort(compareRooms);
+              break;
+            case RoomType.Generic:
+              state.genericRooms.push(room);
+              state.genericRooms.sort(compareRooms);
+              break;
+          }
+        });
+      };
+    },
+
     getRoomByID: function () {
       return (roomID: RoomID): Room | undefined => {
         return this.roomsMap.get(roomID);
@@ -162,7 +195,7 @@ const $roster = defineStore("roster", {
         roomsMap = new Map<RoomID, Room>();
 
       // Load rooms
-      const rooms = Broker.$roster.connectedRooms();
+      const rooms = Broker.$muc.connectedRooms();
 
       rooms.forEach(room => {
         switch (room.type) {
