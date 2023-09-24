@@ -18,6 +18,7 @@ ul.c-base-navigate
       :title="section.title"
       :label="section.label"
       :icon="section.icon"
+      :color="color"
       :active="section.id === activeId"
     )
 </template>
@@ -45,6 +46,15 @@ export default {
 
       validator(x: Array<Section>): boolean {
         return x.length > 0;
+      }
+    },
+
+    color: {
+      type: String,
+      default: "blue",
+
+      validator(x: string) {
+        return ["blue", "grey"].includes(x);
       }
     },
 

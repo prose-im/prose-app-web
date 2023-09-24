@@ -12,6 +12,7 @@
 a(
   :class=`[
     "c-base-navigate-section",
+    "c-base-navigate-section--" + color,
     {
       "c-base-navigate-section--active": active
     }
@@ -64,6 +65,15 @@ export default {
       default: ""
     },
 
+    color: {
+      type: String,
+      default: "blue",
+
+      validator(x: string) {
+        return ["blue", "grey"].includes(x);
+      }
+    },
+
     active: {
       type: Boolean,
       default: false
@@ -90,7 +100,6 @@ $icon-size: 28px;
   border-radius: 4px;
 
   #{$c}__icon {
-    background-color: $color-base-blue-dark;
     width: $icon-size;
     height: $icon-size;
     margin-inline-end: 9px;
@@ -142,11 +151,47 @@ $icon-size: 28px;
     background-color: darken($color-base-grey-light, 1.5%);
   }
 
+  // --> COLORS <--
+
+  &--blue {
+    #{$c}__icon {
+      background-color: $color-base-blue-dark;
+    }
+
+    &#{$c}--active {
+      background-color: $color-base-blue-dark;
+
+      &:hover {
+        background-color: darken($color-base-blue-dark, 2%);
+      }
+
+      &:active {
+        background-color: darken($color-base-blue-dark, 3%);
+      }
+    }
+  }
+
+  &--grey {
+    #{$c}__icon {
+      background-color: $color-base-grey-normal;
+    }
+
+    &#{$c}--active {
+      background-color: $color-base-grey-dark;
+
+      &:hover {
+        background-color: darken($color-base-grey-dark, 2%);
+      }
+
+      &:active {
+        background-color: darken($color-base-grey-dark, 3%);
+      }
+    }
+  }
+
   // --> BOOLEANS <--
 
   &--active {
-    background-color: $color-base-blue-dark;
-
     &,
     &:hover,
     &:active {
@@ -167,14 +212,6 @@ $icon-size: 28px;
       #{$c}__arrow {
         visibility: visible;
       }
-    }
-
-    &:hover {
-      background-color: darken($color-base-blue-dark, 2%);
-    }
-
-    &:active {
-      background-color: darken($color-base-blue-dark, 3%);
     }
   }
 }
