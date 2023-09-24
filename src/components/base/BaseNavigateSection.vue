@@ -70,7 +70,7 @@ export default {
       default: "blue",
 
       validator(x: string) {
-        return ["blue", "grey"].includes(x);
+        return ["blue"].includes(x);
       }
     },
 
@@ -167,24 +167,6 @@ $icon-size: 28px;
 
       &:active {
         background-color: darken($color-base-blue-dark, 3%);
-      }
-    }
-  }
-
-  &--grey {
-    #{$c}__icon {
-      background-color: $color-base-grey-normal;
-    }
-
-    &#{$c}--active {
-      background-color: $color-base-grey-dark;
-
-      &:hover {
-        background-color: darken($color-base-grey-dark, 2%);
-      }
-
-      &:active {
-        background-color: darken($color-base-grey-dark, 3%);
       }
     }
   }
