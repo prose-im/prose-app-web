@@ -114,7 +114,7 @@ $popup-height-full-margin-block: $popup-width-full-margin-inline;
 $popup-max-width-medium: 760px;
 $popup-max-height-medium: 650px;
 $popup-max-width-small: 640px;
-$popup-max-height-small: 440px;
+$popup-max-height-small: 540px;
 
 .c-layout-popup-navigate {
   #{$c}__popup {
