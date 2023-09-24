@@ -12,7 +12,10 @@
 base-popup(
   :class=`[
     "c-layout-popup-navigate",
-    "c-layout-popup-navigate--" + size
+    "c-layout-popup-navigate--" + size,
+    {
+      "c-layout-popup-navigate--actions": $slots.actions
+    }
   ]`
   popup-class="c-layout-popup-navigate__popup"
 )
@@ -43,6 +46,7 @@ base-popup(
       )
 
     div(
+      v-if="$slots.actions"
       :class=`[
         "c-layout-popup-navigate__actions",
         {
@@ -112,7 +116,7 @@ $popup-width-full-margin-inline: 14px;
 $popup-height-full-margin-block: $popup-width-full-margin-inline;
 
 $popup-max-width-medium: 760px;
-$popup-max-height-medium: 650px;
+$popup-max-height-medium: 660px;
 $popup-max-width-small: 640px;
 $popup-max-height-small: 540px;
 
@@ -145,6 +149,7 @@ $popup-max-height-small: 540px;
 
     #{$c}__form {
       padding-block-start: $popup-padding-block-start;
+      padding-block-end: $popup-padding-block-end;
       overflow: auto;
       flex: 1;
 
@@ -158,6 +163,7 @@ $popup-max-height-small: 540px;
     }
 
     #{$c}__actions {
+      border-top: 1px solid $color-border-tertiary;
       padding-block: $popup-padding-block-end;
       flex: 0 0 auto;
     }
@@ -184,6 +190,16 @@ $popup-max-height-small: 540px;
 
     #{$c}__navigate {
       width: 168px;
+    }
+  }
+
+  // --> BOOLEANS <--
+
+  &--actions {
+    #{$c}__content {
+      #{$c}__form {
+        padding-block-end: ($popup-padding-block-end + 20px);
+      }
     }
   }
 }
