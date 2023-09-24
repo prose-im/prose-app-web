@@ -31,7 +31,7 @@
     )
       form-fieldset-field(
         v-for="field in fieldset.fields"
-        :label="field.label"
+        :label="field.label || ''"
         class="p-settings-editor-form-fieldset__field"
       )
         template(
@@ -55,9 +55,24 @@
             :icon="field.data.icon"
             :name="field.id"
             :placeholder="field.data.placeholder"
+            :position="field.data.position"
+            :search="field.data.options.length > 10"
             :disabled="field.data.disabled"
             size="mid-medium"
           )
+
+          form-checkbox(
+            v-else-if="field.type === 'checkbox'"
+            v-model="field.data.value.inner"
+            :name="field.id"
+            :disabled="field.data.disabled"
+            size="small"
+          )
+            template(
+              v-if="field.data.label"
+              v-slot:default
+            )
+              | {{ field.data.label }}
 
           form-toggle(
             v-else-if="field.type === 'toggle'"
@@ -74,10 +89,16 @@
           )
             | {{ field.data.text }}
 
+          span.p-settings-editor-form-fieldset__field-spacer(
+            v-else-if="field.type === 'spacer'"
+          )
+
         template(
           v-slot:aside
         )
-          .p-settings-editor-form-fieldset__field-aside
+          .p-settings-editor-form-fieldset__field-aside(
+            v-if="fieldset.options && fieldset.options.aside === true"
+          )
             template(
               v-if="field.aside"
             )
@@ -175,10 +196,14 @@ export enum FieldsetFieldType {
   Input = "input",
   // Select type.
   Select = "select",
+  // Checkbox type.
+  Checkbox = "checkbox",
   // Toggle type.
   Toggle = "toggle",
   // Button type.
-  Button = "button"
+  Button = "button",
+  // Spacer type.
+  Spacer = "spacer"
 }
 
 export enum FieldsetFieldAsideType {
@@ -221,11 +246,22 @@ export type FieldsetFieldDataSelect = {
   options: Array<FormSelectOption>;
   placeholder: string;
   icon?: FormSelectIcon;
+  position?: string;
   disabled?: boolean;
 };
 
 type FieldsetFieldDataSelectValue = {
   inner: string;
+};
+
+export type FieldsetFieldDataCheckbox = {
+  value: FieldsetFieldDataCheckboxValue;
+  label?: string;
+  disabled?: boolean;
+};
+
+type FieldsetFieldDataCheckboxValue = {
+  inner: boolean;
 };
 
 export type FieldsetFieldDataToggle = {
@@ -252,6 +288,7 @@ export interface Fieldset {
   fields?: Array<FieldsetField>;
   controls?: Array<FieldsetControl>;
   notes?: Array<string>;
+  options?: FieldsetOptions;
 }
 
 interface FieldsetPart {
@@ -263,10 +300,11 @@ interface FieldsetPart {
 interface FieldsetField {
   id: string;
   type: FieldsetFieldType;
-  label: string;
+  label?: string;
   data?:
     | FieldsetFieldDataInput
     | FieldsetFieldDataSelect
+    | FieldsetFieldDataCheckbox
     | FieldsetFieldDataToggle
     | FieldsetFieldDataButton;
   aside?: FieldsetFieldAside;
@@ -291,6 +329,10 @@ interface FieldsetControl {
 interface FieldsetControlAction {
   type: FieldsetControlActionType;
   data?: FieldsetControlActionDataButton;
+}
+
+interface FieldsetOptions {
+  aside?: boolean;
 }
 
 export default {
@@ -372,6 +414,11 @@ $c: ".p-settings-editor-form-fieldset";
   }
 
   #{$c}__field {
+    #{$c}__field-spacer {
+      height: 10px;
+      display: block;
+    }
+
     #{$c}__field-aside {
       margin-inline-start: 11px;
       margin-block-start: -3px;

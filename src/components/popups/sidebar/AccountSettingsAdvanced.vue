@@ -23,7 +23,10 @@
 // PROJECT: COMPONENTS
 import {
   default as SettingsEditorFormFieldset,
-  Fieldset as FormFieldset
+  Fieldset as FormFieldset,
+  FieldsetFieldType as FormFieldsetFieldType,
+  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
+  FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
 export default {
@@ -35,7 +38,76 @@ export default {
     return {
       // --> DATA <--
 
-      fieldsets: [] as Array<FormFieldset>
+      fieldsets: [
+        {
+          id: "updates",
+          title: "Updates",
+
+          fields: [
+            {
+              id: "channel",
+              type: FormFieldsetFieldType.Select,
+              label: "Channel:",
+
+              data: {
+                value: {
+                  inner: "stable" // TODO: from model
+                },
+
+                placeholder: "Pick an update channel…",
+
+                options: [
+                  {
+                    value: "stable",
+                    label: "Stable (recommended)"
+                  },
+
+                  {
+                    value: "beta",
+                    label: "Beta (more updates, unstable)"
+                  }
+                ],
+
+                position: "bottom"
+              } as FormFieldsetFieldDataSelect
+            }
+          ]
+        },
+
+        {
+          id: "privacy",
+          title: "Privacy",
+
+          fields: [
+            {
+              id: "analytics",
+              type: FormFieldsetFieldType.Checkbox,
+              label: "Reports:",
+
+              data: {
+                value: {
+                  inner: false
+                },
+
+                label: "Send anonymous usage analytics"
+              } as FieldsetFieldDataCheckbox
+            },
+
+            {
+              id: "crashes",
+              type: FormFieldsetFieldType.Checkbox,
+
+              data: {
+                value: {
+                  inner: true
+                },
+
+                label: "Automatically send crash reports"
+              } as FieldsetFieldDataCheckbox
+            }
+          ]
+        }
+      ] as Array<FormFieldset>
     };
   }
 };

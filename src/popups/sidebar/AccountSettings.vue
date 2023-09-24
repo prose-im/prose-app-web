@@ -21,7 +21,6 @@ layout-popup-navigate(
       @navigate="onSectionsNavigate"
       :sections="navigateSections"
       :active-id="section"
-      color="grey"
     )
 
   template(
@@ -55,7 +54,6 @@ import { shallowRef } from "vue";
 // PROJECT: COMPONENTS
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
 import AccountSettingsGeneral from "@/components/popups/sidebar/AccountSettingsGeneral.vue";
-import AccountSettingsAccounts from "@/components/popups/sidebar/AccountSettingsAccounts.vue";
 import AccountSettingsNotifications from "@/components/popups/sidebar/AccountSettingsNotifications.vue";
 import AccountSettingsMessages from "@/components/popups/sidebar/AccountSettingsMessages.vue";
 import AccountSettingsCalls from "@/components/popups/sidebar/AccountSettingsCalls.vue";
@@ -82,12 +80,6 @@ export default {
           id: "general",
           title: "General",
           icon: "gearshape"
-        },
-
-        {
-          id: "accounts",
-          title: "Accounts",
-          icon: "person.2"
         },
 
         {
@@ -118,10 +110,6 @@ export default {
       formSections: {
         general: {
           component: shallowRef(AccountSettingsGeneral)
-        },
-
-        accounts: {
-          component: shallowRef(AccountSettingsAccounts)
         },
 
         notifications: {

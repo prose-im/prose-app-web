@@ -94,7 +94,11 @@ export default {
 
           notes: [
             "Your current organization and job title are shared with your team members and contacts to identify your position within your company."
-          ]
+          ],
+
+          options: {
+            aside: true
+          }
         },
 
         {
@@ -188,7 +192,11 @@ export default {
           notes: [
             "You can opt-in to automatic location updates based on your last used device location. It is handy if you travel a lot, and would like this to be auto-managed. Your current city and country will be shared, not your exact GPS location.",
             "Note that geolocation permissions are required for automatic mode."
-          ]
+          ],
+
+          options: {
+            aside: true
+          }
         }
       ] as Array<FormFieldset>
     };
