@@ -191,7 +191,7 @@ $popup-max-height-small: 540px;
   }
 
   #{$c}__navigate {
-    border-right: 1px solid $color-border-secondary;
+    border-inline-end: 1px solid $color-border-secondary;
     padding-inline: 12px;
     padding-block: $popup-padding-block-start $popup-padding-block-end;
     overflow: auto;

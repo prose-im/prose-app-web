@@ -134,7 +134,7 @@ $inner-spacing-sides: 18px;
   align-items: center;
 
   #{$c}__snapshot {
-    border-right: 1px solid $color-border-secondary;
+    border-inline-end: 1px solid $color-border-secondary;
     padding-inline-end: $inner-spacing-sides;
     display: flex;
     align-items: flex-start;
