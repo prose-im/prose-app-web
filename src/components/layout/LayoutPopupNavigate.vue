@@ -10,7 +10,10 @@
 
 <template lang="pug">
 base-popup(
-  class="c-layout-popup-navigate"
+  :class=`[
+    "c-layout-popup-navigate",
+    "c-layout-popup-navigate--" + size
+  ]`
   popup-class="c-layout-popup-navigate__popup"
 )
   div(
@@ -61,6 +64,15 @@ export default {
   name: "LayoutPopupNavigate",
 
   props: {
+    size: {
+      type: String,
+      default: "medium",
+
+      validator(x: string) {
+        return ["small", "medium"].includes(x);
+      }
+    },
+
     locked: {
       type: Boolean,
       default: false
@@ -92,28 +104,22 @@ export default {
 $c: ".c-layout-popup-navigate";
 
 // VARIABLES
-$popup-max-width: 760px;
-$popup-max-height: 650px;
 $popup-padding-inline: $size-layout-popup-navigate-padding-inline;
 $popup-padding-block-start: ($popup-padding-inline + 6px);
 $popup-padding-block-end: $popup-padding-inline;
 
 $popup-width-full-margin-inline: 14px;
-$popup-width-full-breakpoint: (
-  $popup-max-width + $popup-width-full-margin-inline
-);
-
 $popup-height-full-margin-block: $popup-width-full-margin-inline;
-$popup-height-full-breakpoint: (
-  $popup-max-height + $popup-height-full-margin-block
-);
+
+$popup-max-width-medium: 760px;
+$popup-max-height-medium: 650px;
+$popup-max-width-small: 640px;
+$popup-max-height-small: 440px;
 
 .c-layout-popup-navigate {
   #{$c}__popup {
-    width: 100%;
-    height: 100%;
-    max-width: $popup-max-width;
-    max-height: $popup-max-height;
+    width: calc(100% - #{$popup-width-full-margin-inline});
+    height: calc(100% - #{$popup-height-full-margin-block});
     overflow: hidden;
     display: flex;
   }
@@ -123,7 +129,6 @@ $popup-height-full-breakpoint: (
     padding-inline: 12px;
     padding-block: $popup-padding-block-start $popup-padding-block-end;
     overflow: auto;
-    width: 200px;
     flex: 0 0 auto;
   }
 
@@ -157,22 +162,28 @@ $popup-height-full-breakpoint: (
       flex: 0 0 auto;
     }
   }
-}
 
-// --> MEDIA-QUERIES <--
+  // --> SIZES <--
 
-@media (max-width: $popup-width-full-breakpoint) {
-  .c-layout-popup-navigate {
+  &--medium {
     #{$c}__popup {
-      width: calc(100% - #{$popup-width-full-margin-inline});
+      max-width: $popup-max-width-medium;
+      max-height: $popup-max-height-medium;
+    }
+
+    #{$c}__navigate {
+      width: 200px;
     }
   }
-}
 
-@media (max-height: $popup-height-full-breakpoint) {
-  .c-layout-popup-navigate {
+  &--small {
     #{$c}__popup {
-      height: calc(100% - #{$popup-height-full-margin-block});
+      max-width: $popup-max-width-small;
+      max-height: $popup-max-height-small;
+    }
+
+    #{$c}__navigate {
+      width: 168px;
     }
   }
 }
