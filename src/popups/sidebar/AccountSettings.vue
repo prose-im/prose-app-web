@@ -10,6 +10,7 @@
 
 <template lang="pug">
 layout-popup-navigate(
+  size="small"
   class="p-account-settings"
   actions-class="p-account-settings__actions"
 )
@@ -18,13 +19,19 @@ layout-popup-navigate(
   )
     base-navigate(
       @navigate="onSectionsNavigate"
-      :sections="sections"
+      :sections="navigateSections"
       :active-id="section"
+      color="grey"
     )
 
   template(
     v-slot:form
   )
+    component(
+      v-if="formSections[section]"
+      v-bind="formSections[section].properties"
+      :is="formSections[section].component"
+    )
 
   template(
     v-slot:actions
@@ -42,8 +49,20 @@ layout-popup-navigate(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { shallowRef } from "vue";
+
 // PROJECT: COMPONENTS
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
+import AccountSettingsGeneral from "@/components/popups/sidebar/AccountSettingsGeneral.vue";
+import AccountSettingsAccounts from "@/components/popups/sidebar/AccountSettingsAccounts.vue";
+import AccountSettingsNotifications from "@/components/popups/sidebar/AccountSettingsNotifications.vue";
+import AccountSettingsMessages from "@/components/popups/sidebar/AccountSettingsMessages.vue";
+import AccountSettingsCalls from "@/components/popups/sidebar/AccountSettingsCalls.vue";
+import AccountSettingsAdvanced from "@/components/popups/sidebar/AccountSettingsAdvanced.vue";
+
+// CONSTANTS
+const SECTION_INITIAL = "general";
 
 export default {
   name: "AccountSettings",
@@ -54,11 +73,11 @@ export default {
     return {
       // --> STATE <--
 
-      section: null as string | null,
+      section: SECTION_INITIAL,
 
       // --> DATA <--
 
-      sections: [
+      navigateSections: [
         {
           id: "general",
           title: "General",
@@ -94,7 +113,33 @@ export default {
           title: "Advanced",
           icon: "dial.low"
         }
-      ] as Array<NavigateSection>
+      ] as Array<NavigateSection>,
+
+      formSections: {
+        general: {
+          component: shallowRef(AccountSettingsGeneral)
+        },
+
+        accounts: {
+          component: shallowRef(AccountSettingsAccounts)
+        },
+
+        notifications: {
+          component: shallowRef(AccountSettingsNotifications)
+        },
+
+        messages: {
+          component: shallowRef(AccountSettingsMessages)
+        },
+
+        calls: {
+          component: shallowRef(AccountSettingsCalls)
+        },
+
+        advanced: {
+          component: shallowRef(AccountSettingsAdvanced)
+        }
+      }
     };
   },
 
