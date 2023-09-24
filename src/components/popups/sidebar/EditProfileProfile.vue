@@ -10,7 +10,7 @@
 
 <template lang="pug">
 .p-edit-profile-profile
-  edit-profile-form-fieldset(
+  settings-editor-form-fieldset(
     :fieldsets="fieldsets"
   )
 </template>
@@ -28,7 +28,7 @@ import { countries } from "crisp-countries-languages";
 // PROJECT: COMPONENTS
 import BaseFlag from "@/components/base/BaseFlag.vue";
 import {
-  default as EditProfileFormFieldset,
+  default as SettingsEditorFormFieldset,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
@@ -37,7 +37,7 @@ import {
   FieldsetControlActionType as FormFieldsetControlActionType,
   FieldsetControlActionDataButton as FormFieldsetControlActionDataButton,
   FieldsetControlIconType as FormFieldsetControlIconType
-} from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
+} from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
 // PROJECT: POPUPS
 import { FormProfile as ProfileFormProfile } from "@/popups/sidebar/EditProfile.vue";
@@ -45,7 +45,7 @@ import { FormProfile as ProfileFormProfile } from "@/popups/sidebar/EditProfile.
 export default {
   name: "EditProfileProfile",
 
-  components: { EditProfileFormFieldset },
+  components: { SettingsEditorFormFieldset },
 
   props: {
     jid: {

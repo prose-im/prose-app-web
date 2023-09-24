@@ -9,12 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.p-edit-profile-form-fieldset
-  form-fieldset.p-edit-profile-form-fieldset__fieldset(
+.p-settings-editor-form-fieldset
+  form-fieldset.p-settings-editor-form-fieldset__fieldset(
     v-for="fieldset in fieldsets"
     :id="'fieldset_' + fieldset.id"
   )
-    h6.p-edit-profile-form-fieldset__title.u-medium
+    h6.p-settings-editor-form-fieldset__title.u-medium
       | {{ fieldset.title }}
 
     template(
@@ -32,7 +32,7 @@
       form-fieldset-field(
         v-for="field in fieldset.fields"
         :label="field.label"
-        class="p-edit-profile-form-fieldset__field"
+        class="p-settings-editor-form-fieldset__field"
       )
         template(
           v-slot:default
@@ -77,17 +77,17 @@
         template(
           v-slot:aside
         )
-          .p-edit-profile-form-fieldset__field-aside
+          .p-settings-editor-form-fieldset__field-aside
             template(
               v-if="field.aside"
             )
               a(
                 v-if="field.aside.type === 'link'"
                 :class=`[
-                  "p-edit-profile-form-fieldset__field-aside-link",
+                  "p-settings-editor-form-fieldset__field-aside-link",
                   "u-medium",
                   {
-                    "p-edit-profile-form-fieldset__field-aside-link--disabled": field.aside.disabled
+                    "p-settings-editor-form-fieldset__field-aside-link--disabled": field.aside.disabled
                   }
                 ]`
               )
@@ -96,9 +96,9 @@
               span(
                 v-else-if="field.aside.type === 'label'"
                 :class=`[
-                  "p-edit-profile-form-fieldset__field-aside-label",
+                  "p-settings-editor-form-fieldset__field-aside-label",
                   {
-                    ["p-edit-profile-form-fieldset__field-aside-label--" + field.aside.color]: field.aside.color
+                    ["p-settings-editor-form-fieldset__field-aside-label--" + field.aside.color]: field.aside.color
                   }
                 ]`
               )
@@ -106,18 +106,18 @@
                   v-if="field.aside.icon"
                   :name="field.aside.icon"
                   size="13px"
-                  class="p-edit-profile-form-fieldset__field-aside-icon"
+                  class="p-settings-editor-form-fieldset__field-aside-icon"
                 )
 
                 | {{ field.aside.label }}
 
-    .p-edit-profile-form-fieldset__controls(
+    .p-settings-editor-form-fieldset__controls(
       v-if="fieldset.controls"
     )
       form-fieldset-control(
         v-for="control in fieldset.controls"
         :label="control.label"
-        class="p-edit-profile-form-fieldset__control"
+        class="p-settings-editor-form-fieldset__control"
       )
         template(
           v-slot:default
@@ -127,8 +127,8 @@
             :name="controlIconToName(control.icon)"
             :size="controlIconToSize(control.icon)"
             :class=`[
-              "p-edit-profile-form-fieldset__control-icon",
-              "p-edit-profile-form-fieldset__control-icon--" + controlIconToColor(control.icon)
+              "p-settings-editor-form-fieldset__control-icon",
+              "p-settings-editor-form-fieldset__control-icon--" + controlIconToColor(control.icon)
             ]`
           )
 
@@ -294,7 +294,7 @@ interface FieldsetControlAction {
 }
 
 export default {
-  name: "EditProfileFormFieldset",
+  name: "SettingsEditorFormFieldset",
 
   props: {
     fieldsets: {
@@ -362,9 +362,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".p-edit-profile-form-fieldset";
+$c: ".p-settings-editor-form-fieldset";
 
-.p-edit-profile-form-fieldset {
+.p-settings-editor-form-fieldset {
   #{$c}__title {
     color: $color-text-secondary;
     font-size: 14.5px;

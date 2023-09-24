@@ -10,7 +10,7 @@
 
 <template lang="pug">
 .p-edit-profile-identity
-  edit-profile-form-fieldset(
+  settings-editor-form-fieldset(
     :fieldsets="fieldsets"
   )
 </template>
@@ -26,12 +26,12 @@ import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import {
-  default as EditProfileFormFieldset,
+  default as SettingsEditorFormFieldset,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldAsideType as FormFieldsetFieldAsideType,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput
-} from "@/components/popups/sidebar/EditProfileFormFieldset.vue";
+} from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
 // PROJECT: POPUPS
 import { FormIdentity as ProfileFormIdentity } from "@/popups/sidebar/EditProfile.vue";
@@ -39,7 +39,7 @@ import { FormIdentity as ProfileFormIdentity } from "@/popups/sidebar/EditProfil
 export default {
   name: "EditProfileIdentity",
 
-  components: { EditProfileFormFieldset },
+  components: { SettingsEditorFormFieldset },
 
   props: {
     jid: {
