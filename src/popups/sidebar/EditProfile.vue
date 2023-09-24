@@ -11,6 +11,7 @@
 <template lang="pug">
 layout-popup-navigate(
   :locked="isPending"
+  :form-section="section"
   class="p-edit-profile"
   form-class="p-edit-profile__form"
   actions-class="p-edit-profile__actions"

@@ -10,6 +10,7 @@
 
 <template lang="pug">
 layout-popup-navigate(
+  :form-section="section"
   size="small"
   class="p-account-settings"
   actions-class="p-account-settings__actions"

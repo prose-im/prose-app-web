@@ -40,6 +40,7 @@ base-popup(
           [formClass]: formClass
         }
       ]`
+      ref="form"
     )
       slot(
         name="form"
@@ -50,6 +51,7 @@ base-popup(
       :class=`[
         "c-layout-popup-navigate__actions",
         {
+          "c-layout-popup-navigate__actions--separated": hasActionsSeparator,
           [actionsClass]: actionsClass
         }
       ]`
@@ -92,9 +94,69 @@ export default {
       default: null
     },
 
+    formSection: {
+      type: String,
+      default: null
+    },
+
     actionsClass: {
       type: String,
       default: null
+    }
+  },
+
+  data() {
+    return {
+      // --> STATE <--
+
+      hasActionsSeparator: false
+    };
+  },
+
+  watch: {
+    formSection: {
+      handler() {
+        // Refresh actions separator state
+        this.$nextTick(this.autoDetectActionsSeparator);
+      }
+    }
+  },
+
+  mounted() {
+    // Auto-detect actions separator state
+    this.autoDetectActionsSeparator();
+
+    // Watch for popup size changes (which would trigger the actions separator \
+    //   to show or hide)
+    window.addEventListener("resize", this.onWindowResize);
+  },
+
+  unmounted() {
+    // Stop watching for popup size changes
+    window.removeEventListener("resize", this.onWindowResize);
+  },
+
+  methods: {
+    // --> HELPERS <--
+
+    autoDetectActionsSeparator(): void {
+      const formElement = (this.$refs.form as HTMLElement) || null;
+
+      if (formElement !== null) {
+        const isFormScrollable =
+          formElement.scrollHeight > formElement.clientHeight ? true : false;
+
+        if (isFormScrollable !== this.hasActionsSeparator) {
+          this.hasActionsSeparator = isFormScrollable;
+        }
+      }
+    },
+
+    // --> EVENT LISTENERS <--
+
+    onWindowResize(): void {
+      // Refresh actions separator state
+      this.autoDetectActionsSeparator();
     }
   }
 };
@@ -163,9 +225,14 @@ $popup-max-height-small: 540px;
     }
 
     #{$c}__actions {
-      border-top: 1px solid $color-border-tertiary;
+      border-block-start: 1px solid transparent;
       padding-block: $popup-padding-block-end;
       flex: 0 0 auto;
+      transition: border-color 50ms linear;
+
+      &--separated {
+        border-block-start-color: $color-border-tertiary;
+      }
     }
   }
 
