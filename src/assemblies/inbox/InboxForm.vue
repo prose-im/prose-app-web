@@ -112,22 +112,21 @@ layout-toolbar(
 
 <script lang="ts">
 // NPM
+import { JID, Room, RoomType } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
-import { JID, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import {
   Item as PopoverItem,
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
-import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 import FormField from "@/components/form/FormField.vue";
+import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
 
 // PROJECT: BROKER
-import Broker from "@/broker";
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
@@ -286,6 +285,28 @@ export default {
 
         // Mark user as not composing anymore.
         this.isUserComposing = false;
+
+        if (message.startsWith("/invite ")) {
+          const jid = new JID(message.substring("/invite ".length).trim());
+
+          switch (this.$props.room.type) {
+            case RoomType.DirectMessage:
+            case RoomType.Group:
+            case RoomType.Generic:
+              console.warn("This room type does not allow inviting users");
+              break;
+
+            case RoomType.PrivateChannel:
+            case RoomType.PublicChannel:
+              console.info(
+                `Inviting user ${jid} to room ${this.$props.room.id}`
+              );
+              await this.$props.room.inviteUsers([jid.toString()]);
+              break;
+          }
+          this.message = "";
+          return;
+        }
 
         // Send message
         await this.$props.room.sendMessage(message);
