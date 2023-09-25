@@ -100,11 +100,11 @@ class Router {
               name: "app.inbox",
               component: AppInboxBase,
               props: route => {
-                const room = Store.$roster.getRoomByID(
+                const room = Store.$muc.getRoomByID(
                   route.params.roomID as RoomID
                 );
                 if (!room) {
-                  const availableRooms = Store.$roster.getAvailableRoomIDs();
+                  const availableRooms = Store.$muc.getAvailableRoomIDs();
                   let errorMessage = `Could not find room '${route.params.roomID}'.`;
 
                   if (availableRooms.length == 0) {

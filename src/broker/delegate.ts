@@ -53,26 +53,27 @@ class BrokerDelegate implements ProseClientDelegate {
   }
 
   async composingUsersChanged(client: ProseClient, room: Room): Promise<void> {
-    const composingUsers = await client.loadComposingUsersInConversation(
-      conversation
-    );
+    const composingUsers = await room.loadComposingUsers();
 
     logger.info(
       `Composing users changed: ${composingUsers.join(", ") || "(none)"}`
     );
 
-    const conversationComposingUser = composingUsers.find(jid => {
-      return jid.equals(conversation);
-    });
+    // TODO: Handle multiple composing users in the UI
 
-    Store.$inbox.setComposing(
-      conversation,
-      conversationComposingUser ? true : false
-    );
+    // const conversationComposingUser = composingUsers.find(jid => {
+    //   return jid.equals(conversation);
+    // });
+
+    // Store.$inbox.setComposing(
+    //   room.id,
+    //   conversationComposingUser ? true : false
+    // );
   }
 
   roomsChanged(_client: ProseClient): void {
-    Store.$roster.markRoomsChanged();
+    Store.$muc.markRoomsChanged();
+    Store.$muc.load();
   }
 
   contactChanged(_client: ProseClient, jid: JID): void {

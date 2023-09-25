@@ -46,7 +46,7 @@ class BrokerModuleMUC extends BrokerModule {
       participants.map(jid => jid.toString())
     )) as Room;
 
-    Store.$roster.insertRoom(room);
+    Store.$muc.insertRoom(room);
   }
 
   async createPublicChannel(name: string): Promise<void> {
@@ -55,7 +55,7 @@ class BrokerModuleMUC extends BrokerModule {
     }
 
     const room = (await this._client.client.createPublicChannel(name)) as Room;
-    Store.$roster.insertRoom(room);
+    Store.$muc.insertRoom(room);
   }
 
   async createPrivateChannel(name: string): Promise<void> {
@@ -64,7 +64,7 @@ class BrokerModuleMUC extends BrokerModule {
     }
 
     const room = (await this._client.client.createPrivateChannel(name)) as Room;
-    Store.$roster.insertRoom(room);
+    Store.$muc.insertRoom(room);
   }
 
   async loadContacts(): Promise<Contact[]> {

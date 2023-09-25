@@ -25,8 +25,8 @@ transition(
 
 <script lang="ts">
 // NPM
-import { PropType } from "vue";
 import { Room } from "@prose-im/prose-sdk-js";
+import { PropType } from "vue";
 
 // PROJECT: STORES
 import Store from "@/store";

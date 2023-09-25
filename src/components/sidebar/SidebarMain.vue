@@ -213,11 +213,11 @@ export default {
     },
 
     itemDirectMessages(): Room[] {
-      return Store.$roster.getDirectMessages();
+      return Store.$muc.getDirectMessages();
     },
 
     itemChannels(): Room[] {
-      return Store.$roster.getChannels();
+      return Store.$muc.getChannels();
     }
   },
 
@@ -244,7 +244,8 @@ export default {
 
     // Bind connected handler
     Store.$session.events().on("connected", this.onStoreConnected);
-    Store.$roster.events().on("rooms:changed", this.onRoomsChanged);
+    Store.$muc.events().on("rooms:changed", this.onRoomsChanged);
+    Store.$roster.events().on("contact:changed", this.onContactChanged);
 
     // Synchronize roster eagerly
     this.syncRosterEager();
@@ -340,19 +341,40 @@ export default {
       this.syncRosterEager(true);
     },
 
+    onContactChanged(): void {
+      // Mark roster as state (should reload)
+      this.isRosterSyncStale = true;
+
+      // Forcibly reload roster
+      this.syncRosterEager(true);
+    },
+
     async onModalAddContactAdd(jidstr: string): Promise<void> {
+      const addGroup = async (jidstr: string) => {
+        const jids = jidstr.split(",").map(str => new JID(str.trim()));
+        // Add contact
+        console.error(jids);
+        await Broker.$muc.createGroup(jids);
+        BaseAlert.success("Group added", "Group has been added");
+      };
+
+      const addChannel = async (jidstr: string) => {
+        await Broker.$muc.createPublicChannel(jidstr);
+        BaseAlert.success("Channel added", "Channel has been added");
+      };
+
       if (this.modals.addContact.loading !== true) {
         this.modals.addContact.loading = true;
 
         try {
-          const jids = jidstr.split(",").map(str => new JID(str.trim()));
-
-          // Add contact
-          console.error(jids);
-
-          await Broker.$muc.createGroup(jids);
-
-          BaseAlert.success("Group added", "Group has been added");
+          switch (this.modals.addContact.mode) {
+            case AddContactMode.Member:
+              await addGroup(jidstr);
+              break;
+            case AddContactMode.Other:
+              await addChannel(jidstr);
+              break;
+          }
 
           this.modals.addContact.visible = false;
         } catch (error) {
