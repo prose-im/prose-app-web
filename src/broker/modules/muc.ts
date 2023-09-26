@@ -9,13 +9,12 @@
  * ************************************************************************* */
 
 // NPM
-import { Channel, Contact, JID, Room } from "@prose-im/prose-sdk-js";
+import { Channel, JID, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
 
 // PROJECT: UTILITIES
-import logger from "@/utilities/logger";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -65,15 +64,6 @@ class BrokerModuleMUC extends BrokerModule {
 
     const room = (await this._client.client.createPrivateChannel(name)) as Room;
     Store.$muc.insertRoom(room);
-  }
-
-  async loadContacts(): Promise<Contact[]> {
-    // XMPP: Instant Messaging and Presence
-    // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-get
-
-    logger.info("Will load roster (or reload)");
-
-    return (await this._client.client?.loadContacts()) || [];
   }
 }
 

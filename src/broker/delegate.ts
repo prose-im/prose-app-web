@@ -60,15 +60,6 @@ class BrokerDelegate implements ProseClientDelegate {
     );
 
     // TODO: Handle multiple composing users in the UI
-
-    // const conversationComposingUser = composingUsers.find(jid => {
-    //   return jid.equals(conversation);
-    // });
-
-    // Store.$inbox.setComposing(
-    //   room.id,
-    //   conversationComposingUser ? true : false
-    // );
   }
 
   roomsChanged(_client: ProseClient): void {
