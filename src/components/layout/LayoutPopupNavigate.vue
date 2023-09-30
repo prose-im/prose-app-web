@@ -46,10 +46,18 @@ base-popup(
         name="form"
       )
 
+      .c-layout-popup-navigate__actions.c-layout-popup-navigate__actions--mask(
+        v-if="$slots.actions"
+      )
+        slot(
+          name="actions"
+        )
+
     div(
       v-if="$slots.actions"
       :class=`[
         "c-layout-popup-navigate__actions",
+        "c-layout-popup-navigate__actions--overlay",
         {
           "c-layout-popup-navigate__actions--separated": hasActionsSeparator,
           [actionsClass]: actionsClass
@@ -201,8 +209,7 @@ $popup-max-height-small: 540px;
   #{$c}__content {
     background-color: $color-background-secondary;
     flex: 1;
-    display: flex;
-    flex-direction: column;
+    position: relative;
 
     #{$c}__form,
     #{$c}__actions {
@@ -213,7 +220,9 @@ $popup-max-height-small: 540px;
       padding-block-start: $popup-padding-block-start;
       padding-block-end: $popup-padding-block-end;
       overflow: auto;
-      flex: 1;
+      position: absolute;
+      inset: 0;
+      z-index: 1;
 
       &--locked {
         cursor: not-allowed;
@@ -227,11 +236,27 @@ $popup-max-height-small: 540px;
     #{$c}__actions {
       border-block-start: 1px solid transparent;
       padding-block: $popup-padding-block-end;
-      flex: 0 0 auto;
       transition: border-color 50ms linear;
 
       &--separated {
         border-block-start-color: $color-border-tertiary;
+
+        &#{$c}__actions--overlay {
+          background-color: rgba($color-background-secondary, 0.9);
+          backdrop-filter: blur(9px);
+        }
+      }
+
+      &--mask {
+        pointer-events: none;
+        visibility: hidden;
+      }
+
+      &--overlay {
+        position: absolute;
+        inset-inline: 0;
+        inset-block-end: 0;
+        z-index: 2;
       }
     }
   }
