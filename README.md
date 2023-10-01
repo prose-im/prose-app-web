@@ -1,8 +1,10 @@
+<img src="https://github.com/prose-im/prose-app-web/assets/1451907/dd3f7cb4-b156-4ecc-a15f-744dea259e27" alt="Prose logo, animated" width="150" height="60" />
+
+---
+
 # prose-app-web
 
 [![Test and Lint](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml)
-
-<img src="https://github.com/prose-im/prose-app-web/assets/1451907/dd3f7cb4-b156-4ecc-a15f-744dea259e27" alt="Prose logo, animated" width="150" height="60" />
 
 **Prose Web application. Built in TypeScript / VueJS.**
 
