@@ -87,6 +87,12 @@
             :disabled="field.data.disabled"
           )
 
+          base-stream-view(
+            v-else-if="field.type === 'stream'",
+            :stream-url="field.data.value.inner"
+            :disabled="field.data.disabled"
+          )
+
           base-button(
             v-else-if="field.type === 'button'",
             :disabled="field.data.disabled"
@@ -208,6 +214,8 @@ export enum FieldsetFieldType {
   Toggle = "toggle",
   // Level type.
   Level = "level",
+  // Stream type.
+  Stream = "stream",
   // Button type.
   Button = "button",
   // Spacer type.
@@ -290,6 +298,15 @@ type FieldsetFieldDataLevelValue = {
   inner: number;
 };
 
+export type FieldsetFieldDataStream = {
+  value: FieldsetFieldDataStreamValue;
+  disabled?: boolean;
+};
+
+type FieldsetFieldDataStreamValue = {
+  inner: string;
+};
+
 export type FieldsetFieldDataButton = {
   text: string;
   disabled?: boolean;
@@ -324,6 +341,7 @@ interface FieldsetField {
     | FieldsetFieldDataCheckbox
     | FieldsetFieldDataToggle
     | FieldsetFieldDataLevel
+    | FieldsetFieldDataStream
     | FieldsetFieldDataButton;
   aside?: FieldsetFieldAside;
 }
