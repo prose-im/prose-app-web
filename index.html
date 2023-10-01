@@ -36,7 +36,29 @@
   </head>
 
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <video
+        height="80"
+        width="200"
+        style="position: absolute; inset: 50%; transform: translate(-50%, -50%)"
+        autoplay
+        loop
+        muted
+      >
+        <source
+          src="/videos/loader/logo-av1.webm"
+          type="video/webm; codecs=av1"
+        />
+        <source
+          src="/videos/loader/logo-vp9.webm"
+          type="video/webm; codecs=vp9"
+        />
+        <source
+          src="/videos/loader/logo-hvc1.mp4"
+          type="video/mp4; codecs=hvc1"
+        />
+      </video>
+    </div>
 
     <script type="module" src="/src/main.ts"></script>
   </body>
