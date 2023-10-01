@@ -81,6 +81,12 @@
             :disabled="field.data.disabled"
           )
 
+          base-indicator-level(
+            v-else-if="field.type === 'level'",
+            :percent="field.data.value.inner"
+            :disabled="field.data.disabled"
+          )
+
           base-button(
             v-else-if="field.type === 'button'",
             :disabled="field.data.disabled"
@@ -200,6 +206,8 @@ export enum FieldsetFieldType {
   Checkbox = "checkbox",
   // Toggle type.
   Toggle = "toggle",
+  // Level type.
+  Level = "level",
   // Button type.
   Button = "button",
   // Spacer type.
@@ -273,6 +281,15 @@ type FieldsetFieldDataToggleValue = {
   inner: boolean;
 };
 
+export type FieldsetFieldDataLevel = {
+  value: FieldsetFieldDataLevelValue;
+  disabled?: boolean;
+};
+
+type FieldsetFieldDataLevelValue = {
+  inner: number;
+};
+
 export type FieldsetFieldDataButton = {
   text: string;
   disabled?: boolean;
@@ -306,6 +323,7 @@ interface FieldsetField {
     | FieldsetFieldDataSelect
     | FieldsetFieldDataCheckbox
     | FieldsetFieldDataToggle
+    | FieldsetFieldDataLevel
     | FieldsetFieldDataButton;
   aside?: FieldsetFieldAside;
 }
