@@ -27,7 +27,8 @@ import {
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataButton as FormFieldsetFieldDataButton,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
-  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect
+  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
+  FieldsetFieldDataLevel as FormFieldsetFieldDataLevel
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
 export default {
@@ -93,18 +94,14 @@ export default {
           fields: [
             {
               id: "audio-input-tester",
-              type: FormFieldsetFieldType.Input,
+              type: FormFieldsetFieldType.Level,
               label: "Mic. tester:",
 
               data: {
-                // TODO: use a custom bar chart component
-
                 value: {
-                  inner: "" // TODO: from model
-                },
-
-                placeholder: "<<Volume in dB>>"
-              } as FormFieldsetFieldDataInput
+                  inner: 0 // TODO: from model
+                }
+              } as FormFieldsetFieldDataLevel
             },
 
             {
