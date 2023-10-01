@@ -2,6 +2,8 @@
 
 [![Test and Lint](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml)
 
+![Prose logo, animated](https://github.com/prose-im/prose-app-web/assets/1451907/dd3f7cb4-b156-4ecc-a15f-744dea259e27)
+
 **Prose Web application. Built in TypeScript / VueJS.**
 
 Copyright 2023, Prose Foundation - Released under the [Mozilla Public License 2.0](./LICENSE.md).
