@@ -24,6 +24,7 @@ import $inbox from "@/store/tables/inbox";
 import $roster from "@/store/tables/roster";
 import $activity from "@/store/tables/activity";
 import $presence from "@/store/tables/presence";
+import $settings from "@/store/tables/settings";
 
 /**************************************************************************
  * CONSTANTS
@@ -55,6 +56,7 @@ class Store {
   $roster!: ReturnType<typeof $roster>;
   $activity!: ReturnType<typeof $activity>;
   $presence!: ReturnType<typeof $presence>;
+  $settings!: ReturnType<typeof $settings>;
 
   constructor() {
     this.__store = createPinia();
@@ -112,6 +114,7 @@ class Store {
     this.$roster = $roster(this.__store);
     this.$activity = $activity(this.__store);
     this.$presence = $presence(this.__store);
+    this.$settings = $settings(this.__store);
   }
 }
 
