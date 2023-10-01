@@ -84,11 +84,11 @@
 
   update-status(
     v-if="modals.updateStatus.visible"
-    :jid="jid"
-    :loading="modals.updateStatus.loading"
     @update="onModalUpdateStatusUpdate"
     @clear="onModalUpdateStatusClear"
     @close="onModalUpdateStatusClose"
+    :jid="jid"
+    :loading="modals.updateStatus.loading"
   )
 
   sign-out(
