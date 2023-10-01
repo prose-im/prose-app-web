@@ -29,6 +29,9 @@ import {
   FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "AccountSettingsNotifications",
 
@@ -51,7 +54,7 @@ export default {
 
               data: {
                 value: {
-                  inner: "all" // TODO: from model
+                  inner: Store.$settings.notifications.configuration.topics
                 },
 
                 placeholder: "Pick topics to get notified…",
@@ -102,7 +105,7 @@ export default {
 
               data: {
                 value: {
-                  inner: "weekdays" // TODO: from model
+                  inner: Store.$settings.notifications.configuration.when.days
                 },
 
                 placeholder: "Pick when to get notified…",
@@ -130,7 +133,8 @@ export default {
 
               data: {
                 value: {
-                  inner: "10:00" // TODO: from model
+                  inner:
+                    Store.$settings.notifications.configuration.when.time.from
                 },
 
                 placeholder: "Pick time…",
@@ -153,7 +157,8 @@ export default {
 
               data: {
                 value: {
-                  inner: "18:00" // TODO: from model
+                  inner:
+                    Store.$settings.notifications.configuration.when.time.to
                 },
 
                 placeholder: "Pick time…",
@@ -183,7 +188,7 @@ export default {
 
               data: {
                 value: {
-                  inner: true
+                  inner: Store.$settings.notifications.action.notify.badge
                 },
 
                 label: "Show a badge in the tab bar"
@@ -196,7 +201,7 @@ export default {
 
               data: {
                 value: {
-                  inner: false
+                  inner: Store.$settings.notifications.action.notify.sound
                 },
 
                 label: "Play a sound"
@@ -209,7 +214,7 @@ export default {
 
               data: {
                 value: {
-                  inner: true
+                  inner: Store.$settings.notifications.action.notify.banner
                 },
 
                 label: "Pop a banner"
@@ -230,7 +235,8 @@ export default {
 
               data: {
                 value: {
-                  inner: true
+                  inner:
+                    Store.$settings.notifications.devices.mobile.alerts.enabled
                 },
 
                 label: "Forward to mobile if inactive after:"
@@ -243,7 +249,8 @@ export default {
 
               data: {
                 value: {
-                  inner: "5m" // TODO: from model
+                  inner:
+                    Store.$settings.notifications.devices.mobile.alerts.after
                 },
 
                 placeholder: "Pick a delay…",

@@ -29,6 +29,9 @@ import {
   FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "AccountSettingsGeneral",
 
@@ -51,7 +54,7 @@ export default {
 
               data: {
                 value: {
-                  inner: "system" // TODO: from model
+                  inner: Store.$settings.appearance.theme
                 },
 
                 placeholder: "Pick a theme…",
@@ -91,7 +94,7 @@ export default {
 
               data: {
                 value: {
-                  inner: false
+                  inner: Store.$settings.availability.autoAway.enabled
                 },
 
                 label: "Automatically mark me as away after:"
@@ -104,7 +107,7 @@ export default {
 
               data: {
                 value: {
-                  inner: "5m" // TODO: from model
+                  inner: Store.$settings.availability.autoAway.after
                 },
 
                 placeholder: "Pick an away delay…",

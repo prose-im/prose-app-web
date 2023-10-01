@@ -29,6 +29,9 @@ import {
   FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "AccountSettingsMessages",
 
@@ -51,7 +54,7 @@ export default {
 
               data: {
                 value: {
-                  inner: true
+                  inner: Store.$settings.messages.chats.chatstates
                 },
 
                 label: "Let users know when I am typing"
@@ -64,7 +67,7 @@ export default {
 
               data: {
                 value: {
-                  inner: false
+                  inner: Store.$settings.messages.chats.spellcheck
                 },
 
                 label: "Enable spell checker"
@@ -83,7 +86,7 @@ export default {
 
               data: {
                 value: {
-                  inner: false
+                  inner: Store.$settings.messages.chats.clock24h
                 },
 
                 label: "Use a 24-hour clock"
@@ -104,7 +107,7 @@ export default {
 
               data: {
                 value: {
-                  inner: true
+                  inner: Store.$settings.messages.files.imagePreviews.enabled
                 },
 
                 label: "Show a preview of image files"
@@ -117,7 +120,7 @@ export default {
 
               data: {
                 value: {
-                  inner: "large" // TODO: from model
+                  inner: Store.$settings.messages.files.imagePreviews.size
                 },
 
                 placeholder: "Pick a size…",

@@ -29,6 +29,9 @@ import {
   FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "AccountSettingsAdvanced",
 
@@ -51,7 +54,7 @@ export default {
 
               data: {
                 value: {
-                  inner: "stable" // TODO: from model
+                  inner: Store.$settings.updates.channel
                 },
 
                 placeholder: "Pick an update channel…",
@@ -86,7 +89,7 @@ export default {
 
               data: {
                 value: {
-                  inner: false
+                  inner: Store.$settings.privacy.report.analytics
                 },
 
                 label: "Send anonymous usage analytics"
@@ -99,7 +102,7 @@ export default {
 
               data: {
                 value: {
-                  inner: true
+                  inner: Store.$settings.privacy.report.crashes
                 },
 
                 label: "Automatically send crash reports"

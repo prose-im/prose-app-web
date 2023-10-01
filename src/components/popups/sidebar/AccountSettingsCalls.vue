@@ -26,11 +26,13 @@ import {
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataButton as FormFieldsetFieldDataButton,
-  FieldsetFieldDataInput as FormFieldsetFieldDataInput,
   FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
   FieldsetFieldDataLevel as FormFieldsetFieldDataLevel,
   FieldsetFieldDataStream as FormFieldsetFieldDataStream
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 export default {
   name: "AccountSettingsCalls",
@@ -54,10 +56,8 @@ export default {
 
               data: {
                 value: {
-                  inner: "" // TODO: from model
-                },
-
-                placeholder: "<<Camera stream URL>>"
+                  inner: "" // TODO: from stream
+                }
               } as FormFieldsetFieldDataStream
             },
 
@@ -68,7 +68,7 @@ export default {
 
               data: {
                 value: {
-                  inner: "system" // TODO: from model
+                  inner: Store.$settings.calls.camera.inputSource
                 },
 
                 placeholder: "Pick a video input…",
@@ -98,7 +98,7 @@ export default {
 
               data: {
                 value: {
-                  inner: 0 // TODO: from model
+                  inner: 0 // TODO: from input
                 }
               } as FormFieldsetFieldDataLevel
             },
@@ -110,7 +110,7 @@ export default {
 
               data: {
                 value: {
-                  inner: "system" // TODO: from model
+                  inner: Store.$settings.calls.microphone.inputSource
                 },
 
                 placeholder: "Pick an audio input…",
@@ -148,7 +148,7 @@ export default {
 
               data: {
                 value: {
-                  inner: "system" // TODO: from model
+                  inner: Store.$settings.calls.sound.outputSource
                 },
 
                 placeholder: "Pick an audio output…",
