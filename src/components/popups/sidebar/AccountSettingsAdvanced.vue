@@ -80,7 +80,7 @@ export default {
 
           fields: [
             {
-              id: "analytics",
+              id: "report-analytics",
               type: FormFieldsetFieldType.Checkbox,
               label: "Reports:",
 
@@ -90,11 +90,11 @@ export default {
                 },
 
                 label: "Send anonymous usage analytics"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {
-              id: "crashes",
+              id: "report-crashes",
               type: FormFieldsetFieldType.Checkbox,
 
               data: {
@@ -103,7 +103,7 @@ export default {
                 },
 
                 label: "Automatically send crash reports"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             }
           ]
         }

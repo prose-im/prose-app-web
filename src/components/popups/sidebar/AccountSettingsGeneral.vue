@@ -25,7 +25,8 @@ import {
   default as SettingsEditorFormFieldset,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
-  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect
+  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
+  FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
 export default {
@@ -94,7 +95,7 @@ export default {
                 },
 
                 label: "Automatically mark me as away after:"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {

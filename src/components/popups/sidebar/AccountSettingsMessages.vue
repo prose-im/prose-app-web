@@ -40,8 +40,8 @@ export default {
 
       fieldsets: [
         {
-          id: "messages",
-          title: "Messages",
+          id: "chats",
+          title: "Chats",
 
           fields: [
             {
@@ -55,7 +55,7 @@ export default {
                 },
 
                 label: "Let users know when I am typing"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {
@@ -68,7 +68,7 @@ export default {
                 },
 
                 label: "Enable spell checker"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {
@@ -87,20 +87,7 @@ export default {
                 },
 
                 label: "Use a 24-hour clock"
-              } as FieldsetFieldDataCheckbox
-            },
-
-            {
-              id: "image-previews-enabled",
-              type: FormFieldsetFieldType.Checkbox,
-
-              data: {
-                value: {
-                  inner: true
-                },
-
-                label: "Show a preview of image files"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             }
           ]
         },
@@ -111,9 +98,22 @@ export default {
 
           fields: [
             {
+              id: "image-previews-enabled",
+              type: FormFieldsetFieldType.Checkbox,
+              label: "Thumbnails:",
+
+              data: {
+                value: {
+                  inner: true
+                },
+
+                label: "Show a preview of image files"
+              } as FormFieldsetFieldDataCheckbox
+            },
+
+            {
               id: "image-previews-size",
               type: FormFieldsetFieldType.Select,
-              label: "Thumbnails:",
 
               data: {
                 value: {
@@ -125,12 +125,12 @@ export default {
                 options: [
                   {
                     value: "large",
-                    label: "Large"
+                    label: "Large size"
                   },
 
                   {
                     value: "small",
-                    label: "Small"
+                    label: "Small size"
                   }
                 ]
               } as FormFieldsetFieldDataSelect

@@ -26,7 +26,7 @@ import {
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
-  FieldsetFieldDataSpacer as FormFieldsetFieldDataSpacer
+  FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
 export default {
@@ -87,7 +87,7 @@ export default {
                 },
 
                 label: "Let me know when I receive a message reply"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {
@@ -187,7 +187,7 @@ export default {
                 },
 
                 label: "Show a badge in the tab bar"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {
@@ -200,7 +200,7 @@ export default {
                 },
 
                 label: "Play a sound"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {
@@ -213,7 +213,7 @@ export default {
                 },
 
                 label: "Pop a banner"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             }
           ]
         },
@@ -234,7 +234,7 @@ export default {
                 },
 
                 label: "Forward to mobile if inactive after:"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {
