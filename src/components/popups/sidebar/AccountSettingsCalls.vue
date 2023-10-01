@@ -28,7 +28,8 @@ import {
   FieldsetFieldDataButton as FormFieldsetFieldDataButton,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
   FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
-  FieldsetFieldDataLevel as FormFieldsetFieldDataLevel
+  FieldsetFieldDataLevel as FormFieldsetFieldDataLevel,
+  FieldsetFieldDataStream as FormFieldsetFieldDataStream
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
 export default {
@@ -48,18 +49,16 @@ export default {
           fields: [
             {
               id: "video-input-tester",
-              type: FormFieldsetFieldType.Input,
+              type: FormFieldsetFieldType.Stream,
               label: "Camera tester:",
 
               data: {
-                // TODO: use a custom bar chart component
-
                 value: {
                   inner: "" // TODO: from model
                 },
 
                 placeholder: "<<Camera stream URL>>"
-              } as FormFieldsetFieldDataInput
+              } as FormFieldsetFieldDataStream
             },
 
             {
