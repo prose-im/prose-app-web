@@ -62,7 +62,7 @@ export default {
     }
   },
 
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "change"],
 
   data() {
     return {
@@ -83,15 +83,17 @@ export default {
   },
 
   methods: {
+    updateValue(enabled: boolean): void {
+      this.$emit("update:modelValue", enabled);
+      this.$emit("change", enabled);
+    },
+
     // --> EVENT LISTENERS <--
 
     onInputChange(event: Event): void {
       // Update model value?
       if (event.target) {
-        this.$emit(
-          "update:modelValue",
-          (event.target as HTMLInputElement).checked
-        );
+        this.updateValue((event.target as HTMLInputElement).checked);
       }
     },
 

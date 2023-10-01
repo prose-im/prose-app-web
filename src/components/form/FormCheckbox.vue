@@ -79,7 +79,7 @@ export default {
     }
   },
 
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "change"],
 
   computed: {
     hasLabelEmphasis(): boolean {
@@ -88,21 +88,25 @@ export default {
   },
 
   methods: {
+    // --> HELPERS <--
+
+    updateValue(checked: boolean): void {
+      this.$emit("update:modelValue", checked);
+      this.$emit("change", checked);
+    },
+
     // --> EVENT LISTENERS <--
 
     onInputChange(event: Event): void {
       // Update model value?
       if (event.target) {
-        this.$emit(
-          "update:modelValue",
-          (event.target as HTMLInputElement).checked
-        );
+        this.updateValue((event.target as HTMLInputElement).checked);
       }
     },
 
     onLabelClick(): void {
       // Toggle model value
-      this.$emit("update:modelValue", !this.modelValue);
+      this.updateValue(!this.modelValue);
     }
   }
 };

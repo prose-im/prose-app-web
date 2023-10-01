@@ -239,7 +239,7 @@ export default {
     }
   },
 
-  emits: ["update:modelValue"],
+  emits: ["update:modelValue", "change"],
 
   data() {
     return {
@@ -501,10 +501,11 @@ export default {
     onInputChange(event: Event): void {
       // Update model value?
       if (event.target) {
-        this.$emit(
-          "update:modelValue",
-          (event.target as HTMLInputElement).value
-        );
+        const selectValue: string = (event.target as HTMLInputElement).value;
+
+        // Update model value and send change event
+        this.$emit("update:modelValue", selectValue);
+        this.$emit("change", selectValue);
       }
     }
   }
