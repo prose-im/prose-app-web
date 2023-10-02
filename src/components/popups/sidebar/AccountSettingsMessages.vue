@@ -54,7 +54,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.messages.chats.chatstates
+                  inner: Store.$settings.messages.chats.chatstates,
+                  change: Store.$settings.setMessagesChatsChatstates
                 },
 
                 label: "Let users know when I am typing"
@@ -67,7 +68,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.messages.chats.spellcheck
+                  inner: Store.$settings.messages.chats.spellcheck,
+                  change: Store.$settings.setMessagesChatsSpellcheck
                 },
 
                 label: "Enable spell checker"
@@ -86,7 +88,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.messages.chats.clock24h
+                  inner: Store.$settings.messages.chats.clock24h,
+                  change: Store.$settings.setMessagesChatsClock24h
                 },
 
                 label: "Use a 24-hour clock"
@@ -107,7 +110,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.messages.files.imagePreviews.enabled
+                  inner: Store.$settings.messages.files.imagePreviews.enabled,
+                  change: Store.$settings.setMessagesFilesImagePreviews
                 },
 
                 label: "Show a preview of image files"
@@ -120,7 +124,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.messages.files.imagePreviews.size
+                  inner: Store.$settings.messages.files.imagePreviews.size,
+                  change: Store.$settings.setMessagesFilesImageSize
                 },
 
                 placeholder: "Pick a size…",

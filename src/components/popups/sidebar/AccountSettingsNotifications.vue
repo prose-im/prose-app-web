@@ -54,7 +54,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.notifications.configuration.topics
+                  inner: Store.$settings.notifications.configuration.topics,
+                  change: Store.$settings.setNotificationsConfigurationTopics
                 },
 
                 placeholder: "Pick topics to get notified…",
@@ -86,7 +87,8 @@ export default {
 
               data: {
                 value: {
-                  inner: true
+                  inner: Store.$settings.notifications.configuration.replies,
+                  change: Store.$settings.setNotificationsConfigurationReplies
                 },
 
                 label: "Let me know when I receive a message reply"
@@ -105,7 +107,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.notifications.configuration.when.days
+                  inner: Store.$settings.notifications.configuration.when.days,
+                  change: Store.$settings.setNotificationsConfigurationWhenDays
                 },
 
                 placeholder: "Pick when to get notified…",
@@ -134,7 +137,9 @@ export default {
               data: {
                 value: {
                   inner:
-                    Store.$settings.notifications.configuration.when.time.from
+                    Store.$settings.notifications.configuration.when.time.from,
+                  change:
+                    Store.$settings.setNotificationsConfigurationWhenTimeFrom
                 },
 
                 placeholder: "Pick time…",
@@ -158,7 +163,9 @@ export default {
               data: {
                 value: {
                   inner:
-                    Store.$settings.notifications.configuration.when.time.to
+                    Store.$settings.notifications.configuration.when.time.to,
+                  change:
+                    Store.$settings.setNotificationsConfigurationWhenTimeTo
                 },
 
                 placeholder: "Pick time…",
@@ -188,7 +195,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.notifications.action.notify.badge
+                  inner: Store.$settings.notifications.action.notify.badge,
+                  change: Store.$settings.setNotificationsActionNotifyBadge
                 },
 
                 label: "Show a badge in the tab bar"
@@ -201,7 +209,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.notifications.action.notify.sound
+                  inner: Store.$settings.notifications.action.notify.sound,
+                  change: Store.$settings.setNotificationsActionNotifySound
                 },
 
                 label: "Play a sound"
@@ -214,7 +223,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.notifications.action.notify.banner
+                  inner: Store.$settings.notifications.action.notify.banner,
+                  change: Store.$settings.setNotificationsActionNotifyBanner
                 },
 
                 label: "Pop a banner"
@@ -236,7 +246,9 @@ export default {
               data: {
                 value: {
                   inner:
-                    Store.$settings.notifications.devices.mobile.alerts.enabled
+                    Store.$settings.notifications.devices.mobile.alerts.enabled,
+                  change:
+                    Store.$settings.setNotificationsDevicesMobileAlertsEnabled
                 },
 
                 label: "Forward to mobile if inactive after:"
@@ -250,7 +262,9 @@ export default {
               data: {
                 value: {
                   inner:
-                    Store.$settings.notifications.devices.mobile.alerts.after
+                    Store.$settings.notifications.devices.mobile.alerts.after,
+                  change:
+                    Store.$settings.setNotificationsDevicesMobileAlertsAfter
                 },
 
                 placeholder: "Pick a delay…",

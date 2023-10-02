@@ -54,7 +54,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.appearance.theme
+                  inner: Store.$settings.appearance.theme,
+                  change: Store.$settings.setAppearanceTheme
                 },
 
                 placeholder: "Pick a theme…",
@@ -94,7 +95,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.availability.autoAway.enabled
+                  inner: Store.$settings.availability.autoAway.enabled,
+                  change: Store.$settings.setAvailabilityAutoAwayEnabled
                 },
 
                 label: "Automatically mark me as away after:"
@@ -107,7 +109,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.availability.autoAway.after
+                  inner: Store.$settings.availability.autoAway.after,
+                  change: Store.$settings.setAvailabilityAutoAwayAfter
                 },
 
                 placeholder: "Pick an away delay…",

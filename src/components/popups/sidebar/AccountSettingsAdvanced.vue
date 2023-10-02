@@ -54,7 +54,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.updates.channel
+                  inner: Store.$settings.updates.channel,
+                  change: Store.$settings.setUpdatesChannel
                 },
 
                 placeholder: "Pick an update channel…",
@@ -89,7 +90,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.privacy.report.analytics
+                  inner: Store.$settings.privacy.report.analytics,
+                  change: Store.$settings.setPrivacyReportAnalytics
                 },
 
                 label: "Send anonymous usage analytics"
@@ -102,7 +104,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.privacy.report.crashes
+                  inner: Store.$settings.privacy.report.crashes,
+                  change: Store.$settings.setPrivacyReportCrashes
                 },
 
                 label: "Automatically send crash reports"

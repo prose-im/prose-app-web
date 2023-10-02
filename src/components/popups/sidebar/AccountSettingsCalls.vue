@@ -68,7 +68,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.calls.camera.inputSource
+                  inner: Store.$settings.calls.camera.inputSource,
+                  change: Store.$settings.setCallsCameraInputSource
                 },
 
                 placeholder: "Pick a video input…",
@@ -110,7 +111,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.calls.microphone.inputSource
+                  inner: Store.$settings.calls.microphone.inputSource,
+                  change: Store.$settings.setCallsMicrophoneInputSource
                 },
 
                 placeholder: "Pick an audio input…",
@@ -148,7 +150,8 @@ export default {
 
               data: {
                 value: {
-                  inner: Store.$settings.calls.sound.outputSource
+                  inner: Store.$settings.calls.sound.outputSource,
+                  change: Store.$settings.setCallSoundOutputSource
                 },
 
                 placeholder: "Pick an audio output…",
