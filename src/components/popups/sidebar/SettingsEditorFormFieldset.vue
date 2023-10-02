@@ -40,7 +40,7 @@
           form-field(
             v-if="field.type === 'input'"
             v-model="field.data.value.inner"
-            @change="field.data.change"
+            @change="field.data.value.change"
             :name="field.id"
             :placeholder="field.data.placeholder"
             :disabled="field.data.disabled"
@@ -52,7 +52,7 @@
           form-select(
             v-else-if="field.type === 'select'"
             v-model="field.data.value.inner"
-            @change="field.data.change"
+            @change="field.data.value.change"
             :options="field.data.options"
             :icon="field.data.icon"
             :name="field.id"
@@ -66,7 +66,7 @@
           form-checkbox(
             v-else-if="field.type === 'checkbox'"
             v-model="field.data.value.inner"
-            @change="field.data.change"
+            @change="field.data.value.change"
             :name="field.id"
             :disabled="field.data.disabled"
             size="small"
@@ -80,7 +80,7 @@
           form-toggle(
             v-else-if="field.type === 'toggle'"
             v-model="field.data.value.inner"
-            @change="field.data.change"
+            @change="field.data.value.change"
             :name="field.id"
             :disabled="field.data.disabled"
           )
@@ -255,11 +255,11 @@ export type FieldsetFieldDataInput = {
   value: FieldsetFieldDataInputValue;
   placeholder: string;
   disabled?: boolean;
-  change?: (_: string | number) => void;
 };
 
 type FieldsetFieldDataInputValue = {
   inner: string;
+  change?: (_: string | number) => void;
 };
 
 export type FieldsetFieldDataSelect = {
@@ -269,32 +269,32 @@ export type FieldsetFieldDataSelect = {
   icon?: FormSelectIcon;
   position?: string;
   disabled?: boolean;
-  change?: (_: string) => void;
 };
 
 type FieldsetFieldDataSelectValue = {
   inner: string;
+  change?: (_: string) => void;
 };
 
 export type FieldsetFieldDataCheckbox = {
   value: FieldsetFieldDataCheckboxValue;
   label?: string;
   disabled?: boolean;
-  change?: (_: boolean) => void;
 };
 
 type FieldsetFieldDataCheckboxValue = {
   inner: boolean;
+  change?: (_: boolean) => void;
 };
 
 export type FieldsetFieldDataToggle = {
   value: FieldsetFieldDataToggleValue;
   disabled?: boolean;
-  change?: (_: boolean) => void;
 };
 
 type FieldsetFieldDataToggleValue = {
   inner: boolean;
+  change?: (_: boolean) => void;
 };
 
 export type FieldsetFieldDataLevel = {
