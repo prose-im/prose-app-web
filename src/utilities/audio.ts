@@ -22,6 +22,15 @@ enum AudioFormat {
   M4A = "m4a"
 }
 
+export enum AudioSound {
+  // Alert action success.
+  AlertActionSuccess = "alerts/action-success",
+  // Alert message receive.
+  AlertMessageReceive = "alerts/message-receive",
+  // Call ringtone pending.
+  CallRingtonePending = "calls/ringtone-pending"
+}
+
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
@@ -44,10 +53,15 @@ const AUDIO_TYPES_PIPELINE = [
 
 class UtilitiesAudio {
   private __format: AudioFormat | null;
+  private __player: AudioContext | null = null;
+  private __cache: { [path: string]: AudioBuffer };
 
   constructor() {
     // Initialize supported audio format
     this.__format = null;
+
+    // Initialize cache
+    this.__cache = {};
   }
 
   detect(): void {
@@ -75,6 +89,105 @@ class UtilitiesAudio {
     } else {
       throw new Error("Audio format already detected");
     }
+  }
+
+  async play(sound: AudioSound, loop = false, volume = 50): Promise<void> {
+    // Can play sound? (otherwise ignore)
+    if (this.__format !== null) {
+      try {
+        // Assert audio cache
+        // Notice: if audio file is not in cache, then this will download the \
+        //   target audio file.
+        const [audioPlayer, audioBuffer] = await this.__assertAudio(
+          `${sound}.${this.__format}`
+        );
+
+        // Resume audio context? (if suspended)
+        if (audioPlayer.state === "suspended") {
+          audioPlayer.resume();
+        }
+
+        // Create gain
+        const audioGain = audioPlayer.createGain();
+
+        audioGain.gain.setValueAtTime(volume / 100, 0);
+        audioGain.connect(audioPlayer.destination);
+
+        // Play audio source
+        const audioSource = audioPlayer.createBufferSource();
+
+        audioSource.buffer = audioBuffer;
+        audioSource.loop = loop;
+
+        audioSource.connect(audioGain);
+        audioSource.start();
+      } catch (error) {
+        logger.error(`Could not play audio: ${sound}`, error);
+      }
+    }
+  }
+
+  private __assertPlayer(): AudioContext {
+    // Initialize audio player? (required to decode audio file)
+    if (this.__player === null) {
+      // Cannot initialize?
+      if (typeof AudioContext !== "function") {
+        throw new Error("Cannot initialize audio context");
+      }
+
+      this.__player = new AudioContext();
+    }
+
+    return this.__player;
+  }
+
+  private async __assertAudio(
+    path: string
+  ): Promise<[AudioContext, AudioBuffer]> {
+    try {
+      return await this.__tryLoadCache(path);
+    } catch (error) {
+      logger.info(
+        `Could not load audio from cache: ${path}, will fetch instead`,
+        error
+      );
+
+      return await this.__tryLoadFetch(path);
+    }
+  }
+
+  private async __tryLoadCache(
+    path: string
+  ): Promise<[AudioContext, AudioBuffer]> {
+    if (path in this.__cache) {
+      return [this.__assertPlayer(), this.__cache[path]];
+    }
+
+    return Promise.reject("Not found in cache (yet)");
+  }
+
+  private async __tryLoadFetch(
+    path: string
+  ): Promise<[AudioContext, AudioBuffer]> {
+    // Assert audio player
+    const player = this.__assertPlayer();
+
+    // Fetch target audio file
+    const response = await fetch(`/src/assets/sounds/${path}`);
+
+    if (response.ok === false) {
+      throw new Error(`Failed loading audio file: HTTP ${response.status}`);
+    }
+
+    // Acquire audio buffer from response array buffer
+    const audioBuffer = await player.decodeAudioData(
+      await response.arrayBuffer()
+    );
+
+    // Write decoded buffer to cache
+    this.__cache[path] = audioBuffer;
+
+    return [player, audioBuffer];
   }
 }
 
