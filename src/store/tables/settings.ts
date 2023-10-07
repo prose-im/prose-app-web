@@ -49,7 +49,7 @@ const $settings = defineStore("settings", {
         action: {
           notify: {
             badge: true,
-            sound: false,
+            sound: true,
             banner: true
           }
         },
