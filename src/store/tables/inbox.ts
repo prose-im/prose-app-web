@@ -146,12 +146,15 @@ const $inbox = defineStore("inbox", {
       return entries[jidString];
     },
 
-    insertMessage(jid: JID, message: InboxEntryMessage) {
-      this.insertMessages(jid, [message]);
+    insertMessage(jid: JID, message: InboxEntryMessage): boolean {
+      return this.insertMessages(jid, [message]);
     },
 
-    insertMessages(jid: JID, messages: Array<InboxEntryMessage>) {
+    insertMessages(jid: JID, messages: Array<InboxEntryMessage>): boolean {
       const container = this.assert(jid).messages;
+
+      // Initialize inserted marker
+      let hasInserted = false;
 
       messages.forEach(message => {
         // Acquire message identifier
@@ -166,6 +169,10 @@ const $inbox = defineStore("inbox", {
 
         // Should insert message? (does not exist)
         if (wasUpdated !== true) {
+          // Mark as inserted
+          hasInserted = true;
+
+          // Insert message in its container
           this.$patch(() => {
             container.byId[messageId] = message;
             container.list.push(message);
@@ -178,6 +185,8 @@ const $inbox = defineStore("inbox", {
           } as EventMessageGeneric);
         }
       });
+
+      return hasInserted;
     },
 
     updateMessage(jid: JID, id: string, message: InboxEntryMessage): boolean {

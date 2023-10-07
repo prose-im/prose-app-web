@@ -22,6 +22,7 @@ import { fromCoreMessage as inboxMessageFromCore } from "@/store/tables/inbox";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+import { default as UtilitiesAudio, AudioSound } from "@/utilities/audio";
 
 // PROJECT: BROKER
 import mitt from "mitt";
@@ -88,13 +89,27 @@ class BrokerDelegate implements ProseClientDelegate {
   ): Promise<void> {
     const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
 
-    Store.$inbox.insertMessages(
+    // Insert all appended messages
+    const hasInserted = Store.$inbox.insertMessages(
       conversation,
 
       messages.map(message => {
         return inboxMessageFromCore(message);
       })
     );
+
+    // Play incoming message sound? (only for messages from remote users)
+    if (hasInserted === true) {
+      const selfJIDRaw = Store.$account.getLocalJID().toString();
+
+      const firstNonSelfMessage = messages.find(message => {
+        return message.from !== selfJIDRaw;
+      });
+
+      if (firstNonSelfMessage) {
+        UtilitiesAudio.play(AudioSound.AlertMessageReceive);
+      }
+    }
   }
 
   messagesDeleted(

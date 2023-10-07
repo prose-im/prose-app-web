@@ -35,6 +35,8 @@ export enum AudioSound {
  * CONSTANTS
  * ************************************************************************* */
 
+const AUDIO_MASTER_VOLUME = 30;
+
 const AUDIO_TYPES_PIPELINE = [
   {
     format: AudioFormat.OGA,
@@ -91,7 +93,11 @@ class UtilitiesAudio {
     }
   }
 
-  async play(sound: AudioSound, loop = false, volume = 50): Promise<void> {
+  async play(
+    sound: AudioSound,
+    loop = false,
+    volume = AUDIO_MASTER_VOLUME
+  ): Promise<void> {
     // Can play sound? (otherwise ignore)
     if (this.__format !== null) {
       try {
