@@ -99,7 +99,10 @@ class BrokerDelegate implements ProseClientDelegate {
     );
 
     // Play incoming message sound? (only for messages from remote users)
-    if (hasInserted === true) {
+    if (
+      hasInserted === true &&
+      Store.$settings.notifications.action.notify.sound === true
+    ) {
       const selfJIDRaw = Store.$account.getLocalJID().toString();
 
       const firstNonSelfMessage = messages.find(message => {
