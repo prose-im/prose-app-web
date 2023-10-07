@@ -41,9 +41,6 @@ import StartServerIdentity from "@/components/start/StartServerIdentity.vue";
 // PROJECT: STORES
 import Store from "@/store";
 
-// PROJECT: UTILITIES
-import { default as UtilitiesAudio, AudioSound } from "@/utilities/audio";
-
 export default {
   name: "StartLogin",
 
@@ -71,9 +68,6 @@ export default {
 
           // Show success alert
           BaseAlert.success("Authenticated", "Welcome back!");
-
-          // Play success sound
-          UtilitiesAudio.play(AudioSound.AlertActionSuccess);
 
           // Redirect to dashboard
           this.$router.push({
