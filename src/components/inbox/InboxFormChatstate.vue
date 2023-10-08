@@ -10,8 +10,8 @@
 
 <template lang="pug">
 transition(
-  enter-active-class="animate animate--fade-in-up-small animate--fast"
-  leave-active-class="animate animate--fade-out-down-small animate--superfast"
+  enter-active-class="u-animate u-animate--fade-in-up-small u-animate--fast"
+  leave-active-class="u-animate u-animate--fade-out-down-small u-animate--superfast"
 )
   .c-inbox-form-chatstate(
     v-if="isVisible"

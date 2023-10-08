@@ -19,9 +19,9 @@ teleport(
     div(
       :class=`[
         "c-base-popup__popup",
-        "animate",
-        "animate--superfast",
-        "animate--fade-in-up-small",
+        "u-animate",
+        "u-animate--superfast",
+        "u-animate--fade-in-up-small",
         {
           [popupClass]: popupClass
         }
