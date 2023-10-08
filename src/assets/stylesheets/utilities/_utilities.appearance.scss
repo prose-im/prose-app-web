@@ -1,0 +1,51 @@
+/*
+ * This file is part of prose-app-web
+ *
+ * Copyright 2023, Prose Foundation
+ */
+
+/* *************************************************************************
+ * UTILITIES > APPEARANCE
+ * **************************************************************************/
+
+.u-appearance {
+  // Black
+  --color-black: #{$color-black};
+
+  // White
+  --color-white: #{$color-white};
+
+  // Bases
+  --color-base-blue-light: #{$color-base-blue-light};
+  --color-base-blue-normal: #{$color-base-blue-normal};
+  --color-base-blue-dark: #{$color-base-blue-dark};
+  --color-base-blue-ultra-dark: #{$color-base-blue-ultra-dark};
+  --color-base-blue-link: #{$color-base-blue-link};
+  --color-base-green-normal: #{$color-base-green-normal};
+  --color-base-grey-dark: #{$color-base-grey-dark};
+  --color-base-grey-light: #{$color-base-grey-light};
+  --color-base-grey-normal: #{$color-base-grey-normal};
+  --color-base-orange-light: #{$color-base-orange-light};
+  --color-base-orange-normal: #{$color-base-orange-normal};
+  --color-base-pink-light: #{$color-base-pink-light};
+  --color-base-purple-light: #{$color-base-purple-light};
+  --color-base-purple-normal: #{$color-base-purple-normal};
+  --color-base-purple-ultra-light: #{$color-base-purple-ultra-light};
+  --color-base-red-normal: #{$color-base-red-normal};
+  --color-base-yellow-ultra-light: #{$color-base-yellow-ultra-light};
+
+  // Borders
+  --color-border-primary: #{$color-border-primary};
+  --color-border-secondary: #{$color-border-secondary};
+  --color-border-tertiary: #{$color-border-tertiary};
+
+  // Backgrounds
+  --color-background-primary: #{$color-background-primary};
+  --color-background-secondary: #{$color-background-secondary};
+
+  // Texts
+  --color-text-primary: #{$color-text-primary};
+  --color-text-secondary: #{$color-text-secondary};
+  --color-text-tertiary: #{$color-text-tertiary};
+  --color-text-reverse: #{$color-text-reverse};
+}
