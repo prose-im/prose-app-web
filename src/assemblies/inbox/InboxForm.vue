@@ -384,7 +384,7 @@ $form-compose-send-button-size: (
       }
 
       #{$c}__compose-send-icon {
-        fill: $color-white;
+        fill: var(--color-white);
         margin-inline-start: -2px;
       }
     }

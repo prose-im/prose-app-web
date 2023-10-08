@@ -54,4 +54,4 @@ BootstrapPlugins.init(app);
  * INITIALIZE
  * ************************************************************************* */
 
-app.mount("#app");
+app.mount("#runtime");
