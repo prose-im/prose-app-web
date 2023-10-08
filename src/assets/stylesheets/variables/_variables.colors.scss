@@ -18,10 +18,8 @@ $color-white: #ffffff;
 
 // Bases
 
-$color-base-blue-light: #6edbff;
 $color-base-blue-normal: #2490f0;
 $color-base-blue-dark: #0079e5;
-$color-base-blue-ultra-dark: #1c293b;
 $color-base-blue-link: #4233be;
 $color-base-green-normal: #05c02b;
 $color-base-grey-dark: #495462;
@@ -29,27 +27,25 @@ $color-base-grey-light: #f5f6fa;
 $color-base-grey-normal: #949eb1;
 $color-base-orange-light: #f1914b;
 $color-base-orange-normal: #dd792f;
-$color-base-pink-light: #ff88a3;
 $color-base-purple-light: #c6c6e1;
 $color-base-purple-normal: #392ca0;
 $color-base-purple-ultra-light: #fbfbfd;
 $color-base-red-normal: #dd2f2f;
-$color-base-yellow-ultra-light: #fffff8;
 
 // Borders
 
-$color-border-primary: rgba($color-black, 0.1);
-$color-border-secondary: rgba($color-black, 0.06);
-$color-border-tertiary: rgba($color-black, 0.04);
+$color-border-primary: #e5e5e5;
+$color-border-secondary: #f0f0f0;
+$color-border-tertiary: #f5f5f5;
 
 // Backgrounds
 
-$color-background-primary: $color-white;
+$color-background-primary: #ffffff;
 $color-background-secondary: #fbfbfc;
 
 // Texts
 
-$color-text-primary: $color-black;
-$color-text-secondary: rgba($color-base-blue-ultra-dark, 0.55);
-$color-text-tertiary: rgba($color-base-blue-ultra-dark, 0.45);
-$color-text-reverse: $color-white;
+$color-text-primary: #000000;
+$color-text-secondary: #828993;
+$color-text-tertiary: #999fa7;
+$color-text-reverse: #ffffff;

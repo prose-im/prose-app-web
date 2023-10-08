@@ -10,9 +10,16 @@
 
 // NPM
 import { defineStore } from "pinia";
+import mitt from "mitt";
 
 // PROJECT: STORES
 import { STORE_PERSIST_PREFIX, STORE_PERSIST_BOOT } from "@/store";
+
+/**************************************************************************
+ * INSTANCES
+ * ************************************************************************* */
+
+const EventBus = mitt();
 
 /**************************************************************************
  * TABLE
@@ -110,8 +117,15 @@ const $settings = defineStore("settings", {
   },
 
   actions: {
+    events(): ReturnType<typeof mitt> {
+      // Return event bus
+      return EventBus;
+    },
+
     setAppearanceTheme(value: string): void {
-      this.setGeneric(this.appearance, "theme", value);
+      this.setGeneric(this.appearance, "theme", value, {
+        event: "appearance:theme"
+      });
 
       // Store in local storage? (for use during boot, before store is loaded)
       if (window.localStorage !== undefined) {
@@ -228,7 +242,8 @@ const $settings = defineStore("settings", {
     setGeneric<ValueType>(
       container: { [key: string]: ValueType },
       key: string,
-      value: ValueType
+      value: ValueType,
+      options?: { event?: string }
     ): boolean {
       // Check if will change
       const willChange = container[key] !== value ? true : false;
@@ -238,6 +253,11 @@ const $settings = defineStore("settings", {
         this.$patch(() => {
           container[key] = value;
         });
+
+        // Broadcast state change?
+        if (options?.event) {
+          EventBus.emit(options.event, value);
+        }
 
         // Has changed
         return true;

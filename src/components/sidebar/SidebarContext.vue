@@ -605,7 +605,7 @@ $current-status-define-padding-block: 2px;
     overflow: hidden;
 
     #{$c}__team {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
       font-size: 14px;
     }
 
@@ -626,7 +626,7 @@ $current-status-define-padding-block: 2px;
       }
 
       #{$c}__status-text {
-        color: $color-text-secondary;
+        color: rgb(var(--color-text-secondary));
         margin-inline-start: 5px;
 
         &:before {
@@ -639,7 +639,7 @@ $current-status-define-padding-block: 2px;
       }
 
       #{$c}__status-define {
-        color: $color-base-purple-normal;
+        color: rgb(var(--color-base-purple-normal));
         margin-inline: (-1 * $current-status-define-padding-inline);
         margin-block: (-1 * $current-status-define-padding-block);
         padding: $current-status-define-padding-block

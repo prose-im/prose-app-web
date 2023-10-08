@@ -256,8 +256,8 @@ $close-size: 24px;
 $close-icon-size: 12px;
 
 .c-base-alert {
-  background: rgba($color-white, 0.95);
-  border: 1px solid rgba($color-black, 0.06);
+  background: rgba(var(--color-white), 0.95);
+  border: 1px solid rgba(var(--color-black), 0.06);
   padding: 10px;
   padding-inline-end: 80px;
   backdrop-filter: blur(9px);
@@ -268,11 +268,11 @@ $close-icon-size: 12px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10000;
-  box-shadow: 0 2px 4px 0 rgba($color-black, 0.04);
+  box-shadow: 0 2px 4px 0 rgba(var(--color-black), 0.04);
   border-radius: 16px;
 
   #{$c}__badge {
-    background-color: rgba($color-base-grey-dark, 0.15);
+    background-color: rgba(var(--color-base-grey-dark), 0.15);
     width: $badge-size;
     height: $badge-size;
     margin-inline-end: 24px;
@@ -288,7 +288,7 @@ $close-icon-size: 12px;
       @include mask-repeat(no-repeat);
 
       content: "";
-      background-color: $color-base-grey-dark;
+      background-color: rgb(var(--color-base-grey-dark));
       width: $badge-icon-size;
       height: $badge-icon-size;
       flex: 0 0 auto;
@@ -299,12 +299,12 @@ $close-icon-size: 12px;
     flex: 1;
 
     #{$c}__text-title {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
       font-size: 17px;
     }
 
     #{$c}__text-description {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
       font-size: 15px;
       margin-block-start: 10px;
     }
@@ -323,7 +323,7 @@ $close-icon-size: 12px;
     border-radius: 5px;
 
     &:hover {
-      background-color: $color-base-grey-light;
+      background-color: rgb(var(--color-base-grey-light));
 
       &:after {
         opacity: 0.75;
@@ -363,72 +363,72 @@ $close-icon-size: 12px;
 
   &--error {
     #{$c}__badge {
-      background-color: rgba($color-base-red-normal, 0.15);
+      background-color: rgba(var(--color-base-red-normal), 0.15);
 
       &:after {
-        background-color: $color-base-red-normal;
+        background-color: rgb(var(--color-base-red-normal));
       }
     }
 
     #{$c}__text {
       #{$c}__text-title {
-        color: $color-base-red-normal;
+        color: rgb(var(--color-base-red-normal));
       }
     }
   }
 
   &--warning {
     #{$c}__badge {
-      background-color: rgba($color-base-orange-normal, 0.15);
+      background-color: rgba(var(--color-base-orange-normal), 0.15);
 
       &:after {
-        background-color: $color-base-orange-normal;
+        background-color: rgb(var(--color-base-orange-normal));
       }
     }
 
     #{$c}__text {
       #{$c}__text-title {
-        color: $color-base-orange-normal;
+        color: rgb(var(--color-base-orange-normal));
       }
     }
   }
 
   &--info {
     #{$c}__badge {
-      background-color: rgba($color-base-blue-normal, 0.15);
+      background-color: rgba(var(--color-base-blue-normal), 0.15);
 
       &:after {
         @include mask-image(
           "@/assets/images/components/base/BaseAlert/badge-icon-information.svg"
         );
 
-        background-color: $color-base-blue-normal;
+        background-color: rgb(var(--color-base-blue-normal));
       }
     }
 
     #{$c}__text {
       #{$c}__text-title {
-        color: $color-base-blue-normal;
+        color: rgb(var(--color-base-blue-normal));
       }
     }
   }
 
   &--success {
     #{$c}__badge {
-      background-color: rgba($color-base-green-normal, 0.15);
+      background-color: rgba(var(--color-base-green-normal), 0.15);
 
       &:after {
         @include mask-image(
           "@/assets/images/components/base/BaseAlert/badge-icon-checkmark.svg"
         );
 
-        background-color: $color-base-green-normal;
+        background-color: rgb(var(--color-base-green-normal));
       }
     }
 
     #{$c}__text {
       #{$c}__text-title {
-        color: $color-base-green-normal;
+        color: rgb(var(--color-base-green-normal));
       }
     }
   }

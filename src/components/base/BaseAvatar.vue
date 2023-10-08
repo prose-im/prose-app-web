@@ -265,8 +265,8 @@ export default {
 $c: ".c-base-avatar";
 
 .c-base-avatar {
-  color: $color-text-reverse;
-  background-color: $color-base-grey-light;
+  color: rgb(var(--color-text-reverse));
+  background-color: rgb(var(--color-base-grey-light));
   background-position: center;
   background-size: cover;
   background-repeat: no-repeat;
@@ -277,11 +277,11 @@ $c: ".c-base-avatar";
   // --> SHADOWS <--
 
   &--shadow-normal {
-    box-shadow: 0 2px 4px 0 rgba($color-black, 0.08);
+    box-shadow: 0 2px 4px 0 rgba(var(--color-black), 0.08);
   }
 
   &--shadow-light {
-    box-shadow: 0 0 2px 0 rgba($color-black, 0.08);
+    box-shadow: 0 0 2px 0 rgba(var(--color-black), 0.08);
   }
 }
 </style>

@@ -60,14 +60,14 @@ export default {
 $c: ".c-base-stream-view";
 
 .c-base-stream-view {
-  border: 1px solid $color-border-primary;
+  border: 1px solid rgb(var(--color-border-primary));
   aspect-ratio: 4/3;
   border-radius: 3px;
   position: relative;
   box-sizing: border-box;
 
   #{$c}__view {
-    background-color: $color-base-grey-light;
+    background-color: rgb(var(--color-base-grey-light));
     position: absolute;
     inset: 2px;
     border-radius: 2px;

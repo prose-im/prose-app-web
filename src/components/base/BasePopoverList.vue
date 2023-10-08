@@ -183,12 +183,12 @@ $entry-button-popover-edges-offset: (
       min-width: 16px;
 
       #{$c}__button-icon-inner {
-        fill: $color-base-grey-dark;
+        fill: rgb(var(--color-base-grey-dark));
       }
     }
 
     #{$c}__button-arrow {
-      fill: $color-base-grey-dark;
+      fill: rgb(var(--color-base-grey-dark));
     }
 
     #{$c}__button-popover {
@@ -204,7 +204,7 @@ $entry-button-popover-edges-offset: (
       &:active {
         #{$c}__button-icon {
           #{$c}__button-icon-inner {
-            fill: $color-white;
+            fill: rgb(var(--color-white));
           }
         }
       }
@@ -213,7 +213,7 @@ $entry-button-popover-edges-offset: (
     &--color-blue {
       #{$c}__button-icon {
         #{$c}__button-icon-inner {
-          fill: $color-base-blue-normal;
+          fill: rgb(var(--color-base-blue-normal));
         }
       }
     }
@@ -221,7 +221,7 @@ $entry-button-popover-edges-offset: (
     &--color-red {
       #{$c}__button-icon {
         #{$c}__button-icon-inner {
-          fill: $color-base-red-normal;
+          fill: rgb(var(--color-base-red-normal));
         }
       }
     }

@@ -113,8 +113,8 @@ $c: ".v-start-login";
   }
 
   #{$c}__box {
-    background: rgba($color-white, 0.85);
-    border: 1px solid rgba($color-base-purple-light, 0.325);
+    background: rgba(var(--color-white), 0.85);
+    border: 1px solid rgba(var(--color-base-purple-light), 0.325);
     backdrop-filter: blur(14px);
     display: flex;
     align-items: center;

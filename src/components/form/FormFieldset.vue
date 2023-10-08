@@ -34,7 +34,7 @@ $c: ".c-form-fieldset";
   & + #{$c} {
     &:before {
       content: "";
-      background-color: $color-border-secondary;
+      background-color: rgb(var(--color-border-secondary));
       height: 1px;
       margin-block: 24px;
       display: block;

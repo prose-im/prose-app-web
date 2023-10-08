@@ -113,7 +113,7 @@ $sidebar-context-height: $size-inbox-form-height;
 
   &,
   #{$c}__context #{$c}__context-presence {
-    background-color: var(--color-base-purple-ultra-light);
+    background-color: rgb(var(--color-base-purple-ultra-light));
   }
 
   #{$c}__header,
@@ -157,7 +157,7 @@ $sidebar-context-height: $size-inbox-form-height;
     }
 
     &--floating {
-      border-block-end-color: var(--color-border-secondary);
+      border-block-end-color: rgb(var(--color-border-secondary));
 
       &:after {
         display: block;
@@ -191,7 +191,7 @@ $sidebar-context-height: $size-inbox-form-height;
 
   #{$c}__context {
     border-block-start: $sidebar-context-border-width solid
-      var(--color-border-secondary);
+      rgb(var(--color-border-secondary));
     height: $sidebar-context-height;
     inset-block-end: 0;
     z-index: 2;

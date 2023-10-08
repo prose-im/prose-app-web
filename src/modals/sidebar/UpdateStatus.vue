@@ -274,12 +274,12 @@ $c: ".m-update-status";
   }
 
   #{$c}__example {
-    color: $color-text-secondary;
+    color: rgb(var(--color-text-secondary));
     font-size: 13px;
     margin-block-start: 15px;
 
     #{$c}__example-status {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
       margin-inline-start: 4px;
 
       &:hover {

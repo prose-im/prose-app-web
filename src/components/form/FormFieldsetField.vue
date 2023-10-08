@@ -58,7 +58,7 @@ $c: ".c-form-fieldset-field";
   }
 
   #{$c}__label {
-    color: $color-text-primary;
+    color: rgb(var(--color-text-primary));
     font-size: 14px;
     letter-spacing: 0.1px;
     line-height: 20px;

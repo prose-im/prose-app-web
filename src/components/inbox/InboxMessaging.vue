@@ -221,6 +221,10 @@ export default {
       return Store.$session;
     },
 
+    settings(): typeof Store.$settings {
+      return Store.$settings;
+    },
+
     messages(): ReturnType<typeof Store.$inbox.getMessages> {
       return Store.$inbox.getMessages(this.jid);
     }
@@ -254,16 +258,18 @@ export default {
   created() {
     // TODO: put this in a utility helper
 
-    // Bind connected handler
+    // Bind session handlers
     Store.$session.events().on("connected", this.onStoreConnected);
+    Store.$session.events().on("appearance", this.onStoreAppearance);
 
     // Synchronize messages eagerly
     this.syncMessagesEager();
   },
 
   beforeUnmount() {
-    // Unbind connected handler
+    // Unbind session handler
     Store.$session.events().off("connected", this.onStoreConnected);
+    Store.$session.events().off("appearance", this.onStoreAppearance);
 
     // Un-setup store
     this.unsetupStore();
@@ -310,8 +316,24 @@ export default {
     setupContext(runtime: MessagingRuntime): void {
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
-      runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
       runtime.MessagingContext.setAccountJID(this.selfJID.toString());
+    },
+
+    setupTheme(runtime: MessagingRuntime): void {
+      // Apply style theme (as needed)
+      switch (this.settings.appearance.theme) {
+        case "light": {
+          runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
+
+          break;
+        }
+
+        case "dark": {
+          runtime.MessagingContext.setStyleTheme(MessagingTheme.Dark);
+
+          break;
+        }
+      }
     },
 
     setupEvents(runtime: MessagingRuntime): void {
@@ -603,6 +625,7 @@ export default {
       if (frameRuntime !== null) {
         this.setupDocument(frameRuntime);
         this.setupContext(frameRuntime);
+        this.setupTheme(frameRuntime);
         this.setupEvents(frameRuntime);
         this.setupStore(frameRuntime);
         this.setupListeners(frameRuntime);
@@ -820,6 +843,15 @@ export default {
         // Mark synchronization as stale (will re-synchronize when connection \
         //   is restored)
         this.isMessageSyncStale = true;
+      }
+    },
+
+    onStoreAppearance(): void {
+      const frameRuntime = this.frame();
+
+      if (frameRuntime !== null) {
+        // Re-setup theme
+        this.setupTheme(frameRuntime);
       }
     },
 

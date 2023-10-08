@@ -152,14 +152,14 @@ $quickie-icon-size: 26px;
 
 .c-inbox-userinfo-security-details-identity {
   #{$c}__quickie {
-    background-color: $color-background-secondary;
+    background-color: rgb(var(--color-background-secondary));
   }
 
   #{$c}__disclaimer {
-    color: $color-text-primary;
+    color: rgb(var(--color-text-primary));
     font-size: 11.5px;
     line-height: 13px;
-    border-block-start: 1px solid $color-border-tertiary;
+    border-block-start: 1px solid rgb(var(--color-border-tertiary));
     padding-block: 8px;
 
     a {

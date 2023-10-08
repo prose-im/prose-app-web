@@ -104,8 +104,8 @@ $c: ".c-base-indicator-level";
   align-items: center;
 
   #{$c}__step {
-    background-color: $color-base-grey-light;
-    border: 1px solid $color-border-primary;
+    background-color: rgb(var(--color-base-grey-light));
+    border: 1px solid rgb(var(--color-border-primary));
     margin-inline-end: 2px;
     flex: 1;
     border-radius: 3px;
@@ -140,7 +140,7 @@ $c: ".c-base-indicator-level";
   &--green {
     #{$c}__step {
       &--active {
-        background-color: $color-base-green-normal;
+        background-color: rgb(var(--color-base-green-normal));
       }
     }
   }
@@ -148,7 +148,7 @@ $c: ".c-base-indicator-level";
   &--orange {
     #{$c}__step {
       &--active {
-        background-color: $color-base-orange-light;
+        background-color: rgb(var(--color-base-orange-light));
       }
     }
   }
@@ -156,7 +156,7 @@ $c: ".c-base-indicator-level";
   &--red {
     #{$c}__step {
       &--active {
-        background-color: $color-base-red-normal;
+        background-color: rgb(var(--color-base-red-normal));
       }
     }
   }

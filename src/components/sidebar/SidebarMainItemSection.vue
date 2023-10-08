@@ -70,7 +70,7 @@ $c: ".c-sidebar-main-item-section";
 
 .c-sidebar-main-item-section {
   #{$c}__icon {
-    fill: $color-base-blue-dark;
+    fill: rgb(var(--color-base-blue-dark));
   }
 }
 </style>

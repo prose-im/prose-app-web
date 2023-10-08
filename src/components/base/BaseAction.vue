@@ -168,7 +168,7 @@ $c: ".c-base-action";
     transition: background-color 100ms linear;
 
     &:focus-visible {
-      outline-color: rgba($color-base-purple-normal, 0.3);
+      outline-color: rgba(var(--color-base-purple-normal), 0.3);
       outline-offset: 1px;
     }
 
@@ -180,7 +180,7 @@ $c: ".c-base-action";
 
     #{$c}__icon,
     #{$c}__dropdown {
-      fill: $color-base-grey-dark;
+      fill: rgb(var(--color-base-grey-dark));
     }
 
     #{$c}__dropdown {
@@ -199,7 +199,7 @@ $c: ".c-base-action";
 
     &#{$c}--white {
       #{$c}__inner {
-        background-color: $color-base-grey-light;
+        background-color: rgb(var(--color-base-grey-light));
       }
     }
 

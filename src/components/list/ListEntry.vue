@@ -98,7 +98,7 @@ $c: ".c-list-entry";
 
   &--color-lighter {
     #{$c}__label {
-      color: $color-text-secondary;
+      color: rgb(var(--color-text-secondary));
     }
   }
 }

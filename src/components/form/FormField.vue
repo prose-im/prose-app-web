@@ -303,18 +303,18 @@ $c: ".c-form-field";
   }
 
   #{$c}__inner {
-    background-color: $color-white;
-    border: 1px solid rgba($color-black, 0.1);
+    background-color: rgb(var(--color-white));
+    border: 1px solid rgba(var(--color-black), 0.1);
     outline: 0 none;
-    color: $color-text-primary;
+    color: rgb(var(--color-text-primary));
     font-family: inherit;
     width: 100%;
     padding-block: $size-form-field-padding-block;
     transition-property: box-shadow, border-color;
     border-radius: $size-form-field-border-radius;
     box-sizing: border-box;
-    box-shadow: 0 3px 4px 0 rgba($color-black, 0.01),
-      inset 0 1px 2px 0 rgba($color-black, 0.04);
+    box-shadow: 0 3px 4px 0 rgba(var(--color-black), 0.01),
+      inset 0 1px 2px 0 rgba(var(--color-black), 0.04);
 
     &--textarea {
       height: 100%;
@@ -324,18 +324,18 @@ $c: ".c-form-field";
     }
 
     &::placeholder {
-      color: $color-text-secondary;
+      color: rgb(var(--color-text-secondary));
       opacity: 1;
     }
 
     &:hover {
-      border-color: rgba($color-base-purple-normal, 0.5);
+      border-color: rgba(var(--color-base-purple-normal), 0.5);
     }
 
     &:focus {
-      border-color: $color-base-purple-normal;
-      box-shadow: 0 3px 4px 0 rgba($color-black, 0.1),
-        inset 0 1px 2px 0 rgba($color-black, 0.04);
+      border-color: rgb(var(--color-base-purple-normal));
+      box-shadow: 0 3px 4px 0 rgba(var(--color-black), 0.1),
+        inset 0 1px 2px 0 rgba(var(--color-black), 0.04);
     }
   }
 
@@ -466,19 +466,19 @@ $c: ".c-form-field";
     }
 
     #{$c}__inner {
-      background-color: rgba($color-base-grey-light, 0.6);
-      color: $color-text-secondary;
+      background-color: rgba(var(--color-base-grey-light), 0.6);
+      color: rgb(var(--color-text-secondary));
       pointer-events: none;
 
       &::placeholder {
-        color: $color-text-tertiary;
+        color: rgb(var(--color-text-tertiary));
       }
     }
   }
 
   &--focused {
     &:before {
-      border-color: rgba($color-base-purple-normal, 0.2);
+      border-color: rgba(var(--color-base-purple-normal), 0.2);
     }
   }
 }

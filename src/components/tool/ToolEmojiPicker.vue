@@ -70,7 +70,7 @@ $c: ".c-tool-emoji-picker";
 
     .v3-header,
     .v3-footer {
-      border-color: $color-border-secondary;
+      border-color: rgb(var(--color-border-secondary));
     }
 
     .v3-header {
@@ -98,7 +98,7 @@ $c: ".c-tool-emoji-picker";
 
         .v3-group {
           h5 {
-            background: rgba($color-white, 0.925);
+            background: rgba(var(--color-white), 0.925);
             font-size: 13px;
             font-weight: $font-weight-medium;
             padding-block-start: 7px;
@@ -111,7 +111,7 @@ $c: ".c-tool-emoji-picker";
               border-radius: 7px;
 
               &:hover {
-                background-color: $color-base-grey-light;
+                background-color: rgb(var(--color-base-grey-light));
               }
 
               &:active {

@@ -58,7 +58,7 @@ $c: ".c-layout-avatar-presence";
   position: relative;
 
   #{$c}__presence {
-    background-color: $color-white;
+    background-color: rgb(var(--color-white));
     padding: 2px;
     display: flex;
     align-items: center;

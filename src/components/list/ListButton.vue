@@ -180,7 +180,7 @@ $c: ".c-list-button";
 
   &--color-normal {
     #{$c}__label {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
     }
   }
 
@@ -195,18 +195,18 @@ $c: ".c-list-button";
     &:hover,
     &#{$c}--actionable:active {
       #{$c}__label {
-        color: $color-white;
+        color: rgb(var(--color-white));
       }
     }
   }
 
   &--color-blue {
     #{$c}__label {
-      color: $color-base-blue-normal;
+      color: rgb(var(--color-base-blue-normal));
     }
 
     &:hover {
-      background-color: $color-base-blue-normal;
+      background-color: rgb(var(--color-base-blue-normal));
     }
 
     &#{$c}--actionable:active {
@@ -216,11 +216,11 @@ $c: ".c-list-button";
 
   &--color-red {
     #{$c}__label {
-      color: $color-base-red-normal;
+      color: rgb(var(--color-base-red-normal));
     }
 
     &:hover {
-      background-color: $color-base-red-normal;
+      background-color: rgb(var(--color-base-red-normal));
     }
 
     &#{$c}--actionable:active {
@@ -244,7 +244,7 @@ $c: ".c-list-button";
   }
 
   &--active {
-    background-color: $color-base-blue-normal;
+    background-color: rgb(var(--color-base-blue-normal));
 
     &:hover {
       background-color: darken($color-base-blue-normal, 4%);
@@ -255,7 +255,7 @@ $c: ".c-list-button";
     }
 
     #{$c}__label {
-      color: $color-white;
+      color: rgb(var(--color-white));
     }
   }
 

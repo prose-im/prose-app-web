@@ -5,13 +5,9 @@
  */
 
 /* *************************************************************************
- * ELEMENTS > INLINE
+ * TOOLS > FUNCTIONS
  * **************************************************************************/
 
-a {
-  outline: 0;
-  color: rgb(var(--color-base-blue-link));
-  text-decoration: none;
-  transition: color 100ms linear;
-  cursor: pointer;
+@function hex-var($colour) {
+  @return red($colour) + ", " + green($colour) + ", " + blue($colour);
 }

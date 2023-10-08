@@ -452,7 +452,7 @@ $c: ".p-settings-editor-form-fieldset";
 
 .p-settings-editor-form-fieldset {
   #{$c}__title {
-    color: $color-text-secondary;
+    color: rgb(var(--color-text-secondary));
     font-size: 14.5px;
     margin-block-end: 16px;
   }
@@ -473,7 +473,7 @@ $c: ".p-settings-editor-form-fieldset";
       }
 
       #{$c}__field-aside-link {
-        color: $color-base-purple-normal;
+        color: rgb(var(--color-base-purple-normal));
 
         &:hover {
           text-decoration: underline;
@@ -495,10 +495,10 @@ $c: ".p-settings-editor-form-fieldset";
         }
 
         &--green {
-          color: $color-base-green-normal;
+          color: rgb(var(--color-base-green-normal));
 
           #{$c}__field-aside-icon {
-            fill: $color-base-green-normal;
+            fill: rgb(var(--color-base-green-normal));
           }
         }
       }
@@ -514,15 +514,15 @@ $c: ".p-settings-editor-form-fieldset";
         margin-inline-end: 3px;
 
         &--grey {
-          fill: $color-base-grey-normal;
+          fill: rgb(var(--color-base-grey-normal));
         }
 
         &--blue {
-          fill: $color-base-blue-dark;
+          fill: rgb(var(--color-base-blue-dark));
         }
 
         &--green {
-          fill: $color-base-green-normal;
+          fill: rgb(var(--color-base-green-normal));
         }
       }
     }
