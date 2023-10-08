@@ -105,18 +105,37 @@ class BuilderInline {
       // Polls for loader readiness (every 10ms)
       // Notice: DOMContentLoaded comes way too late, therefore we need to \
       //   poll so that the loader animation and theme get applied ASAP.
-      const pollerInterval = setInterval(() => {
+      let pollerInterval = setInterval(() => {
         const loaderElement = document.getElementById("loader") || null;
 
         if (loaderElement !== null) {
+          // Clear interval
           clearInterval(pollerInterval);
+
+          pollerInterval = null;
+
+          // Fire loaded handler
           loadedHandler(loaderElement);
         }
       }, 10);
 
       // Bind safety kill switch whenever DOM is loaded
       document.addEventListener("DOMContentLoaded", () => {
-        clearInterval(pollerInterval);
+        // Fire loaded handler, in case DOM content loaded came before? (this \
+        //   may happen sometimes)
+        if (pollerInterval !== null) {
+          // Clear interval
+          clearInterval(pollerInterval);
+
+          pollerInterval = null;
+
+          const loaderElement = document.getElementById("loader") || null;
+
+          // Fire loaded handler?
+          if (loaderElement !== null) {
+            loadedHandler(loaderElement);
+          }
+        }
       });
     `);
   }
