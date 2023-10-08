@@ -32,6 +32,7 @@ import $settings from "@/store/tables/settings";
 
 const STORE_PERSIST_PREFIX = "prose";
 const STORE_PERSIST_REVISION = "v1";
+const STORE_PERSIST_BOOT = "boot";
 
 const STORE_KEY_PREFIX = "$";
 const STORE_RESET_IGNORES = ["account", "layout"];
@@ -122,4 +123,5 @@ class Store {
  * EXPORTS
  * ************************************************************************* */
 
+export { STORE_PERSIST_PREFIX, STORE_PERSIST_BOOT };
 export default new Store();

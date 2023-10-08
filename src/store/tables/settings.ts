@@ -11,6 +11,9 @@
 // NPM
 import { defineStore } from "pinia";
 
+// PROJECT: STORES
+import { STORE_PERSIST_PREFIX, STORE_PERSIST_BOOT } from "@/store";
+
 /**************************************************************************
  * TABLE
  * ************************************************************************* */
@@ -109,6 +112,17 @@ const $settings = defineStore("settings", {
   actions: {
     setAppearanceTheme(value: string): void {
       this.setGeneric(this.appearance, "theme", value);
+
+      // Store in local storage? (for use during boot, before store is loaded)
+      if (window.localStorage !== undefined) {
+        const bootStorageKey = [
+          STORE_PERSIST_PREFIX,
+          STORE_PERSIST_BOOT,
+          "theme"
+        ].join(":");
+
+        window.localStorage.setItem(bootStorageKey, value);
+      }
     },
 
     setAvailabilityAutoAwayEnabled(value: boolean): void {

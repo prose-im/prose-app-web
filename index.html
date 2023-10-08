@@ -33,33 +33,122 @@
     />
 
     <title>Prose</title>
+
+    <style>
+      #loader {
+        position: fixed;
+        inset: 0;
+      }
+
+      #loader.loader--light {
+        background-color: #fff;
+      }
+
+      #loader.loader--dark {
+        background-color: #000;
+      }
+
+      #loader video {
+        position: absolute;
+        inset: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+
+    <script>
+      let theme;
+
+      try {
+        let themePreference = "system";
+
+        // Acquire theme from user preference?
+        if (window.localStorage !== undefined) {
+          themePreference =
+            window.localStorage.getItem("prose:boot:theme") || themePreference;
+        }
+
+        // Acquire final theme value
+        if (themePreference === "system") {
+          theme =
+            window.matchMedia &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches === true
+              ? "dark"
+              : "light";
+        } else if (themePreference === "dark") {
+          theme = "dark";
+        } else {
+          theme = "light";
+        }
+      } catch (_) {
+        // Fallback to light if error
+        theme = "light";
+      }
+
+      // Loaded handler
+      const loadedHandler = loaderElement => {
+        // Apply detected theme to loader
+        loaderElement.classList.add(`loader--${theme}`);
+
+        // Create loader video
+        const videoElement = document.createElement("video");
+
+        videoElement.height = 80;
+        videoElement.width = 200;
+        videoElement.autoplay = true;
+        videoElement.loop = true;
+        videoElement.muted = true;
+
+        // Append video sources
+        const videoSources = [
+          ["av1", "webm"],
+          ["vp9", "webm"],
+          ["hvc1", "mp4"]
+        ];
+
+        videoSources.forEach(videoSource => {
+          const sourceElement = document.createElement("source");
+
+          sourceElement.src = [
+            `/videos/loader/${theme}`,
+            `logo-${videoSource[0]}.${videoSource[1]}`
+          ].join("/");
+
+          sourceElement.type = [
+            `video/${videoSource[1]}`,
+            `codecs=${videoSource[0]}`
+          ].join("; ");
+
+          videoElement.appendChild(sourceElement);
+        });
+
+        // Append loader video
+        loaderElement.appendChild(videoElement);
+      };
+
+      // Polls for loader readiness (every 10ms)
+      // Notice: DOMContentLoaded comes way too late, therefore we need to \
+      //   poll so that the loader animation and theme get applied ASAP.
+      const pollerInterval = setInterval(() => {
+        const loaderElement = document.getElementById("loader") || null;
+
+        if (loaderElement !== null) {
+          clearInterval(pollerInterval);
+          loadedHandler(loaderElement);
+        }
+      }, 10);
+
+      // Bind safety kill switch whenever DOM is loaded
+      document.addEventListener("DOMContentLoaded", () => {
+        clearInterval(pollerInterval);
+      });
+    </script>
+
+    <script type="module" src="/src/main.ts" defer async></script>
   </head>
 
   <body>
     <div id="app">
-      <video
-        height="80"
-        width="200"
-        style="position: absolute; inset: 50%; transform: translate(-50%, -50%)"
-        autoplay
-        loop
-        muted
-      >
-        <source
-          src="/videos/loader/light/logo-av1.webm"
-          type="video/webm; codecs=av1"
-        />
-        <source
-          src="/videos/loader/light/logo-vp9.webm"
-          type="video/webm; codecs=vp9"
-        />
-        <source
-          src="/videos/loader/light/logo-hvc1.mp4"
-          type="video/mp4; codecs=hvc1"
-        />
-      </video>
+      <div id="loader"></div>
     </div>
-
-    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
