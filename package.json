@@ -71,7 +71,7 @@
     "sass": "1.57.x",
     "vite": "4.2.x",
     "vite-plugin-wasm": "3.2.x",
-    "vite-plugin-html": "3.2.x",
+    "vite-plugin-html-config": "1.0.x",
     "vite-plugin-pug-transformer": "1.0.x",
     "vite-plugin-static-copy": "0.13.x",
     "vite-plugin-svg-icons": "2.0.x",

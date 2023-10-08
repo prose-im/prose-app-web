@@ -12,7 +12,7 @@ import path from "path";
 import merge from "lodash.merge";
 import vue from "@vitejs/plugin-vue";
 import viteWasmPlugin from "vite-plugin-wasm";
-import { createHtmlPlugin as viteHtmlPlugin } from "vite-plugin-html";
+import viteHtmlPlugin from "vite-plugin-html-config";
 import vitePugPlugin from "vite-plugin-pug-transformer";
 import { viteStaticCopy as viteStaticCopyPlugin } from "vite-plugin-static-copy";
 import { createSvgIconsPlugin as viteSvgIconsPlugin } from "vite-plugin-svg-icons";
@@ -118,12 +118,8 @@ export default {
     viteWasmPlugin(),
 
     viteHtmlPlugin({
-      inject: {
-        data: {
-          scriptLoader: INLINE_DATA_ITEMS.scripts.loader,
-          styleLoader: INLINE_DATA_ITEMS.styles.loader
-        }
-      }
+      style: [INLINE_DATA_ITEMS.styles.loader].join(""),
+      headScripts: [INLINE_DATA_ITEMS.scripts.loader]
     }),
 
     viteStaticCopyPlugin({
