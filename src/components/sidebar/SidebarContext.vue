@@ -648,11 +648,11 @@ $current-status-define-padding-block: 2px;
         transition: background-color 100ms linear;
 
         &:hover {
-          background-color: darken($color-base-grey-light, 3%);
+          background-color: darken-var(var(--color-base-grey-light), 3%);
         }
 
         &:active {
-          background-color: darken($color-base-grey-light, 5%);
+          background-color: darken-var(var(--color-base-grey-light), 5%);
         }
       }
     }

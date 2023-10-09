@@ -144,18 +144,18 @@ $c: ".c-list-disclosure";
     cursor: pointer;
 
     &:hover {
-      color: darken($color-base-grey-normal, 20%);
+      color: darken-var(var(--color-base-grey-normal), 20%);
 
       #{$c}__header-arrow {
-        fill: darken($color-base-grey-normal, 15%);
+        fill: darken-var(var(--color-base-grey-normal), 15%);
       }
     }
 
     &:active {
-      color: darken($color-base-grey-normal, 35%);
+      color: darken-var(var(--color-base-grey-normal), 35%);
 
       #{$c}__header-arrow {
-        fill: darken($color-base-grey-normal, 25%);
+        fill: darken-var(var(--color-base-grey-normal), 25%);
       }
     }
 

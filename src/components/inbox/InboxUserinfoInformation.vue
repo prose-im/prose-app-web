@@ -228,7 +228,7 @@ $c: ".c-inbox-userinfo-information";
 
 .c-inbox-userinfo-information {
   #{$c}__icon {
-    fill: lighten($color-base-grey-dark, 10%);
+    fill: lighten-var(var(--color-base-grey-dark), 10%);
   }
 
   #{$c}__emoji {

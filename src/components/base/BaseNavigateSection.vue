@@ -148,7 +148,7 @@ $icon-size: 28px;
   }
 
   &:active {
-    background-color: darken($color-base-grey-light, 1.5%);
+    background-color: darken-var(var(--color-base-grey-light), 1.5%);
   }
 
   // --> COLORS <--
@@ -162,11 +162,11 @@ $icon-size: 28px;
       background-color: rgb(var(--color-base-blue-dark));
 
       &:hover {
-        background-color: darken($color-base-blue-dark, 2%);
+        background-color: darken-var(var(--color-base-blue-dark), 2%);
       }
 
       &:active {
-        background-color: darken($color-base-blue-dark, 3%);
+        background-color: darken-var(var(--color-base-blue-dark), 3%);
       }
     }
   }

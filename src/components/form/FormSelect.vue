@@ -694,19 +694,19 @@ $sizes: (
           }
 
           &:active {
-            background-color: darken($color-base-purple-normal, 6%);
+            background-color: darken-var(var(--color-base-purple-normal), 6%);
           }
         }
       }
 
       &--selected {
         a {
-          background-color: darken($color-background-secondary, 3%);
+          background-color: darken-var(var(--color-background-secondary), 3%);
         }
 
         &#{$c}__option--hovered {
           a {
-            background-color: darken($color-background-secondary, 8%);
+            background-color: darken-var(var(--color-background-secondary), 8%);
 
             &,
             &:active {
@@ -716,7 +716,10 @@ $sizes: (
             }
 
             &:active {
-              background-color: darken($color-background-secondary, 10%);
+              background-color: darken-var(
+                var(--color-background-secondary),
+                10%
+              );
             }
           }
         }

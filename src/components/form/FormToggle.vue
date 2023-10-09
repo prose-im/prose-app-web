@@ -136,11 +136,11 @@ $toggle-field-height: ($toggle-height - (2 * $toggle-handle-offset));
       }
 
       &:hover {
-        background-color: darken($color-base-purple-normal, 6%);
+        background-color: darken-var(var(--color-base-purple-normal), 6%);
       }
 
       &:active {
-        background-color: darken($color-base-purple-normal, 12%);
+        background-color: darken-var(var(--color-base-purple-normal), 12%);
       }
     }
   }

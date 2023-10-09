@@ -92,7 +92,7 @@ $c: ".c-list-entry";
 
   &--color-normal {
     #{$c}__label {
-      color: lighten($color-text-primary, 26%);
+      color: lighten-var(var(--color-text-primary), 26%);
     }
   }
 

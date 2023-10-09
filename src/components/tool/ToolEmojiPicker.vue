@@ -115,7 +115,10 @@ $c: ".c-tool-emoji-picker";
               }
 
               &:active {
-                background-color: darken($color-base-grey-light, 1.5%);
+                background-color: darken-var(
+                  var(--color-base-grey-light),
+                  1.5%
+                );
               }
             }
           }

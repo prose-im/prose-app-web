@@ -208,11 +208,11 @@ export default {
 $c: ".c-base-button";
 
 // VARIABLES
-$color-button-dark-normal: $color-base-purple-normal;
+$color-button-dark-normal: var(--color-base-purple-normal);
 $color-button-dark-reverse: var(--color-white);
 $color-button-light-normal: var(--color-white);
 $color-button-light-reverse: var(--color-black);
-$color-button-red-normal: $color-base-red-normal;
+$color-button-red-normal: var(--color-base-red-normal);
 $color-button-red-reverse: var(--color-white);
 
 $size-small-padding-sides: 10px;
@@ -287,14 +287,14 @@ $size-ultra-large-padding-sides: 44px;
 
   &--dark {
     #{$c}__inner {
-      background-color: $color-button-dark-normal;
+      background-color: rgb($color-button-dark-normal);
 
       &:hover {
-        background-color: lighten($color-button-dark-normal, 6%);
+        background-color: lighten-var($color-button-dark-normal, 6%);
       }
 
       &:active {
-        background-color: lighten($color-button-dark-normal, 2%);
+        background-color: lighten-var($color-button-dark-normal, 2%);
       }
     }
   }
@@ -321,14 +321,14 @@ $size-ultra-large-padding-sides: 44px;
 
   &--red {
     #{$c}__inner {
-      background-color: $color-button-red-normal;
+      background-color: rgb($color-button-red-normal);
 
       &:hover {
-        background-color: lighten($color-button-red-normal, 6%);
+        background-color: lighten-var($color-button-red-normal, 6%);
       }
 
       &:active {
-        background-color: lighten($color-button-red-normal, 2%);
+        background-color: lighten-var($color-button-red-normal, 2%);
       }
     }
   }
@@ -404,14 +404,14 @@ $size-ultra-large-padding-sides: 44px;
     &#{$c}--dark {
       #{$c}__inner {
         background-color: rgb($color-button-dark-reverse);
-        border-color: $color-button-dark-normal;
+        border-color: rgb($color-button-dark-normal);
 
         #{$c}__icon {
-          fill: $color-button-dark-normal;
+          fill: rgb($color-button-dark-normal);
         }
 
         #{$c}__label {
-          color: $color-button-dark-normal;
+          color: rgb($color-button-dark-normal);
         }
       }
     }
@@ -441,14 +441,14 @@ $size-ultra-large-padding-sides: 44px;
     &#{$c}--red {
       #{$c}__inner {
         background-color: rgb($color-button-red-reverse);
-        border-color: $color-button-red-normal;
+        border-color: rgb($color-button-red-normal);
 
         #{$c}__icon {
-          fill: $color-button-red-normal;
+          fill: rgb($color-button-red-normal);
         }
 
         #{$c}__label {
-          color: $color-button-red-normal;
+          color: rgb($color-button-red-normal);
         }
       }
     }

@@ -331,7 +331,7 @@ $close-icon-size: 12px;
     }
 
     &:active {
-      background-color: darken($color-base-grey-light, 2%);
+      background-color: darken-var(var(--color-base-grey-light), 2%);
       transition: background-color 100ms linear;
     }
 
