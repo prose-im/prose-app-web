@@ -694,7 +694,7 @@ $sizes: (
           }
 
           &:active {
-            background-color: darken-var(var(--color-base-purple-normal), 6%);
+            background-color: darken-var(var(--color-base-purple-normal), 8%);
           }
         }
       }
