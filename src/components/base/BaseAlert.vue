@@ -23,6 +23,11 @@ transition(
     ]`
   )
     span.c-base-alert__badge
+      base-icon(
+        :name="badgeIcon"
+        size="24px"
+        class="c-base-alert__badge-icon"
+      )
 
     .c-base-alert__text
       p.c-base-alert__text-title.u-bold
@@ -33,8 +38,14 @@ transition(
       )
         | {{ description }}
 
-    a.c-base-alert__close(
+    base-action(
       @click="onCloseClick"
+      class="c-base-alert__close"
+      icon="xmark"
+      context="grey"
+      size="11px"
+      auto-width
+      auto-height
     )
 </template>
 
@@ -137,6 +148,29 @@ export default {
   beforeUnmount() {
     // Unbind show event
     EventBus.off("show", this.show as Handler);
+  },
+
+  computed: {
+    badgeIcon(): string {
+      switch (this.level) {
+        case "success": {
+          return "checkmark.circle.fill";
+        }
+
+        case "info": {
+          return "info.circle.fill";
+        }
+
+        case "warning":
+        case "error": {
+          return "exclamationmark.circle.fill";
+        }
+
+        default: {
+          return "questionmark.circle.fill";
+        }
+      }
+    }
   },
 
   methods: {
@@ -250,10 +284,6 @@ $c: ".c-base-alert";
 
 // VARIABLES
 $badge-size: 54px;
-$badge-icon-size: 24px;
-
-$close-size: 24px;
-$close-icon-size: 12px;
 
 .c-base-alert {
   background: rgba(var(--color-white), 0.95);
@@ -282,15 +312,8 @@ $close-icon-size: 12px;
     justify-content: center;
     border-radius: 12px;
 
-    &:after {
-      @include mask-position(center);
-      @include mask-size(cover);
-      @include mask-repeat(no-repeat);
-
-      content: "";
-      background-color: rgb(var(--color-base-grey-dark));
-      width: $badge-icon-size;
-      height: $badge-icon-size;
+    #{$c}__badge-icon {
+      fill: rgb(var(--color-base-grey-dark));
       flex: 0 0 auto;
     }
   }
@@ -311,62 +334,18 @@ $close-icon-size: 12px;
   }
 
   #{$c}__close {
-    background-color: transparent;
-    width: $close-size;
-    height: $close-size;
-    flex: 0 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: absolute;
     inset-inline-end: 15px;
-    border-radius: 5px;
-
-    &:hover {
-      background-color: rgb(var(--color-base-grey-light));
-
-      &:after {
-        opacity: 0.75;
-      }
-    }
-
-    &:active {
-      background-color: darken-var(var(--color-base-grey-light), 2%);
-      transition: background-color 100ms linear;
-    }
-
-    &:after {
-      content: "";
-      background-image: url("@/assets/images/components/base/BaseAlert/close-icon.svg");
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      width: $close-icon-size;
-      height: $close-icon-size;
-      opacity: 0.4;
-      flex: 0 0 auto;
-    }
   }
 
   // --> LEVELS <--
-
-  &--error,
-  &--warning {
-    #{$c}__badge {
-      &:after {
-        @include mask-image(
-          "@/assets/images/components/base/BaseAlert/badge-icon-exclamation.svg"
-        );
-      }
-    }
-  }
 
   &--error {
     #{$c}__badge {
       background-color: rgba(var(--color-base-red-normal), 0.15);
 
-      &:after {
-        background-color: rgb(var(--color-base-red-normal));
+      #{$c}__badge-icon {
+        fill: rgb(var(--color-base-red-normal));
       }
     }
 
@@ -381,8 +360,8 @@ $close-icon-size: 12px;
     #{$c}__badge {
       background-color: rgba(var(--color-base-orange-normal), 0.15);
 
-      &:after {
-        background-color: rgb(var(--color-base-orange-normal));
+      #{$c}__badge-icon {
+        fill: rgb(var(--color-base-orange-normal));
       }
     }
 
@@ -397,12 +376,8 @@ $close-icon-size: 12px;
     #{$c}__badge {
       background-color: rgba(var(--color-base-blue-normal), 0.15);
 
-      &:after {
-        @include mask-image(
-          "@/assets/images/components/base/BaseAlert/badge-icon-information.svg"
-        );
-
-        background-color: rgb(var(--color-base-blue-normal));
+      #{$c}__badge-icon {
+        fill: rgb(var(--color-base-blue-normal));
       }
     }
 
@@ -417,12 +392,8 @@ $close-icon-size: 12px;
     #{$c}__badge {
       background-color: rgba(var(--color-base-green-normal), 0.15);
 
-      &:after {
-        @include mask-image(
-          "@/assets/images/components/base/BaseAlert/badge-icon-checkmark.svg"
-        );
-
-        background-color: rgb(var(--color-base-green-normal));
+      #{$c}__badge-icon {
+        fill: rgb(var(--color-base-green-normal));
       }
     }
 

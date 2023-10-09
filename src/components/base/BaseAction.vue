@@ -16,7 +16,8 @@ div(
     {
       "c-base-action--active": active,
       "c-base-action--disabled": disabled,
-      "c-base-action--auto-width": autoWidth
+      "c-base-action--auto-width": autoWidth,
+      "c-base-action--auto-height": autoHeight
     }
   ]`
 )
@@ -110,6 +111,11 @@ export default {
     },
 
     autoWidth: {
+      type: Boolean,
+      default: false
+    },
+
+    autoHeight: {
       type: Boolean,
       default: false
     }
@@ -222,6 +228,13 @@ $c: ".c-base-action";
   &--auto-width {
     #{$c}__inner {
       min-width: auto;
+    }
+  }
+
+  &--auto-height {
+    #{$c}__inner {
+      height: auto;
+      padding-block: $size-base-action-padding-sides;
     }
   }
 
