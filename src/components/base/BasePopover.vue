@@ -128,6 +128,6 @@ $c: ".c-base-popover";
   max-width: 360px;
   padding-block: 7px;
   border-radius: 5px;
-  box-shadow: 0 2px 6px 0 rgba(var(--color-black), 0.025);
+  box-shadow: 0 2px 6px 0 rgba(var(--color-shadow-primary), 0.025);
 }
 </style>

@@ -74,7 +74,7 @@ $logo-size: 44px;
   align-items: center;
   border-radius: 30px;
   box-sizing: border-box;
-  box-shadow: 0 4px 4px 0 rgba(var(--color-black), 0.01);
+  box-shadow: 0 4px 4px 0 rgba(var(--color-shadow-primary), 0.01);
 
   #{$c}__logo {
     margin-inline-end: 12px;

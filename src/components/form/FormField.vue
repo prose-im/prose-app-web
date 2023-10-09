@@ -313,7 +313,7 @@ $c: ".c-form-field";
     transition-property: box-shadow, border-color;
     border-radius: $size-form-field-border-radius;
     box-sizing: border-box;
-    box-shadow: 0 3px 4px 0 rgba(var(--color-black), 0.01),
+    box-shadow: 0 3px 4px 0 rgba(var(--color-shadow-primary), 0.01),
       inset 0 1px 2px 0 rgba(var(--color-black), 0.04);
 
     &--textarea {
@@ -334,7 +334,7 @@ $c: ".c-form-field";
 
     &:focus {
       border-color: rgb(var(--color-base-purple-normal));
-      box-shadow: 0 3px 4px 0 rgba(var(--color-black), 0.1),
+      box-shadow: 0 3px 4px 0 rgba(var(--color-shadow-primary), 0.1),
         inset 0 1px 2px 0 rgba(var(--color-black), 0.04);
     }
   }

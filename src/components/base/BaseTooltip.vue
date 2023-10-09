@@ -160,7 +160,7 @@ $tooltip-spacing-inline: -3px;
     padding: 5px 10px;
     display: inline-block;
     border-radius: 3px;
-    box-shadow: 0 2px 6px 0 rgba(var(--color-black), 0.06);
+    box-shadow: 0 2px 6px 0 rgba(var(--color-shadow-primary), 0.06);
 
     &,
     a {

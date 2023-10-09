@@ -298,7 +298,7 @@ $badge-size: 54px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10000;
-  box-shadow: 0 2px 4px 0 rgba(var(--color-black), 0.04);
+  box-shadow: 0 2px 4px 0 rgba(var(--color-shadow-primary), 0.04);
   border-radius: 16px;
 
   #{$c}__badge {

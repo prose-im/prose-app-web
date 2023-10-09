@@ -92,7 +92,7 @@ $c: ".c-base-popup";
   #{$c}__popup {
     background-color: rgb(var(--color-white));
     border-radius: 7px;
-    box-shadow: 0 4px 14px 0 rgba(var(--color-black), 0.075);
+    box-shadow: 0 4px 14px 0 rgba(var(--color-shadow-primary), 0.075);
   }
 }
 </style>

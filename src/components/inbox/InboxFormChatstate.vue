@@ -74,7 +74,7 @@ $c: ".c-inbox-form-chatstate";
   padding-inline: 12px;
   padding-block-end: 1px;
   border-radius: 16px;
-  box-shadow: 0 1px 3px 0 rgba(var(--color-black), 0.02);
+  box-shadow: 0 1px 3px 0 rgba(var(--color-shadow-primary), 0.02);
   backdrop-filter: blur(6px);
 }
 </style>

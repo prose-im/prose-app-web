@@ -564,7 +564,7 @@ $sizes: (
   #{$c}__dropdown {
     background-color: rgb(var(--color-white));
     border: $size-form-select-border-width solid rgba(var(--color-black), 0.1);
-    box-shadow: 0 2px 3px 0 rgba(var(--color-black), 0.01);
+    box-shadow: 0 2px 3px 0 rgba(var(--color-shadow-primary), 0.01);
   }
 
   #{$c}__field,

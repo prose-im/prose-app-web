@@ -105,11 +105,11 @@ $c: ".c-base-flag";
   // --> SHADOWS <--
 
   &--shadow-normal {
-    box-shadow: 0 2px 4px 0 rgba(var(--color-black), 0.08);
+    box-shadow: 0 2px 4px 0 rgba(var(--color-shadow-primary), 0.08);
   }
 
   &--shadow-light {
-    box-shadow: 0 0 2px 0 rgba(var(--color-black), 0.08);
+    box-shadow: 0 0 2px 0 rgba(var(--color-shadow-primary), 0.08);
   }
 }
 </style>
