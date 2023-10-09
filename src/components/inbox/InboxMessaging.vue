@@ -100,6 +100,7 @@ import RemoveMessage from "@/modals/inbox/RemoveMessage.vue";
 import Store from "@/store";
 import { EventMessageGeneric } from "@/store/tables/inbox";
 import { EventAvatarGeneric } from "@/store/tables/avatar";
+import { SessionAppearance } from "@/store/tables/session";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -321,14 +322,14 @@ export default {
 
     setupTheme(runtime: MessagingRuntime): void {
       // Apply style theme (as needed)
-      switch (this.settings.appearance.theme) {
-        case "light": {
+      switch (this.session.appearance) {
+        case SessionAppearance.Light: {
           runtime.MessagingContext.setStyleTheme(MessagingTheme.Light);
 
           break;
         }
 
-        case "dark": {
+        case SessionAppearance.Dark: {
           runtime.MessagingContext.setStyleTheme(MessagingTheme.Dark);
 
           break;
