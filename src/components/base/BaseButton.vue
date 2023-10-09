@@ -227,7 +227,7 @@ $size-ultra-large-padding-sides: 44px;
   display: inline-block;
 
   #{$c}__inner {
-    border: 1px solid rgba(var(--color-black), 0.5);
+    border: 1px solid rgba(var(--color-black), 0.25);
     outline: 2px solid transparent;
     text-align: center;
     user-select: none;
