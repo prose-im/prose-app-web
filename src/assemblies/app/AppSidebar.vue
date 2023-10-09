@@ -113,7 +113,7 @@ $sidebar-context-height: $size-inbox-form-height;
 
   &,
   #{$c}__context #{$c}__context-presence {
-    background-color: rgb(var(--color-base-purple-ultra-light));
+    background-color: rgb(var(--color-background-secondary));
   }
 
   #{$c}__header,
@@ -124,7 +124,7 @@ $sidebar-context-height: $size-inbox-form-height;
 
   #{$c}__header,
   #{$c}__context {
-    background-color: rgba(var(--color-base-purple-ultra-light), 0.9);
+    background-color: rgba(var(--color-background-secondary), 0.9);
     position: absolute;
     inset-inline: 0;
     backdrop-filter: blur(9px);

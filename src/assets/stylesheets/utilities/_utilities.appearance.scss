@@ -27,7 +27,6 @@
   --color-base-orange-normal: #{hex-var($color-base-orange-normal)};
   --color-base-purple-light: #{hex-var($color-base-purple-light)};
   --color-base-purple-normal: #{hex-var($color-base-purple-normal)};
-  --color-base-purple-ultra-light: #{hex-var($color-base-purple-ultra-light)};
   --color-base-red-normal: #{hex-var($color-base-red-normal)};
 
   // Borders
@@ -53,26 +52,39 @@
     --color-white: #{hex-var(invert($color-white))};
 
     // Bases
-    --color-base-blue-normal: #{hex-var(invert($color-base-blue-normal))};
-    --color-base-blue-dark: #{hex-var(invert($color-base-blue-dark))};
-    --color-base-blue-link: #{hex-var(invert($color-base-blue-link))};
-    --color-base-green-normal: #{hex-var(invert($color-base-green-normal))};
-    --color-base-grey-dark: #{hex-var(invert($color-base-grey-dark))};
-    --color-base-grey-light: #{hex-var(invert($color-base-grey-light))};
-    --color-base-grey-normal: #{hex-var(invert($color-base-grey-normal))};
-    --color-base-orange-light: #{hex-var(invert($color-base-orange-light))};
-    --color-base-orange-normal: #{hex-var(invert($color-base-orange-normal))};
-    --color-base-purple-light: #{hex-var(invert($color-base-purple-light))};
-    --color-base-purple-normal: #{hex-var(invert($color-base-purple-normal))};
-    --color-base-purple-ultra-light: #{hex-var(
-        invert($color-base-purple-ultra-light)
+    --color-base-blue-normal: #{hex-var(lighten($color-base-blue-normal, 4%))};
+    --color-base-blue-dark: #{hex-var(lighten($color-base-blue-dark, 6%))};
+    --color-base-blue-link: #{hex-var(lighten($color-base-blue-link, 4%))};
+    --color-base-green-normal: #{hex-var(lighten($color-base-green-normal, 18%))};
+    --color-base-grey-dark: #{hex-var(
+        lighten(invert($color-base-grey-dark), 2%)
       )};
-    --color-base-red-normal: #{hex-var(invert($color-base-red-normal))};
+    --color-base-grey-light: #{hex-var(
+        lighten(invert($color-base-grey-light), 2%)
+      )};
+    --color-base-grey-normal: #{hex-var(
+        lighten(invert($color-base-grey-normal), 4%)
+      )};
+    --color-base-orange-light: #{hex-var(lighten($color-base-orange-light, 6%))};
+    --color-base-orange-normal: #{hex-var(
+        lighten($color-base-orange-normal, 2%)
+      )};
+    --color-base-purple-light: #{hex-var(lighten($color-base-purple-light, 2%))};
+    --color-base-purple-normal: #{hex-var(
+        lighten($color-base-purple-normal, 20%)
+      )};
+    --color-base-red-normal: #{hex-var(lighten($color-base-red-normal, 3%))};
 
     // Borders
-    --color-border-primary: #{hex-var(invert($color-border-primary))};
-    --color-border-secondary: #{hex-var(invert($color-border-secondary))};
-    --color-border-tertiary: #{hex-var(invert($color-border-tertiary))};
+    --color-border-primary: #{hex-var(
+        lighten(invert($color-border-primary), 8%)
+      )};
+    --color-border-secondary: #{hex-var(
+        lighten(invert($color-border-secondary), 4%)
+      )};
+    --color-border-tertiary: #{hex-var(
+        lighten(invert($color-border-tertiary), 4%)
+      )};
 
     // Backgrounds
     --color-background-primary: #{hex-var(invert($color-background-primary))};

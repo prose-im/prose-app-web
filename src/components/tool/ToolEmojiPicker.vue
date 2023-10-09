@@ -139,4 +139,20 @@ $c: ".c-tool-emoji-picker";
     }
   }
 }
+
+// --> APPEARANCES <--
+
+.u-appearance {
+  &--dark {
+    .v3-header {
+      .v3-groups {
+        .v3-group {
+          .v3-icon {
+            filter: invert(100%);
+          }
+        }
+      }
+    }
+  }
+}
 </style>
