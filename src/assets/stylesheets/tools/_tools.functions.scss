@@ -8,6 +8,22 @@
  * TOOLS > FUNCTIONS
  * **************************************************************************/
 
-@function hex-var($colour) {
-  @return red($colour) + ", " + green($colour) + ", " + blue($colour);
+@function hex-var($color) {
+  @return red($color) + ", " + green($color) + ", " + blue($color);
+}
+
+@function color-mix-var($base, $color, $percent) {
+  @return color-mix(in srgb, rgb($color) (100% - $percent), rgb($base));
+}
+
+@function lighten-var($color, $percent) {
+  // Notice: apply a corrective factor to the percent so that it looks almost \
+  //   like SCSS lighten() function.
+  @return color-mix-var(var(--color-white), $color, ($percent * 1.4));
+}
+
+@function darken-var($color, $percent) {
+  // Notice: apply a corrective factor to the percent so that it looks almost \
+  //   like SCSS darken() function.
+  @return color-mix-var(var(--color-black), $color, ($percent * 1.3));
 }
