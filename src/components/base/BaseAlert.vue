@@ -257,7 +257,7 @@ $close-icon-size: 12px;
 
 .c-base-alert {
   background: rgba(var(--color-white), 0.95);
-  border: 1px solid rgba(var(--color-black), 0.06);
+  border: 1px solid rgba(var(--color-border-secondary), 0.9);
   padding: 10px;
   padding-inline-end: 80px;
   backdrop-filter: blur(9px);
