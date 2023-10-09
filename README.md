@@ -1,4 +1,4 @@
-# <picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/prose-im/prose-app-web/assets/1451907/2fbb2174-5962-4791-a0f8-95f480bdf51f" /><img src="https://github.com/prose-im/prose-app-web/assets/1451907/dd3f7cb4-b156-4ecc-a15f-744dea259e27" alt="Prose logo, animated" width="150" height="60" /></picture>
+# <picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/prose-im/prose-app-web/assets/1451907/2fbb2174-5962-4791-a0f8-95f480bdf51f" /><img src="https://github.com/prose-im/prose-app-web/assets/1451907/dd3f7cb4-b156-4ecc-a15f-744dea259e27" alt="prose-app-web" width="150" height="60" /></picture>
 
 [![Test and Lint](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml)
 
