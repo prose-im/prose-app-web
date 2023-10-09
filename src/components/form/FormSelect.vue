@@ -562,9 +562,9 @@ $sizes: (
 
   #{$c}__field,
   #{$c}__dropdown {
-    background-color: $color-white;
-    border: $size-form-select-border-width solid rgba($color-black, 0.1);
-    box-shadow: 0 2px 3px 0 rgba($color-black, 0.01);
+    background-color: rgb(var(--color-white));
+    border: $size-form-select-border-width solid rgba(var(--color-black), 0.1);
+    box-shadow: 0 2px 3px 0 rgba(var(--color-shadow-primary), 0.01);
   }
 
   #{$c}__field,
@@ -592,11 +592,11 @@ $sizes: (
     position: relative;
 
     &:hover {
-      border-color: rgba($color-black, 0.15);
+      border-color: rgba(var(--color-black), 0.15);
     }
 
     &:active {
-      border-color: rgba($color-black, 0.2);
+      border-color: rgba(var(--color-black), 0.2);
     }
 
     #{$c}__inner {
@@ -605,15 +605,15 @@ $sizes: (
     }
 
     #{$c}__value {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
 
       &--empty {
-        color: $color-text-secondary;
+        color: rgb(var(--color-text-secondary));
       }
     }
 
     #{$c}__arrow {
-      fill: $color-text-tertiary;
+      fill: rgb(var(--color-text-tertiary));
       margin-inline-start: 5px;
       flex: 0 0 auto;
     }
@@ -626,7 +626,7 @@ $sizes: (
   }
 
   #{$c}__search {
-    background-color: rgba($color-background-primary, 0.94);
+    background-color: rgba(var(--color-background-primary), 0.94);
     position: absolute;
     inset-block-start: 0;
     inset-inline: 0;
@@ -638,7 +638,7 @@ $sizes: (
     }
 
     #{$c}__search-icon {
-      fill: $color-base-grey-normal;
+      fill: rgb(var(--color-base-grey-normal));
       pointer-events: none;
       position: absolute;
       inset-block-start: 50%;
@@ -648,15 +648,15 @@ $sizes: (
     input {
       background-color: transparent;
       border: 0 none;
-      border-block-end: 1px solid $color-border-tertiary;
-      color: $color-text-primary;
+      border-block-end: 1px solid rgb(var(--color-border-tertiary));
+      color: rgb(var(--color-text-primary));
       outline: 0 none;
       font-size: 11px;
       letter-spacing: 0.05px;
       width: 100%;
 
       &::placeholder {
-        color: $color-text-tertiary;
+        color: rgb(var(--color-text-tertiary));
         opacity: 1;
       }
     }
@@ -678,45 +678,48 @@ $sizes: (
         transition: none;
 
         #{$c}__value {
-          color: $color-text-primary;
+          color: rgb(var(--color-text-primary));
         }
       }
 
       &--hovered {
         a {
-          background-color: $color-base-purple-normal;
+          background-color: rgb(var(--color-base-purple-normal));
 
           &,
           &:active {
             #{$c}__value {
-              color: $color-text-reverse;
+              color: rgb(var(--color-text-reverse));
             }
           }
 
           &:active {
-            background-color: darken($color-base-purple-normal, 6%);
+            background-color: darken-var(var(--color-base-purple-normal), 8%);
           }
         }
       }
 
       &--selected {
         a {
-          background-color: darken($color-background-secondary, 3%);
+          background-color: darken-var(var(--color-background-secondary), 3%);
         }
 
         &#{$c}__option--hovered {
           a {
-            background-color: darken($color-background-secondary, 8%);
+            background-color: darken-var(var(--color-background-secondary), 8%);
 
             &,
             &:active {
               #{$c}__value {
-                color: $color-text-primary;
+                color: rgb(var(--color-text-primary));
               }
             }
 
             &:active {
-              background-color: darken($color-background-secondary, 10%);
+              background-color: darken-var(
+                var(--color-background-secondary),
+                10%
+              );
             }
           }
         }
@@ -839,7 +842,7 @@ $sizes: (
       &,
       &:hover,
       &:active {
-        border-color: rgba($color-black, 0.125);
+        border-color: rgba(var(--color-black), 0.125);
       }
     }
 
@@ -872,14 +875,14 @@ $sizes: (
     }
 
     #{$c}__field {
-      background-color: rgba($color-base-grey-light, 0.6);
+      background-color: rgba(var(--color-base-grey-light), 0.6);
 
       #{$c}__icon {
         opacity: 0.6;
       }
 
       #{$c}__value {
-        color: $color-text-secondary;
+        color: rgb(var(--color-text-secondary));
       }
     }
   }

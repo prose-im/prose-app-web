@@ -175,12 +175,12 @@ $c: ".c-inbox-userinfo-identity";
       }
 
       #{$c}__name-full {
-        color: $color-text-primary;
+        color: rgb(var(--color-text-primary));
       }
     }
 
     #{$c}__role {
-      color: $color-text-secondary;
+      color: rgb(var(--color-text-secondary));
       font-size: 13px;
       margin-block-start: 6px;
     }

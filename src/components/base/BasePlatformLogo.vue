@@ -94,8 +94,8 @@ $c: ".c-base-platform-logo";
 $name-logos: ("web", "macos", "ios", "windows", "android", "linux");
 
 .c-base-platform-logo {
-  background-color: $color-white;
-  border: 0.5px solid $color-black;
+  background-color: rgb(var(--color-white));
+  border: 0.5px solid rgb(var(--color-black));
   width: 46px;
   height: 54px;
   border-radius: 4px;

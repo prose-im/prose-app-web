@@ -35,7 +35,7 @@ const STORE_PERSIST_REVISION = "v1";
 const STORE_PERSIST_BOOT = "boot";
 
 const STORE_KEY_PREFIX = "$";
-const STORE_RESET_IGNORES = ["account", "layout"];
+const STORE_RESET_IGNORES = ["account", "layout", "settings"];
 
 /**************************************************************************
  * STORE

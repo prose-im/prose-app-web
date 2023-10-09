@@ -101,15 +101,15 @@ $sizes: (
 );
 
 $availabilities: (
-  "available": $color-base-green-normal,
-  "away": $color-base-orange-normal,
-  "unavailable": $color-base-grey-normal,
-  "dnd": $color-base-red-normal
+  "available": var(--color-base-green-normal),
+  "away": var(--color-base-orange-normal),
+  "unavailable": var(--color-base-grey-normal),
+  "dnd": var(--color-base-red-normal)
 );
 
 .c-base-presence {
   background-color: transparent;
-  border: 1px solid $color-base-grey-normal;
+  border: 1px solid rgb(var(--color-base-grey-normal));
   display: inline-block;
   box-sizing: border-box;
   border-radius: 100%;
@@ -127,15 +127,15 @@ $availabilities: (
 
   @each $availability, $color in $availabilities {
     &--#{$availability} {
-      background-color: $color-base-grey-dark;
+      background-color: rgb(var(--color-base-grey-dark));
       border: 0 none;
 
       &#{$c}--#{$availability} {
-        background-color: $color;
+        background-color: rgb($color);
       }
 
       &#{$c}--active {
-        background-color: $color-white;
+        background-color: rgb(var(--color-white));
       }
     }
   }
@@ -143,7 +143,7 @@ $availabilities: (
   // --> BOOLEANS <--
 
   &--active {
-    border-color: $color-white;
+    border-color: rgb(var(--color-white));
   }
 
   &--available-only {

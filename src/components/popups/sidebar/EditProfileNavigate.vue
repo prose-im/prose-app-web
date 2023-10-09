@@ -324,8 +324,8 @@ $c: ".p-edit-profile-navigate";
         #{$c}__identity-avatar-edit-inner {
           background-image: linear-gradient(
             180deg,
-            rgba($color-black, 0) 0%,
-            rgba($color-black, 0.6) 100%
+            rgba(var(--color-black), 0) 0%,
+            rgba(var(--color-black), 0.6) 100%
           );
           padding-block-start: 14px;
           padding-block-end: 10px;
@@ -337,7 +337,7 @@ $c: ".p-edit-profile-navigate";
           transition: opacity 100ms linear;
 
           #{$c}__identity-avatar-edit-text {
-            color: $color-text-reverse;
+            color: rgb(var(--color-text-reverse));
             font-size: 12.5px;
             line-height: 14px;
             text-transform: lowercase;
@@ -349,13 +349,13 @@ $c: ".p-edit-profile-navigate";
     }
 
     #{$c}__identity-name {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
       font-size: 15.5px;
       margin-block-start: 14px;
     }
 
     #{$c}__identity-address {
-      color: $color-text-secondary;
+      color: rgb(var(--color-text-secondary));
       font-size: 13.5px;
       margin-block-start: 4px;
     }

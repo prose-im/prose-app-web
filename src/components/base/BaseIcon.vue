@@ -66,7 +66,7 @@ export default {
 $c: ".c-base-icon";
 
 // VARIABLES
-$icon-fill-default: $color-black;
+$icon-fill-default: rgb(var(--color-black));
 
 .c-base-icon {
   fill: $icon-fill-default;

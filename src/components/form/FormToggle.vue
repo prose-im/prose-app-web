@@ -129,24 +129,24 @@ $toggle-field-height: ($toggle-height - (2 * $toggle-handle-offset));
     display: none;
 
     &:checked + #{$c}__field {
-      background-color: $color-base-purple-normal;
+      background-color: rgb(var(--color-base-purple-normal));
 
       &:after {
         margin-inline-start: ($toggle-field-width - $toggle-handle-size);
       }
 
       &:hover {
-        background-color: darken($color-base-purple-normal, 6%);
+        background-color: darken-var(var(--color-base-purple-normal), 8%);
       }
 
       &:active {
-        background-color: darken($color-base-purple-normal, 12%);
+        background-color: darken-var(var(--color-base-purple-normal), 14%);
       }
     }
   }
 
   #{$c}__field {
-    background-color: rgba($color-base-grey-normal, 0.2);
+    background-color: rgba(var(--color-base-grey-normal), 0.2);
     width: $toggle-field-width;
     height: $toggle-field-height;
     padding: $toggle-handle-offset;
@@ -157,29 +157,29 @@ $toggle-field-height: ($toggle-height - (2 * $toggle-handle-offset));
 
     &:after {
       content: "";
-      background-color: $color-white;
+      background-color: rgb(var(--color-white));
       width: $toggle-handle-size;
       height: $toggle-handle-size;
       border-radius: $toggle-height;
       display: block;
-      box-shadow: 0 1px 2px 0 rgba($color-black, 0.08);
+      box-shadow: 0 1px 2px 0 rgba(var(--color-shadow-primary), 0.08);
       transition: all 150ms linear;
       transition-property: margin-inline-start, box-shadow;
     }
 
     &:hover {
-      background-color: rgba($color-base-grey-normal, 0.27);
+      background-color: rgba(var(--color-base-grey-normal), 0.27);
 
       &:after {
-        box-shadow: 0 1px 2px 0 rgba($color-black, 0.12);
+        box-shadow: 0 1px 2px 0 rgba(var(--color-shadow-primary), 0.12);
       }
     }
 
     &:active {
-      background-color: rgba($color-base-grey-normal, 0.34);
+      background-color: rgba(var(--color-base-grey-normal), 0.34);
 
       &:after {
-        box-shadow: 0 1px 2px 0 rgba($color-black, 0.1);
+        box-shadow: 0 1px 2px 0 rgba(var(--color-shadow-primary), 0.1);
       }
     }
   }

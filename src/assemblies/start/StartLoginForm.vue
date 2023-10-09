@@ -173,7 +173,7 @@ $c: ".a-start-login-form";
       }
 
       #{$c}__options-recover {
-        color: var(--color-text-primary);
+        color: rgb(var(--color-text-primary));
         font-size: 15px;
         opacity: 0.3;
         pointer-events: none;

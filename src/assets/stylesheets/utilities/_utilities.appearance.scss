@@ -10,46 +10,93 @@
 
 .u-appearance {
   // Black
-  --color-black: #{$color-black};
+  --color-black: #{hex-var($color-black)};
 
   // White
-  --color-white: #{$color-white};
+  --color-white: #{hex-var($color-white)};
 
   // Bases
-  --color-base-blue-light: #{$color-base-blue-light};
-  --color-base-blue-normal: #{$color-base-blue-normal};
-  --color-base-blue-dark: #{$color-base-blue-dark};
-  --color-base-blue-ultra-dark: #{$color-base-blue-ultra-dark};
-  --color-base-blue-link: #{$color-base-blue-link};
-  --color-base-green-normal: #{$color-base-green-normal};
-  --color-base-grey-dark: #{$color-base-grey-dark};
-  --color-base-grey-light: #{$color-base-grey-light};
-  --color-base-grey-normal: #{$color-base-grey-normal};
-  --color-base-orange-light: #{$color-base-orange-light};
-  --color-base-orange-normal: #{$color-base-orange-normal};
-  --color-base-pink-light: #{$color-base-pink-light};
-  --color-base-purple-light: #{$color-base-purple-light};
-  --color-base-purple-normal: #{$color-base-purple-normal};
-  --color-base-purple-ultra-light: #{$color-base-purple-ultra-light};
-  --color-base-red-normal: #{$color-base-red-normal};
-  --color-base-yellow-ultra-light: #{$color-base-yellow-ultra-light};
+  --color-base-blue-normal: #{hex-var($color-base-blue-normal)};
+  --color-base-blue-dark: #{hex-var($color-base-blue-dark)};
+  --color-base-blue-link: #{hex-var($color-base-blue-link)};
+  --color-base-green-normal: #{hex-var($color-base-green-normal)};
+  --color-base-grey-dark: #{hex-var($color-base-grey-dark)};
+  --color-base-grey-light: #{hex-var($color-base-grey-light)};
+  --color-base-grey-normal: #{hex-var($color-base-grey-normal)};
+  --color-base-orange-light: #{hex-var($color-base-orange-light)};
+  --color-base-orange-normal: #{hex-var($color-base-orange-normal)};
+  --color-base-purple-light: #{hex-var($color-base-purple-light)};
+  --color-base-purple-normal: #{hex-var($color-base-purple-normal)};
+  --color-base-red-normal: #{hex-var($color-base-red-normal)};
 
   // Borders
-  --color-border-primary: #{$color-border-primary};
-  --color-border-secondary: #{$color-border-secondary};
-  --color-border-tertiary: #{$color-border-tertiary};
+  --color-border-primary: #{hex-var($color-border-primary)};
+  --color-border-secondary: #{hex-var($color-border-secondary)};
+  --color-border-tertiary: #{hex-var($color-border-tertiary)};
 
   // Backgrounds
-  --color-background-primary: #{$color-background-primary};
-  --color-background-secondary: #{$color-background-secondary};
+  --color-background-primary: #{hex-var($color-background-primary)};
+  --color-background-secondary: #{hex-var($color-background-secondary)};
+
+  // Shadows
+  --color-shadow-primary: #{hex-var($color-shadow-primary)};
 
   // Texts
-  --color-text-primary: #{$color-text-primary};
-  --color-text-secondary: #{$color-text-secondary};
-  --color-text-tertiary: #{$color-text-tertiary};
-  --color-text-reverse: #{$color-text-reverse};
+  --color-text-primary: #{hex-var($color-text-primary)};
+  --color-text-secondary: #{hex-var($color-text-secondary)};
+  --color-text-tertiary: #{hex-var($color-text-tertiary)};
+  --color-text-reverse: #{hex-var($color-text-reverse)};
 
   &--dark {
-    /* TODO */
+    // Black
+    --color-black: #{hex-var(invert($color-black))};
+
+    // White
+    --color-white: #{hex-var(invert($color-white))};
+
+    // Bases
+    --color-base-blue-normal: #{hex-var(lighten($color-base-blue-normal, 4%))};
+    --color-base-blue-dark: #{hex-var(lighten($color-base-blue-dark, 6%))};
+    --color-base-blue-link: #{hex-var(lighten($color-base-blue-link, 4%))};
+    --color-base-green-normal: #{hex-var(lighten($color-base-green-normal, 18%))};
+    --color-base-grey-dark: #{hex-var(
+        lighten(invert($color-base-grey-dark), 2%)
+      )};
+    --color-base-grey-light: #{hex-var(
+        lighten(invert($color-base-grey-light), 2%)
+      )};
+    --color-base-grey-normal: #{hex-var(
+        lighten(invert($color-base-grey-normal), 4%)
+      )};
+    --color-base-orange-light: #{hex-var(lighten($color-base-orange-light, 6%))};
+    --color-base-orange-normal: #{hex-var(
+        lighten($color-base-orange-normal, 2%)
+      )};
+    --color-base-purple-light: #{hex-var(lighten($color-base-purple-light, 2%))};
+    --color-base-purple-normal: #{hex-var(
+        lighten($color-base-purple-normal, 20%)
+      )};
+    --color-base-red-normal: #{hex-var(lighten($color-base-red-normal, 3%))};
+
+    // Borders
+    --color-border-primary: #{hex-var(
+        lighten(invert($color-border-primary), 8%)
+      )};
+    --color-border-secondary: #{hex-var(
+        lighten(invert($color-border-secondary), 4%)
+      )};
+    --color-border-tertiary: #{hex-var(
+        lighten(invert($color-border-tertiary), 4%)
+      )};
+
+    // Backgrounds
+    --color-background-primary: #{hex-var(invert($color-background-primary))};
+    --color-background-secondary: #{hex-var(invert($color-background-secondary))};
+
+    // Texts
+    --color-text-primary: #{hex-var(invert($color-text-primary))};
+    --color-text-secondary: #{hex-var(invert($color-text-secondary))};
+    --color-text-tertiary: #{hex-var(invert($color-text-tertiary))};
+    --color-text-reverse: #{hex-var(invert($color-text-reverse))};
   }
 }

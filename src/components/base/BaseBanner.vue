@@ -79,7 +79,7 @@ export default {
 $c: ".c-base-banner";
 
 .c-base-banner {
-  color: $color-text-reverse;
+  color: rgb(var(--color-text-reverse));
   min-height: 26px;
   padding-inline: 20px;
   padding-block: 8px;
@@ -100,7 +100,7 @@ $c: ".c-base-banner";
   }
 
   #{$c}__icon {
-    fill: $color-text-reverse;
+    fill: rgb(var(--color-text-reverse));
     margin-inline-end: 24px;
   }
 
@@ -126,19 +126,19 @@ $c: ".c-base-banner";
   // --> COLORS <--
 
   &--grey {
-    background-color: $color-base-grey-dark;
+    background-color: rgb(var(--color-base-grey-dark));
   }
 
   &--blue {
-    background-color: $color-base-blue-dark;
+    background-color: rgb(var(--color-base-blue-dark));
   }
 
   &--red {
-    background-color: $color-base-red-normal;
+    background-color: rgb(var(--color-base-red-normal));
   }
 
   &--orange {
-    background-color: $color-base-orange-normal;
+    background-color: rgb(var(--color-base-orange-normal));
   }
 }
 </style>

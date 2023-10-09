@@ -283,8 +283,8 @@ $controls-button-width: 26px;
 $controls-button-height: 22px;
 
 .c-base-data-table {
-  background-color: $color-background-primary;
-  border-block: 1px solid $color-border-primary;
+  background-color: rgb(var(--color-background-primary));
+  border-block: 1px solid rgb(var(--color-border-primary));
 
   #{$c}__header,
   #{$c}__rows,
@@ -293,20 +293,20 @@ $controls-button-height: 22px;
   }
 
   #{$c}__header {
-    border-block-end: 1px solid $color-border-secondary;
+    border-block-end: 1px solid rgb(var(--color-border-secondary));
     font-size: 12px;
     line-height: 14px;
     padding-block: 8px;
 
     > #{$c}__column {
-      border-inline-end: 1px solid $color-border-tertiary;
+      border-inline-end: 1px solid rgb(var(--color-border-tertiary));
 
       &:last-child {
         border-inline-end: 0 none;
       }
 
       #{$c}__column-label {
-        color: $color-text-secondary;
+        color: rgb(var(--color-text-secondary));
       }
 
       &--actionable {
@@ -314,14 +314,14 @@ $controls-button-height: 22px;
 
         &:hover {
           #{$c}__column-label {
-            color: $color-text-primary;
+            color: rgb(var(--color-text-primary));
           }
         }
       }
 
       &--ordered {
         #{$c}__column-label {
-          color: $color-text-primary;
+          color: rgb(var(--color-text-primary));
         }
       }
     }
@@ -336,12 +336,12 @@ $controls-button-height: 22px;
     overflow: auto;
 
     #{$c}__row {
-      border-block-end: 1px solid $color-border-tertiary;
+      border-block-end: 1px solid rgb(var(--color-border-tertiary));
       padding-block: 4px;
 
       > #{$c}__column {
         #{$c}__column-label {
-          color: $color-text-primary;
+          color: rgb(var(--color-text-primary));
         }
       }
     }
@@ -382,7 +382,7 @@ $controls-button-height: 22px;
   }
 
   #{$c}__controls {
-    border-block-start: 1px solid $color-border-secondary;
+    border-block-start: 1px solid rgb(var(--color-border-secondary));
     padding-block: 5px;
 
     #{$c}__control {

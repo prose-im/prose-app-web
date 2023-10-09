@@ -65,7 +65,7 @@ $c: ".c-sidebar-main-item-channel";
 
 .c-sidebar-main-item-channel {
   #{$c}__icon {
-    fill: $color-base-blue-dark;
+    fill: rgb(var(--color-base-blue-dark));
     margin-block-start: 2px;
   }
 }

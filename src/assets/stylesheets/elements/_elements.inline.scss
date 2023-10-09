@@ -10,7 +10,7 @@
 
 a {
   outline: 0;
-  color: $color-base-blue-link;
+  color: rgb(var(--color-base-blue-link));
   text-decoration: none;
   transition: color 100ms linear;
   cursor: pointer;

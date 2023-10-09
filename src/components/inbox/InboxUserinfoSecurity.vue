@@ -245,37 +245,37 @@ $c: ".c-inbox-userinfo-security";
 .c-inbox-userinfo-security {
   #{$c}__icon {
     &--identity-verified {
-      fill: $color-base-green-normal;
+      fill: rgb(var(--color-base-green-normal));
     }
 
     &--identity-unknown {
-      fill: $color-base-grey-normal;
+      fill: rgb(var(--color-base-grey-normal));
     }
 
     &--encryption-secure {
-      fill: $color-base-blue-dark;
+      fill: rgb(var(--color-base-blue-dark));
     }
 
     &--encryption-safe {
-      fill: $color-base-grey-dark;
+      fill: rgb(var(--color-base-grey-dark));
     }
 
     &--encryption-unknown {
-      fill: $color-base-orange-normal;
+      fill: rgb(var(--color-base-orange-normal));
     }
 
     &--encryption-insecure {
-      fill: $color-base-red-normal;
+      fill: rgb(var(--color-base-red-normal));
     }
   }
 
   #{$c}__label {
     &--important {
-      color: $color-base-orange-normal;
+      color: rgb(var(--color-base-orange-normal));
     }
 
     &--critical {
-      color: $color-base-red-normal;
+      color: rgb(var(--color-base-red-normal));
     }
   }
 
@@ -283,21 +283,21 @@ $c: ".c-inbox-userinfo-security";
     position: relative;
 
     #{$c}__details-icon {
-      fill: rgba($color-base-grey-dark, 0.65);
+      fill: rgba(var(--color-base-grey-dark), 0.65);
       cursor: pointer;
       display: block;
 
       &:hover {
-        fill: rgba($color-base-grey-dark, 0.8);
+        fill: rgba(var(--color-base-grey-dark), 0.8);
       }
 
       &:active {
-        fill: $color-base-grey-dark;
+        fill: rgb(var(--color-base-grey-dark));
       }
     }
 
     #{$c}__details-popover {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
       width: (
         $size-inbox-userinfo-width -
           (

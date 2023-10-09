@@ -82,35 +82,35 @@ export default {
 $c: ".c-base-badge";
 
 .c-base-badge {
-  background-color: $color-black;
+  background-color: rgb(var(--color-black));
   display: flex;
   align-items: center;
   justify-content: center;
 
   #{$c}__icon {
-    fill: $color-white;
+    fill: rgb(var(--color-white));
   }
 
   // --> COLORS <--
 
   &--grey {
-    background-color: $color-base-grey-normal;
+    background-color: rgb(var(--color-base-grey-normal));
   }
 
   &--green {
-    background-color: $color-base-green-normal;
+    background-color: rgb(var(--color-base-green-normal));
   }
 
   &--blue {
-    background-color: $color-base-blue-dark;
+    background-color: rgb(var(--color-base-blue-dark));
   }
 
   &--orange {
-    background-color: $color-base-orange-normal;
+    background-color: rgb(var(--color-base-orange-normal));
   }
 
   &--red {
-    background-color: $color-base-red-normal;
+    background-color: rgb(var(--color-base-red-normal));
   }
 }
 </style>

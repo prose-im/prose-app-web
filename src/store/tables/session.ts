@@ -13,6 +13,17 @@ import mitt from "mitt";
 import { defineStore } from "pinia";
 
 /**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
+
+enum SessionAppearance {
+  // Light appearance.
+  Light = "light",
+  // Dark appearance.
+  Dark = "dark"
+}
+
+/**************************************************************************
  * INSTANCES
  * ************************************************************************* */
 
@@ -31,7 +42,9 @@ const $session = defineStore("session", {
       connected: false,
       connecting: false,
 
-      protocol: ""
+      protocol: "",
+
+      appearance: SessionAppearance.Light
     };
   },
 
@@ -51,6 +64,10 @@ const $session = defineStore("session", {
 
     setProtocol(protocol = ""): void {
       this.setGeneric("protocol", this.protocol, protocol);
+    },
+
+    setAppearance(appearance: SessionAppearance): void {
+      this.setGeneric("appearance", this.appearance, appearance);
     },
 
     setGeneric<ValueType>(
@@ -78,4 +95,5 @@ const $session = defineStore("session", {
  * EXPORTS
  * ************************************************************************* */
 
+export { SessionAppearance };
 export default $session;

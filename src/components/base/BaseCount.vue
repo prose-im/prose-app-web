@@ -67,13 +67,13 @@ $count-padding-sides: 5px;
   // --> COLORS <--
 
   &--blue {
-    background-color: $color-base-blue-normal;
-    color: $color-white;
+    background-color: rgb(var(--color-base-blue-normal));
+    color: rgb(var(--color-white));
   }
 
   &--white {
-    background-color: $color-white;
-    color: $color-black;
+    background-color: rgb(var(--color-white));
+    color: rgb(var(--color-black));
   }
 }
 </style>

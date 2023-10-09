@@ -92,13 +92,13 @@ $c: ".c-list-entry";
 
   &--color-normal {
     #{$c}__label {
-      color: lighten($color-text-primary, 26%);
+      color: lighten-var(var(--color-text-primary), 26%);
     }
   }
 
   &--color-lighter {
     #{$c}__label {
-      color: $color-text-secondary;
+      color: rgb(var(--color-text-secondary));
     }
   }
 }

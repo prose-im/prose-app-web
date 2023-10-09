@@ -151,7 +151,7 @@ $tooltip-spacing-inline: -3px;
   }
 
   #{$c}__value {
-    background-color: rgba($color-white, 0.9);
+    background-color: rgba(var(--color-white), 0.9);
     backdrop-filter: blur(3px);
     font-size: 11.5px;
     user-select: none;
@@ -160,11 +160,11 @@ $tooltip-spacing-inline: -3px;
     padding: 5px 10px;
     display: inline-block;
     border-radius: 3px;
-    box-shadow: 0 2px 6px 0 rgba($color-black, 0.06);
+    box-shadow: 0 2px 6px 0 rgba(var(--color-shadow-primary), 0.06);
 
     &,
     a {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
     }
 
     a {

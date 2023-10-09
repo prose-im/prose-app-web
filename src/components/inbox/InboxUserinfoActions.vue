@@ -130,7 +130,7 @@ $c: ".c-inbox-userinfo-actions";
 .c-inbox-userinfo-actions {
   #{$c}__action {
     #{$c}__action-navigate {
-      fill: $color-base-grey-dark;
+      fill: rgb(var(--color-base-grey-dark));
     }
   }
 }

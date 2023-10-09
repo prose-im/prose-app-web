@@ -112,14 +112,14 @@ $c: ".c-sidebar-context-account";
       }
 
       #{$c}__identity-name {
-        color: $color-text-primary;
+        color: rgb(var(--color-text-primary));
         font-size: 13.5px;
         flex: 1;
       }
     }
 
     #{$c}__identity-address {
-      color: $color-text-secondary;
+      color: rgb(var(--color-text-secondary));
       font-size: 12.5px;
     }
   }

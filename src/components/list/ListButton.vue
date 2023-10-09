@@ -132,7 +132,7 @@ $c: ".c-list-button";
   cursor: default;
 
   &:hover {
-    background-color: darken($color-base-grey-light, 1%);
+    background-color: darken-var(var(--color-base-grey-light), 1%);
   }
 
   #{$c}__icon {
@@ -180,13 +180,13 @@ $c: ".c-list-button";
 
   &--color-normal {
     #{$c}__label {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
     }
   }
 
   &--color-lighter {
     #{$c}__label {
-      color: lighten($color-text-primary, 26%);
+      color: lighten-var(var(--color-text-primary), 26%);
     }
   }
 
@@ -195,36 +195,36 @@ $c: ".c-list-button";
     &:hover,
     &#{$c}--actionable:active {
       #{$c}__label {
-        color: $color-white;
+        color: rgb(var(--color-white));
       }
     }
   }
 
   &--color-blue {
     #{$c}__label {
-      color: $color-base-blue-normal;
+      color: rgb(var(--color-base-blue-normal));
     }
 
     &:hover {
-      background-color: $color-base-blue-normal;
+      background-color: rgb(var(--color-base-blue-normal));
     }
 
     &#{$c}--actionable:active {
-      background-color: darken($color-base-blue-normal, 4%);
+      background-color: darken-var(var(--color-base-blue-normal), 4%);
     }
   }
 
   &--color-red {
     #{$c}__label {
-      color: $color-base-red-normal;
+      color: rgb(var(--color-base-red-normal));
     }
 
     &:hover {
-      background-color: $color-base-red-normal;
+      background-color: rgb(var(--color-base-red-normal));
     }
 
     &#{$c}--actionable:active {
-      background-color: darken($color-base-red-normal, 4%);
+      background-color: darken-var(var(--color-base-red-normal), 4%);
     }
   }
 
@@ -239,42 +239,42 @@ $c: ".c-list-button";
     cursor: pointer;
 
     &:active {
-      background-color: darken($color-base-grey-light, 2%);
+      background-color: darken-var(var(--color-base-grey-light), 2.5%);
     }
   }
 
   &--active {
-    background-color: $color-base-blue-normal;
+    background-color: rgb(var(--color-base-blue-normal));
 
     &:hover {
-      background-color: darken($color-base-blue-normal, 4%);
+      background-color: darken-var(var(--color-base-blue-normal), 4%);
     }
 
     &#{$c}--actionable:active {
-      background-color: darken($color-base-blue-normal, 6%);
+      background-color: darken-var(var(--color-base-blue-normal), 6%);
     }
 
     #{$c}__label {
-      color: $color-white;
+      color: rgb(var(--color-white));
     }
   }
 
   &--important {
     &:not(#{$c}--active) {
       &:nth-child(odd) {
-        background-color: darken($color-base-grey-light, 0.75%);
+        background-color: darken-var(var(--color-base-grey-light), 0.75%);
       }
 
       &:nth-child(even) {
-        background-color: lighten($color-base-grey-light, 0.25%);
+        background-color: lighten-var(var(--color-base-grey-light), 0.25%);
       }
 
       &:hover {
-        background-color: darken($color-base-grey-light, 2.5%);
+        background-color: darken-var(var(--color-base-grey-light), 2.5%);
       }
 
       &#{$c}--actionable:active {
-        background-color: darken($color-base-grey-light, 3.5%);
+        background-color: darken-var(var(--color-base-grey-light), 3.5%);
       }
     }
   }
