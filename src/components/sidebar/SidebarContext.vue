@@ -539,13 +539,23 @@ export default {
       // Reset all stores
       Store.reset();
 
-      // Redirect to login
-      await this.$router.push({
-        name: "start.login"
-      });
-
       // Show confirm alert
       BaseAlert.info("Signed out", "Successfully signed out");
+
+      // Hide sign out modal
+      this.modals.signOut.visible = false;
+
+      // Make sure that sign out modal is hidden, then redirect to login
+      // Important: failure to remove the sign out modal from the DOM will \
+      //   induce a general Vue error due to the teleport target (ie. #app) \
+      //   being destroyed, then re-created with a different DOM reference. \
+      //   This explains why we need to wait for $nextTick() before redirecting.
+      this.$nextTick(async () => {
+        // Redirect to login
+        await this.$router.push({
+          name: "start.login"
+        });
+      });
     },
 
     onModalSignOutClose(): void {
