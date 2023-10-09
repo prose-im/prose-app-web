@@ -207,7 +207,6 @@ $c: ".c-form-checkbox";
       }
 
       &:after {
-        border-color: rgb(var(--color-white));
         visibility: visible;
       }
     }
