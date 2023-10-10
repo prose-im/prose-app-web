@@ -26,9 +26,13 @@ import {
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataButton as FormFieldsetFieldDataButton,
-  FieldsetFieldDataInput as FormFieldsetFieldDataInput,
-  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect
+  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
+  FieldsetFieldDataLevel as FormFieldsetFieldDataLevel,
+  FieldsetFieldDataStream as FormFieldsetFieldDataStream
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 export default {
   name: "AccountSettingsCalls",
@@ -47,18 +51,14 @@ export default {
           fields: [
             {
               id: "video-input-tester",
-              type: FormFieldsetFieldType.Input,
+              type: FormFieldsetFieldType.Stream,
               label: "Camera tester:",
 
               data: {
-                // TODO: use a custom bar chart component
-
                 value: {
-                  inner: "" // TODO: from model
-                },
-
-                placeholder: "<<Camera stream URL>>"
-              } as FormFieldsetFieldDataInput
+                  inner: "" // TODO: from stream
+                }
+              } as FormFieldsetFieldDataStream
             },
 
             {
@@ -68,7 +68,8 @@ export default {
 
               data: {
                 value: {
-                  inner: "system" // TODO: from model
+                  inner: Store.$settings.calls.camera.inputSource,
+                  change: Store.$settings.setCallsCameraInputSource
                 },
 
                 placeholder: "Pick a video input…",
@@ -93,18 +94,14 @@ export default {
           fields: [
             {
               id: "audio-input-tester",
-              type: FormFieldsetFieldType.Input,
+              type: FormFieldsetFieldType.Level,
               label: "Mic. tester:",
 
               data: {
-                // TODO: use a custom bar chart component
-
                 value: {
-                  inner: "" // TODO: from model
-                },
-
-                placeholder: "<<Volume in dB>>"
-              } as FormFieldsetFieldDataInput
+                  inner: 0 // TODO: from input
+                }
+              } as FormFieldsetFieldDataLevel
             },
 
             {
@@ -114,7 +111,8 @@ export default {
 
               data: {
                 value: {
-                  inner: "system" // TODO: from model
+                  inner: Store.$settings.calls.microphone.inputSource,
+                  change: Store.$settings.setCallsMicrophoneInputSource
                 },
 
                 placeholder: "Pick an audio input…",
@@ -152,7 +150,8 @@ export default {
 
               data: {
                 value: {
-                  inner: "system" // TODO: from model
+                  inner: Store.$settings.calls.sound.outputSource,
+                  change: Store.$settings.setCallSoundOutputSource
                 },
 
                 placeholder: "Pick an audio output…",

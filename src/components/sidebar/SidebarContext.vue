@@ -84,11 +84,11 @@
 
   update-status(
     v-if="modals.updateStatus.visible"
-    :jid="jid"
-    :loading="modals.updateStatus.loading"
     @update="onModalUpdateStatusUpdate"
     @clear="onModalUpdateStatusClear"
     @close="onModalUpdateStatusClose"
+    :jid="jid"
+    :loading="modals.updateStatus.loading"
   )
 
   sign-out(
@@ -539,13 +539,23 @@ export default {
       // Reset all stores
       Store.reset();
 
-      // Redirect to login
-      await this.$router.push({
-        name: "start.login"
-      });
-
       // Show confirm alert
       BaseAlert.info("Signed out", "Successfully signed out");
+
+      // Hide sign out modal
+      this.modals.signOut.visible = false;
+
+      // Make sure that sign out modal is hidden, then redirect to login
+      // Important: failure to remove the sign out modal from the DOM will \
+      //   induce a general Vue error due to the teleport target (ie. #app) \
+      //   being destroyed, then re-created with a different DOM reference. \
+      //   This explains why we need to wait for $nextTick() before redirecting.
+      this.$nextTick(async () => {
+        // Redirect to login
+        await this.$router.push({
+          name: "start.login"
+        });
+      });
     },
 
     onModalSignOutClose(): void {
@@ -605,7 +615,7 @@ $current-status-define-padding-block: 2px;
     overflow: hidden;
 
     #{$c}__team {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
       font-size: 14px;
     }
 
@@ -626,7 +636,7 @@ $current-status-define-padding-block: 2px;
       }
 
       #{$c}__status-text {
-        color: $color-text-secondary;
+        color: rgb(var(--color-text-secondary));
         margin-inline-start: 5px;
 
         &:before {
@@ -639,7 +649,7 @@ $current-status-define-padding-block: 2px;
       }
 
       #{$c}__status-define {
-        color: $color-base-purple-normal;
+        color: rgb(var(--color-base-purple-normal));
         margin-inline: (-1 * $current-status-define-padding-inline);
         margin-block: (-1 * $current-status-define-padding-block);
         padding: $current-status-define-padding-block
@@ -648,11 +658,11 @@ $current-status-define-padding-block: 2px;
         transition: background-color 100ms linear;
 
         &:hover {
-          background-color: darken($color-base-grey-light, 3%);
+          background-color: darken-var(var(--color-base-grey-light), 3%);
         }
 
         &:active {
-          background-color: darken($color-base-grey-light, 5%);
+          background-color: darken-var(var(--color-base-grey-light), 5%);
         }
       }
     }

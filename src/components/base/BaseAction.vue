@@ -16,7 +16,8 @@ div(
     {
       "c-base-action--active": active,
       "c-base-action--disabled": disabled,
-      "c-base-action--auto-width": autoWidth
+      "c-base-action--auto-width": autoWidth,
+      "c-base-action--auto-height": autoHeight
     }
   ]`
 )
@@ -112,6 +113,11 @@ export default {
     autoWidth: {
       type: Boolean,
       default: false
+    },
+
+    autoHeight: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -168,7 +174,7 @@ $c: ".c-base-action";
     transition: background-color 100ms linear;
 
     &:focus-visible {
-      outline-color: rgba($color-base-purple-normal, 0.3);
+      outline-color: rgba(var(--color-base-purple-normal), 0.3);
       outline-offset: 1px;
     }
 
@@ -180,7 +186,7 @@ $c: ".c-base-action";
 
     #{$c}__icon,
     #{$c}__dropdown {
-      fill: $color-base-grey-dark;
+      fill: rgb(var(--color-base-grey-dark));
     }
 
     #{$c}__dropdown {
@@ -193,19 +199,19 @@ $c: ".c-base-action";
   &--active {
     #{$c}__inner {
       #{$c}__icon {
-        fill: darken($color-base-blue-normal, 6%);
+        fill: darken-var(var(--color-base-blue-normal), 6%);
       }
     }
 
     &#{$c}--white {
       #{$c}__inner {
-        background-color: $color-base-grey-light;
+        background-color: rgb(var(--color-base-grey-light));
       }
     }
 
     &#{$c}--grey {
       #{$c}__inner {
-        background-color: darken($color-base-grey-light, 3%);
+        background-color: darken-var(var(--color-base-grey-light), 3%);
       }
     }
   }
@@ -225,16 +231,23 @@ $c: ".c-base-action";
     }
   }
 
+  &--auto-height {
+    #{$c}__inner {
+      height: auto;
+      padding-block: $size-base-action-padding-sides;
+    }
+  }
+
   // --> CONTEXTS <--
 
   &--white {
     #{$c}__inner {
       &:hover {
-        background-color: darken($color-base-grey-light, 1%);
+        background-color: darken-var(var(--color-base-grey-light), 1%);
       }
 
       &:active {
-        background-color: darken($color-base-grey-light, 4%);
+        background-color: darken-var(var(--color-base-grey-light), 4%);
       }
     }
   }
@@ -242,11 +255,11 @@ $c: ".c-base-action";
   &--grey {
     #{$c}__inner {
       &:hover {
-        background-color: darken($color-base-grey-light, 4%);
+        background-color: darken-var(var(--color-base-grey-light), 4%);
       }
 
       &:active {
-        background-color: darken($color-base-grey-light, 8%);
+        background-color: darken-var(var(--color-base-grey-light), 8%);
       }
     }
   }

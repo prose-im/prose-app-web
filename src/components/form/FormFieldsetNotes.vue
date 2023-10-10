@@ -31,7 +31,7 @@ export default {
 $c: ".c-form-fieldset-notes";
 
 .c-form-fieldset-notes {
-  color: $color-text-secondary;
+  color: rgb(var(--color-text-secondary));
   font-size: 13.5px;
   line-height: 16px;
   margin-block-start: 22px;

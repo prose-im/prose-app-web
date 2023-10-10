@@ -30,7 +30,7 @@ export default {
 $c: ".c-base-separator";
 
 .c-base-separator {
-  background-color: $color-border-secondary;
+  background-color: rgb(var(--color-border-secondary));
   width: 1px;
   height: 20px;
   margin-inline: 14px;

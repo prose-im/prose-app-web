@@ -1,4 +1,4 @@
-# prose-app-web
+# <picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/prose-im/prose-app-web/assets/1451907/8e6c83c6-26a0-4505-9561-50a9c97bf236" /><img src="https://github.com/prose-im/prose-app-web/assets/1451907/dd3f7cb4-b156-4ecc-a15f-744dea259e27" alt="prose-app-web" width="150" height="60" /></picture>
 
 [![Test and Lint](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml)
 
@@ -75,6 +75,10 @@ PROSE_CORE_VIEWS_PATH="../prose-core-views" npm run dev
 ```
 
 ## Design
+
+![Prose main view](https://github.com/prose-im/prose-app-web/assets/1451907/624bcf38-7406-4194-9aba-924144b6a675)
+![Prose profile modal](https://github.com/prose-im/prose-app-web/assets/1451907/e930929b-2fee-4566-86b5-a1b104b39c03)
+![Prose login screen](https://github.com/prose-im/prose-app-web/assets/1451907/92af0399-b74a-4321-b66a-a9a64d56b783)
 
 _👉 The Prose Web app reference design [can be found there](https://github.com/prose-im/prose-medley/blob/master/designs/app/prose-app-web.sketch)._
 

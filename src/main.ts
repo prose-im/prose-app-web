@@ -21,6 +21,7 @@ import Store from "@/store";
 
 // PROJECT: BOOTSTRAP
 import "@/bootstrap/icons";
+import "@/bootstrap/features";
 
 import BootstrapConfig from "@/bootstrap/config";
 import BootstrapFilters from "@/bootstrap/filters";
@@ -53,4 +54,4 @@ BootstrapPlugins.init(app);
  * INITIALIZE
  * ************************************************************************* */
 
-app.mount("#app");
+app.mount("#runtime");

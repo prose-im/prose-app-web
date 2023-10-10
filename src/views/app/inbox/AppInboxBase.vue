@@ -105,8 +105,8 @@ $content-padding-sides: 14px;
   flex-direction: column;
 
   #{$c}__topbar {
-    background-color: $color-base-grey-light;
-    border-block-end: 1px solid $color-border-secondary;
+    background-color: rgb(var(--color-base-grey-light));
+    border-block-end: 1px solid rgb(var(--color-border-secondary));
     height: $size-inbox-topbar-height;
     padding: 0 $content-padding-sides;
     flex: 0 0 auto;
@@ -145,8 +145,8 @@ $content-padding-sides: 14px;
         &:before {
           background-image: linear-gradient(
             0deg,
-            rgba($color-black, 0) 0%,
-            rgba($color-black, 0.015) 100%
+            rgba(var(--color-black), 0) 0%,
+            rgba(var(--color-black), 0.015) 100%
           );
           inset-block-start: 0;
         }
@@ -154,15 +154,15 @@ $content-padding-sides: 14px;
         &:after {
           background-image: linear-gradient(
             180deg,
-            rgba($color-black, 0) 0%,
-            rgba($color-black, 0.01) 100%
+            rgba(var(--color-black), 0) 0%,
+            rgba(var(--color-black), 0.01) 100%
           );
           inset-block-end: 0;
         }
       }
 
       #{$c}__form {
-        border-block-start: 1px solid $color-border-secondary;
+        border-block-start: 1px solid rgb(var(--color-border-secondary));
         min-height: $size-inbox-form-height;
         padding: 0 $content-padding-sides;
         flex: 0 0 auto;
@@ -170,7 +170,7 @@ $content-padding-sides: 14px;
     }
 
     #{$c}__userinfo {
-      border-inline-start: 1px solid $color-border-secondary;
+      border-inline-start: 1px solid rgb(var(--color-border-secondary));
       width: $size-inbox-userinfo-width;
       overflow-x: hidden;
       overflow-y: auto;

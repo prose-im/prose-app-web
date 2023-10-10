@@ -12,10 +12,13 @@ import path from "path";
 import merge from "lodash.merge";
 import vue from "@vitejs/plugin-vue";
 import viteWasmPlugin from "vite-plugin-wasm";
+import viteHtmlPlugin from "vite-plugin-html-config";
 import vitePugPlugin from "vite-plugin-pug-transformer";
 import { viteStaticCopy as viteStaticCopyPlugin } from "vite-plugin-static-copy";
 import { createSvgIconsPlugin as viteSvgIconsPlugin } from "vite-plugin-svg-icons";
 import { getInstalledPathSync } from "get-installed-path";
+
+import BuilderInline from "./res/builders/inline";
 
 import commonConfig from "./config/common";
 import developmentConfig from "./config/development";
@@ -46,6 +49,11 @@ const PROSE_SDK_JS_OVERRIDE_PATH = process.env.PROSE_CORE_CLIENT_PATH
   : null;
 
 const ASSETS_ICONS_PATH = path.join(__dirname, "src/assets/images/icons/");
+
+const INLINE_DATA_ITEMS = {
+  scripts: BuilderInline.scripts(),
+  styles: BuilderInline.styles()
+};
 
 /**************************************************************************
  * EXPORTS
@@ -108,6 +116,11 @@ export default {
     vue(),
     vitePugPlugin({}),
     viteWasmPlugin(),
+
+    viteHtmlPlugin({
+      style: [INLINE_DATA_ITEMS.styles.loader].join(""),
+      headScripts: [INLINE_DATA_ITEMS.scripts.loader]
+    }),
 
     viteStaticCopyPlugin({
       targets: [

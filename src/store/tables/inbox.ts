@@ -145,8 +145,8 @@ const $inbox = defineStore("inbox", {
       return entries[roomID];
     },
 
-    insertCoreMessages(roomID: RoomID, messages: CoreMessage[]) {
-      this.insertMessages(
+    insertCoreMessages(roomID: RoomID, messages: CoreMessage[]): boolean {
+      return this.insertMessages(
         roomID,
         messages.map(message => {
           return fromCoreMessage(message);
@@ -154,12 +154,18 @@ const $inbox = defineStore("inbox", {
       );
     },
 
-    insertMessage(roomID: RoomID, message: InboxEntryMessage) {
-      this.insertMessages(roomID, [message]);
+    insertMessage(roomID: RoomID, message: InboxEntryMessage): boolean {
+      return this.insertMessages(roomID, [message]);
     },
 
-    insertMessages(roomID: RoomID, messages: Array<InboxEntryMessage>) {
+    insertMessages(
+      roomID: RoomID,
+      messages: Array<InboxEntryMessage>
+    ): boolean {
       const container = this.assert(roomID).messages;
+
+      // Initialize inserted marker
+      let hasInserted = false;
 
       messages.forEach(message => {
         // Acquire message identifier
@@ -174,6 +180,10 @@ const $inbox = defineStore("inbox", {
 
         // Should insert message? (does not exist)
         if (wasUpdated !== true) {
+          // Mark as inserted
+          hasInserted = true;
+
+          // Insert message in its container
           this.$patch(() => {
             container.byId[messageId] = message;
             container.list.push(message);
@@ -186,6 +196,8 @@ const $inbox = defineStore("inbox", {
           } as EventMessageGeneric);
         }
       });
+
+      return hasInserted;
     },
 
     updateMessage(

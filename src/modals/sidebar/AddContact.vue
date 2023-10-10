@@ -296,7 +296,7 @@ $c: ".m-add-contact";
     }
 
     #{$c}__form-identity {
-      color: $color-text-secondary;
+      color: rgb(var(--color-text-secondary));
       max-width: 30%;
       display: flex;
       align-items: center;
@@ -335,7 +335,7 @@ $c: ".m-add-contact";
       }
 
       #{$c}__notice-label {
-        color: $color-text-secondary;
+        color: rgb(var(--color-text-secondary));
         flex: 1;
       }
     }
@@ -344,11 +344,11 @@ $c: ".m-add-contact";
       #{$c}__notice-line {
         &:first-child {
           #{$c}__notice-icon {
-            fill: $color-base-green-normal;
+            fill: rgb(var(--color-base-green-normal));
           }
 
           #{$c}__notice-label {
-            color: $color-base-green-normal;
+            color: rgb(var(--color-base-green-normal));
           }
         }
       }
@@ -358,11 +358,11 @@ $c: ".m-add-contact";
       #{$c}__notice-line {
         &:first-child {
           #{$c}__notice-icon {
-            fill: $color-base-grey-dark;
+            fill: rgb(var(--color-base-grey-dark));
           }
 
           #{$c}__notice-label {
-            color: $color-base-grey-dark;
+            color: rgb(var(--color-base-grey-dark));
           }
         }
       }

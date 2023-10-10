@@ -88,13 +88,13 @@ $c: ".c-base-badge-details";
       flex: 1;
 
       #{$c}__title {
-        color: $color-text-primary;
+        color: rgb(var(--color-text-primary));
         font-size: 12.5px;
         line-height: 14px;
       }
 
       #{$c}__label {
-        color: $color-text-secondary;
+        color: rgb(var(--color-text-secondary));
         font-size: 12px;
         line-height: 13px;
         margin-block-start: 4px;
@@ -104,7 +104,7 @@ $c: ".c-base-badge-details";
     &--red {
       #{$c}__text {
         #{$c}__title {
-          color: $color-base-red-normal;
+          color: rgb(var(--color-base-red-normal));
         }
       }
     }
@@ -112,7 +112,7 @@ $c: ".c-base-badge-details";
     &--orange {
       #{$c}__text {
         #{$c}__title {
-          color: $color-base-orange-normal;
+          color: rgb(var(--color-base-orange-normal));
         }
       }
     }

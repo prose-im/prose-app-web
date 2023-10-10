@@ -19,9 +19,9 @@ teleport(
     div(
       :class=`[
         "c-base-popup__popup",
-        "animate",
-        "animate--superfast",
-        "animate--fade-in-up-small",
+        "u-animate",
+        "u-animate--superfast",
+        "u-animate--fade-in-up-small",
         {
           [popupClass]: popupClass
         }
@@ -80,7 +80,7 @@ export default {
 $c: ".c-base-popup";
 
 .c-base-popup {
-  background-color: rgba($color-base-grey-dark, 0.35);
+  background-color: rgba(var(--color-base-grey-dark), 0.35);
   user-select: none;
   position: fixed;
   display: flex;
@@ -90,9 +90,9 @@ $c: ".c-base-popup";
   z-index: 1000;
 
   #{$c}__popup {
-    background-color: $color-white;
+    background-color: rgb(var(--color-white));
     border-radius: 7px;
-    box-shadow: 0 4px 14px 0 rgba($color-black, 0.075);
+    box-shadow: 0 4px 14px 0 rgba(var(--color-shadow-primary), 0.075);
   }
 }
 </style>

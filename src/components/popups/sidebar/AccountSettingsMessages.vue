@@ -29,6 +29,9 @@ import {
   FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "AccountSettingsMessages",
 
@@ -40,8 +43,8 @@ export default {
 
       fieldsets: [
         {
-          id: "messages",
-          title: "Messages",
+          id: "chats",
+          title: "Chats",
 
           fields: [
             {
@@ -51,11 +54,12 @@ export default {
 
               data: {
                 value: {
-                  inner: true
+                  inner: Store.$settings.messages.chats.chatstates,
+                  change: Store.$settings.setMessagesChatsChatstates
                 },
 
                 label: "Let users know when I am typing"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {
@@ -64,11 +68,12 @@ export default {
 
               data: {
                 value: {
-                  inner: false
+                  inner: Store.$settings.messages.chats.spellcheck,
+                  change: Store.$settings.setMessagesChatsSpellcheck
                 },
 
                 label: "Enable spell checker"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {
@@ -83,24 +88,12 @@ export default {
 
               data: {
                 value: {
-                  inner: false
+                  inner: Store.$settings.messages.chats.clock24h,
+                  change: Store.$settings.setMessagesChatsClock24h
                 },
 
                 label: "Use a 24-hour clock"
-              } as FieldsetFieldDataCheckbox
-            },
-
-            {
-              id: "image-previews-enabled",
-              type: FormFieldsetFieldType.Checkbox,
-
-              data: {
-                value: {
-                  inner: true
-                },
-
-                label: "Show a preview of image files"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             }
           ]
         },
@@ -111,13 +104,28 @@ export default {
 
           fields: [
             {
-              id: "image-previews-size",
-              type: FormFieldsetFieldType.Select,
+              id: "image-previews-enabled",
+              type: FormFieldsetFieldType.Checkbox,
               label: "Thumbnails:",
 
               data: {
                 value: {
-                  inner: "large" // TODO: from model
+                  inner: Store.$settings.messages.files.imagePreviews.enabled,
+                  change: Store.$settings.setMessagesFilesImagePreviews
+                },
+
+                label: "Show a preview of image files"
+              } as FormFieldsetFieldDataCheckbox
+            },
+
+            {
+              id: "image-previews-size",
+              type: FormFieldsetFieldType.Select,
+
+              data: {
+                value: {
+                  inner: Store.$settings.messages.files.imagePreviews.size,
+                  change: Store.$settings.setMessagesFilesImageSize
                 },
 
                 placeholder: "Pick a size…",
@@ -125,12 +133,12 @@ export default {
                 options: [
                   {
                     value: "large",
-                    label: "Large"
+                    label: "Large size"
                   },
 
                   {
                     value: "small",
-                    label: "Small"
+                    label: "Small size"
                   }
                 ]
               } as FormFieldsetFieldDataSelect

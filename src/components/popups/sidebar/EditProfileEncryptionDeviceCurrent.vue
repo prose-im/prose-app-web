@@ -134,7 +134,7 @@ $inner-spacing-sides: 18px;
   align-items: center;
 
   #{$c}__snapshot {
-    border-inline-end: 1px solid $color-border-secondary;
+    border-inline-end: 1px solid rgb(var(--color-border-secondary));
     padding-inline-end: $inner-spacing-sides;
     display: flex;
     align-items: flex-start;
@@ -149,12 +149,12 @@ $inner-spacing-sides: 18px;
       flex: 1;
 
       #{$c}__snapshot-system {
-        color: $color-text-primary;
+        color: rgb(var(--color-text-primary));
         font-size: 14px;
       }
 
       #{$c}__snapshot-client {
-        color: $color-text-secondary;
+        color: rgb(var(--color-text-secondary));
         font-size: 12.5px;
         margin-block-start: 3px;
       }

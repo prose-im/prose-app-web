@@ -60,7 +60,7 @@ $c: ".c-form-fieldset-control";
 
   #{$c}__label,
   #{$c}__value {
-    color: $color-text-primary;
+    color: rgb(var(--color-text-primary));
     font-size: 13px;
     letter-spacing: 0.05px;
     line-height: 18px;

@@ -30,7 +30,7 @@ export default {
 $c: ".c-list-divider";
 
 .c-list-divider {
-  background-color: $color-base-grey-light;
+  background-color: rgb(var(--color-base-grey-light));
   height: 1px;
   margin-block: 7px;
   display: block;

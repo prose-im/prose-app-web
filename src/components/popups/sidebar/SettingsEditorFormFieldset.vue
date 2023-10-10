@@ -40,6 +40,7 @@
           form-field(
             v-if="field.type === 'input'"
             v-model="field.data.value.inner"
+            @change="field.data.value.change"
             :name="field.id"
             :placeholder="field.data.placeholder"
             :disabled="field.data.disabled"
@@ -51,6 +52,7 @@
           form-select(
             v-else-if="field.type === 'select'"
             v-model="field.data.value.inner"
+            @change="field.data.value.change"
             :options="field.data.options"
             :icon="field.data.icon"
             :name="field.id"
@@ -64,6 +66,7 @@
           form-checkbox(
             v-else-if="field.type === 'checkbox'"
             v-model="field.data.value.inner"
+            @change="field.data.value.change"
             :name="field.id"
             :disabled="field.data.disabled"
             size="small"
@@ -77,7 +80,20 @@
           form-toggle(
             v-else-if="field.type === 'toggle'"
             v-model="field.data.value.inner"
+            @change="field.data.value.change"
             :name="field.id"
+            :disabled="field.data.disabled"
+          )
+
+          base-indicator-level(
+            v-else-if="field.type === 'level'",
+            :percent="field.data.value.inner"
+            :disabled="field.data.disabled"
+          )
+
+          base-stream-view(
+            v-else-if="field.type === 'stream'",
+            :stream-url="field.data.value.inner"
             :disabled="field.data.disabled"
           )
 
@@ -200,6 +216,10 @@ export enum FieldsetFieldType {
   Checkbox = "checkbox",
   // Toggle type.
   Toggle = "toggle",
+  // Level type.
+  Level = "level",
+  // Stream type.
+  Stream = "stream",
   // Button type.
   Button = "button",
   // Spacer type.
@@ -239,6 +259,7 @@ export type FieldsetFieldDataInput = {
 
 type FieldsetFieldDataInputValue = {
   inner: string;
+  change?: (_: string | number) => void;
 };
 
 export type FieldsetFieldDataSelect = {
@@ -252,6 +273,7 @@ export type FieldsetFieldDataSelect = {
 
 type FieldsetFieldDataSelectValue = {
   inner: string;
+  change?: (_: string) => void;
 };
 
 export type FieldsetFieldDataCheckbox = {
@@ -262,6 +284,7 @@ export type FieldsetFieldDataCheckbox = {
 
 type FieldsetFieldDataCheckboxValue = {
   inner: boolean;
+  change?: (_: boolean) => void;
 };
 
 export type FieldsetFieldDataToggle = {
@@ -271,6 +294,25 @@ export type FieldsetFieldDataToggle = {
 
 type FieldsetFieldDataToggleValue = {
   inner: boolean;
+  change?: (_: boolean) => void;
+};
+
+export type FieldsetFieldDataLevel = {
+  value: FieldsetFieldDataLevelValue;
+  disabled?: boolean;
+};
+
+type FieldsetFieldDataLevelValue = {
+  inner: number;
+};
+
+export type FieldsetFieldDataStream = {
+  value: FieldsetFieldDataStreamValue;
+  disabled?: boolean;
+};
+
+type FieldsetFieldDataStreamValue = {
+  inner: string;
 };
 
 export type FieldsetFieldDataButton = {
@@ -306,6 +348,8 @@ interface FieldsetField {
     | FieldsetFieldDataSelect
     | FieldsetFieldDataCheckbox
     | FieldsetFieldDataToggle
+    | FieldsetFieldDataLevel
+    | FieldsetFieldDataStream
     | FieldsetFieldDataButton;
   aside?: FieldsetFieldAside;
 }
@@ -408,7 +452,7 @@ $c: ".p-settings-editor-form-fieldset";
 
 .p-settings-editor-form-fieldset {
   #{$c}__title {
-    color: $color-text-secondary;
+    color: rgb(var(--color-text-secondary));
     font-size: 14.5px;
     margin-block-end: 16px;
   }
@@ -429,7 +473,7 @@ $c: ".p-settings-editor-form-fieldset";
       }
 
       #{$c}__field-aside-link {
-        color: $color-base-purple-normal;
+        color: rgb(var(--color-base-purple-normal));
 
         &:hover {
           text-decoration: underline;
@@ -451,10 +495,10 @@ $c: ".p-settings-editor-form-fieldset";
         }
 
         &--green {
-          color: $color-base-green-normal;
+          color: rgb(var(--color-base-green-normal));
 
           #{$c}__field-aside-icon {
-            fill: $color-base-green-normal;
+            fill: rgb(var(--color-base-green-normal));
           }
         }
       }
@@ -470,15 +514,15 @@ $c: ".p-settings-editor-form-fieldset";
         margin-inline-end: 3px;
 
         &--grey {
-          fill: $color-base-grey-normal;
+          fill: rgb(var(--color-base-grey-normal));
         }
 
         &--blue {
-          fill: $color-base-blue-dark;
+          fill: rgb(var(--color-base-blue-dark));
         }
 
         &--green {
-          fill: $color-base-green-normal;
+          fill: rgb(var(--color-base-green-normal));
         }
       }
     }

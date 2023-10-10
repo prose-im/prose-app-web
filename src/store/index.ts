@@ -25,6 +25,7 @@ import $presence from "@/store/tables/presence";
 import $profile from "@/store/tables/profile";
 import $roster from "@/store/tables/roster";
 import $session from "@/store/tables/session";
+import $settings from "@/store/tables/settings";
 
 /**************************************************************************
  * CONSTANTS
@@ -32,9 +33,10 @@ import $session from "@/store/tables/session";
 
 const STORE_PERSIST_PREFIX = "prose";
 const STORE_PERSIST_REVISION = "v1";
+const STORE_PERSIST_BOOT = "boot";
 
 const STORE_KEY_PREFIX = "$";
-const STORE_RESET_IGNORES = ["account", "layout"];
+const STORE_RESET_IGNORES = ["account", "layout", "settings"];
 
 /**************************************************************************
  * STORE
@@ -57,6 +59,7 @@ class Store {
   $activity!: ReturnType<typeof $activity>;
   $presence!: ReturnType<typeof $presence>;
   $muc!: ReturnType<typeof $muc>;
+  $settings!: ReturnType<typeof $settings>;
 
   constructor() {
     this.__store = createPinia();
@@ -115,6 +118,7 @@ class Store {
     this.$activity = $activity(this.__store);
     this.$presence = $presence(this.__store);
     this.$muc = $muc(this.__store);
+    this.$settings = $settings(this.__store);
   }
 }
 
@@ -122,4 +126,5 @@ class Store {
  * EXPORTS
  * ************************************************************************* */
 
+export { STORE_PERSIST_PREFIX, STORE_PERSIST_BOOT };
 export default new Store();

@@ -33,11 +33,13 @@
     />
 
     <title>Prose</title>
+
+    <script type="module" src="/src/main.ts" defer async></script>
   </head>
 
   <body>
-    <div id="app"></div>
-
-    <script type="module" src="/src/main.ts"></script>
+    <div id="runtime">
+      <div id="loader"></div>
+    </div>
   </body>
 </html>

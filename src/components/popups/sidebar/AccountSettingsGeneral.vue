@@ -25,8 +25,12 @@ import {
   default as SettingsEditorFormFieldset,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
-  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect
+  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
+  FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
 } from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 export default {
   name: "AccountSettingsGeneral",
@@ -50,7 +54,8 @@ export default {
 
               data: {
                 value: {
-                  inner: "system" // TODO: from model
+                  inner: Store.$settings.appearance.theme,
+                  change: Store.$settings.setAppearanceTheme
                 },
 
                 placeholder: "Pick a theme…",
@@ -90,11 +95,12 @@ export default {
 
               data: {
                 value: {
-                  inner: false
+                  inner: Store.$settings.availability.autoAway.enabled,
+                  change: Store.$settings.setAvailabilityAutoAwayEnabled
                 },
 
                 label: "Automatically mark me as away after:"
-              } as FieldsetFieldDataCheckbox
+              } as FormFieldsetFieldDataCheckbox
             },
 
             {
@@ -103,7 +109,8 @@ export default {
 
               data: {
                 value: {
-                  inner: "5m" // TODO: from model
+                  inner: Store.$settings.availability.autoAway.after,
+                  change: Store.$settings.setAvailabilityAutoAwayAfter
                 },
 
                 placeholder: "Pick an away delay…",

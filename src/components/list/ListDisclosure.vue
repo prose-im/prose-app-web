@@ -136,7 +136,7 @@ $c: ".c-list-disclosure";
 
 .c-list-disclosure {
   #{$c}__header {
-    color: $color-base-grey-normal;
+    color: rgb(var(--color-base-grey-normal));
     font-size: 12.5px;
     line-height: 20px;
     display: flex;
@@ -144,18 +144,18 @@ $c: ".c-list-disclosure";
     cursor: pointer;
 
     &:hover {
-      color: darken($color-base-grey-normal, 20%);
+      color: darken-var(var(--color-base-grey-normal), 20%);
 
       #{$c}__header-arrow {
-        fill: darken($color-base-grey-normal, 15%);
+        fill: darken-var(var(--color-base-grey-normal), 15%);
       }
     }
 
     &:active {
-      color: darken($color-base-grey-normal, 35%);
+      color: darken-var(var(--color-base-grey-normal), 35%);
 
       #{$c}__header-arrow {
-        fill: darken($color-base-grey-normal, 25%);
+        fill: darken-var(var(--color-base-grey-normal), 25%);
       }
     }
 
@@ -164,7 +164,7 @@ $c: ".c-list-disclosure";
     }
 
     #{$c}__header-arrow {
-      fill: $color-base-grey-normal;
+      fill: rgb(var(--color-base-grey-normal));
       margin-inline-start: 5px;
       flex: 0 0 auto;
       transition: transform 100ms linear;
@@ -180,7 +180,7 @@ $c: ".c-list-disclosure";
 
   &--separated {
     #{$c}__header {
-      border-block-end: 1px solid rgba($color-base-grey-normal, 0.2);
+      border-block-end: 1px solid rgba(var(--color-base-grey-normal), 0.2);
       padding-block-end: 4px;
     }
   }

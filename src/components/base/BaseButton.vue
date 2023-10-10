@@ -208,12 +208,12 @@ export default {
 $c: ".c-base-button";
 
 // VARIABLES
-$color-button-dark-normal: $color-base-purple-normal;
-$color-button-dark-reverse: $color-white;
-$color-button-light-normal: $color-white;
-$color-button-light-reverse: rgba($color-black, 0.15);
-$color-button-red-normal: $color-base-red-normal;
-$color-button-red-reverse: $color-white;
+$color-button-dark-normal: var(--color-base-purple-normal);
+$color-button-dark-reverse: var(--color-white);
+$color-button-light-normal: var(--color-white);
+$color-button-light-reverse: var(--color-black);
+$color-button-red-normal: var(--color-base-red-normal);
+$color-button-red-reverse: var(--color-white);
 
 $size-small-padding-sides: 10px;
 $size-mid-small-padding-sides: 12px;
@@ -227,7 +227,7 @@ $size-ultra-large-padding-sides: 44px;
   display: inline-block;
 
   #{$c}__inner {
-    border: 1px solid rgba($color-black, 0.5);
+    border: 1px solid rgba(var(--color-black), 0.25);
     outline: 2px solid transparent;
     text-align: center;
     user-select: none;
@@ -246,7 +246,7 @@ $size-ultra-large-padding-sides: 44px;
     }
 
     &:focus-visible {
-      outline-color: rgba($color-base-purple-normal, 0.3);
+      outline-color: rgba(var(--color-base-purple-normal), 0.3);
       outline-offset: 1px;
     }
 
@@ -269,14 +269,14 @@ $size-ultra-large-padding-sides: 44px;
   &--red {
     #{$c}__inner {
       box-shadow: 0 4px 4px 0 rgba($color-button-dark-normal, 0.04),
-        inset 0 1px 0 0 rgba($color-white, 0.15);
+        inset 0 1px 0 0 rgba(var(--color-white), 0.15);
 
       #{$c}__icon {
-        fill: $color-white;
+        fill: rgb(var(--color-white));
       }
 
       #{$c}__label {
-        color: $color-white;
+        color: rgb(var(--color-white));
       }
 
       &:active {
@@ -287,48 +287,48 @@ $size-ultra-large-padding-sides: 44px;
 
   &--dark {
     #{$c}__inner {
-      background-color: $color-button-dark-normal;
+      background-color: rgb($color-button-dark-normal);
 
       &:hover {
-        background-color: lighten($color-button-dark-normal, 6%);
+        background-color: lighten-var($color-button-dark-normal, 6%);
       }
 
       &:active {
-        background-color: lighten($color-button-dark-normal, 2%);
+        background-color: lighten-var($color-button-dark-normal, 2%);
       }
     }
   }
 
   &--light {
     #{$c}__inner {
-      background-color: $color-button-light-normal;
-      border-color: rgba($color-black, 0.15);
+      background-color: rgb($color-button-light-normal);
+      border-color: rgba(var(--color-black), 0.15);
 
       #{$c}__icon {
-        fill: $color-black;
+        fill: rgb(var(--color-black));
       }
 
       #{$c}__label {
-        color: $color-black;
+        color: rgb(var(--color-black));
       }
 
       &:hover,
       &:active {
-        border-color: rgba($color-black, 0.2);
+        border-color: rgba(var(--color-black), 0.2);
       }
     }
   }
 
   &--red {
     #{$c}__inner {
-      background-color: $color-button-red-normal;
+      background-color: rgb($color-button-red-normal);
 
       &:hover {
-        background-color: lighten($color-button-red-normal, 6%);
+        background-color: lighten-var($color-button-red-normal, 6%);
       }
 
       &:active {
-        background-color: lighten($color-button-red-normal, 2%);
+        background-color: lighten-var($color-button-red-normal, 2%);
       }
     }
   }
@@ -403,52 +403,52 @@ $size-ultra-large-padding-sides: 44px;
   &--reverse {
     &#{$c}--dark {
       #{$c}__inner {
-        background-color: $color-button-dark-reverse;
-        border-color: $color-button-dark-normal;
+        background-color: rgb($color-button-dark-reverse);
+        border-color: rgb($color-button-dark-normal);
 
         #{$c}__icon {
-          fill: $color-button-dark-normal;
+          fill: rgb($color-button-dark-normal);
         }
 
         #{$c}__label {
-          color: $color-button-dark-normal;
+          color: rgb($color-button-dark-normal);
         }
       }
     }
 
     &#{$c}--light {
       #{$c}__inner {
-        background-color: $color-button-light-reverse;
+        background-color: rgba($color-button-light-reverse, 0.15);
 
         #{$c}__icon {
-          fill: $color-black;
+          fill: rgb(var(--color-black));
         }
 
         #{$c}__label {
-          color: $color-black;
+          color: rgb(var(--color-black));
         }
 
         &:hover {
-          background-color: lighten($color-button-light-reverse, 12%);
+          background-color: rgba($color-button-light-reverse, 0.11);
         }
 
         &:active {
-          background-color: lighten($color-button-light-reverse, 6%);
+          background-color: rgba($color-button-light-reverse, 0.125);
         }
       }
     }
 
     &#{$c}--red {
       #{$c}__inner {
-        background-color: $color-button-red-reverse;
-        border-color: $color-button-red-normal;
+        background-color: rgb($color-button-red-reverse);
+        border-color: rgb($color-button-red-normal);
 
         #{$c}__icon {
-          fill: $color-button-red-normal;
+          fill: rgb($color-button-red-normal);
         }
 
         #{$c}__label {
-          color: $color-button-red-normal;
+          color: rgb($color-button-red-normal);
         }
       }
     }

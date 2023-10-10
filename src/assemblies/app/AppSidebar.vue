@@ -113,7 +113,7 @@ $sidebar-context-height: $size-inbox-form-height;
 
   &,
   #{$c}__context #{$c}__context-presence {
-    background-color: $color-base-purple-ultra-light;
+    background-color: rgb(var(--color-background-secondary));
   }
 
   #{$c}__header,
@@ -124,7 +124,7 @@ $sidebar-context-height: $size-inbox-form-height;
 
   #{$c}__header,
   #{$c}__context {
-    background-color: rgba($color-base-purple-ultra-light, 0.9);
+    background-color: rgba(var(--color-background-secondary), 0.9);
     position: absolute;
     inset-inline: 0;
     backdrop-filter: blur(9px);
@@ -149,15 +149,15 @@ $sidebar-context-height: $size-inbox-form-height;
     &:after {
       background-image: linear-gradient(
         0deg,
-        rgba($color-black, 0) 0%,
-        rgba($color-black, 0.015) 100%
+        rgba(var(--color-black), 0) 0%,
+        rgba(var(--color-black), 0.015) 100%
       );
       inset-block-start: calc(100% + 1px);
       display: none;
     }
 
     &--floating {
-      border-block-end-color: $color-border-secondary;
+      border-block-end-color: rgb(var(--color-border-secondary));
 
       &:after {
         display: block;
@@ -191,7 +191,7 @@ $sidebar-context-height: $size-inbox-form-height;
 
   #{$c}__context {
     border-block-start: $sidebar-context-border-width solid
-      $color-border-secondary;
+      rgb(var(--color-border-secondary));
     height: $sidebar-context-height;
     inset-block-end: 0;
     z-index: 2;
@@ -199,8 +199,8 @@ $sidebar-context-height: $size-inbox-form-height;
     &:before {
       background-image: linear-gradient(
         180deg,
-        rgba($color-black, 0) 0%,
-        rgba($color-black, 0.01) 100%
+        rgba(var(--color-black), 0) 0%,
+        rgba(var(--color-black), 0.01) 100%
       );
       inset-block-end: calc(100% + 1px);
     }

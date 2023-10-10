@@ -336,7 +336,7 @@ $c: ".a-inbox-topbar";
     align-items: center;
 
     &--name {
-      color: $color-text-primary;
+      color: rgb(var(--color-text-primary));
       font-size: 16px;
 
       #{$c}__identity-badge {
@@ -345,18 +345,18 @@ $c: ".a-inbox-topbar";
     }
 
     &--jid {
-      color: $color-text-secondary;
+      color: rgb(var(--color-text-secondary));
       font-size: 15px;
 
       #{$c}__identity-badge {
         margin-block-start: 2px;
 
         &--verified {
-          fill: $color-base-green-normal;
+          fill: rgb(var(--color-base-green-normal));
         }
 
         &--unknown {
-          fill: $color-base-grey-normal;
+          fill: rgb(var(--color-base-grey-normal));
         }
       }
     }
