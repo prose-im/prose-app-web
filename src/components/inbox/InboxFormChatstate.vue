@@ -52,7 +52,7 @@ export default {
     },
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
-      return this.$props.room.name;
+      return this.room.name;
     }
   }
 };

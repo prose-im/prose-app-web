@@ -491,11 +491,8 @@ export default {
       // Mark synchronization as non-stale
       this.isMessageSyncStale = false;
 
-      const messages = await this.$props.room.loadLatestMessages(
-        undefined,
-        true
-      );
-      Store.$inbox.insertCoreMessages(this.$props.room.id, messages);
+      const messages = await this.room.loadLatestMessages(undefined, true);
+      Store.$inbox.insertCoreMessages(this.room.id, messages);
 
       // Load all messages
       //       await Broker.$mam.loadLatestMessages(this.jid);
@@ -546,11 +543,8 @@ export default {
           frameRuntime.MessagingStore.loader("backwards", true);
 
           // TODO: this one is not working
-          const messages = await this.$props.room.loadLatestMessages(
-            undefined,
-            true
-          );
-          Store.$inbox.insertCoreMessages(this.$props.room.id, messages);
+          const messages = await this.room.loadLatestMessages(undefined, true);
+          Store.$inbox.insertCoreMessages(this.room.id, messages);
 
           // Mark backwards loading as complete
           frameRuntime.MessagingStore.loader("backwards", false);

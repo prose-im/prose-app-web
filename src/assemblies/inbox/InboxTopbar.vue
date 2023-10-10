@@ -172,10 +172,12 @@ export default {
     },
 
     truncatedJID(): string {
-      let jid = this.$props.jid.toString();
+      let jid = this.jid.toString();
+
       if (jid.length < 15) {
         return jid;
       }
+
       return jid.slice(0, 14) + "…";
     },
 

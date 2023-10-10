@@ -181,12 +181,11 @@ export default {
     },
 
     states(): ReturnType<typeof Store.$inbox.getStates> {
-      return [];
-      //return Store.$inbox.getStates(this.jid);
+      return Store.$inbox.getStates(this.room.id);
     },
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
-      return this.$props.room.name;
+      return this.room.name;
     }
   },
 
@@ -202,7 +201,7 @@ export default {
       // Propagate new chat state?
       if (composing !== this.isUserComposing) {
         this.isUserComposing = composing;
-        await this.$props.room.setUserIsComposing(composing);
+        await this.room.setUserIsComposing(composing);
       }
     },
 
@@ -289,7 +288,7 @@ export default {
         if (message.startsWith("/invite ")) {
           const jid = new JID(message.substring("/invite ".length).trim());
 
-          switch (this.$props.room.type) {
+          switch (this.room.type) {
             case RoomType.DirectMessage:
             case RoomType.Group:
             case RoomType.Generic:
@@ -298,10 +297,8 @@ export default {
 
             case RoomType.PrivateChannel:
             case RoomType.PublicChannel:
-              console.info(
-                `Inviting user ${jid} to room ${this.$props.room.id}`
-              );
-              await this.$props.room.inviteUsers([jid.toString()]);
+              console.info(`Inviting user ${jid} to room ${this.room.id}`);
+              await this.room.inviteUsers([jid.toString()]);
               break;
           }
           this.message = "";
@@ -309,7 +306,7 @@ export default {
         }
 
         // Send message
-        await this.$props.room.sendMessage(message);
+        await this.room.sendMessage(message);
 
         // Clear message field
         this.message = "";
