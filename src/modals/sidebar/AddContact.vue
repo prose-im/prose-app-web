@@ -113,8 +113,8 @@ base-modal(
 
 <script lang="ts">
 // NPM
-import { PropType } from "vue";
 import { JID } from "@prose-im/prose-sdk-js";
+import { PropType } from "vue";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -255,14 +255,15 @@ export default {
         try {
           // Attempt to parse JID (this might fail, in which case the JID \
           //   needs to be considered invalid)
-          const jid = new JID(jidUnsafeString);
+          // TODO: restore this functionality
+          // const jid = new JID(jidUnsafeString);
 
-          const name =
-            this.identity.jid && jid.equals(this.identity.jid) === true
-              ? this.identity.name
-              : "";
+          // const name =
+          //   this.identity.jid && jid.equals(this.identity.jid) === true
+          //     ? this.identity.name
+          //     : "";
 
-          this.$emit("add", jid, name);
+          this.$emit("add", jidUnsafeString);
         } catch (_) {
           BaseAlert.warning(
             "Invalid address",

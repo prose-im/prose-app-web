@@ -14,16 +14,17 @@ import { Pinia, createPinia } from "pinia";
 import { createPersistedState } from "pinia-plugin-persistedstate";
 
 // PROJECT: STORE
-import $session from "@/store/tables/session";
-import $history from "@/store/tables/history";
-import $layout from "@/store/tables/layout";
 import $account from "@/store/tables/account";
-import $avatar from "@/store/tables/avatar";
-import $profile from "@/store/tables/profile";
-import $inbox from "@/store/tables/inbox";
-import $roster from "@/store/tables/roster";
 import $activity from "@/store/tables/activity";
+import $avatar from "@/store/tables/avatar";
+import $history from "@/store/tables/history";
+import $inbox from "@/store/tables/inbox";
+import $layout from "@/store/tables/layout";
+import $muc from "@/store/tables/muc";
 import $presence from "@/store/tables/presence";
+import $profile from "@/store/tables/profile";
+import $roster from "@/store/tables/roster";
+import $session from "@/store/tables/session";
 import $settings from "@/store/tables/settings";
 
 /**************************************************************************
@@ -57,6 +58,7 @@ class Store {
   $roster!: ReturnType<typeof $roster>;
   $activity!: ReturnType<typeof $activity>;
   $presence!: ReturnType<typeof $presence>;
+  $muc!: ReturnType<typeof $muc>;
   $settings!: ReturnType<typeof $settings>;
 
   constructor() {
@@ -115,6 +117,7 @@ class Store {
     this.$roster = $roster(this.__store);
     this.$activity = $activity(this.__store);
     this.$presence = $presence(this.__store);
+    this.$muc = $muc(this.__store);
     this.$settings = $settings(this.__store);
   }
 }

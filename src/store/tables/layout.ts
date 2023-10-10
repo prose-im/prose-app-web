@@ -26,7 +26,8 @@ const $layout = defineStore("layout", {
           favorites: true,
           teamMembers: true,
           otherContacts: false,
-          groups: true
+          groups: true,
+          channels: true
         }
       },
 
@@ -72,6 +73,12 @@ const $layout = defineStore("layout", {
     setSidebarSectionGroups(visible: boolean) {
       this.$patch(state => {
         state.sidebar.sections.groups = visible;
+      });
+    },
+
+    setSidebarSectionChannels(visible: boolean) {
+      this.$patch(state => {
+        state.sidebar.sections.channels = visible;
       });
     },
 

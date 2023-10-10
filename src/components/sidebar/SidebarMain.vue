@@ -54,72 +54,51 @@
     )
 
   list-disclosure(
-    @toggle="onTeamMembersToggle"
-    :expanded="layout.sidebar.sections.teamMembers"
+    @toggle="onGroupsToggle"
+    :expanded="layout.sidebar.sections.groups"
     :list-class="disclosureListClass"
-    title="Team members"
+    title="Direct Messages"
     expanded
   )
-    sidebar-main-item-user(
-      v-for="itemTeamMember in itemTeamMembers"
-      :jid="itemTeamMember.jid"
-      :name="itemTeamMember.name"
-      :active="activeJID && itemTeamMember.jid.equals(activeJID)"
+    template(
+      v-for="room in itemDirectMessages"
     )
+      sidebar-main-item-user(
+        v-if="room.type === roomType.DirectMessage"
+        :jid="room.members[0]"
+        :name="room.name"
+        :active="room.id === selectedRoomID"
+      )
+
+      sidebar-main-item-channel(
+        v-if="room.type === roomType.Group"
+        :id="room.id"
+        :name="room.name"
+        :active="room.id === selectedRoomID"
+      )
 
     sidebar-main-item-add(
       @click="onTeamMembersAddClick"
-      title="Add a member"
+      title="Open a direct message"
     )
 
   list-disclosure(
-    @toggle="onOtherContactsToggle"
-    :expanded="layout.sidebar.sections.otherContacts"
+    @toggle="onChannelsToggle"
+    :expanded="layout.sidebar.sections.channels"
     :list-class="disclosureListClass"
-    title="Other contacts"
+    title="Channels"
+    expanded
   )
-    sidebar-main-item-user(
-      v-for="itemOtherContact in itemOtherContacts"
-      :jid="itemOtherContact.jid"
-      :name="itemOtherContact.name"
-      :active="activeJID && itemOtherContact.jid.equals(activeJID)"
+    sidebar-main-item-channel(
+      v-for="room in itemChannels"
+      :id="room.id"
+      :name="room.name"
+      :active="room.id === selectedRoomID"
     )
 
     sidebar-main-item-add(
       @click="onOtherContactsAddClick"
-      title="Connect with someone"
-    )
-
-  list-disclosure(
-    @toggle="onGroupsToggle"
-    :expanded="layout.sidebar.sections.groups"
-    :list-class="disclosureListClass"
-    title="Groups"
-    expanded
-  )
-    sidebar-main-item-channel(
-      name="bugs"
-      disabled
-    )
-
-    sidebar-main-item-channel(
-      name="constellation"
-      disabled
-    )
-
-    sidebar-main-item-channel(
-      name="general"
-      disabled
-    )
-
-    sidebar-main-item-channel(
-      name="support"
-      disabled
-    )
-
-    sidebar-main-item-add(
-      title="Add a group"
-      disabled
+      title="Add channels"
     )
 
   add-contact(
@@ -137,18 +116,25 @@
 
 <script lang="ts">
 // NPM
-import { JID, Group as RosterGroup } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  Room,
+  RoomType,
+  Group as RosterGroup
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
 import { RosterList } from "@/store/tables/roster";
 
+import Broker from "@/broker";
+
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
-import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
+import SidebarMainItemAdd from "@/components/sidebar/SidebarMainItemAdd.vue";
 import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
 import SidebarMainItemSection from "@/components/sidebar/SidebarMainItemSection.vue";
-import SidebarMainItemAdd from "@/components/sidebar/SidebarMainItemAdd.vue";
+import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
 
 // PROJECT: MODALS
 import {
@@ -184,7 +170,8 @@ export default {
     return {
       // --> STATE <--
 
-      activeJID: null,
+      activeJID: null as JID | null,
+      selectedRoomID: null as string | null,
 
       isRosterSyncStale: true,
       isRosterLoading: false,
@@ -195,7 +182,11 @@ export default {
           loading: false,
           mode: null as AddContactMode | null
         }
-      }
+      },
+
+      // --> DATA <--
+
+      roomType: RoomType
     };
   },
 
@@ -220,6 +211,14 @@ export default {
       return this.intoRosterDisplayItems(
         Store.$roster.getList(RosterGroup.Other)
       );
+    },
+
+    itemDirectMessages(): Room[] {
+      return Store.$muc.getDirectMessages();
+    },
+
+    itemChannels(): Room[] {
+      return Store.$muc.getChannels();
     }
   },
 
@@ -229,7 +228,11 @@ export default {
 
       handler(value) {
         if (value.name && value.name.startsWith("app.inbox")) {
-          this.activeJID = new JID(value.params.jid);
+          if (value.params.jid) {
+            this.activeJID = new JID(value.params.jid);
+          } else if (value.params.roomId) {
+            this.selectedRoomID = value.params.roomId;
+          }
         } else {
           this.activeJID = null;
         }
@@ -242,6 +245,7 @@ export default {
 
     // Bind connected handler
     Store.$session.events().on("connected", this.onStoreConnected);
+    Store.$muc.events().on("rooms:changed", this.onRoomsChanged);
     Store.$roster.events().on("contact:changed", this.onContactChanged);
 
     // Synchronize roster eagerly
@@ -283,6 +287,21 @@ export default {
       });
     },
 
+    async addContactGroup(jidString: string): Promise<void> {
+      const jids = jidString.split(",").map(value => new JID(value.trim()));
+
+      // Add contact
+      await Broker.$muc.createGroup(jids);
+
+      BaseAlert.success("Group added", "Group has been added");
+    },
+
+    async addContactChannel(jidString: string): Promise<void> {
+      await Broker.$muc.createPublicChannel(jidString);
+
+      BaseAlert.success("Channel added", "Channel has been added");
+    },
+
     // --> EVENT LISTENERS <--
 
     onSpotlightToggle(visible: boolean): void {
@@ -315,15 +334,27 @@ export default {
       Store.$layout.setSidebarSectionGroups(visible);
     },
 
-    onStoreConnected(connected: boolean): void {
+    onChannelsToggle(visible: boolean): void {
+      Store.$layout.setSidebarSectionChannels(visible);
+    },
+
+    async onStoreConnected(connected: boolean): Promise<void> {
       if (connected === true) {
         // Synchronize roster eagerly
-        this.syncRosterEager();
+        await Broker.$muc.startObservingRooms();
       } else {
         // Mark synchronization as stale (will re-synchronize when connection \
         //   is restored)
         this.isRosterSyncStale = true;
       }
+    },
+
+    onRoomsChanged(): void {
+      // Mark roster as state (should reload)
+      this.isRosterSyncStale = true;
+
+      // Forcibly reload roster
+      this.syncRosterEager(true);
     },
 
     onContactChanged(): void {
@@ -334,21 +365,31 @@ export default {
       this.syncRosterEager(true);
     },
 
-    async onModalAddContactAdd(jid: JID, name: string): Promise<void> {
+    async onModalAddContactAdd(jidString: string): Promise<void> {
       if (this.modals.addContact.loading !== true) {
         this.modals.addContact.loading = true;
 
         try {
-          // Add contact
-          // TODO: await Broker.$contact.addContact(jid, name);
+          switch (this.modals.addContact.mode) {
+            case AddContactMode.Member:
+              await this.addContactGroup(jidString);
 
-          BaseAlert.success("Contact added", "Contact has been added");
+              break;
+
+            case AddContactMode.Other:
+              await this.addContactChannel(jidString);
+
+              break;
+          }
 
           this.modals.addContact.visible = false;
         } catch (error) {
-          this.$log.error("Failed adding contact", error);
+          BaseAlert.error(
+            "Contact not added",
+            `${jidString} could not be added`
+          );
 
-          BaseAlert.error("Contact not added", `${name} could not be added`);
+          this.$log.error("Failed adding contact", error);
         } finally {
           this.modals.addContact.loading = false;
         }

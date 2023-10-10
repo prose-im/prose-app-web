@@ -10,10 +10,11 @@
 
 // NPM
 import {
+  ConnectionError,
+  JID,
   ProseClient,
   ProseClientDelegate,
-  ConnectionError,
-  JID
+  Room
 } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
@@ -52,26 +53,19 @@ class BrokerDelegate implements ProseClientDelegate {
     this.__eventBus.emit("client:disconnected");
   }
 
-  async composingUsersChanged(
-    client: ProseClient,
-    conversation: JID
-  ): Promise<void> {
-    const composingUsers = await client.loadComposingUsersInConversation(
-      conversation
-    );
+  async composingUsersChanged(client: ProseClient, room: Room): Promise<void> {
+    const composingUsers = await room.loadComposingUsers();
 
     logger.info(
       `Composing users changed: ${composingUsers.join(", ") || "(none)"}`
     );
 
-    const conversationComposingUser = composingUsers.find(jid => {
-      return jid.equals(conversation);
-    });
+    // TODO: Handle multiple composing users in the UI
+  }
 
-    Store.$inbox.setComposing(
-      conversation,
-      conversationComposingUser ? true : false
-    );
+  roomsChanged(_client: ProseClient): void {
+    Store.$muc.markRoomsChanged();
+    Store.$muc.load();
   }
 
   contactChanged(_client: ProseClient, jid: JID): void {
@@ -83,20 +77,14 @@ class BrokerDelegate implements ProseClientDelegate {
   }
 
   async messagesAppended(
-    client: ProseClient,
-    conversation: JID,
+    _client: ProseClient,
+    room: Room,
     messageIDs: string[]
   ): Promise<void> {
-    const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
+    const messages = await room.loadMessagesWithIDs(messageIDs);
 
     // Insert all appended messages
-    const hasInserted = Store.$inbox.insertMessages(
-      conversation,
-
-      messages.map(message => {
-        return inboxMessageFromCore(message);
-      })
-    );
+    const hasInserted = Store.$inbox.insertCoreMessages(room.id, messages);
 
     // Play incoming message sound? (only for messages from remote users)
     if (
@@ -117,24 +105,28 @@ class BrokerDelegate implements ProseClientDelegate {
 
   messagesDeleted(
     _client: ProseClient,
-    conversation: JID,
+    room: Room,
     messageIDs: string[]
   ): void {
     for (const messageID of messageIDs) {
-      Store.$inbox.retractMessage(conversation, messageID);
+      Store.$inbox.retractMessage(room.id, messageID);
     }
   }
 
   async messagesUpdated(
     client: ProseClient,
-    conversation: JID,
+    room: Room,
     messageIDs: string[]
   ): Promise<void> {
-    const messages = await client.loadMessagesWithIDs(conversation, messageIDs);
+    const messages = await room.loadMessagesWithIDs(messageIDs);
 
     for (const message of messages) {
+      if (!message.id) {
+        continue;
+      }
+
       Store.$inbox.updateMessage(
-        conversation,
+        room.id,
         message.id,
         inboxMessageFromCore(message)
       );

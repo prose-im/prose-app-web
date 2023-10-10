@@ -74,8 +74,8 @@ list-button(
 
 <script lang="ts">
 // NPM
-import { PropType } from "vue";
 import { JID } from "@prose-im/prose-sdk-js";
+import { PropType } from "vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -130,7 +130,7 @@ export default {
     onButtonClick(): void {
       this.$router.push({
         name: "app.inbox",
-        params: { jid: this.jid.toString() }
+        params: { roomId: this.jid.toString() }
       });
     }
   }

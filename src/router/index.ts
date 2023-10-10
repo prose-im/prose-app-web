@@ -12,21 +12,24 @@
 import { App } from "vue";
 import {
   Router as VueRouter,
-  createWebHistory,
-  createRouter
+  createRouter,
+  createWebHistory
 } from "vue-router";
-import init, { JID } from "@prose-im/prose-sdk-js";
+import init, { JID, RoomID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: VIEWS
-import StartLogin from "@/views/start/StartLogin.vue";
 import AppBase from "@/views/app/AppBase.vue";
 import AppInboxBase from "@/views/app/inbox/AppInboxBase.vue";
+import StartLogin from "@/views/start/StartLogin.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
+
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
 
 /**************************************************************************
  * ENUMERATIONS
@@ -96,9 +99,40 @@ class Router {
 
           children: [
             {
-              path: "inbox/:jid/",
+              path: "inbox/:roomId/",
               name: "app.inbox",
-              component: AppInboxBase
+              component: AppInboxBase,
+
+              props: route => {
+                const room = Store.$muc.getRoomByID(
+                  route.params.roomId as RoomID
+                );
+
+                if (!room) {
+                  const availableRooms = Store.$muc.getAvailableRoomIDs();
+
+                  let errorMessage = `Room not found '${route.params.roomId}'.`;
+
+                  if (availableRooms.length == 0) {
+                    errorMessage += " There are no rooms available.";
+                  } else {
+                    errorMessage += ` Available rooms are ${availableRooms.join(
+                      ", "
+                    )}`;
+                  }
+
+                  logger.error(errorMessage);
+                }
+
+                return { room: room };
+              },
+
+              beforeEnter: (to, from, next) => {
+                Broker.client
+                  .awaitConnection()
+                  .then(() => Broker.$muc.startObservingRooms())
+                  .then(next);
+              }
             }
           ]
         },

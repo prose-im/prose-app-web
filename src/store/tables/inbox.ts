@@ -9,11 +9,11 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, Message as CoreMessage } from "@prose-im/prose-sdk-js";
 import cloneDeep from "lodash.clonedeep";
 import mitt from "mitt";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
+import { Message as CoreMessage, RoomID } from "@prose-im/prose-sdk-js";
 
 /**************************************************************************
  * TYPES
@@ -29,7 +29,7 @@ type InboxEntryStates = {
 };
 
 type EventMessageGeneric = {
-  jid: JID;
+  roomId: RoomID;
   message: InboxEntryMessage;
   original?: InboxEntryMessage;
 };
@@ -43,7 +43,7 @@ interface Inbox {
 }
 
 interface InboxEntries {
-  [jid: string]: InboxEntry;
+  [roomId: string]: InboxEntry;
 }
 
 interface InboxEntry {
@@ -98,20 +98,20 @@ const $inbox = defineStore("inbox", {
 
   getters: {
     getMessages: function () {
-      return (jid: JID): Array<InboxEntryMessage> => {
-        return this.assert(jid).messages.list;
+      return (roomId: RoomID): Array<InboxEntryMessage> => {
+        return this.assert(roomId).messages.list;
       };
     },
 
     getMessage: function () {
-      return (jid: JID, id: string): InboxEntryMessage | void => {
-        return this.assert(jid).messages.byId[id] || undefined;
+      return (roomId: RoomID, id: string): InboxEntryMessage | void => {
+        return this.assert(roomId).messages.byId[id] || undefined;
       };
     },
 
     getStates: function () {
-      return (jid: JID): Array<InboxEntryStates> => {
-        return this.assert(jid).states;
+      return (roomId: RoomID): Array<InboxEntryStates> => {
+        return this.assert(roomId).states;
       };
     }
   },
@@ -122,15 +122,14 @@ const $inbox = defineStore("inbox", {
       return EventBus;
     },
 
-    assert(jid: JID): InboxEntry {
-      const jidString = jid.toString(),
-        entries = this.entries;
+    assert(roomId: RoomID): InboxEntry {
+      const entries = this.entries;
 
       // Assign new inbox entry?
-      if (!(jidString in entries)) {
+      if (!(roomId in entries)) {
         this.$patch(() => {
           // Insert with defaults
-          entries[jidString] = {
+          entries[roomId] = {
             messages: {
               list: [],
               byId: {}
@@ -143,15 +142,27 @@ const $inbox = defineStore("inbox", {
         });
       }
 
-      return entries[jidString];
+      return entries[roomId];
     },
 
-    insertMessage(jid: JID, message: InboxEntryMessage): boolean {
-      return this.insertMessages(jid, [message]);
+    insertCoreMessages(roomId: RoomID, messages: CoreMessage[]): boolean {
+      return this.insertMessages(
+        roomId,
+        messages.map(message => {
+          return fromCoreMessage(message);
+        })
+      );
     },
 
-    insertMessages(jid: JID, messages: Array<InboxEntryMessage>): boolean {
-      const container = this.assert(jid).messages;
+    insertMessage(roomId: RoomID, message: InboxEntryMessage): boolean {
+      return this.insertMessages(roomId, [message]);
+    },
+
+    insertMessages(
+      roomId: RoomID,
+      messages: Array<InboxEntryMessage>
+    ): boolean {
+      const container = this.assert(roomId).messages;
 
       // Initialize inserted marker
       let hasInserted = false;
@@ -165,7 +176,7 @@ const $inbox = defineStore("inbox", {
         }
 
         // Attempt to update first?
-        const wasUpdated = this.updateMessage(jid, messageId, message);
+        const wasUpdated = this.updateMessage(roomId, messageId, message);
 
         // Should insert message? (does not exist)
         if (wasUpdated !== true) {
@@ -180,7 +191,7 @@ const $inbox = defineStore("inbox", {
 
           // Emit IPC inserted event
           EventBus.emit("message:inserted", {
-            jid: jid,
+            roomId: roomId,
             message
           } as EventMessageGeneric);
         }
@@ -189,8 +200,12 @@ const $inbox = defineStore("inbox", {
       return hasInserted;
     },
 
-    updateMessage(jid: JID, id: string, message: InboxEntryMessage): boolean {
-      const container = this.assert(jid).messages;
+    updateMessage(
+      roomId: RoomID,
+      id: string,
+      message: InboxEntryMessage
+    ): boolean {
+      const container = this.assert(roomId).messages;
 
       // Acquire message identifier
       const messageId = message.id;
@@ -221,7 +236,7 @@ const $inbox = defineStore("inbox", {
 
         // Emit IPC updated event
         EventBus.emit("message:updated", {
-          jid: jid,
+          roomId: roomId,
           message: existingMessage,
           original: originalMessage
         } as EventMessageGeneric);
@@ -234,8 +249,8 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
-    retractMessage(jid: JID, id: string): boolean {
-      const container = this.assert(jid).messages;
+    retractMessage(roomId: RoomID, id: string): boolean {
+      const container = this.assert(roomId).messages;
 
       // Acquire message from store
       const existingMessage = container.byId[id] || null;
@@ -259,7 +274,7 @@ const $inbox = defineStore("inbox", {
 
         // Emit IPC retracted event
         EventBus.emit("message:retracted", {
-          jid: jid,
+          roomId: roomId,
           message: existingMessage
         } as EventMessageGeneric);
 
@@ -271,8 +286,8 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
-    setComposing(jid: JID, composing: boolean) {
-      this.assert(jid).states.composing = composing;
+    setComposing(roomId: RoomID, composing: boolean) {
+      this.assert(roomId).states.composing = composing;
     }
   }
 });
@@ -281,6 +296,6 @@ const $inbox = defineStore("inbox", {
  * EXPORTS
  * ************************************************************************* */
 
-export type { InboxEntryMessage, EventMessageGeneric };
 export { fromCoreMessage };
+export type { EventMessageGeneric, InboxEntryMessage };
 export default $inbox;

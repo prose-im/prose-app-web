@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, UserProfile, UserMetadata } from "@prose-im/prose-sdk-js";
+import { JID, UserMetadata, UserProfile } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -71,6 +71,7 @@ class BrokerModuleProfile extends BrokerModule {
     logger.info(`Will load avatar for: '${jid}'`);
 
     const dataURL = await this._client.client?.loadAvatarDataURL(jid);
+
     if (dataURL) {
       return { dataURL };
     }

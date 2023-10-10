@@ -11,8 +11,7 @@
 // PROJECT: BROKER
 import BrokerClient from "@/broker/client";
 
-import BrokerModuleChat from "@/broker/modules/chat";
-import BrokerModuleMAM from "@/broker/modules/mam";
+import BrokerModuleMUC from "@/broker/modules/muc";
 import BrokerModuleProfile from "@/broker/modules/profile";
 import BrokerModuleRoster from "@/broker/modules/roster";
 import BrokerModuleStatus from "@/broker/modules/status";
@@ -24,22 +23,20 @@ import BrokerModuleStatus from "@/broker/modules/status";
 class Broker {
   readonly client: BrokerClient;
 
-  readonly $chat: BrokerModuleChat;
-  readonly $mam: BrokerModuleMAM;
   readonly $profile: BrokerModuleProfile;
   readonly $roster: BrokerModuleRoster;
   readonly $status: BrokerModuleStatus;
+  readonly $muc: BrokerModuleMUC;
 
   constructor() {
     // Initialize client
     this.client = new BrokerClient();
 
     // Bootstrap all modules (for client)
-    this.$chat = new BrokerModuleChat(this.client);
-    this.$mam = new BrokerModuleMAM(this.client);
     this.$profile = new BrokerModuleProfile(this.client);
     this.$roster = new BrokerModuleRoster(this.client);
     this.$status = new BrokerModuleStatus(this.client);
+    this.$muc = new BrokerModuleMUC(this.client);
   }
 }
 

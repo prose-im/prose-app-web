@@ -38,7 +38,7 @@ layout-toolbar(
       @submit.prevent="onSubmit"
     )
       inbox-form-chatstate(
-        :jid="jid"
+        :room="room"
         :composing="states.composing"
         class="a-inbox-form__compose-chatstate"
       )
@@ -113,21 +113,21 @@ layout-toolbar(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, Room, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import {
   Item as PopoverItem,
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
-import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 import FormField from "@/components/form/FormField.vue";
+import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
 
-// PROJECT: BROKER
-import Broker from "@/broker";
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
@@ -138,8 +138,8 @@ export default {
   components: { InboxFormChatstate },
 
   props: {
-    jid: {
-      type: Object as PropType<JID>,
+    room: {
+      type: Object as PropType<Room>,
       required: true
     }
   },
@@ -182,11 +182,11 @@ export default {
     },
 
     states(): ReturnType<typeof Store.$inbox.getStates> {
-      return Store.$inbox.getStates(this.jid);
+      return Store.$inbox.getStates(this.room.id);
     },
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
-      return Store.$roster.getEntryName(this.jid);
+      return this.room.name;
     }
   },
 
@@ -198,12 +198,12 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    propagateChatState(composing: boolean): void {
+    async propagateChatState(composing: boolean): Promise<void> {
       // Propagate new chat state?
       if (composing !== this.isUserComposing) {
         this.isUserComposing = composing;
 
-        Broker.$chat.sendChatState(this.jid, composing);
+        await this.room.setUserIsComposing(composing);
       }
     },
 
@@ -284,11 +284,33 @@ export default {
         // Clear compose chat state timeout (as needed)
         this.unscheduleChatStateComposeTimeout();
 
-        // Mark user as not composing anymore.
+        // Mark user as not composing anymore
         this.isUserComposing = false;
 
-        // Send message
-        await Broker.$chat.sendMessage(this.jid, message);
+        // Invite users to room?
+        if (message.startsWith("/invite ") === true) {
+          const jid = new JID(message.substring("/invite ".length).trim());
+
+          switch (this.room.type) {
+            case RoomType.DirectMessage:
+            case RoomType.Group:
+            case RoomType.Generic:
+              logger.warn("This room type does not allow inviting users");
+
+              break;
+
+            case RoomType.PrivateChannel:
+            case RoomType.PublicChannel:
+              logger.info(`Inviting user ${jid} to room ${this.room.id}`);
+
+              await this.room.inviteUsers([jid.toString()]);
+
+              break;
+          }
+        } else {
+          // Send message
+          await this.room.sendMessage(message);
+        }
 
         // Clear message field
         this.message = "";

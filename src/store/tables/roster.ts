@@ -11,8 +11,8 @@
 // NPM
 import { defineStore } from "pinia";
 import {
-  JID,
   Availability,
+  JID,
   Group as RosterGroup
 } from "@prose-im/prose-sdk-js";
 
