@@ -66,7 +66,7 @@ export default {
     onButtonClick(): void {
       this.$router.push({
         name: "app.inbox",
-        params: { roomID: this.id }
+        params: { roomId: this.id }
       });
     }
   }

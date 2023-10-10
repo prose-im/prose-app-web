@@ -37,33 +37,31 @@ class BrokerModuleMUC extends BrokerModule {
   }
 
   async createGroup(participants: JID[]): Promise<void> {
-    if (!this._client.client) {
-      return;
-    }
-
-    const room = (await this._client.client.createGroup(
+    const room = (await this._client.client?.createGroup(
       participants.map(jid => jid.toString())
     )) as Room;
 
-    Store.$muc.insertRoom(room);
+    if (room) {
+      Store.$muc.insertRoom(room);
+    }
   }
 
   async createPublicChannel(name: string): Promise<void> {
-    if (!this._client.client) {
-      return;
-    }
+    const room = (await this._client.client?.createPublicChannel(name)) as Room;
 
-    const room = (await this._client.client.createPublicChannel(name)) as Room;
-    Store.$muc.insertRoom(room);
+    if (room) {
+      Store.$muc.insertRoom(room);
+    }
   }
 
   async createPrivateChannel(name: string): Promise<void> {
-    if (!this._client.client) {
-      return;
-    }
+    const room = (await this._client.client?.createPrivateChannel(
+      name
+    )) as Room;
 
-    const room = (await this._client.client.createPrivateChannel(name)) as Room;
-    Store.$muc.insertRoom(room);
+    if (room) {
+      Store.$muc.insertRoom(room);
+    }
   }
 }
 

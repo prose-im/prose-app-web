@@ -67,6 +67,8 @@
 
 <script lang="ts">
 // NPM
+import { PropType, shallowRef } from "vue";
+import { JID, Room } from "@prose-im/prose-sdk-js";
 import {
   Modifier as MessagingModifier,
   Platform as MessagingPlatform,
@@ -74,8 +76,6 @@ import {
   SeekDirection as MessagingSeekDirection,
   Theme as MessagingTheme
 } from "@prose-im/prose-core-views/types/messaging";
-import { JID, Room } from "@prose-im/prose-sdk-js";
-import { PropType, shallowRef } from "vue";
 
 // PROJECT: STYLES
 import styleElementsFonts from "@/assets/stylesheets/elements/_elements.fonts.scss?inline";
@@ -348,8 +348,8 @@ export default {
 
     setupStore(runtime: MessagingRuntime): void {
       // Identify both parties
-      //this.identifyPartyLocal(runtime);
-      //this.identifyPartyRemote(runtime);
+      this.identifyPartyLocal(runtime);
+      this.identifyAllPartiesRemote(runtime);
 
       // Mark as initializing?
       if (this.isMessageSyncStale === true) {
@@ -381,11 +381,18 @@ export default {
       });
     },
 
-    identifyPartyRemote(runtime: MessagingRuntime): void {
+    identifyPartyRemote(runtime: MessagingRuntime, jid: JID): void {
       // Identify remote party
-      runtime.MessagingStore.identify(this.jid.toString(), {
-        name: Store.$roster.getEntryName(this.jid),
-        avatar: Store.$avatar.getAvatarDataUrl(this.jid)
+      runtime.MessagingStore.identify(jid.toString(), {
+        name: Store.$roster.getEntryName(jid),
+        avatar: Store.$avatar.getAvatarDataUrl(jid)
+      });
+    },
+
+    identifyAllPartiesRemote(runtime: MessagingRuntime): void {
+      // Identify remote all parties
+      this.room.members.forEach((memberJID: JID) => {
+        this.identifyPartyRemote(runtime, memberJID);
       });
     },
 
@@ -544,6 +551,7 @@ export default {
 
           // TODO: this one is not working
           const messages = await this.room.loadLatestMessages(undefined, true);
+
           Store.$inbox.insertCoreMessages(this.room.id, messages);
 
           // Mark backwards loading as complete
@@ -858,14 +866,14 @@ export default {
     },
 
     onStoreMessageInserted(event: EventMessageGeneric): void {
-      if (this.room.id === event.roomID) {
+      if (this.room.id === event.roomId) {
         // Insert into view
         this.frame()?.MessagingStore.insert(event.message);
       }
     },
 
     onStoreMessageUpdated(event: EventMessageGeneric): void {
-      if (this.room.id === event.roomID) {
+      if (this.room.id === event.roomId) {
         // Update in view
         // Notice: use identifier from original message as reference, if any, \
         //   otherwise fallback on the actual message. This is done as the \
@@ -879,21 +887,24 @@ export default {
     },
 
     onStoreMessageRetracted(event: EventMessageGeneric): void {
-      if (this.room.id === event.roomID) {
+      if (this.room.id === event.roomId) {
         // Retract from view
         this.frame()?.MessagingStore.retract(event.message.id);
       }
     },
 
     onStoreAvatarChangedOrFlushed({ jid }: EventAvatarGeneric): void {
-      return;
       // Check if should re-identify (if runtime is available)
       const frameRuntime = this.frame();
 
       if (frameRuntime !== null) {
         // Re-identify remote party?
-        if (this.jid.equals(jid) === true) {
-          this.identifyPartyRemote(frameRuntime);
+        const remotePartyJID = this.room.members.find((memberJID: JID) => {
+          return memberJID.equals(jid);
+        });
+
+        if (remotePartyJID) {
+          this.identifyPartyRemote(frameRuntime, remotePartyJID);
         }
 
         // Re-identify local party?

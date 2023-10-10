@@ -9,13 +9,13 @@
  * ************************************************************************* */
 
 // NPM
-import init, { JID, RoomID } from "@prose-im/prose-sdk-js";
 import { App } from "vue";
 import {
   Router as VueRouter,
   createRouter,
   createWebHistory
 } from "vue-router";
+import init, { JID, RoomID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: VIEWS
 import AppBase from "@/views/app/AppBase.vue";
@@ -27,6 +27,9 @@ import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
+
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
 
 /**************************************************************************
  * ENUMERATIONS
@@ -96,16 +99,19 @@ class Router {
 
           children: [
             {
-              path: "inbox/:roomID/",
+              path: "inbox/:roomId/",
               name: "app.inbox",
               component: AppInboxBase,
+
               props: route => {
                 const room = Store.$muc.getRoomByID(
-                  route.params.roomID as RoomID
+                  route.params.roomId as RoomID
                 );
+
                 if (!room) {
                   const availableRooms = Store.$muc.getAvailableRoomIDs();
-                  let errorMessage = `Could not find room '${route.params.roomID}'.`;
+
+                  let errorMessage = `Room not found '${route.params.roomId}'.`;
 
                   if (availableRooms.length == 0) {
                     errorMessage += " There are no rooms available.";
@@ -114,11 +120,14 @@ class Router {
                       ", "
                     )}`;
                   }
-                  console.error(errorMessage);
+
+                  logger.error(errorMessage);
                 }
+
                 return { room: room };
               },
-              beforeEnter: (_to, _from, next) => {
+
+              beforeEnter: (to, from, next) => {
                 Broker.client
                   .awaitConnection()
                   .then(() => Broker.$muc.startObservingRooms())

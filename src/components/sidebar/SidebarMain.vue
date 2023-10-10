@@ -54,33 +54,33 @@
     )
 
   list-disclosure(
-      @toggle="onGroupsToggle"
-      :expanded="layout.sidebar.sections.groups"
-      :list-class="disclosureListClass"
-      title="Direct Messages"
-      expanded
+    @toggle="onGroupsToggle"
+    :expanded="layout.sidebar.sections.groups"
+    :list-class="disclosureListClass"
+    title="Direct Messages"
+    expanded
+  )
+    template(
+      v-for="room in itemDirectMessages"
     )
-      template(
-        v-for="room in itemDirectMessages"
+      sidebar-main-item-user(
+        v-if="room.type === roomType.DirectMessage"
+        :jid="room.members[0]"
+        :name="room.name"
+        :active="room.id === selectedRoomID"
       )
-        sidebar-main-item-user(
-          v-if="room.type === ROOM_TYPE_DIRECTMESSAGE"
-          :jid="room.members[0]"
-          :name="room.name"
-          :active="room.id === selectedRoomID"
-        )
 
-        sidebar-main-item-channel(
-          v-if="room.type === ROOM_TYPE_GROUP"
-          :id="room.id"
-          :name="room.name"
-          :active="room.id === selectedRoomID"
-        )
-
-      sidebar-main-item-add(
-        @click="onTeamMembersAddClick"
-        title="Open a direct message"
+      sidebar-main-item-channel(
+        v-if="room.type === roomType.Group"
+        :id="room.id"
+        :name="room.name"
+        :active="room.id === selectedRoomID"
       )
+
+    sidebar-main-item-add(
+      @click="onTeamMembersAddClick"
+      title="Open a direct message"
+    )
 
   list-disclosure(
     @toggle="onChannelsToggle"
@@ -176,16 +176,17 @@ export default {
       isRosterSyncStale: true,
       isRosterLoading: false,
 
-      ROOM_TYPE_DIRECTMESSAGE: RoomType.DirectMessage,
-      ROOM_TYPE_GROUP: RoomType.Group,
-
       modals: {
         addContact: {
           visible: false,
           loading: false,
           mode: null as AddContactMode | null
         }
-      }
+      },
+
+      // --> DATA <--
+
+      roomType: RoomType
     };
   },
 
@@ -229,8 +230,8 @@ export default {
         if (value.name && value.name.startsWith("app.inbox")) {
           if (value.params.jid) {
             this.activeJID = new JID(value.params.jid);
-          } else if (value.params.roomID) {
-            this.selectedRoomID = value.params.roomID;
+          } else if (value.params.roomId) {
+            this.selectedRoomID = value.params.roomId;
           }
         } else {
           this.activeJID = null;
@@ -286,6 +287,21 @@ export default {
       });
     },
 
+    async addContactGroup(jidString: string): Promise<void> {
+      const jids = jidString.split(",").map(value => new JID(value.trim()));
+
+      // Add contact
+      await Broker.$muc.createGroup(jids);
+
+      BaseAlert.success("Group added", "Group has been added");
+    },
+
+    async addContactChannel(jidString: string): Promise<void> {
+      await Broker.$muc.createPublicChannel(jidString);
+
+      BaseAlert.success("Channel added", "Channel has been added");
+    },
+
     // --> EVENT LISTENERS <--
 
     onSpotlightToggle(visible: boolean): void {
@@ -319,7 +335,7 @@ export default {
     },
 
     onChannelsToggle(visible: boolean): void {
-      Store.$layout.setSidebarSectionGroups(visible);
+      Store.$layout.setSidebarSectionChannels(visible);
     },
 
     async onStoreConnected(connected: boolean): Promise<void> {
@@ -349,38 +365,31 @@ export default {
       this.syncRosterEager(true);
     },
 
-    async onModalAddContactAdd(jidstr: string): Promise<void> {
-      const addGroup = async (jidstr: string) => {
-        const jids = jidstr.split(",").map(str => new JID(str.trim()));
-        // Add contact
-        console.error(jids);
-        await Broker.$muc.createGroup(jids);
-        BaseAlert.success("Group added", "Group has been added");
-      };
-
-      const addChannel = async (jidstr: string) => {
-        await Broker.$muc.createPublicChannel(jidstr);
-        BaseAlert.success("Channel added", "Channel has been added");
-      };
-
+    async onModalAddContactAdd(jidString: string): Promise<void> {
       if (this.modals.addContact.loading !== true) {
         this.modals.addContact.loading = true;
 
         try {
           switch (this.modals.addContact.mode) {
             case AddContactMode.Member:
-              await addGroup(jidstr);
+              await this.addContactGroup(jidString);
+
               break;
+
             case AddContactMode.Other:
-              await addChannel(jidstr);
+              await this.addContactChannel(jidString);
+
               break;
           }
 
           this.modals.addContact.visible = false;
         } catch (error) {
-          this.$log.error("Failed adding contact", error);
+          BaseAlert.error(
+            "Contact not added",
+            `${jidString} could not be added`
+          );
 
-          BaseAlert.error("Contact not added", `${name} could not be added`);
+          this.$log.error("Failed adding contact", error);
         } finally {
           this.modals.addContact.loading = false;
         }

@@ -9,12 +9,12 @@
  * ************************************************************************* */
 
 // NPM
+import { defineStore } from "pinia";
 import {
   Availability,
   JID,
   Group as RosterGroup
 } from "@prose-im/prose-sdk-js";
-import { defineStore } from "pinia";
 
 // PROJECT: STORES
 import Store from "@/store";

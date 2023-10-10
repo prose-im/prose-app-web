@@ -122,8 +122,8 @@ layout-toolbar(
 
 <script lang="ts">
 // NPM
-import { JID, Room, RoomID } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
+import { JID, Room, RoomID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -148,6 +148,7 @@ export default {
       type: Object as PropType<JID>,
       required: true
     },
+
     room: {
       type: Object as PropType<Room>,
       required: true
@@ -226,14 +227,14 @@ export default {
 
           if (
             adjacentRoute.name.startsWith("app.inbox") &&
-            adjacentRoute.params.roomID
+            adjacentRoute.params.roomId
           ) {
             // Make sure not to push current route JID
             if (
               !currentRoute.name.startsWith("app.inbox") ||
-              currentRoute.params.roomID !== adjacentRoute.params.roomID
+              currentRoute.params.roomId !== adjacentRoute.params.roomId
             ) {
-              historyRawJIDs.add(adjacentRoute.params.roomID);
+              historyRawJIDs.add(adjacentRoute.params.roomId);
             }
           }
         }
@@ -276,13 +277,13 @@ export default {
       this.isActionHistoryPopoverVisible = false;
     },
 
-    onActionHistoryPopoverEntryClick(roomID: RoomID): void {
+    onActionHistoryPopoverEntryClick(roomId: RoomID): void {
       // Go to conversation
       this.$router.push({
         name: "app.inbox",
 
         params: {
-          roomID: roomID
+          roomId: roomId
         }
       });
 

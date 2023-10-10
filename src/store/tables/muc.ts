@@ -9,15 +9,12 @@
  * ************************************************************************* */
 
 // NPM
-import { Room, RoomID, RoomType } from "@prose-im/prose-sdk-js";
-
-// PROJECT: STORES
-
+import mitt from "mitt";
 import { defineStore } from "pinia";
+import { Room, RoomID, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import mitt from "mitt";
 
 /**************************************************************************
  * INTERFACES
@@ -31,14 +28,18 @@ interface MUC {
 }
 
 /**************************************************************************
+ * INSTANCES
+ * ************************************************************************* */
+
+const EventBus = mitt();
+
+/**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
 const LOCAL_STATES = {
   loaded: false
 };
-
-const EventBus = mitt();
 
 /**************************************************************************
  * TABLE
@@ -75,39 +76,6 @@ const $muc = defineStore("muc", {
       };
     },
 
-    insertRoom: function (room: Room) {
-      const compareRooms = (lhs: Room, rhs: Room): number => {
-        return lhs.name.localeCompare(rhs.name);
-      };
-
-      return (room: Room) => {
-        this.$patch(state => {
-          switch (room.type) {
-            case RoomType.DirectMessage:
-              state.directMessages.push(room);
-              state.directMessages.sort(compareRooms);
-              break;
-            case RoomType.Group:
-              state.directMessages.push(room);
-              state.directMessages.sort(compareRooms);
-              break;
-            case RoomType.PrivateChannel:
-              state.channels.push(room);
-              state.channels.sort(compareRooms);
-              break;
-            case RoomType.PublicChannel:
-              state.channels.push(room);
-              state.channels.sort(compareRooms);
-              break;
-            case RoomType.Generic:
-              state.genericRooms.push(room);
-              state.genericRooms.sort(compareRooms);
-              break;
-          }
-        });
-      };
-    },
-
     getRoomByID: function () {
       return (roomID: RoomID): Room | undefined => {
         return this.roomsMap.get(roomID);
@@ -122,8 +90,13 @@ const $muc = defineStore("muc", {
   },
 
   actions: {
+    events(): ReturnType<typeof mitt> {
+      // Return event bus
+      return EventBus;
+    },
+
     load(reload = false): Promise<void> {
-      // Load roster? (or reload)
+      // Load MUC list? (or reload)
       if (LOCAL_STATES.loaded === true && reload === false) {
         return Promise.resolve(this.list);
       }
@@ -141,28 +114,43 @@ const $muc = defineStore("muc", {
 
       rooms.forEach(room => {
         switch (room.type) {
-          case RoomType.DirectMessage:
+          case RoomType.DirectMessage: {
             directMessages.push(room);
+
             break;
-          case RoomType.Group:
+          }
+
+          case RoomType.Group: {
             directMessages.push(room);
+
             break;
-          case RoomType.PrivateChannel:
+          }
+
+          case RoomType.PrivateChannel: {
             channels.push(room);
+
             break;
-          case RoomType.PublicChannel:
+          }
+
+          case RoomType.PublicChannel: {
             channels.push(room);
+
             break;
-          case RoomType.Generic:
+          }
+
+          case RoomType.Generic: {
             genericRooms.push(room);
+
             break;
+          }
         }
 
         roomsMap.set(room.id, room);
       });
 
-      const compareRooms = (lhs: Room, rhs: Room): number => {
-        return lhs.name.localeCompare(rhs.name);
+      // Append all rooms
+      const compareRooms = (left: Room, right: Room): number => {
+        return left.name.localeCompare(right.name);
       };
 
       this.$patch(state => {
@@ -175,8 +163,49 @@ const $muc = defineStore("muc", {
       return Promise.resolve(this.list);
     },
 
-    events(): ReturnType<typeof mitt> {
-      return EventBus;
+    insertRoom(room: Room): void {
+      const compareRooms = (left: Room, right: Room): number => {
+        return left.name.localeCompare(right.name);
+      };
+
+      this.$patch(state => {
+        switch (room.type) {
+          case RoomType.DirectMessage: {
+            state.directMessages.push(room);
+            state.directMessages.sort(compareRooms);
+
+            break;
+          }
+
+          case RoomType.Group: {
+            state.directMessages.push(room);
+            state.directMessages.sort(compareRooms);
+
+            break;
+          }
+
+          case RoomType.PrivateChannel: {
+            state.channels.push(room);
+            state.channels.sort(compareRooms);
+
+            break;
+          }
+
+          case RoomType.PublicChannel: {
+            state.channels.push(room);
+            state.channels.sort(compareRooms);
+
+            break;
+          }
+
+          case RoomType.Generic: {
+            state.genericRooms.push(room);
+            state.genericRooms.sort(compareRooms);
+
+            break;
+          }
+        }
+      });
     },
 
     markRoomsChanged() {

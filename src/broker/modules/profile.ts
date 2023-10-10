@@ -71,6 +71,7 @@ class BrokerModuleProfile extends BrokerModule {
     logger.info(`Will load avatar for: '${jid}'`);
 
     const dataURL = await this._client.client?.loadAvatarDataURL(jid);
+
     if (dataURL) {
       return { dataURL };
     }

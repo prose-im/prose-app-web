@@ -112,8 +112,8 @@ layout-toolbar(
 
 <script lang="ts">
 // NPM
-import { JID, Room, RoomType } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
+import { JID, Room, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import {
@@ -126,7 +126,8 @@ import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 // PROJECT: STORES
 import Store from "@/store";
 
-// PROJECT: BROKER
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
@@ -201,6 +202,7 @@ export default {
       // Propagate new chat state?
       if (composing !== this.isUserComposing) {
         this.isUserComposing = composing;
+
         await this.room.setUserIsComposing(composing);
       }
     },
@@ -282,31 +284,33 @@ export default {
         // Clear compose chat state timeout (as needed)
         this.unscheduleChatStateComposeTimeout();
 
-        // Mark user as not composing anymore.
+        // Mark user as not composing anymore
         this.isUserComposing = false;
 
-        if (message.startsWith("/invite ")) {
+        // Invite users to room?
+        if (message.startsWith("/invite ") === true) {
           const jid = new JID(message.substring("/invite ".length).trim());
 
           switch (this.room.type) {
             case RoomType.DirectMessage:
             case RoomType.Group:
             case RoomType.Generic:
-              console.warn("This room type does not allow inviting users");
+              logger.warn("This room type does not allow inviting users");
+
               break;
 
             case RoomType.PrivateChannel:
             case RoomType.PublicChannel:
-              console.info(`Inviting user ${jid} to room ${this.room.id}`);
+              logger.info(`Inviting user ${jid} to room ${this.room.id}`);
+
               await this.room.inviteUsers([jid.toString()]);
+
               break;
           }
-          this.message = "";
-          return;
+        } else {
+          // Send message
+          await this.room.sendMessage(message);
         }
-
-        // Send message
-        await this.room.sendMessage(message);
 
         // Clear message field
         this.message = "";

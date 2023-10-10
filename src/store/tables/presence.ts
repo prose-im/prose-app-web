@@ -9,8 +9,8 @@
  * ************************************************************************* */
 
 // NPM
-import { Availability, JID } from "@prose-im/prose-sdk-js";
 import { defineStore } from "pinia";
+import { Availability, JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Broker from "@/broker";

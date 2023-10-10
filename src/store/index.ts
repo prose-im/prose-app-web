@@ -9,9 +9,9 @@
  * ************************************************************************* */
 
 // NPM
+import { App } from "vue";
 import { Pinia, createPinia } from "pinia";
 import { createPersistedState } from "pinia-plugin-persistedstate";
-import { App } from "vue";
 
 // PROJECT: STORE
 import $account from "@/store/tables/account";

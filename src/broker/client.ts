@@ -82,17 +82,21 @@ class BrokerClient {
   }
 
   async awaitConnection(): Promise<void> {
-    if (this.__isConnected) {
+    // Already connected?
+    if (this.__isConnected === true) {
       return Promise.resolve();
     }
 
+    // Not already connected
     const delegate = this.__delegate;
 
     return new Promise(resolve => {
       const handler = () => {
         delegate.events().off("client:connected", handler);
+
         resolve();
       };
+
       delegate.events().on("client:connected", handler);
     });
   }
@@ -137,12 +141,14 @@ class BrokerClient {
 
   private __onClientConnected(): void {
     this.__isConnected = true;
+
     Store.$session.setConnected(true);
     Store.$session.setConnecting(false);
   }
 
   private __onClientDisconnected(): void {
     this.__isConnected = false;
+
     Store.$session.setConnected(false);
     Store.$session.setConnecting(false);
 

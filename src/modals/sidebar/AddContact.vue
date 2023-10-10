@@ -255,6 +255,7 @@ export default {
         try {
           // Attempt to parse JID (this might fail, in which case the JID \
           //   needs to be considered invalid)
+          // TODO: restore this functionality
           // const jid = new JID(jidUnsafeString);
 
           // const name =
