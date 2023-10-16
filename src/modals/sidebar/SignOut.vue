@@ -13,13 +13,16 @@ base-modal(
   @close="$emit('close')"
   @confirm="$emit('proceed', context)"
   confirm-label="Sign Out"
+  class="m-sign-out"
+  size="large"
   destructive
 )
-  p.u-regular
-    | You will be signed out of your account and will need to login back again to access your inbox. You will not receive new message notifications anymore.
-
-  p.u-medium
-    | Do you really want to sign out?
+  base-placeholder-image(
+    illustration="goodbye"
+    title="Do you really want to sign out?"
+    description="You will need to login again to access your inbox and receive notifications."
+    class="m-sign-out__placeholder"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -33,3 +36,18 @@ export default {
   emits: ["close", "proceed"]
 };
 </script>
+
+<!-- **********************************************************************
+     STYLE
+     ********************************************************************** -->
+
+<style lang="scss">
+$c: ".m-sign-out";
+
+.m-sign-out {
+  #{$c}__placeholder {
+    margin-inline: auto;
+    margin-block: 16px 36px;
+  }
+}
+</style>
