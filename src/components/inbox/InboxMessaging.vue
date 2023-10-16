@@ -25,6 +25,15 @@
     sandbox="allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
   )
 
+  .c-inbox-messaging__placeholder(
+    v-if="hasPlaceholder"
+  )
+    base-placeholder-image(
+      illustration="empty"
+      title="Don't be shy!"
+      description="It's pretty quiet around here, send your first message to get the conversation rolling."
+    )
+
   base-popover-list(
     v-if="popover.items.length > 0"
     v-click-away="onPopoverClickAway"
@@ -205,6 +214,14 @@ export default {
   },
 
   computed: {
+    hasLoader(): boolean {
+      return this.isMessageSyncStale || this.isMessageSyncMoreLoading;
+    },
+
+    hasPlaceholder(): boolean {
+      return this.hasLoader === false && this.messages.length === 0;
+    },
+
     selfJID(): JID {
       return this.account.getLocalJID();
     },
@@ -499,6 +516,7 @@ export default {
       this.isMessageSyncStale = false;
 
       const messages = await this.room.loadLatestMessages(undefined, true);
+
       Store.$inbox.insertCoreMessages(this.room.id, messages);
 
       // Load all messages
@@ -1101,6 +1119,17 @@ $c: ".c-inbox-messaging";
     &--visible {
       visibility: visible;
     }
+  }
+
+  #{$c}__placeholder {
+    background-color: rgba(var(--color-white), 0.65);
+    backdrop-filter: blur(6px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    inset: 0;
+    z-index: 2;
   }
 
   #{$c}__popover {
