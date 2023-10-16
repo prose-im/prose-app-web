@@ -19,6 +19,7 @@ import init, { JID, RoomID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: VIEWS
 import AppBase from "@/views/app/AppBase.vue";
+import AppIndex from "@/views/app/AppIndex.vue";
 import AppInboxBase from "@/views/app/inbox/AppInboxBase.vue";
 import StartLogin from "@/views/start/StartLogin.vue";
 
@@ -98,6 +99,12 @@ class Router {
           },
 
           children: [
+            {
+              path: "",
+              name: "app.index",
+              component: AppIndex
+            },
+
             {
               path: "inbox/:roomId/",
               name: "app.inbox",
