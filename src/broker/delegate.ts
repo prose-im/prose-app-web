@@ -53,7 +53,7 @@ class BrokerDelegate implements ProseClientDelegate {
     this.__eventBus.emit("client:disconnected");
   }
 
-  async composingUsersChanged(client: ProseClient, room: Room): Promise<void> {
+  async composingUsersChanged(_client: ProseClient, room: Room): Promise<void> {
     const composingUsers = await room.loadComposingUsers();
 
     logger.info(
@@ -63,7 +63,7 @@ class BrokerDelegate implements ProseClientDelegate {
     // TODO: Handle multiple composing users in the UI
   }
 
-  roomsChanged(_client: ProseClient): void {
+  roomsChanged(): void {
     Store.$muc.markRoomsChanged();
     Store.$muc.load();
   }
@@ -114,7 +114,7 @@ class BrokerDelegate implements ProseClientDelegate {
   }
 
   async messagesUpdated(
-    client: ProseClient,
+    _client: ProseClient,
     room: Room,
     messageIDs: string[]
   ): Promise<void> {

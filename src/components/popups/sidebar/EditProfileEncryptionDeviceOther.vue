@@ -115,7 +115,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onDataTableControlClick(type: DataTableControlType): void {
+    onDataTableControlClick(): void {
       // TODO: handle action for type
     }
   }

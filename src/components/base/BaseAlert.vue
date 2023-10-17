@@ -140,16 +140,6 @@ export default {
     });
   },
 
-  created() {
-    // Bind show event
-    EventBus.on("show", this.show as Handler);
-  },
-
-  beforeUnmount() {
-    // Unbind show event
-    EventBus.off("show", this.show as Handler);
-  },
-
   computed: {
     badgeIcon(): string {
       switch (this.level) {
@@ -171,6 +161,16 @@ export default {
         }
       }
     }
+  },
+
+  created() {
+    // Bind show event
+    EventBus.on("show", this.show as Handler);
+  },
+
+  beforeUnmount() {
+    // Unbind show event
+    EventBus.off("show", this.show as Handler);
   },
 
   methods: {

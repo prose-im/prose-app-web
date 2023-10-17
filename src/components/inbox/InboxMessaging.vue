@@ -83,7 +83,11 @@ import {
   Platform as MessagingPlatform,
   Messaging as MessagingRuntime,
   SeekDirection as MessagingSeekDirection,
-  Theme as MessagingTheme
+  Theme as MessagingTheme,
+  EventMessageActionsView,
+  EventMessageReactionsView,
+  EventMessageReactionsReact,
+  EventMessageHistorySeek
 } from "@prose-im/prose-core-views/types/messaging";
 
 // PROJECT: STYLES
@@ -1129,7 +1133,6 @@ $c: ".c-inbox-messaging";
     justify-content: center;
     position: absolute;
     inset: 0;
-    z-index: 2;
   }
 
   #{$c}__popover {
