@@ -67,17 +67,22 @@ export default {
 $c: ".c-base-placeholder-image";
 
 // VARIABLES
-$illustration-max-width: 280px;
-$illustration-margin-sides: 20px;
+$illustration-image-width: 680px;
+$illustration-image-scale-factor: 3;
+
+$illustration-margin-sides: 40px;
 
 $illustration-images: (
-  "empty": 226px,
-  "goodbye": 180px,
-  "welcome": 196px
+  "empty": 550px,
+  "goodbye": 437px,
+  "welcome": 477px
 );
 
 .c-base-placeholder-image {
-  max-width: ($illustration-max-width + (2 * $illustration-margin-sides));
+  max-width: calc(
+    ($illustration-image-width / $illustration-image-scale-factor) +
+      (2 * $illustration-margin-sides)
+  );
   text-align: center;
 
   #{$c}__illustration {
@@ -108,7 +113,7 @@ $illustration-images: (
     &--#{$illustration} {
       #{$c}__illustration {
         background-image: url("@/assets/images/components/base/BasePlaceholderImage/illustration-#{$illustration}.webp");
-        height: $height;
+        height: calc($height / $illustration-image-scale-factor);
       }
     }
   }
