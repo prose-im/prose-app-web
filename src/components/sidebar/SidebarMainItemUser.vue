@@ -106,16 +106,7 @@ export default {
     },
 
     unreadCount() {
-      // TODO: those are fixtures, this data should come somewhere from the \
-      //   store, based on the user JID!
-      if (this.jid.node?.startsWith("m") === true) {
-        return 8;
-      }
-
-      if (this.jid.node?.startsWith("s") === true) {
-        return 15;
-      }
-
+      // TODO: return a non-zero unread count if there are unread messages
       return 0;
     },
 

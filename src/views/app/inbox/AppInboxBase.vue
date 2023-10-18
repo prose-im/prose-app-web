@@ -78,7 +78,6 @@ export default {
     },
 
     room(): Room | void {
-      // TODO: handle case of room not found (show placeholder data)
       return Store.$muc.getRoomByID(this.roomId);
     },
 

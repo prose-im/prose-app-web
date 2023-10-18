@@ -68,7 +68,8 @@ import {
 
 // CONSTANTS
 // TODO: import this from the JS SDK?
-const OMEMO_VERSION = "0.8.3"; // TODO: from local OMEMO library version tag
+// TODO: from local OMEMO library version tag
+const OMEMO_VERSION = "0.0.0";
 
 export default {
   name: "EditProfileEncryptionDeviceCurrent",
