@@ -159,7 +159,7 @@ export default {
   props: {
     room: {
       type: Object as PropType<Room>,
-      required: true
+      default: undefined
     }
   },
 
@@ -243,7 +243,7 @@ export default {
     },
 
     messages(): ReturnType<typeof Store.$inbox.getMessages> {
-      return Store.$inbox.getMessages(this.room.id);
+      return this.room ? Store.$inbox.getMessages(this.room.id) : [];
     }
   },
 
@@ -412,7 +412,7 @@ export default {
 
     identifyAllPartiesRemote(runtime: MessagingRuntime): void {
       // Identify remote all parties
-      this.room.members.forEach((memberJID: JID) => {
+      this.room?.members.forEach((memberJID: JID) => {
         this.identifyPartyRemote(runtime, memberJID);
       });
     },
@@ -512,45 +512,50 @@ export default {
 
     async syncMessagesEager(): Promise<void> {
       // Can synchronize now? (connected)
+      // TODO
       // if (
       //   this.isMessageSyncStale === true &&
       //   Store.$session.connected === true
       // ) {
-      // Mark synchronization as non-stale
-      this.isMessageSyncStale = false;
 
-      const messages = await this.room.loadLatestMessages(undefined, true);
+      // Can synchronize now? (room is known)
+      if (this.room) {
+        // Mark synchronization as non-stale
+        this.isMessageSyncStale = false;
 
-      Store.$inbox.insertCoreMessages(this.room.id, messages);
+        const messages = await this.room.loadLatestMessages(undefined, true);
 
-      // Load all messages
-      //       await Broker.$mam.loadLatestMessages(this.jid);
-      //
-      //       const frameRuntime = this.frame();
-      //
-      //       if (frameRuntime !== null) {
-      //         // Mark forwards loading as complete
-      //         frameRuntime.MessagingStore.loader("forwards", false);
-      //
-      //         // TODO: Fix backwards loading after updating core lib
-      //         // Mark backwards loading as complete?
-      //         // if (result.complete === true) {
-      //         //   frameRuntime.MessagingStore.loader("backwards", false);
-      //         // }
-      //       } else {
-      //         this.$log.warn(
-      //           `Could not show loaders in message frame runtime upon eagerly ` +
-      //             `synchronizing messages, as it is not ready yet for: ${this.jid}`
-      //         );
-      //       }
-      // }
+        Store.$inbox.insertCoreMessages(this.room.id, messages);
+
+        // Load all messages
+        //       await Broker.$mam.loadLatestMessages(this.jid);
+        //
+        //       const frameRuntime = this.frame();
+        //
+        //       if (frameRuntime !== null) {
+        //         // Mark forwards loading as complete
+        //         frameRuntime.MessagingStore.loader("forwards", false);
+        //
+        //         // TODO: Fix backwards loading after updating core lib
+        //         // Mark backwards loading as complete?
+        //         // if (result.complete === true) {
+        //         //   frameRuntime.MessagingStore.loader("backwards", false);
+        //         // }
+        //       } else {
+        //         this.$log.warn(
+        //           `Could not show loaders in message frame runtime upon eagerly ` +
+        //             `synchronizing messages, as it is not ready yet for: ${this.jid}`
+        //         );
+        //       }
+        // }
+      }
     },
 
     async seekMoreMessages(): Promise<void> {
       // Can seek now? (connected and not stale)
       // TODO: Fix condition after updating core lib
       if (
-        true
+        this.room
         // Store.$session.connected === true &&
         // this.isMessageSyncStale !== true &&
         // this.isMessageSyncMoreLoading !== true
@@ -643,7 +648,7 @@ export default {
       if (shouldPropagate === true) {
         // Send reaction to network
         for (const reaction of reactions) {
-          await this.room.toggleReactionToMessage(messageId, reaction);
+          await this.room?.toggleReactionToMessage(messageId, reaction);
         }
       }
     },
@@ -680,7 +685,7 @@ export default {
 
       try {
         // Send update to network
-        await this.room.updateMessage(messageId, text);
+        await this.room?.updateMessage(messageId, text);
 
         // Acknowledge update
         BaseAlert.info("Message edited", "The message has been updated");
@@ -714,12 +719,14 @@ export default {
       messageId: string;
     }): Promise<void> {
       // Remove from store
-      const wasRemoved = Store.$inbox.retractMessage(this.room.id, messageId);
+      const wasRemoved = this.room
+        ? Store.$inbox.retractMessage(this.room.id, messageId)
+        : false;
 
       // Message removed in store? Proceed actual network removal & acknowledge
       if (wasRemoved === true) {
         // Send removal to network
-        await this.room.retractMessage(messageId);
+        await this.room?.retractMessage(messageId);
 
         // Acknowledge removal
         BaseAlert.info("Message removed", "The message has been deleted");
@@ -888,14 +895,14 @@ export default {
     },
 
     onStoreMessageInserted(event: EventMessageGeneric): void {
-      if (this.room.id === event.roomId) {
+      if (this.room?.id === event.roomId) {
         // Insert into view
         this.frame()?.MessagingStore.insert(event.message);
       }
     },
 
     onStoreMessageUpdated(event: EventMessageGeneric): void {
-      if (this.room.id === event.roomId) {
+      if (this.room?.id === event.roomId) {
         // Update in view
         // Notice: use identifier from original message as reference, if any, \
         //   otherwise fallback on the actual message. This is done as the \
@@ -909,7 +916,7 @@ export default {
     },
 
     onStoreMessageRetracted(event: EventMessageGeneric): void {
-      if (this.room.id === event.roomId) {
+      if (this.room?.id === event.roomId) {
         // Retract from view
         this.frame()?.MessagingStore.retract(event.message.id);
       }
@@ -921,7 +928,7 @@ export default {
 
       if (frameRuntime !== null) {
         // Re-identify remote party?
-        const remotePartyJID = this.room.members.find((memberJID: JID) => {
+        const remotePartyJID = this.room?.members.find((memberJID: JID) => {
           return memberJID.equals(jid);
         });
 

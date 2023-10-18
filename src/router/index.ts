@@ -68,14 +68,16 @@ class Router {
           name: "start.login",
           component: StartLogin,
 
-          beforeEnter: (_to, _from, next) => {
-            this.__guardAnonymous()
-              .then(next)
-              .catch(error => {
-                if (error) {
-                  logger.error("Failed routing to start login", error);
-                }
-              });
+          beforeEnter: async (_to, _from, next) => {
+            try {
+              await this.__guardAnonymous();
+            } catch (_) {
+              logger.warn(
+                "Cannot route to the start login, user already logged in"
+              );
+            }
+
+            next();
           }
         },
 
@@ -86,15 +88,20 @@ class Router {
           name: "app",
           component: AppBase,
 
-          beforeEnter: (_to, _from, next) => {
-            this.__guardAuthenticated()
-              .then(this.__setupBrokerClient.bind(this))
-              .then(next)
-              .catch(error => {
-                if (error) {
-                  logger.error("Failed routing to app", error);
-                }
-              });
+          beforeEnter: async (_to, _from, next) => {
+            try {
+              await this.__guardAuthenticated();
+            } catch (_) {
+              logger.warn("Cannot route to the app, user not logged in");
+            }
+
+            // Important: do not await here, as this would block routing while \
+            //   the broker client is connecting to the network. We want this \
+            //   to be done in the background while the app is already showing \
+            //   on screen for the user.
+            this.__setupBrokerClient();
+
+            next();
           },
 
           children: [

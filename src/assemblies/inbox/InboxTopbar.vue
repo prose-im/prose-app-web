@@ -54,7 +54,9 @@ layout-toolbar(
   template(
     v-slot:middle
   )
-    span.a-inbox-topbar__identity.a-inbox-topbar__identity--name
+    span.a-inbox-topbar__identity.a-inbox-topbar__identity--name(
+      v-if="room"
+    )
       base-presence(
         :jid="jid"
         class="a-inbox-topbar__identity-badge"
@@ -151,7 +153,7 @@ export default {
 
     room: {
       type: Object as PropType<Room>,
-      required: true
+      default: undefined
     }
   },
 

@@ -38,6 +38,7 @@ layout-toolbar(
       @submit.prevent="onSubmit"
     )
       inbox-form-chatstate(
+        v-if="room"
         :room="room"
         :composing="states.composing"
         class="a-inbox-form__compose-chatstate"
@@ -140,7 +141,7 @@ export default {
   props: {
     room: {
       type: Object as PropType<Room>,
-      required: true
+      default: undefined
     }
   },
 
@@ -170,7 +171,12 @@ export default {
     },
 
     fieldComposePlaceholder(): string {
-      return `Message ${this.rosterName}`;
+      // Any roster name set?
+      if (this.rosterName) {
+        return `Message ${this.rosterName}`;
+      }
+
+      return "Send a message";
     },
 
     isFormDisabled(): boolean {
@@ -182,11 +188,11 @@ export default {
     },
 
     states(): ReturnType<typeof Store.$inbox.getStates> {
-      return Store.$inbox.getStates(this.room.id);
+      return Store.$inbox.getStates(this.room?.id);
     },
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
-      return this.room.name;
+      return this.room?.name || "";
     }
   },
 
@@ -203,7 +209,7 @@ export default {
       if (composing !== this.isUserComposing) {
         this.isUserComposing = composing;
 
-        await this.room.setUserIsComposing(composing);
+        await this.room?.setUserIsComposing(composing);
       }
     },
 
@@ -291,7 +297,7 @@ export default {
         if (message.startsWith("/invite ") === true) {
           const jid = new JID(message.substring("/invite ".length).trim());
 
-          switch (this.room.type) {
+          switch (this.room?.type) {
             case RoomType.DirectMessage:
             case RoomType.Group:
             case RoomType.Generic:
@@ -309,7 +315,7 @@ export default {
           }
         } else {
           // Send message
-          await this.room.sendMessage(message);
+          await this.room?.sendMessage(message);
         }
 
         // Clear message field
