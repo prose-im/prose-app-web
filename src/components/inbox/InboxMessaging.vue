@@ -252,7 +252,7 @@ export default {
       immediate: true,
 
       handler(newValue: Room, oldValue: Room) {
-        if (newValue && (!oldValue || newValue.id != oldValue.id)) {
+        if (newValue && (!oldValue || newValue.id !== oldValue.id)) {
           // Mark as stale
           this.isMessageSyncStale = true;
 

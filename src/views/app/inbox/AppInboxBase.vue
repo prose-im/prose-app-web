@@ -43,8 +43,7 @@
 
 <script lang="ts">
 // NPM
-import { JID, Room } from "@prose-im/prose-sdk-js";
-import { PropType } from "vue";
+import { JID, Room, RoomID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -69,16 +68,18 @@ export default {
     InboxForm
   },
 
-  props: {
-    room: {
-      type: Object as PropType<Room>,
-      required: true
-    }
-  },
-
   computed: {
     jid(): JID {
-      return new JID(this.$route.params.roomId as string);
+      return new JID(this.roomId as string);
+    },
+
+    roomId(): RoomID {
+      return this.$route.params.roomId as RoomID;
+    },
+
+    room(): Room | void {
+      // TODO: handle case of room not found (show placeholder data)
+      return Store.$muc.getRoomByID(this.roomId);
     },
 
     layout(): typeof Store.$layout {

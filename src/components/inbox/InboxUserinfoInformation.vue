@@ -118,7 +118,7 @@ export default {
 
         if (this.profile.information.lastActive) {
           const activePrefix =
-            this.availability != Availability.Unavailable
+            this.availability !== Availability.Unavailable
               ? "Active"
               : "Last seen";
 
