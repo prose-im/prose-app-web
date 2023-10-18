@@ -511,54 +511,49 @@ export default {
     },
 
     async syncMessagesEager(): Promise<void> {
-      // Can synchronize now? (connected)
-      // TODO
-      // if (
-      //   this.isMessageSyncStale === true &&
-      //   Store.$session.connected === true
-      // ) {
-
-      // Can synchronize now? (room is known)
-      if (this.room) {
+      // Can synchronize now? (connected & room is known)
+      if (
+        this.room &&
+        this.isMessageSyncStale === true &&
+        Store.$session.connected === true
+      ) {
         // Mark synchronization as non-stale
         this.isMessageSyncStale = false;
 
+        // Load all messages
         const messages = await this.room.loadLatestMessages(undefined, true);
 
         Store.$inbox.insertCoreMessages(this.room.id, messages);
 
-        // Load all messages
-        //       await Broker.$mam.loadLatestMessages(this.jid);
-        //
-        //       const frameRuntime = this.frame();
-        //
-        //       if (frameRuntime !== null) {
-        //         // Mark forwards loading as complete
-        //         frameRuntime.MessagingStore.loader("forwards", false);
-        //
-        //         // TODO: Fix backwards loading after updating core lib
-        //         // Mark backwards loading as complete?
-        //         // if (result.complete === true) {
-        //         //   frameRuntime.MessagingStore.loader("backwards", false);
-        //         // }
-        //       } else {
-        //         this.$log.warn(
-        //           `Could not show loaders in message frame runtime upon eagerly ` +
-        //             `synchronizing messages, as it is not ready yet for: ${this.jid}`
-        //         );
-        //       }
-        // }
+        // Update loading marker
+        const frameRuntime = this.frame();
+
+        if (frameRuntime !== null) {
+          // Mark forwards loading as complete
+          frameRuntime.MessagingStore.loader("forwards", false);
+
+          // TODO: Fix backwards loading after updating core lib
+          // Mark backwards loading as complete?
+          // if (result.complete === true) {
+          //   frameRuntime.MessagingStore.loader("backwards", false);
+          // }
+        } else {
+          this.$log.warn(
+            `Could not show loaders in message frame runtime upon eagerly ` +
+              `synchronizing messages, as it is not ready yet for: ` +
+              `${this.room.id}`
+          );
+        }
       }
     },
 
     async seekMoreMessages(): Promise<void> {
       // Can seek now? (connected and not stale)
-      // TODO: Fix condition after updating core lib
       if (
-        this.room
-        // Store.$session.connected === true &&
-        // this.isMessageSyncStale !== true &&
-        // this.isMessageSyncMoreLoading !== true
+        Store.$session.connected === true &&
+        this.room &&
+        this.isMessageSyncStale !== true &&
+        this.isMessageSyncMoreLoading !== true
       ) {
         const frameRuntime = this.frame();
 
@@ -576,7 +571,7 @@ export default {
 
           frameRuntime.MessagingStore.loader("backwards", true);
 
-          // TODO: this one is not working
+          // Load earlier messages
           const messages = await this.room.loadLatestMessages(undefined, true);
 
           Store.$inbox.insertCoreMessages(this.room.id, messages);
@@ -588,7 +583,8 @@ export default {
         } else {
           this.$log.warn(
             `Could not seek previous messages, as there is no first ` +
-              `message from archives or frame is not ready yet for: ${this.jid}`
+              `message from archives or frame is not ready yet for: ` +
+              `${this.room.id}`
           );
         }
       }
