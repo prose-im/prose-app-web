@@ -29,6 +29,9 @@ import Store from "@/store";
 // PROJECT: BROKER
 import Broker from "@/broker";
 
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * ENUMERATIONS
  * ************************************************************************* */
@@ -66,13 +69,15 @@ class Router {
           name: "start.login",
           component: StartLogin,
 
-          beforeEnter: (to, from, next) => {
-            this.__initializeWasmModule().then(() => {
-              // Ensure that user is not already logged-in
-              this.__guardAnonymous();
-
-              next();
-            });
+          beforeEnter: (_to, _from, next) => {
+            this.__initializeWasmModule()
+              .then(this.__guardAnonymous.bind(this))
+              .then(next)
+              .catch(error => {
+                if (error) {
+                  logger.error("Failed routing to start login", error);
+                }
+              });
           }
         },
 
@@ -83,16 +88,16 @@ class Router {
           name: "app",
           component: AppBase,
 
-          beforeEnter: (to, from, next) => {
-            this.__initializeWasmModule().then(() => {
-              // Ensure that user is logged-in
-              this.__guardAuthenticated();
-
-              // Setup broker client (resume session)
-              this.__setupBrokerClient();
-
-              next();
-            });
+          beforeEnter: (_to, _from, next) => {
+            this.__initializeWasmModule()
+              .then(this.__guardAuthenticated.bind(this))
+              .then(this.__setupBrokerClient.bind(this))
+              .then(next)
+              .catch(error => {
+                if (error) {
+                  logger.error("Failed routing to app", error);
+                }
+              });
           },
 
           children: [
@@ -105,14 +110,7 @@ class Router {
             {
               path: "inbox/:roomId/",
               name: "app.inbox",
-              component: AppInboxBase,
-
-              beforeEnter: (to, from, next) => {
-                Broker.client
-                  .awaitConnection()
-                  .then(() => Broker.$muc.startObservingRooms())
-                  .then(next);
-              }
+              component: AppInboxBase
             }
           ]
         },
@@ -141,34 +139,50 @@ class Router {
     }
   }
 
-  private __guardAuthenticated() {
+  private __guardAuthenticated(): Promise<void> {
     // Ensure that user is logged in (redirect to base if not)
     if (!Store.$account.credentials.jid) {
       this.__router.push({
         name: "start.login"
       });
+
+      return Promise.reject();
     }
+
+    return Promise.resolve();
   }
 
-  private __guardAnonymous() {
+  private __guardAnonymous(): Promise<void> {
     // Ensure that user is not logged-in (redirect to app if so)
     if (Store.$account.credentials.jid) {
       this.__router.push({
         name: "app"
       });
+
+      return Promise.reject();
     }
+
+    return Promise.resolve();
   }
 
-  private __setupBrokerClient() {
+  private async __setupBrokerClient(): Promise<void> {
     // Authenticate to broker client
     const credentials = Store.$account.credentials;
 
     if (credentials.jid) {
-      Broker.client
-        .authenticate(new JID(credentials.jid), credentials.password)
-        .catch(() => {
-          // Ignore authentication errors here
-        });
+      try {
+        // Authenticate client
+        await Broker.client.authenticate(
+          new JID(credentials.jid),
+          credentials.password
+        );
+
+        // Start observers
+        await Broker.client.observe();
+      } catch (error) {
+        // Ignore authentication errors here
+        logger.error("Error setting up broker client", error);
+      }
     }
   }
 

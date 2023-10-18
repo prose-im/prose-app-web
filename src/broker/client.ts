@@ -18,6 +18,7 @@ import Store from "@/store";
 import logger from "@/utilities/logger";
 
 // PROJECT: BROKER
+import Broker from "@/broker";
 import BrokerConnection from "@/broker/connection";
 import {
   VERSION_NAME,
@@ -45,7 +46,6 @@ class BrokerClient {
   private __delegate: BrokerDelegate;
   private __credentials?: { jid: JID; password: string };
   private __reconnectTimeout?: ReturnType<typeof setTimeout>;
-  private __isConnected = false;
 
   constructor() {
     // Initialize delegate
@@ -81,26 +81,6 @@ class BrokerClient {
     await this.__connect(jid, password);
   }
 
-  async awaitConnection(): Promise<void> {
-    // Already connected?
-    if (this.__isConnected === true) {
-      return Promise.resolve();
-    }
-
-    // Not already connected
-    const delegate = this.__delegate;
-
-    return new Promise(resolve => {
-      const handler = () => {
-        delegate.events().off("client:connected", handler);
-
-        resolve();
-      };
-
-      delegate.events().on("client:connected", handler);
-    });
-  }
-
   reconnect(afterDelay = 0): void {
     const credentials = this.__credentials;
 
@@ -128,6 +108,10 @@ class BrokerClient {
     }, afterDelay);
   }
 
+  async observe(): Promise<void> {
+    await Broker.$muc.startObservingRooms();
+  }
+
   async logout(): Promise<void> {
     // Unassign JID
     this.jid = undefined;
@@ -140,15 +124,11 @@ class BrokerClient {
   }
 
   private __onClientConnected(): void {
-    this.__isConnected = true;
-
     Store.$session.setConnected(true);
     Store.$session.setConnecting(false);
   }
 
   private __onClientDisconnected(): void {
-    this.__isConnected = false;
-
     Store.$session.setConnected(false);
     Store.$session.setConnecting(false);
 
