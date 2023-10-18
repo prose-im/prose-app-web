@@ -15,7 +15,7 @@ import {
   createRouter,
   createWebHistory
 } from "vue-router";
-import init, { JID } from "@prose-im/prose-sdk-js";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: VIEWS
 import AppBase from "@/views/app/AppBase.vue";
@@ -50,7 +50,6 @@ enum NavigateState {
 class Router {
   private readonly __router: VueRouter;
 
-  private __wasmModuleInitialized = false;
   private __lastNavigateStatePosition = 0;
   private __pendingNavigateState: NavigateState | null = null;
 
@@ -70,8 +69,7 @@ class Router {
           component: StartLogin,
 
           beforeEnter: (_to, _from, next) => {
-            this.__initializeWasmModule()
-              .then(this.__guardAnonymous.bind(this))
+            this.__guardAnonymous()
               .then(next)
               .catch(error => {
                 if (error) {
@@ -89,8 +87,7 @@ class Router {
           component: AppBase,
 
           beforeEnter: (_to, _from, next) => {
-            this.__initializeWasmModule()
-              .then(this.__guardAuthenticated.bind(this))
+            this.__guardAuthenticated()
               .then(this.__setupBrokerClient.bind(this))
               .then(next)
               .catch(error => {
@@ -130,16 +127,7 @@ class Router {
     app.use(this.__router);
   }
 
-  private async __initializeWasmModule() {
-    // Not already initialized?
-    if (this.__wasmModuleInitialized !== true) {
-      this.__wasmModuleInitialized = true;
-
-      await init();
-    }
-  }
-
-  private __guardAuthenticated(): Promise<void> {
+  private async __guardAuthenticated(): Promise<void> {
     // Ensure that user is logged in (redirect to base if not)
     if (!Store.$account.credentials.jid) {
       this.__router.push({
@@ -148,11 +136,9 @@ class Router {
 
       return Promise.reject();
     }
-
-    return Promise.resolve();
   }
 
-  private __guardAnonymous(): Promise<void> {
+  private async __guardAnonymous(): Promise<void> {
     // Ensure that user is not logged-in (redirect to app if so)
     if (Store.$account.credentials.jid) {
       this.__router.push({
@@ -161,8 +147,6 @@ class Router {
 
       return Promise.reject();
     }
-
-    return Promise.resolve();
   }
 
   private async __setupBrokerClient(): Promise<void> {

@@ -10,6 +10,7 @@
 
 // NPM
 import { createApp } from "vue";
+import { default as proseSDKJS } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STYLES
 import "@/assets/stylesheets/all.scss";
@@ -27,6 +28,12 @@ import BootstrapConfig from "@/bootstrap/config";
 import BootstrapFilters from "@/bootstrap/filters";
 import BootstrapComponents from "@/bootstrap/components";
 import BootstrapPlugins from "@/bootstrap/plugins";
+
+/**************************************************************************
+ * DEPENDENCIES
+ * ************************************************************************* */
+
+await proseSDKJS();
 
 /**************************************************************************
  * INSTANCES
