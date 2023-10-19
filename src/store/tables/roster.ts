@@ -69,15 +69,13 @@ const EventBus = mitt();
  * ************************************************************************* */
 
 const $roster = defineStore("roster", {
-  persist: true,
+  persist: false,
 
   state: (): Roster => {
     return {
       list: [],
-
-      // TODO: do not store this in persistance layer
-      byGroup: {}, // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
-      byJID: {} // TODO: rebuild this from list, DO NOT store this in store as reference to list is lost
+      byGroup: {},
+      byJID: {}
     };
   },
 

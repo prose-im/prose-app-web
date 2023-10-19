@@ -39,7 +39,7 @@ const AVAILABILITY_DEFAULT = Availability.Available;
  * ************************************************************************* */
 
 const $presence = defineStore("presence", {
-  persist: true,
+  persist: false,
 
   state: (): Presence => {
     return {

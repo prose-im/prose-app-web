@@ -43,7 +43,7 @@ interface ActivityEntry {
  * ************************************************************************* */
 
 const $activity = defineStore("activity", {
-  persist: true,
+  persist: false,
 
   state: (): Activity => {
     return {
