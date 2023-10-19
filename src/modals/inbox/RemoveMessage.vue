@@ -13,7 +13,6 @@ base-modal(
   @close="$emit('close')"
   @confirm="$emit('remove', context)"
   confirm-label="Remove Message"
-  class="m-remove-message"
   destructive
 )
   p.u-regular
@@ -41,15 +40,3 @@ export default {
   emits: ["close", "remove"]
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".m-remove-message";
-
-.m-remove-message {
-  /* TODO: show message preview */
-}
-</style>
