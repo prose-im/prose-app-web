@@ -41,6 +41,7 @@
     )
 
   list-disclosure(
+    v-if="itemFavorites.length > 0"
     @toggle="onFavoritesToggle"
     :expanded="layout.sidebar.sections.favorites"
     :list-class="disclosureListClass"
@@ -50,7 +51,7 @@
       v-for="itemFavorite in itemFavorites"
       :jid="itemFavorite.jid"
       :name="itemFavorite.name"
-      :active="activeJID && itemFavorite.jid.equals(activeJID)"
+      :active="selectedJID && itemFavorite.jid.equals(selectedJID)"
     )
 
   list-disclosure(
@@ -63,22 +64,25 @@
     template(
       v-for="room in itemDirectMessages"
     )
-      sidebar-main-item-user(
-        v-if="room.type === roomType.DirectMessage"
-        :jid="room.members[0]"
-        :name="room.name"
-        :active="room.id === selectedRoomID"
+      template(
+        v-if="!itemFavoriteRawJIDs.has(room.id)"
       )
+        sidebar-main-item-user(
+          v-if="room.type === roomType.DirectMessage"
+          :jid="room.members[0]"
+          :name="room.name"
+          :active="room.id === selectedRoomID"
+        )
 
-      sidebar-main-item-channel(
-        v-if="room.type === roomType.Group"
-        :id="room.id"
-        :name="room.name"
-        :active="room.id === selectedRoomID"
-      )
+        sidebar-main-item-channel(
+          v-if="room.type === roomType.Group"
+          :id="room.id"
+          :name="room.name"
+          :active="room.id === selectedRoomID"
+        )
 
     sidebar-main-item-add(
-      @click="onTeamMembersAddClick"
+      @click="onDirectMessageAddClick"
       title="Open a direct message"
     )
 
@@ -97,7 +101,7 @@
     )
 
     sidebar-main-item-add(
-      @click="onOtherContactsAddClick"
+      @click="onChannelsAddClick"
       title="Add channels"
     )
 
@@ -170,7 +174,7 @@ export default {
     return {
       // --> STATE <--
 
-      activeJID: null as JID | null,
+      selectedJID: null as JID | null,
       selectedRoomID: null as string | null,
 
       isRosterSyncStale: true,
@@ -195,21 +199,19 @@ export default {
       return Store.$layout;
     },
 
+    itemFavoriteRawJIDs(): Set<string> {
+      const favoriteJIDs: Set<string> = new Set([]);
+
+      this.itemFavorites.forEach(itemFavorite => {
+        favoriteJIDs.add(itemFavorite.jid.toString());
+      });
+
+      return favoriteJIDs;
+    },
+
     itemFavorites(): RosterDisplayItem[] {
       return this.intoRosterDisplayItems(
         Store.$roster.getList(RosterGroup.Favorite)
-      );
-    },
-
-    itemTeamMembers(): RosterDisplayItem[] {
-      return this.intoRosterDisplayItems(
-        Store.$roster.getList(RosterGroup.Team)
-      );
-    },
-
-    itemOtherContacts(): RosterDisplayItem[] {
-      return this.intoRosterDisplayItems(
-        Store.$roster.getList(RosterGroup.Other)
       );
     },
 
@@ -227,14 +229,23 @@ export default {
       immediate: true,
 
       handler(value) {
-        if (value.name && value.name.startsWith("app.inbox")) {
-          if (value.params.jid) {
-            this.activeJID = new JID(value.params.jid);
-          } else if (value.params.roomId) {
-            this.selectedRoomID = value.params.roomId;
+        if (
+          value.name &&
+          value.name.startsWith("app.inbox") === true &&
+          value.params.roomId
+        ) {
+          this.selectedRoomID = value.params.roomId;
+
+          // Opportunistic JID extrapolation from room identifier (if room is \
+          //   a JID)
+          try {
+            this.selectedJID = new JID(value.params.roomId);
+          } catch (_) {
+            this.selectedJID = null;
           }
         } else {
-          this.activeJID = null;
+          this.selectedRoomID = null;
+          this.selectedJID = null;
         }
       }
     }
@@ -312,21 +323,13 @@ export default {
       Store.$layout.setSidebarSectionFavorites(visible);
     },
 
-    onTeamMembersToggle(visible: boolean): void {
-      Store.$layout.setSidebarSectionTeamMembers(visible);
-    },
-
-    onTeamMembersAddClick(): void {
+    onDirectMessageAddClick(): void {
       this.modals.addContact.mode = AddContactMode.Member;
       this.modals.addContact.visible = true;
     },
 
-    onOtherContactsToggle(visible: boolean): void {
-      Store.$layout.setSidebarSectionOtherContacts(visible);
-    },
-
-    onOtherContactsAddClick(): void {
-      this.modals.addContact.mode = AddContactMode.Other;
+    onChannelsAddClick(): void {
+      this.modals.addContact.mode = AddContactMode.Channel;
       this.modals.addContact.visible = true;
     },
 
@@ -376,7 +379,7 @@ export default {
 
               break;
 
-            case AddContactMode.Other:
+            case AddContactMode.Channel:
               await this.addContactChannel(jidString);
 
               break;

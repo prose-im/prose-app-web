@@ -30,10 +30,10 @@ base-modal(
     v-else
   )
     p.u-medium
-      | Connect with someone
+      | Add a channel
 
     p.u-regular
-      | Connect with people from other teams using their chat address.
+      | Create or join a public channel, where multiple people can talk.
 
   .m-add-contact__form
     base-spinner(
@@ -61,8 +61,8 @@ base-modal(
       v-model="contact.jid"
       @change="onAddressChange"
       @submit="onConfirm"
+      :placeholder="fieldAddressPlacehokder"
       class="m-add-contact__form-field"
-      placeholder="Enter contact address…"
       type="email"
       name="address"
       size="large"
@@ -123,8 +123,8 @@ import BaseAlert from "@/components/base/BaseAlert.vue";
 export enum Mode {
   // Member mode.
   Member = "member",
-  // Other mode.
-  Other = "other"
+  // Channel mode.
+  Channel = "channel"
 }
 
 // CONSTANTS
@@ -178,6 +178,12 @@ export default {
 
     isVerified(): boolean {
       return this.hasIdentity === true && this.identity.name ? true : false;
+    },
+
+    fieldAddressPlacehokder(): string {
+      return this.isMember === true
+        ? "Enter contact address…"
+        : "Enter channel name…";
     },
 
     noticeIcon(): string {
