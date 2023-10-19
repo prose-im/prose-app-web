@@ -300,7 +300,6 @@ export default {
       profile.lastName = formIdentity.nameLast.inner || undefined;
       profile.email = formIdentity.email.inner || undefined;
       profile.phone = formIdentity.phone.inner || undefined;
-      // TODO: profile.url = vCard.url;
 
       // Assign job
       const job = new Job();
