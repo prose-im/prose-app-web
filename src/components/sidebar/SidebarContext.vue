@@ -43,7 +43,7 @@
 
   .c-sidebar-context__current
     p.c-sidebar-context__team.u-bold.u-ellipsis
-      | (no team)
+      | {{ teamName }}
 
     p.c-sidebar-context__status(
       v-if="statusActivity.status"
@@ -309,20 +309,19 @@ export default {
 
           properties: {
             type: "server",
-            name: "Prose",
-            address: "prose.org"
+            name: this.teamName,
+            address: this.teamDomain
           }
         },
 
         {
           type: PopoverItemType.Button,
           label: "Switch account",
-          disabled: true,
 
           children: [
             {
               type: PopoverItemType.Button,
-              label: "Prose – prose.org"
+              label: `${this.teamName} – ${this.teamDomain}`
             }
           ]
         },
@@ -333,6 +332,14 @@ export default {
           disabled: true
         }
       ];
+    },
+
+    teamDomain(): string {
+      return this.jid.domain;
+    },
+
+    teamName(): string {
+      return `@${this.teamDomain}`;
     },
 
     localAvailability(): ReturnType<
@@ -607,6 +614,7 @@ $current-status-define-padding-block: 2px;
   }
 
   #{$c}__current {
+    line-height: 16px;
     margin-inline-start: (13px - $current-status-define-padding-inline);
     margin-inline-end: (6px - $current-status-define-padding-inline);
     padding-inline: $current-status-define-padding-inline;
@@ -617,11 +625,11 @@ $current-status-define-padding-block: 2px;
     #{$c}__team {
       color: rgb(var(--color-text-primary));
       font-size: 14px;
+      margin-block-start: -1px;
     }
 
     #{$c}__status {
-      line-height: 16px;
-      margin-block-start: 5px;
+      margin-block-start: 4px;
       display: flex;
       align-items: center;
 
