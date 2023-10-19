@@ -58,7 +58,8 @@ export default {
                   change: Store.$settings.setMessagesChatsChatstates
                 },
 
-                label: "Let users know when I am typing"
+                label: "Let users know when I am typing",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -72,7 +73,8 @@ export default {
                   change: Store.$settings.setMessagesChatsSpellcheck
                 },
 
-                label: "Enable spell checker"
+                label: "Enable spell checker",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -92,7 +94,8 @@ export default {
                   change: Store.$settings.setMessagesChatsClock24h
                 },
 
-                label: "Use a 24-hour clock"
+                label: "Use a 24-hour clock",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             }
           ]
@@ -114,7 +117,8 @@ export default {
                   change: Store.$settings.setMessagesFilesImagePreviews
                 },
 
-                label: "Show a preview of image files"
+                label: "Show a preview of image files",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -140,7 +144,9 @@ export default {
                     value: "small",
                     label: "Small size"
                   }
-                ]
+                ],
+
+                disabled: true
               } as FormFieldsetFieldDataSelect
             }
           ]

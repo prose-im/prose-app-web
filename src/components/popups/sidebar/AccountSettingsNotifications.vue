@@ -77,7 +77,8 @@ export default {
                   }
                 ],
 
-                position: "bottom"
+                position: "bottom",
+                disabled: true
               } as FormFieldsetFieldDataSelect
             },
 
@@ -91,7 +92,8 @@ export default {
                   change: Store.$settings.setNotificationsConfigurationReplies
                 },
 
-                label: "Let me know when I receive a message reply"
+                label: "Let me know when I receive a message reply",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -125,7 +127,8 @@ export default {
                   }
                 ],
 
-                position: "bottom"
+                position: "bottom",
+                disabled: true
               } as FormFieldsetFieldDataSelect
             },
 
@@ -151,7 +154,8 @@ export default {
                   }
                 ],
 
-                position: "bottom"
+                position: "bottom",
+                disabled: true
               } as FormFieldsetFieldDataSelect
             },
 
@@ -177,7 +181,8 @@ export default {
                   }
                 ],
 
-                position: "bottom"
+                position: "bottom",
+                disabled: true
               } as FormFieldsetFieldDataSelect
             }
           ]
@@ -199,7 +204,8 @@ export default {
                   change: Store.$settings.setNotificationsActionNotifyBadge
                 },
 
-                label: "Show a badge in the tab bar"
+                label: "Show a badge in the tab bar",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -227,7 +233,8 @@ export default {
                   change: Store.$settings.setNotificationsActionNotifyBanner
                 },
 
-                label: "Pop a banner"
+                label: "Pop a banner",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             }
           ]
@@ -251,7 +258,8 @@ export default {
                     Store.$settings.setNotificationsDevicesMobileAlertsEnabled
                 },
 
-                label: "Forward to mobile if inactive after:"
+                label: "Forward to mobile if inactive after:",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -294,7 +302,9 @@ export default {
                     value: "10m",
                     label: "10 minutes"
                   }
-                ]
+                ],
+
+                disabled: true
               } as FormFieldsetFieldDataSelect
             }
           ]

@@ -72,7 +72,8 @@ export default {
                   }
                 ],
 
-                position: "bottom"
+                position: "bottom",
+                disabled: true
               } as FormFieldsetFieldDataSelect
             }
           ]
@@ -94,7 +95,8 @@ export default {
                   change: Store.$settings.setPrivacyReportAnalytics
                 },
 
-                label: "Send anonymous usage analytics"
+                label: "Send anonymous usage analytics",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -108,7 +110,8 @@ export default {
                   change: Store.$settings.setPrivacyReportCrashes
                 },
 
-                label: "Automatically send crash reports"
+                label: "Automatically send crash reports",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             }
           ]

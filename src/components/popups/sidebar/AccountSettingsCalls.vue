@@ -81,7 +81,8 @@ export default {
                   }
                 ],
 
-                position: "bottom"
+                position: "bottom",
+                disabled: true
               } as FormFieldsetFieldDataSelect
             }
           ]
@@ -122,7 +123,9 @@ export default {
                     value: "system",
                     label: "Same as System"
                   }
-                ]
+                ],
+
+                disabled: true
               } as FormFieldsetFieldDataSelect
             }
           ]
@@ -139,7 +142,8 @@ export default {
               label: "Speaker tester:",
 
               data: {
-                text: "Play Test Sound"
+                text: "Play Test Sound",
+                disabled: true
               } as FormFieldsetFieldDataButton
             },
 
@@ -161,7 +165,9 @@ export default {
                     value: "system",
                     label: "Same as System"
                   }
-                ]
+                ],
+
+                disabled: true
               } as FormFieldsetFieldDataSelect
             }
           ]

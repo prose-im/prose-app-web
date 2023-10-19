@@ -99,7 +99,8 @@ export default {
                   change: Store.$settings.setAvailabilityAutoAwayEnabled
                 },
 
-                label: "Automatically mark me as away after:"
+                label: "Automatically mark me as away after:",
+                disabled: true
               } as FormFieldsetFieldDataCheckbox
             },
 
