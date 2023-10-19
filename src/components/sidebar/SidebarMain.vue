@@ -127,6 +127,9 @@ import {
   Group as RosterGroup
 } from "@prose-im/prose-sdk-js";
 
+// PROJECT: COMPOSABLES
+import { useEvents } from "@/composables/events";
+
 // PROJECT: STORES
 import Store from "@/store";
 import { RosterList } from "@/store/tables/roster";
@@ -252,20 +255,23 @@ export default {
   },
 
   created() {
-    // TODO: put this in a utility helper
+    // Bind session event handlers
+    useEvents(Store.$session, {
+      connected: this.onStoreConnected
+    });
 
-    // Bind connected handler
-    Store.$session.events().on("connected", this.onStoreConnected);
-    Store.$muc.events().on("rooms:changed", this.onRoomsChanged);
-    Store.$roster.events().on("contact:changed", this.onContactChanged);
+    // Bind MUC event handlers
+    useEvents(Store.$muc, {
+      "rooms:changed": this.onRoomsChanged
+    });
+
+    // Bind roster event handlers
+    useEvents(Store.$roster, {
+      "contact:changed": this.onContactChanged
+    });
 
     // Synchronize roster eagerly
     this.syncRosterEager();
-  },
-
-  beforeUnmount() {
-    // Unbind connected handler
-    Store.$session.events().off("connected", this.onStoreConnected);
   },
 
   methods: {

@@ -37,6 +37,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPOSABLES
+import { useEvents } from "@/composables/events";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -112,18 +115,13 @@ export default {
   },
 
   created() {
-    // TODO: put this in a utility helper
-
     // Initialize first disconnected value
     this.refreshInitialDisconnected();
 
-    // Bind connected handler
-    Store.$session.events().on("connected", this.onStoreConnected);
-  },
-
-  beforeUnmount() {
-    // Unbind connected handler
-    Store.$session.events().off("connected", this.onStoreConnected);
+    // Bind session event handlers
+    useEvents(Store.$session, {
+      connected: this.onStoreConnected
+    });
   },
 
   methods: {

@@ -105,6 +105,9 @@ import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 import EditMessage from "@/modals/inbox/EditMessage.vue";
 import RemoveMessage from "@/modals/inbox/RemoveMessage.vue";
 
+// PROJECT: COMPOSABLES
+import { useEvents } from "@/composables/events";
+
 // PROJECT: STORES
 import Store from "@/store";
 import { EventMessageGeneric } from "@/store/tables/inbox";
@@ -273,21 +276,17 @@ export default {
   },
 
   created() {
-    // TODO: put this in a utility helper
-
-    // Bind session handlers
-    Store.$session.events().on("connected", this.onStoreConnected);
-    Store.$session.events().on("appearance", this.onStoreAppearance);
+    // Bind session event handlers
+    useEvents(Store.$session, {
+      connected: this.onStoreConnected,
+      appearance: this.onStoreAppearance
+    });
 
     // Synchronize messages eagerly
     this.syncMessagesEager();
   },
 
   beforeUnmount() {
-    // Unbind session handler
-    Store.$session.events().off("connected", this.onStoreConnected);
-    Store.$session.events().off("appearance", this.onStoreAppearance);
-
     // Un-setup store
     this.unsetupStore();
   },
@@ -363,7 +362,7 @@ export default {
 
       // Subscribe to store events
       for (let [eventName, eventPath] of Object.entries(this.storeEvents)) {
-        eventPath[0].events().on(eventName, eventPath[1]);
+        eventPath[0].events().on(eventName, eventPath[1] as MittHandler<any>);
       }
     },
 

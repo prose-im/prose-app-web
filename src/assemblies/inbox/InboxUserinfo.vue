@@ -51,6 +51,9 @@
 import { PropType } from "vue";
 import { JID } from "@prose-im/prose-sdk-js";
 
+// PROJECT: COMPOSABLES
+import { useEvents } from "@/composables/events";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -113,20 +116,13 @@ export default {
   },
 
   created() {
-    // TODO: put this in a utility helper
-    // TODO: or maybe add ability to stack pending requests once connected (w/ \
-    //   a timeout if not connected in due time)
-
-    // Bind handlers
-    Store.$session.events().on("connected", this.onStoreConnected);
+    // Bind session event handlers
+    useEvents(Store.$session, {
+      connected: this.onStoreConnected
+    });
 
     // Synchronize vCard eagerly
     this.syncVCardEager();
-  },
-
-  beforeUnmount() {
-    // Unbind handlers
-    Store.$session.events().off("connected", this.onStoreConnected);
   },
 
   methods: {
