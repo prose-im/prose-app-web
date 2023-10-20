@@ -19,17 +19,19 @@ layout-toolbar(
       base-action(
         @click="onActionFormattingClick"
         :active="isActionFormattingPopoverVisible"
-        :disabled="true || isFormDisabled"
+        :disabled="isFormDisabled"
         class="a-inbox-form__action"
         icon="textformat.alt"
         size="18px"
       )
-        base-popover-list(
+        base-popover(
           v-if="isActionFormattingPopoverVisible"
           v-click-away="onActionFormattingPopoverClickAway"
-          :items="actionFormattingPopoverItems"
           class="a-inbox-form__action-popover a-inbox-form__action-popover--left"
         )
+          inbox-form-formatting(
+            class="a-inbox-form__action-formatting"
+          )
 
   template(
     v-slot:middle
@@ -83,7 +85,7 @@ layout-toolbar(
   )
     layout-actions
       base-action(
-        :disabled="true || isFormDisabled"
+        :disabled="isFormDisabled"
         class="a-inbox-form__action"
         icon="paperclip"
         size="18px"
@@ -117,11 +119,8 @@ import { PropType } from "vue";
 import { JID, Room, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
-import {
-  Item as PopoverItem,
-  ItemType as PopoverItemType
-} from "@/components/base/BasePopoverList.vue";
 import FormField from "@/components/form/FormField.vue";
+import InboxFormFormatting from "@/components/inbox/InboxFormFormatting.vue";
 import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 
 // PROJECT: STORES
@@ -136,7 +135,7 @@ const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
 export default {
   name: "InboxForm",
 
-  components: { InboxFormChatstate },
+  components: { InboxFormFormatting, InboxFormChatstate },
 
   props: {
     room: {
@@ -160,16 +159,6 @@ export default {
   },
 
   computed: {
-    actionFormattingPopoverItems(): Array<PopoverItem> {
-      return [
-        {
-          type: PopoverItemType.Button,
-          label: "Formatting items…",
-          color: "blue"
-        }
-      ];
-    },
-
     fieldComposePlaceholder(): string {
       // Any roster name set?
       if (this.rosterName) {
@@ -363,6 +352,12 @@ $form-compose-send-button-size: (
       &--right {
         inset-inline-end: 0;
       }
+    }
+
+    #{$c}__action-formatting {
+      min-width: 210px;
+      padding-block: 4px;
+      padding-inline: 14px;
     }
   }
 
