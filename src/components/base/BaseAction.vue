@@ -197,20 +197,20 @@ $c: ".c-base-action";
   // --> BOOLEANS <--
 
   &--active {
-    #{$c}__inner {
+    > #{$c}__inner {
       #{$c}__icon {
         fill: darken-var(var(--color-base-blue-normal), 6%);
       }
     }
 
     &#{$c}--white {
-      #{$c}__inner {
+      > #{$c}__inner {
         background-color: rgb(var(--color-base-grey-light));
       }
     }
 
     &#{$c}--grey {
-      #{$c}__inner {
+      > #{$c}__inner {
         background-color: darken-var(var(--color-base-grey-light), 3%);
       }
     }
@@ -219,20 +219,20 @@ $c: ".c-base-action";
   &--disabled {
     cursor: not-allowed;
 
-    #{$c}__inner {
+    > #{$c}__inner {
       pointer-events: none;
       opacity: 0.35;
     }
   }
 
   &--auto-width {
-    #{$c}__inner {
+    > #{$c}__inner {
       min-width: auto;
     }
   }
 
   &--auto-height {
-    #{$c}__inner {
+    > #{$c}__inner {
       height: auto;
       padding-block: $size-base-action-padding-sides;
     }
@@ -241,7 +241,7 @@ $c: ".c-base-action";
   // --> CONTEXTS <--
 
   &--white {
-    #{$c}__inner {
+    > #{$c}__inner {
       &:hover {
         background-color: darken-var(var(--color-base-grey-light), 1%);
       }
@@ -253,7 +253,7 @@ $c: ".c-base-action";
   }
 
   &--grey {
-    #{$c}__inner {
+    > #{$c}__inner {
       &:hover {
         background-color: darken-var(var(--color-base-grey-light), 4%);
       }
