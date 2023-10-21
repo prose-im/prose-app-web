@@ -4,6 +4,8 @@
 
 **Prose Web application. Built in TypeScript / VueJS.**
 
+The Prose project was originally announced in a blog post: [Introducing Prose, Decentralized Team Messaging in an Era of Centralized SaaS](https://prose.org/blog/introducing-prose/).
+
 Copyright 2023, Prose Foundation - Released under the [Mozilla Public License 2.0](./LICENSE.md).
 
 _Tested at NodeJS version: `v20.5.0`_
