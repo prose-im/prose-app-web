@@ -19,24 +19,17 @@
     .c-inbox-form-formatting__actions
       base-tooltip(
         v-for="action in group.actions"
+        :tooltip="action.title"
         align="left"
       )
-        template(
-          v-slot:tooltip
+        base-action(
+          @click="onActionClick(action.action)"
+          :icon="action.icon"
+          class="c-inbox-form-formatting__action"
+          size="14px"
+          auto-width
+          auto-height
         )
-          | {{ action.title }}
-
-        template(
-          v-slot:default
-        )
-          base-action(
-            @click="onActionClick(action.action)"
-            :icon="action.icon"
-            class="c-inbox-form-formatting__action"
-            size="14px"
-            auto-width
-            auto-height
-          )
 </template>
 
 <!-- **********************************************************************

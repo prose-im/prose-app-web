@@ -19,32 +19,25 @@ layout-toolbar(
       base-tooltip(
         :bypassed="isFormDisabled || isActionFormattingPopoverVisible"
         align="left"
+        tooltip="Text Formatting"
       )
-        template(
-          v-slot:tooltip
+        base-action(
+          @click="onActionFormattingClick"
+          :active="isActionFormattingPopoverVisible"
+          :disabled="isFormDisabled"
+          class="a-inbox-form__action"
+          icon="textformat.alt"
+          size="18px"
         )
-          | Text Formatting
-
-        template(
-          v-slot:default
-        )
-          base-action(
-            @click="onActionFormattingClick"
-            :active="isActionFormattingPopoverVisible"
-            :disabled="isFormDisabled"
-            class="a-inbox-form__action"
-            icon="textformat.alt"
-            size="18px"
+          base-popover(
+            v-if="isActionFormattingPopoverVisible"
+            v-click-away="onActionFormattingPopoverClickAway"
+            class="a-inbox-form__action-popover a-inbox-form__action-popover--left"
           )
-            base-popover(
-              v-if="isActionFormattingPopoverVisible"
-              v-click-away="onActionFormattingPopoverClickAway"
-              class="a-inbox-form__action-popover a-inbox-form__action-popover--left"
+            inbox-form-formatting(
+              @action="onFormattingAction"
+              class="a-inbox-form__action-formatting"
             )
-              inbox-form-formatting(
-                @action="onFormattingAction"
-                class="a-inbox-form__action-formatting"
-              )
 
   template(
     v-slot:middle
@@ -100,51 +93,37 @@ layout-toolbar(
       base-tooltip(
         :bypassed="isFormDisabled"
         align="right"
+        tooltip="Send Files"
       )
-        template(
-          v-slot:tooltip
+        base-action(
+          @click="onActionAttachClick"
+          :disabled="isFormDisabled"
+          class="a-inbox-form__action"
+          icon="paperclip"
+          size="18px"
         )
-          | Send Files
-
-        template(
-          v-slot:default
-        )
-          base-action(
-            @click="onActionAttachClick"
-            :disabled="isFormDisabled"
-            class="a-inbox-form__action"
-            icon="paperclip"
-            size="18px"
-          )
 
       base-tooltip(
         :bypassed="isFormDisabled || isActionEmojisPopoverVisible"
         align="right"
+        tooltip="Emojis"
       )
-        template(
-          v-slot:tooltip
+        base-action(
+          @click="onActionEmojisClick"
+          :active="isActionEmojisPopoverVisible"
+          :disabled="isFormDisabled"
+          class="a-inbox-form__action"
+          icon="face.smiling"
+          size="18px"
         )
-          | Emojis
-
-        template(
-          v-slot:default
-        )
-          base-action(
-            @click="onActionEmojisClick"
-            :active="isActionEmojisPopoverVisible"
-            :disabled="isFormDisabled"
-            class="a-inbox-form__action"
-            icon="face.smiling"
-            size="18px"
+          base-popover(
+            v-if="isActionEmojisPopoverVisible"
+            v-click-away="onActionEmojisPopoverClickAway"
+            class="a-inbox-form__action-popover a-inbox-form__action-popover--right"
           )
-            base-popover(
-              v-if="isActionEmojisPopoverVisible"
-              v-click-away="onActionEmojisPopoverClickAway"
-              class="a-inbox-form__action-popover a-inbox-form__action-popover--right"
+            tool-emoji-picker(
+              @pick="onEmojiPick"
             )
-              tool-emoji-picker(
-                @pick="onEmojiPick"
-              )
 </template>
 
 <!-- **********************************************************************

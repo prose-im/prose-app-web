@@ -25,7 +25,13 @@ div(
     v-if="!bypassed"
   )
     span.c-base-tooltip__value
+      template(
+        v-if="tooltip"
+      )
+        | {{ tooltip }}
+
       slot(
+        v-else
         name="tooltip"
       )
 
@@ -47,6 +53,11 @@ export default {
   name: "BaseTooltip",
 
   props: {
+    tooltip: {
+      type: String,
+      default: null
+    },
+
     align: {
       type: String,
       default: "center",
