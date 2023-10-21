@@ -30,6 +30,7 @@
           v-slot:default
         )
           base-action(
+            @click="onActionClick(action.action)"
             :icon="action.icon"
             class="c-inbox-form-formatting__action"
             size="14px"
@@ -43,8 +44,34 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// ENUMERATIONS
+export enum FormattingAction {
+  // Bold formatting.
+  Bold = "bold",
+  // Italic formatting.
+  Italic = "italic",
+  // Underline formatting.
+  Underline = "underline",
+  // Strikethrough formatting.
+  Strikethrough = "strikethrough",
+  // List bullets formatting.
+  ListBullets = "list-bullets",
+  // List numbers formatting.
+  ListNumbers = "list-numbers",
+  // Quote formatting.
+  Quote = "quote",
+  // Link formatting.
+  Link = "link",
+  // Code formatting.
+  Code = "code",
+  // Snippet formatting.
+  Snippet = "snippet"
+}
+
 export default {
   name: "InboxFormFormatting",
+
+  emits: ["action"],
 
   data() {
     return {
@@ -57,22 +84,26 @@ export default {
           actions: [
             {
               title: "Bold",
-              icon: "bold"
+              icon: "bold",
+              action: FormattingAction.Bold
             },
 
             {
-              title: "Icon",
-              icon: "italic"
+              title: "Italic",
+              icon: "italic",
+              action: FormattingAction.Italic
             },
 
             {
               title: "Underline",
-              icon: "underline"
+              icon: "underline",
+              action: FormattingAction.Underline
             },
 
             {
               title: "Strikethrough",
-              icon: "strikethrough"
+              icon: "strikethrough",
+              action: FormattingAction.Strikethrough
             }
           ]
         },
@@ -83,17 +114,20 @@ export default {
           actions: [
             {
               title: "List (Bullets)",
-              icon: "list.bullet"
+              icon: "list.bullet",
+              action: FormattingAction.ListBullets
             },
 
             {
               title: "List (Numbers)",
-              icon: "list.number"
+              icon: "list.number",
+              action: FormattingAction.ListNumbers
             },
 
             {
               title: "Quote text",
-              icon: "text.quote"
+              icon: "text.quote",
+              action: FormattingAction.Quote
             }
           ]
         },
@@ -104,22 +138,33 @@ export default {
           actions: [
             {
               title: "Link",
-              icon: "link"
+              icon: "link",
+              action: FormattingAction.Link
             },
 
             {
               title: "Code",
-              icon: "chevron.left.forwardslash.chevron.right"
+              icon: "chevron.left.forwardslash.chevron.right",
+              action: FormattingAction.Code
             },
 
             {
-              title: "Image",
-              icon: "character.textbox"
+              title: "Snippet",
+              icon: "character.textbox",
+              action: FormattingAction.Snippet
             }
           ]
         }
       ]
     };
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onActionClick(action: FormattingAction): void {
+      this.$emit("action", action);
+    }
   }
 };
 </script>
