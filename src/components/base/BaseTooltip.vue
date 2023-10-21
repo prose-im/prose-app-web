@@ -52,7 +52,7 @@ export default {
       default: "center",
 
       validator(x: string): boolean {
-        return ["left", "center"].includes(x);
+        return ["left", "center", "right"].includes(x);
       }
     },
 
@@ -199,6 +199,13 @@ $tooltip-spacing-inline: -3px;
       inset-inline-start: 50%;
       margin-inline-start: (-1 * calc($tooltip-area-width / 2));
       text-align: center;
+    }
+  }
+
+  &--right {
+    > #{$c}__overlay {
+      inset-inline-end: $tooltip-spacing-inline;
+      text-align: right;
     }
   }
 
