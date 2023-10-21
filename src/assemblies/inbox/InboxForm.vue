@@ -16,23 +16,35 @@ layout-toolbar(
     v-slot:left
   )
     layout-actions
-      base-action(
-        @click="onActionFormattingClick"
-        :active="isActionFormattingPopoverVisible"
-        :disabled="isFormDisabled"
-        class="a-inbox-form__action"
-        icon="textformat.alt"
-        size="18px"
+      base-tooltip(
+        :bypassed="isFormDisabled || isActionFormattingPopoverVisible"
+        align="left"
       )
-        base-popover(
-          v-if="isActionFormattingPopoverVisible"
-          v-click-away="onActionFormattingPopoverClickAway"
-          class="a-inbox-form__action-popover a-inbox-form__action-popover--left"
+        template(
+          v-slot:tooltip
         )
-          inbox-form-formatting(
-            @action="onFormattingAction"
-            class="a-inbox-form__action-formatting"
+          | Text Formatting
+
+        template(
+          v-slot:default
+        )
+          base-action(
+            @click="onActionFormattingClick"
+            :active="isActionFormattingPopoverVisible"
+            :disabled="isFormDisabled"
+            class="a-inbox-form__action"
+            icon="textformat.alt"
+            size="18px"
           )
+            base-popover(
+              v-if="isActionFormattingPopoverVisible"
+              v-click-away="onActionFormattingPopoverClickAway"
+              class="a-inbox-form__action-popover a-inbox-form__action-popover--left"
+            )
+              inbox-form-formatting(
+                @action="onFormattingAction"
+                class="a-inbox-form__action-formatting"
+              )
 
   template(
     v-slot:middle
@@ -85,30 +97,54 @@ layout-toolbar(
     v-slot:right
   )
     layout-actions
-      base-action(
-        @click="onActionAttachClick"
-        :disabled="isFormDisabled"
-        class="a-inbox-form__action"
-        icon="paperclip"
-        size="18px"
+      base-tooltip(
+        :bypassed="isFormDisabled"
+        align="right"
       )
-
-      base-action(
-        @click="onActionEmojisClick"
-        :active="isActionEmojisPopoverVisible"
-        :disabled="isFormDisabled"
-        class="a-inbox-form__action"
-        icon="face.smiling"
-        size="18px"
-      )
-        base-popover(
-          v-if="isActionEmojisPopoverVisible"
-          v-click-away="onActionEmojisPopoverClickAway"
-          class="a-inbox-form__action-popover a-inbox-form__action-popover--right"
+        template(
+          v-slot:tooltip
         )
-          tool-emoji-picker(
-            @pick="onEmojiPick"
+          | Send Files
+
+        template(
+          v-slot:default
+        )
+          base-action(
+            @click="onActionAttachClick"
+            :disabled="isFormDisabled"
+            class="a-inbox-form__action"
+            icon="paperclip"
+            size="18px"
           )
+
+      base-tooltip(
+        :bypassed="isFormDisabled || isActionEmojisPopoverVisible"
+        align="right"
+      )
+        template(
+          v-slot:tooltip
+        )
+          | Emojis
+
+        template(
+          v-slot:default
+        )
+          base-action(
+            @click="onActionEmojisClick"
+            :active="isActionEmojisPopoverVisible"
+            :disabled="isFormDisabled"
+            class="a-inbox-form__action"
+            icon="face.smiling"
+            size="18px"
+          )
+            base-popover(
+              v-if="isActionEmojisPopoverVisible"
+              v-click-away="onActionEmojisPopoverClickAway"
+              class="a-inbox-form__action-popover a-inbox-form__action-popover--right"
+            )
+              tool-emoji-picker(
+                @pick="onEmojiPick"
+              )
 </template>
 
 <!-- **********************************************************************
@@ -250,6 +286,9 @@ export default {
     },
 
     onFormattingAction(action: FormattingAction): void {
+      // Close popover
+      this.isActionFormattingPopoverVisible = false;
+
       // TODO: apply formatting to text
     },
 
