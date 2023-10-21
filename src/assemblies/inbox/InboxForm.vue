@@ -17,7 +17,7 @@ layout-toolbar(
   )
     layout-actions
       base-tooltip(
-        :bypassed="isFormDisabled || isActionFormattingPopoverVisible"
+        :bypassed="isActionFormattingPopoverVisible"
         align="left"
         tooltip="Text Formatting"
       )
@@ -91,7 +91,6 @@ layout-toolbar(
   )
     layout-actions
       base-tooltip(
-        :bypassed="isFormDisabled"
         align="right"
         tooltip="Send Files"
       )
@@ -104,7 +103,7 @@ layout-toolbar(
         )
 
       base-tooltip(
-        :bypassed="isFormDisabled || isActionEmojisPopoverVisible"
+        :bypassed="isActionEmojisPopoverVisible"
         align="right"
         tooltip="Emojis"
       )

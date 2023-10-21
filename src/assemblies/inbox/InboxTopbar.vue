@@ -16,40 +16,56 @@ layout-toolbar(
     v-slot:left
   )
     layout-actions
-      base-action(
-        @click="onActionHistoryPreviousClick"
-        :disabled="!hasActionHistoryPrevious"
-        class="a-inbox-topbar__action"
-        icon="chevron.left"
-        context="grey"
-        size="14px"
+      base-tooltip(
+        align="left"
+        direction="bottom"
+        tooltip="Go to Previous"
       )
-
-      base-action(
-        @click="onActionHistoryNextClick"
-        :disabled="!hasActionHistoryNext"
-        class="a-inbox-topbar__action"
-        icon="chevron.right"
-        context="grey"
-        size="14px"
-      )
-
-      base-action(
-        @click="onActionHistoryDropdownClick"
-        :disabled="!hasActionHistoryDropdown"
-        :active="isActionHistoryPopoverVisible"
-        class="a-inbox-topbar__action"
-        icon="clock"
-        context="grey"
-        size="18px"
-        dropdown
-      )
-        base-popover-list(
-          v-if="isActionHistoryPopoverVisible"
-          v-click-away="onActionHistoryPopoverClickAway"
-          :items="actionHistoryPopoverItems"
-          class="a-inbox-topbar__action-popover"
+        base-action(
+          @click="onActionHistoryPreviousClick"
+          :disabled="!hasActionHistoryPrevious"
+          class="a-inbox-topbar__action"
+          icon="chevron.left"
+          context="grey"
+          size="14px"
         )
+
+      base-tooltip(
+        align="left"
+        direction="bottom"
+        tooltip="Go to Next"
+      )
+        base-action(
+          @click="onActionHistoryNextClick"
+          :disabled="!hasActionHistoryNext"
+          class="a-inbox-topbar__action"
+          icon="chevron.right"
+          context="grey"
+          size="14px"
+        )
+
+      base-tooltip(
+        :bypassed="isActionHistoryPopoverVisible"
+        align="left"
+        direction="bottom"
+        tooltip="Show History"
+      )
+        base-action(
+          @click="onActionHistoryDropdownClick"
+          :disabled="!hasActionHistoryDropdown"
+          :active="isActionHistoryPopoverVisible"
+          class="a-inbox-topbar__action"
+          icon="clock"
+          context="grey"
+          size="18px"
+          dropdown
+        )
+          base-popover-list(
+            v-if="isActionHistoryPopoverVisible"
+            v-click-away="onActionHistoryPopoverClickAway"
+            :items="actionHistoryPopoverItems"
+            class="a-inbox-topbar__action-popover"
+          )
 
   template(
     v-slot:middle
@@ -87,35 +103,50 @@ layout-toolbar(
     )
 
     layout-actions
-      base-action(
-        class="a-inbox-topbar__action"
-        icon="video"
-        context="grey"
-        size="20px"
-        disabled
+      base-tooltip(
+        align="right"
+        direction="bottom"
+        tooltip="Start Video Call"
       )
+        base-action(
+          class="a-inbox-topbar__action"
+          icon="video"
+          context="grey"
+          size="20px"
+          disabled
+        )
 
-      base-action(
-        @click="onActionUserinfoClick"
-        :active="layout.inbox.userinfo.visible"
-        class="a-inbox-topbar__action"
-        icon="info.circle"
-        context="grey"
-        size="18px"
+      base-tooltip(
+        align="right"
+        direction="bottom"
+        tooltip="User Details"
       )
+        base-action(
+          @click="onActionUserinfoClick"
+          :active="layout.inbox.userinfo.visible"
+          class="a-inbox-topbar__action"
+          icon="info.circle"
+          context="grey"
+          size="18px"
+        )
 
     base-separator(
       class="a-inbox-topbar__separator"
     )
 
     layout-actions
-      base-action(
-        class="a-inbox-topbar__action"
-        icon="magnifyingglass"
-        context="grey"
-        size="17px"
-        disabled
+      base-tooltip(
+        align="right"
+        direction="bottom"
+        tooltip="Search"
       )
+        base-action(
+          class="a-inbox-topbar__action"
+          icon="magnifyingglass"
+          context="grey"
+          size="17px"
+          disabled
+        )
 </template>
 
 <!-- **********************************************************************

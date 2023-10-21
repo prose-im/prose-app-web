@@ -10,36 +10,42 @@
 
 <template lang="pug">
 .c-sidebar-context
-  layout-avatar-presence(
-    class="c-sidebar-context__avatar"
-    :presence-class="avatarPresenceClass"
+  base-tooltip(
+    :bypassed="isAvatarPopoverVisible"
+    align="left"
+    tooltip="Manage Account"
+    class="c-sidebar-context__avatar-wrap"
   )
-    template(
-      v-slot:avatar
+    layout-avatar-presence(
+      class="c-sidebar-context__avatar"
+      :presence-class="avatarPresenceClass"
     )
-      base-avatar(
-        @click="onAvatarImageClick"
-        :jid="jid"
-        size="32px"
-        shadow="light"
-        class="c-sidebar-context__avatar-image"
+      template(
+        v-slot:avatar
       )
+        base-avatar(
+          @click="onAvatarImageClick"
+          :jid="jid"
+          size="32px"
+          shadow="light"
+          class="c-sidebar-context__avatar-image"
+        )
 
-      base-popover-list(
-        v-if="isAvatarPopoverVisible"
-        v-click-away="onAvatarPopoverClickAway"
-        :items="avatarPopoverItems"
-        class="c-sidebar-context__avatar-popover"
-      )
+        base-popover-list(
+          v-if="isAvatarPopoverVisible"
+          v-click-away="onAvatarPopoverClickAway"
+          :items="avatarPopoverItems"
+          class="c-sidebar-context__avatar-popover"
+        )
 
-    template(
-      v-slot:presence
-    )
-      base-presence(
-        v-if="this.session.connected"
-        :jid="jid"
-        size="small"
+      template(
+        v-slot:presence
       )
+        base-presence(
+          v-if="this.session.connected"
+          :jid="jid"
+          size="small"
+        )
 
   .c-sidebar-context__current
     p.c-sidebar-context__team.u-bold.u-ellipsis
@@ -65,22 +71,28 @@
       )
         | Set your status
 
-  base-action(
-    @click="onActionsClick"
-    :active="isActionsPopoverVisible"
-    icon="ellipsis"
-    context="grey"
-    rotate="90deg"
-    size="16px"
-    class="c-sidebar-context__actions"
-    auto-width
+  base-tooltip(
+    :bypassed="isActionsPopoverVisible"
+    align="right"
+    tooltip="More Options"
+    class="c-sidebar-context__actions-wrap"
   )
-    base-popover-list(
-      v-if="isActionsPopoverVisible"
-      v-click-away="onActionsPopoverClickAway"
-      :items="actionsPopoverItems"
-      class="c-sidebar-context__actions-popover"
+    base-action(
+      @click="onActionsClick"
+      :active="isActionsPopoverVisible"
+      icon="ellipsis"
+      context="grey"
+      rotate="90deg"
+      size="16px"
+      class="c-sidebar-context__actions"
+      auto-width
     )
+      base-popover-list(
+        v-if="isActionsPopoverVisible"
+        v-click-away="onActionsPopoverClickAway"
+        :items="actionsPopoverItems"
+        class="c-sidebar-context__actions-popover"
+      )
 
   update-status(
     v-if="modals.updateStatus.visible"
@@ -587,29 +599,33 @@ $current-status-define-padding-block: 2px;
   display: flex;
   align-items: center;
 
-  #{$c}__avatar {
+  #{$c}__avatar-wrap {
     flex: 0 0 auto;
-    position: relative;
+    display: inline-flex;
 
-    #{$c}__avatar-image {
-      cursor: pointer;
+    #{$c}__avatar {
+      position: relative;
 
-      &:hover {
-        filter: brightness(105%);
+      #{$c}__avatar-image {
+        cursor: pointer;
+
+        &:hover {
+          filter: brightness(105%);
+        }
+
+        &:active {
+          filter: brightness(98%);
+        }
       }
 
-      &:active {
-        filter: brightness(98%);
+      #{$c}__avatar-popover {
+        position: absolute;
+        inset-inline-start: $size-sidebar-popover-inset-inline-side;
+        inset-block-end: calc(
+          100% + #{$size-base-popover-list-inset-block-edge-offset}
+        );
+        z-index: 1;
       }
-    }
-
-    #{$c}__avatar-popover {
-      position: absolute;
-      inset-inline-start: $size-sidebar-popover-inset-inline-side;
-      inset-block-end: calc(
-        100% + #{$size-base-popover-list-inset-block-edge-offset}
-      );
-      z-index: 1;
     }
   }
 
@@ -676,17 +692,19 @@ $current-status-define-padding-block: 2px;
     }
   }
 
-  #{$c}__actions {
-    margin-inline-end: (-1 * $size-base-action-padding-sides);
+  #{$c}__actions-wrap {
     flex: 0 0 auto;
+    margin-inline-end: (-1 * $size-base-action-padding-sides);
 
-    #{$c}__actions-popover {
-      position: absolute;
-      inset-inline-end: $size-sidebar-popover-inset-inline-side;
-      inset-block-end: calc(
-        100% + #{$size-base-popover-list-inset-block-edge-offset}
-      );
-      z-index: 1;
+    #{$c}__actions {
+      #{$c}__actions-popover {
+        position: absolute;
+        inset-inline-end: $size-sidebar-popover-inset-inline-side;
+        inset-block-end: calc(
+          100% + #{$size-base-popover-list-inset-block-edge-offset}
+        );
+        z-index: 1;
+      }
     }
   }
 }

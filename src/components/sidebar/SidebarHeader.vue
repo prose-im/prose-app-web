@@ -11,12 +11,18 @@
 <template lang="pug">
 .c-sidebar-header
   .c-sidebar-header__identity
-    base-server-logo(
-      @click="onIdentityLogoClick"
-      class="c-sidebar-header__identity-logo"
-      domain="prose.org"
-      size="30px"
+    base-tooltip(
+      :bypassed="isIdentityPopoverVisible"
+      align="left"
+      direction="bottom"
+      tooltip="Manage Workspace"
     )
+      base-server-logo(
+        @click="onIdentityLogoClick"
+        class="c-sidebar-header__identity-logo"
+        domain="prose.org"
+        size="30px"
+      )
 
     base-popover-list(
       v-if="isIdentityPopoverVisible"
@@ -28,19 +34,29 @@
   layout-actions(
     class="c-sidebar-header__actions"
   )
-    base-action(
-      class="c-sidebar-header__action"
-      icon="phone.bubble.left"
-      size="18px"
-      disabled
+    base-tooltip(
+      align="right"
+      direction="bottom"
+      tooltip="Call Someone"
     )
+      base-action(
+        class="c-sidebar-header__action"
+        icon="phone.bubble.left"
+        size="18px"
+        disabled
+      )
 
-    base-action(
-      class="c-sidebar-header__action"
-      icon="square.and.pencil"
-      size="18px"
-      disabled
+    base-tooltip(
+      align="right"
+      direction="bottom"
+      tooltip="Message Someone"
     )
+      base-action(
+        class="c-sidebar-header__action"
+        icon="square.and.pencil"
+        size="18px"
+        disabled
+      )
 </template>
 
 <!-- **********************************************************************
@@ -122,6 +138,7 @@ $c: ".c-sidebar-header";
   align-items: center;
 
   #{$c}__identity {
+    line-height: 0;
     flex: 1;
     position: relative;
 

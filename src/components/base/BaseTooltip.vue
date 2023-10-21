@@ -184,7 +184,7 @@ $tooltip-spacing-inline: -3px;
   }
 
   #{$c}__wrapped {
-    display: inline-block;
+    display: contents;
   }
 
   // --> DIRECTIONS <--
