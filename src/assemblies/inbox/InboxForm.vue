@@ -30,6 +30,7 @@ layout-toolbar(
           class="a-inbox-form__action-popover a-inbox-form__action-popover--left"
         )
           inbox-form-formatting(
+            @action="onFormattingAction"
             class="a-inbox-form__action-formatting"
           )
 
@@ -85,6 +86,7 @@ layout-toolbar(
   )
     layout-actions
       base-action(
+        @click="onActionAttachClick"
         :disabled="isFormDisabled"
         class="a-inbox-form__action"
         icon="paperclip"
@@ -120,7 +122,10 @@ import { JID, Room, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import FormField from "@/components/form/FormField.vue";
-import InboxFormFormatting from "@/components/inbox/InboxFormFormatting.vue";
+import {
+  default as InboxFormFormatting,
+  FormattingAction
+} from "@/components/inbox/InboxFormFormatting.vue";
 import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 
 // PROJECT: STORES
@@ -230,6 +235,10 @@ export default {
       this.isActionFormattingPopoverVisible = false;
     },
 
+    onActionAttachClick(): void {
+      // TODO: open file picker
+    },
+
     onActionEmojisClick(): void {
       // Toggle popover
       this.isActionEmojisPopoverVisible = !this.isActionEmojisPopoverVisible;
@@ -238,6 +247,10 @@ export default {
     onActionEmojisPopoverClickAway(): void {
       // Close popover
       this.isActionEmojisPopoverVisible = false;
+    },
+
+    onFormattingAction(action: FormattingAction): void {
+      // TODO: apply formatting to text
     },
 
     onEmojiPick(glyph: string): void {
