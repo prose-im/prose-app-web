@@ -72,7 +72,7 @@ export default {
       default: "top",
 
       validator(x: string): boolean {
-        return ["top"].includes(x);
+        return ["top", "bottom"].includes(x);
       }
     },
 
@@ -145,7 +145,7 @@ $tooltip-spacing-block: 6px;
 $tooltip-spacing-inline: -3px;
 
 .c-base-tooltip {
-  display: inline-block;
+  display: inherit;
   position: relative;
 
   #{$c}__overlay {
@@ -184,7 +184,7 @@ $tooltip-spacing-inline: -3px;
   }
 
   #{$c}__wrapped {
-    display: inline-block;
+    display: inherit;
   }
 
   // --> DIRECTIONS <--
@@ -193,6 +193,13 @@ $tooltip-spacing-inline: -3px;
     > #{$c}__overlay {
       padding-block-end: $tooltip-spacing-block;
       inset-block-end: 100%;
+    }
+  }
+
+  &--bottom {
+    > #{$c}__overlay {
+      padding-block-start: $tooltip-spacing-block;
+      inset-block-start: 100%;
     }
   }
 
