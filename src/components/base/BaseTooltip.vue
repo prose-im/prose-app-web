@@ -179,7 +179,7 @@ $tooltip-spacing-inline: -3px;
   // --> DIRECTIONS <--
 
   &--top {
-    #{$c}__overlay {
+    > #{$c}__overlay {
       padding-block-end: $tooltip-spacing-block;
       inset-block-end: 100%;
     }
@@ -188,14 +188,14 @@ $tooltip-spacing-inline: -3px;
   // --> ALIGNS <--
 
   &--left {
-    #{$c}__overlay {
+    > #{$c}__overlay {
       inset-inline-start: $tooltip-spacing-inline;
       text-align: left;
     }
   }
 
   &--center {
-    #{$c}__overlay {
+    > #{$c}__overlay {
       inset-inline-start: 50%;
       margin-inline-start: (-1 * calc($tooltip-area-width / 2));
       text-align: center;
@@ -205,7 +205,7 @@ $tooltip-spacing-inline: -3px;
   // --> BOOLEANS <--
 
   &--visible {
-    #{$c}__overlay {
+    > #{$c}__overlay {
       visibility: visible;
       opacity: 1;
     }
