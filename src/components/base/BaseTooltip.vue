@@ -145,7 +145,7 @@ $tooltip-spacing-block: 6px;
 $tooltip-spacing-inline: -3px;
 
 .c-base-tooltip {
-  display: inherit;
+  display: inline-block;
   position: relative;
 
   #{$c}__overlay {
@@ -184,7 +184,7 @@ $tooltip-spacing-inline: -3px;
   }
 
   #{$c}__wrapped {
-    display: inherit;
+    display: inline-block;
   }
 
   // --> DIRECTIONS <--
