@@ -43,7 +43,8 @@ interface ActivityEntry {
  * ************************************************************************* */
 
 const $activity = defineStore("activity", {
-  persist: false,
+  // TODO: set to false when activity is restored from core library database
+  persist: true,
 
   state: (): Activity => {
     return {
