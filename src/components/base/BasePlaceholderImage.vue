@@ -12,7 +12,10 @@
 div(
   :class=`[
     "c-base-placeholder-image",
-    "c-base-placeholder-image--" + illustration
+    "c-base-placeholder-image--" + illustration,
+    {
+      "c-base-placeholder-image--auto-width": autoWidth
+    }
   ]`
 )
   .c-base-placeholder-image__illustration
@@ -54,6 +57,11 @@ export default {
     description: {
       type: String,
       default: null
+    },
+
+    autoWidth: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -105,6 +113,12 @@ $illustration-images: (
     font-size: 15.5px;
     line-height: 21px;
     margin-block-start: 12px;
+  }
+
+  // --> BOOLEANS <--
+
+  &--auto-width {
+    max-width: none;
   }
 
   // --> ILLUSTRATIONS <--

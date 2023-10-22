@@ -12,6 +12,13 @@
 base-overlay(
   class="c-inbox-dropzone"
 )
+  base-placeholder-image(
+    :title="title"
+    illustration="welcome"
+    description="Drop file here. You can send multiple files at once."
+    class="c-inbox-dropzone__placeholder"
+    auto-width
+  )
 </template>
 
 <!-- **********************************************************************
@@ -19,8 +26,31 @@ base-overlay(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { Room } from "@prose-im/prose-sdk-js";
+
 export default {
-  name: "InboxDropzone"
+  name: "InboxDropzone",
+
+  props: {
+    room: {
+      type: Object as PropType<Room>,
+      default: undefined
+    }
+  },
+
+  computed: {
+    title(): string {
+      let title = "Send file";
+
+      if (this.room) {
+        title += ` to ${this.room.name}`;
+      }
+
+      return title;
+    }
+  }
 };
 </script>
 
@@ -32,6 +62,8 @@ export default {
 $c: ".c-inbox-dropzone";
 
 .c-inbox-dropzone {
-  /* TODO */
+  #{$c}__placeholder {
+    margin-inline: 20px;
+  }
 }
 </style>
