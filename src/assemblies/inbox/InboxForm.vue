@@ -101,6 +101,12 @@ layout-toolbar(
           icon="paperclip"
           size="18px"
         )
+          template(
+            v-slot:inner
+          )
+            inbox-form-attach(
+              @file="onAttachFile"
+            )
 
       base-tooltip(
         :bypassed="isActionEmojisPopoverVisible"
@@ -140,6 +146,7 @@ import {
   default as InboxFormFormatting,
   FormattingAction
 } from "@/components/inbox/InboxFormFormatting.vue";
+import InboxFormAttach from "@/components/inbox/InboxFormAttach.vue";
 import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 
 // PROJECT: STORES
@@ -154,7 +161,7 @@ const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
 export default {
   name: "InboxForm",
 
-  components: { InboxFormFormatting, InboxFormChatstate },
+  components: { InboxFormFormatting, InboxFormAttach, InboxFormChatstate },
 
   props: {
     room: {
@@ -268,6 +275,10 @@ export default {
       this.isActionFormattingPopoverVisible = false;
 
       // TODO: apply formatting to text
+    },
+
+    onAttachFile(file: File): void {
+      // TODO: add file to upload queue
     },
 
     onEmojiPick(glyph: string): void {
