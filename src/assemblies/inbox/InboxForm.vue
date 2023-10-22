@@ -134,7 +134,7 @@ layout-toolbar(
     v-slot:default
   )
     inbox-form-loader(
-      v-if="true"
+      v-if="isAttachFilePending"
       class="a-inbox-form__loader"
     )
 </template>
@@ -149,6 +149,7 @@ import { PropType } from "vue";
 import { JID, Room, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import FormField from "@/components/form/FormField.vue";
 import {
   default as InboxFormFormatting,
@@ -194,6 +195,7 @@ export default {
       isActionEmojisPopoverVisible: false,
 
       isUserComposing: false,
+      isAttachFilePending: false,
       chatStateComposeTimeout: null as null | ReturnType<typeof setTimeout>
     };
   },
@@ -292,7 +294,17 @@ export default {
     },
 
     onAttachFile(file: File): void {
+      // Mark file attach as pending
+      this.isAttachFilePending = true;
+
       // TODO: add file to upload queue
+
+      // TODO: simulated placeholder behavior
+      setTimeout(() => {
+        BaseAlert.error("Failed sending file", "Try this again?");
+
+        this.isAttachFilePending = false;
+      }, 2000);
     },
 
     onEmojiPick(glyph: string): void {
