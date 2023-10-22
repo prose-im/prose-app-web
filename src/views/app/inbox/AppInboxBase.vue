@@ -17,10 +17,15 @@
   )
 
   .v-app-inbox-base__content
-    .v-app-inbox-base__messages
+    .v-app-inbox-base__messages(
+      @dragover.prevent.stop="onMessagesDragOver"
+      @drop.prevent.stop="onMessagesDrop"
+    )
       inbox-banner
 
       inbox-messaging(
+        @dragover="onMessagesDragOver"
+        @drop="onMessagesDrop"
         :room="room"
         class="v-app-inbox-base__timeline"
       )
@@ -83,6 +88,18 @@ export default {
 
     layout(): typeof Store.$layout {
       return Store.$layout;
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onMessagesDragOver(event: DragEvent): void {
+      // TODO: handle file drag over
+    },
+
+    onMessagesDrop(event: DragEvent): void {
+      // TODO: file handle drop
     }
   }
 };
