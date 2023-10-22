@@ -85,18 +85,23 @@ layout-toolbar(
   template(
     v-slot:right
   )
-    span.a-inbox-topbar__identity.a-inbox-topbar__identity--jid
-      base-icon(
-        :name="identityBadge.icon"
-        :class=`[
-          "a-inbox-topbar__identity-badge",
-          "a-inbox-topbar__identity-badge--" + identityBadge.status
-        ]`
-        size="16px"
-      )
+    base-tooltip(
+      :tooltip="originalJID"
+      align="right"
+      direction="bottom"
+    )
+      span.a-inbox-topbar__identity.a-inbox-topbar__identity--jid
+        base-icon(
+          :name="identityBadge.icon"
+          :class=`[
+            "a-inbox-topbar__identity-badge",
+            "a-inbox-topbar__identity-badge--" + identityBadge.status
+          ]`
+          size="16px"
+        )
 
-      span.u-regular
-        | {{ truncatedJID }}
+        span.u-regular
+          | {{ truncatedJID }}
 
     base-separator(
       class="a-inbox-topbar__separator"
@@ -173,6 +178,9 @@ interface IdentityBadge {
   icon: string;
 }
 
+// CONSTANTS
+const JID_TRUNCATE_LENGTH = 15;
+
 export default {
   name: "InboxTopbar",
 
@@ -205,14 +213,18 @@ export default {
       return Store.$history;
     },
 
-    truncatedJID(): string {
-      let jid = this.jid.toString();
+    originalJID(): string {
+      return this.jid.toString();
+    },
 
-      if (jid.length < 15) {
+    truncatedJID(): string {
+      let jid = this.originalJID;
+
+      if (jid.length < JID_TRUNCATE_LENGTH) {
         return jid;
       }
 
-      return jid.slice(0, 14) + "…";
+      return jid.slice(0, JID_TRUNCATE_LENGTH - 1) + "…";
     },
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
