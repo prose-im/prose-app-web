@@ -11,6 +11,7 @@
 <template lang="pug">
 #app(
   @contextmenu.prevent
+  @drop.prevent.stop
   :class=`[
     "s-app",
     "u-appearance",
