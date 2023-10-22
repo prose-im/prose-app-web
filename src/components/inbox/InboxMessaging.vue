@@ -25,8 +25,9 @@
     sandbox="allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
   )
 
-  .c-inbox-messaging__placeholder(
+  base-overlay(
     v-if="hasPlaceholder"
+    class="c-inbox-messaging__placeholder"
   )
     base-placeholder-image(
       illustration="empty"
@@ -166,7 +167,7 @@ export default {
     }
   },
 
-  emits: ["dragover", "drop"],
+  emits: ["dragover"],
 
   data() {
     return {
@@ -388,7 +389,6 @@ export default {
     setupListeners(runtime: MessagingRuntime): void {
       runtime.addEventListener("click", this.onFrameInnerClick);
       runtime.addEventListener("dragover", this.onFrameDragOver);
-      runtime.addEventListener("drop", this.onFrameDrop);
     },
 
     unsetupStore(): void {
@@ -679,16 +679,6 @@ export default {
 
       // Re-emit event to parent
       this.$emit("dragover", event);
-    },
-
-    onFrameDrop(event: DragEvent): void {
-      // Prevent frame to capture 'drop' event (it is impossible to catch for \
-      //   a parent if capture is not prevented there)
-      event.preventDefault();
-      event.stopPropagation();
-
-      // Re-emit event to parent
-      this.$emit("drop", event);
     },
 
     onFrameInnerClick(): void {
@@ -1152,11 +1142,6 @@ $c: ".c-inbox-messaging";
   }
 
   #{$c}__placeholder {
-    background-color: rgba(var(--color-white), 0.65);
-    backdrop-filter: blur(6px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: absolute;
     inset: 0;
   }
