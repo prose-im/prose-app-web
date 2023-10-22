@@ -129,6 +129,14 @@ layout-toolbar(
             tool-emoji-picker(
               @pick="onEmojiPick"
             )
+
+  template(
+    v-slot:default
+  )
+    inbox-form-loader(
+      v-if="true"
+      class="a-inbox-form__loader"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -148,6 +156,7 @@ import {
 } from "@/components/inbox/InboxFormFormatting.vue";
 import InboxFormAttach from "@/components/inbox/InboxFormAttach.vue";
 import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
+import InboxFormLoader from "@/components/inbox/InboxFormLoader.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -161,7 +170,12 @@ const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
 export default {
   name: "InboxForm",
 
-  components: { InboxFormFormatting, InboxFormAttach, InboxFormChatstate },
+  components: {
+    InboxFormFormatting,
+    InboxFormAttach,
+    InboxFormChatstate,
+    InboxFormLoader
+  },
 
   props: {
     room: {
@@ -378,6 +392,8 @@ $form-compose-send-button-size: (
 );
 
 .a-inbox-form {
+  position: relative;
+
   #{$c}__action {
     #{$c}__action-popover {
       position: absolute;
@@ -460,6 +476,12 @@ $form-compose-send-button-size: (
       inset-block-end: calc(100% - 5px);
       z-index: 1;
     }
+  }
+
+  #{$c}__loader {
+    position: absolute;
+    inset-block-end: 100%;
+    inset-inline: 0;
   }
 }
 </style>
