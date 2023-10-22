@@ -202,9 +202,8 @@ export default {
       const target = (event.target as HTMLInputElement) || null;
 
       if (
-        target !== null &&
-        target.files &&
-        target.files.length > 0 &&
+        target?.files &&
+        target?.files.length > 0 &&
         this.avatarFileLoading !== true
       ) {
         const avatarFile: File = target.files[0];
