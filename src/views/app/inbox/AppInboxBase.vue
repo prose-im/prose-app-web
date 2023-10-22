@@ -20,10 +20,11 @@
     .v-app-inbox-base__messages(
       @dragover.prevent.stop="onMessagesDragOver"
       @dragleave.prevent.stop="onMessagesDragLeave"
-      @drop.prevent.stop="onMessagesDrop"
     )
       inbox-dropzone(
         v-if="isMessagesDragged"
+        @drop.prevent.stop="onMessagesDrop"
+        :room="room"
         class="v-app-inbox-base__dropzone"
       )
 
@@ -37,6 +38,7 @@
 
       inbox-form(
         :room="room"
+        ref="form"
         class="v-app-inbox-base__form"
       )
 
@@ -120,7 +122,12 @@ export default {
     onMessagesDrop(event: DragEvent): void {
       this.isMessagesDragged = false;
 
-      // TODO: file handle drop
+      // Send dropped files? (if any)
+      if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
+        for (const file of event.dataTransfer.files) {
+          (this.$refs.form as typeof InboxForm).onAttachFile(file);
+        }
+      }
     }
   }
 };
