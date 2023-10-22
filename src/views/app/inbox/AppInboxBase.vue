@@ -19,13 +19,18 @@
   .v-app-inbox-base__content
     .v-app-inbox-base__messages(
       @dragover.prevent.stop="onMessagesDragOver"
+      @dragleave.prevent.stop="onMessagesDragLeave"
       @drop.prevent.stop="onMessagesDrop"
     )
+      inbox-dropzone(
+        v-if="isMessagesDragged"
+        class="v-app-inbox-base__dropzone"
+      )
+
       inbox-banner
 
       inbox-messaging(
         @dragover="onMessagesDragOver"
-        @drop="onMessagesDrop"
         :room="room"
         class="v-app-inbox-base__timeline"
       )
@@ -54,6 +59,7 @@ import { JID, Room, RoomID } from "@prose-im/prose-sdk-js";
 import Store from "@/store";
 
 // PROJECT: COMPONENTS
+import InboxDropzone from "@/components/inbox/InboxDropzone.vue";
 import InboxBanner from "@/components/inbox/InboxBanner.vue";
 import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
 
@@ -66,11 +72,20 @@ export default {
   name: "AppInboxBase",
 
   components: {
+    InboxDropzone,
     InboxMessaging,
     InboxBanner,
     InboxTopbar,
     InboxUserinfo,
     InboxForm
+  },
+
+  data() {
+    return {
+      // --> STATE <--
+
+      isMessagesDragged: false
+    };
   },
 
   computed: {
@@ -94,11 +109,17 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onMessagesDragOver(event: DragEvent): void {
-      // TODO: handle file drag over
+    onMessagesDragOver(): void {
+      this.isMessagesDragged = true;
+    },
+
+    onMessagesDragLeave(): void {
+      this.isMessagesDragged = false;
     },
 
     onMessagesDrop(event: DragEvent): void {
+      this.isMessagesDragged = false;
+
       // TODO: file handle drop
     }
   }
@@ -138,10 +159,17 @@ $content-padding-sides: 14px;
       display: flex;
       flex: 1;
       flex-direction: column;
+      position: relative;
 
       #{$c}__banner {
         padding-inline: ($content-padding-sides + 11px);
         flex: 0 0 auto;
+      }
+
+      #{$c}__dropzone {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
       }
 
       #{$c}__timeline {
