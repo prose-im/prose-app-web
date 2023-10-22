@@ -50,6 +50,10 @@ div(
       class="c-base-action__dropdown"
     )
 
+    slot(
+      name="inner"
+    )
+
   slot
 </template>
 
@@ -168,6 +172,7 @@ $c: ".c-base-action";
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
     cursor: pointer;
     box-sizing: border-box;
     border-radius: 5px;
