@@ -25,6 +25,10 @@ $animate-toast-margin-block-end: -3px;
     animation-duration: 0.1s;
   }
 
+  &--midfast {
+    animation-duration: 0.15s;
+  }
+
   &--fast {
     animation-duration: 0.2s;
   }
@@ -33,8 +37,12 @@ $animate-toast-margin-block-end: -3px;
     animation-duration: 1s;
   }
 
+  &--midslow {
+    animation-duration: 1.25s;
+  }
+
   &--superslow {
-    animation-duration: 2s;
+    animation-duration: 1.5s;
   }
 
   // --> ANIMATIONS <--
@@ -45,6 +53,10 @@ $animate-toast-margin-block-end: -3px;
 
   &--fade-out-down-small {
     animation-name: fadeOutDownSmall;
+  }
+
+  &--fade-in-out-expand-horizontal {
+    animation-name: fadeInOutExpandHorizontal;
   }
 
   &--rotate {
@@ -75,6 +87,22 @@ $animate-toast-margin-block-end: -3px;
   to {
     opacity: 0;
     margin-block-end: $animate-toast-margin-block-end;
+  }
+}
+
+@keyframes fadeInOutExpandHorizontal {
+  0% {
+    opacity: 0;
+    width: 0%;
+  }
+
+  20% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+    width: 100%;
   }
 }
 
