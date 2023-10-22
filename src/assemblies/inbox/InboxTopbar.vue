@@ -87,6 +87,7 @@ layout-toolbar(
   )
     base-tooltip(
       :tooltip="originalJID"
+      :bypassed="truncatedJID === originalJID"
       align="right"
       direction="bottom"
     )
