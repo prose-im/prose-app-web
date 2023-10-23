@@ -25,9 +25,9 @@ layout-toolbar(
           @click="onActionFormattingClick"
           :active="isActionFormattingPopoverVisible"
           :disabled="isFormDisabled"
+          :size="actionIconSize"
           class="a-inbox-form__action"
           icon="textformat.alt"
-          size="18px"
         )
           base-popover(
             v-if="isActionFormattingPopoverVisible"
@@ -38,6 +38,17 @@ layout-toolbar(
               @action="onFormattingAction"
               class="a-inbox-form__action-formatting"
             )
+
+      base-tooltip(
+        align="left"
+        tooltip="Record Audio"
+      )
+        base-action(
+          :disabled="true || isFormDisabled"
+          :size="actionIconSize"
+          class="a-inbox-form__action"
+          icon="mic"
+        )
 
   template(
     v-slot:middle
@@ -97,9 +108,9 @@ layout-toolbar(
         base-action(
           @click="onActionAttachClick"
           :disabled="isFormDisabled"
+          :size="actionIconSize"
           class="a-inbox-form__action"
           icon="paperclip"
-          size="18px"
         )
           template(
             v-slot:inner
@@ -117,9 +128,9 @@ layout-toolbar(
           @click="onActionEmojisClick"
           :active="isActionEmojisPopoverVisible"
           :disabled="isFormDisabled"
+          :size="actionIconSize"
           class="a-inbox-form__action"
           icon="face.smiling"
-          size="18px"
         )
           base-popover(
             v-if="isActionEmojisPopoverVisible"
@@ -187,6 +198,10 @@ export default {
 
   data() {
     return {
+      // --> DATA <--
+
+      actionIconSize: "18px",
+
       // --> STATE <--
 
       message: "",
