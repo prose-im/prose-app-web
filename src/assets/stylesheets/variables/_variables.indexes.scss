@@ -5,10 +5,11 @@
  */
 
 /* *************************************************************************
- * VARIABLES > ALL
+ * VARIABLES > INDEXES
  * **************************************************************************/
 
-@import "_variables.colors";
-@import "_variables.fonts";
-@import "_variables.sizes";
-@import "_variables.indexes";
+// --> FOREGROUND <--
+
+$index-foreground-primary: 10000;
+$index-foreground-secondary: 1000;
+$index-foreground-tertiary: 100;
