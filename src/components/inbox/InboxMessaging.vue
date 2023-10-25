@@ -78,6 +78,7 @@
 <script lang="ts">
 // NPM
 import { PropType, shallowRef } from "vue";
+import download from "browser-downloads";
 import { JID, Room } from "@prose-im/prose-sdk-js";
 import {
   Modifier as MessagingModifier,
@@ -85,9 +86,12 @@ import {
   Messaging as MessagingRuntime,
   SeekDirection as MessagingSeekDirection,
   Theme as MessagingTheme,
+  FileType as MessagingFileType,
+  FileAction as MessagingFileAction,
   EventMessageActionsView,
   EventMessageReactionsView,
   EventMessageReactionsReact,
+  EventMessageFileView,
   EventMessageHistorySeek
 } from "@prose-im/prose-core-views/types/messaging";
 
@@ -101,6 +105,10 @@ import {
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
+import {
+  File as FilePreviewFile,
+  FileType as FilePreviewFileType
+} from "@/components/inbox/InboxFilePreview.vue";
 
 // PROJECT: MODALS
 import EditMessage from "@/modals/inbox/EditMessage.vue";
@@ -167,7 +175,7 @@ export default {
     }
   },
 
-  emits: ["dragover"],
+  emits: ["file", "dragover"],
 
   data() {
     return {
@@ -185,6 +193,7 @@ export default {
         "message:actions:view": this.onMessagingMessageActionsView,
         "message:reactions:view": this.onMessagingMessageReactionsView,
         "message:reactions:react": this.onMessagingMessageReactionsReact,
+        "message:file:view": this.onMessagingMessageFileView,
         "message:history:seek": this.onMessagingMessageHistorySeek
       },
 
@@ -1096,6 +1105,41 @@ export default {
         event.id,
         event.reaction as MessageReaction
       );
+    },
+
+    onMessagingMessageFileView(event: EventMessageFileView): void {
+      this.$log.debug("Got message file view", event);
+
+      // Handle file view action
+      switch (event.action) {
+        case MessagingFileAction.Expand: {
+          if (event.file.type !== MessagingFileType.Other) {
+            // Request to expand file into preview
+            this.$emit("file", {
+              type: event.file.type as FilePreviewFileType,
+              url: event.file.url,
+              name: event.file.name || ""
+            } as FilePreviewFile);
+          } else {
+            this.$log.error(
+              `Cannot expand non-media file of type: ${event.file.type}`
+            );
+          }
+
+          break;
+        }
+
+        case MessagingFileAction.Download: {
+          // Trigger a browser download of the file
+          download(event.file.url, event.file.name || "");
+
+          break;
+        }
+
+        default: {
+          this.$log.error(`Got unsupported file view action: ${event.action}`);
+        }
+      }
     },
 
     onMessagingMessageHistorySeek(event: EventMessageHistorySeek): void {
