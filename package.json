@@ -45,6 +45,7 @@
     "strophe.js": "1.6.x",
     "mitt": "3.0.x",
     "crypto-js": "4.1.x",
+    "browser-downloads": "0.2.x",
     "browser-image-resizer": "2.4.x",
     "pinia": "2.1.x",
     "pinia-plugin-persistedstate": "3.1.x",

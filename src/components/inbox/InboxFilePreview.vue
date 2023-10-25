@@ -164,6 +164,9 @@ teleport(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import download from "browser-downloads";
+
 // ENUMERATIONS
 export enum FileType {
   // Image type.
@@ -305,16 +308,8 @@ export default {
 
     onActionDownloadClick(): void {
       if (this.activeFile) {
-        // Create virtual download element
-        const linkElement = document.createElement("a");
-
-        linkElement.href = this.activeFile.url;
-
-        linkElement.setAttribute("download", this.activeFile.name);
-        linkElement.setAttribute("target", "_blank");
-
-        // Trigger file download
-        linkElement.click();
+        // Trigger a browser download of the file
+        download(this.activeFile.url, this.activeFile.name);
       }
     },
 
