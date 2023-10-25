@@ -21,6 +21,13 @@
       @dragover.prevent.stop="onMessagesDragOver"
       @dragleave.prevent.stop="onMessagesDragLeave"
     )
+      inbox-file-preview(
+        v-if="filePreview.collection.length > 0"
+        @close="onMessagesFilePreviewClose"
+        :collection="filePreview.collection"
+        :initial-index="filePreview.index"
+      )
+
       inbox-dropzone(
         v-if="isMessagesDragged"
         @drop.prevent.stop="onMessagesDrop"
@@ -61,6 +68,11 @@ import { JID, Room, RoomID } from "@prose-im/prose-sdk-js";
 import Store from "@/store";
 
 // PROJECT: COMPONENTS
+import {
+  default as InboxFilePreview,
+  Collection as FilePreviewCollection,
+  FileType as FilePreviewFileType
+} from "@/components/inbox/InboxFilePreview.vue";
 import InboxDropzone from "@/components/inbox/InboxDropzone.vue";
 import InboxBanner from "@/components/inbox/InboxBanner.vue";
 import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
@@ -74,6 +86,7 @@ export default {
   name: "AppInboxBase",
 
   components: {
+    InboxFilePreview,
     InboxDropzone,
     InboxMessaging,
     InboxBanner,
@@ -85,6 +98,11 @@ export default {
   data() {
     return {
       // --> STATE <--
+
+      filePreview: {
+        collection: [] as FilePreviewCollection,
+        index: 0
+      },
 
       isMessagesDragged: false
     };
@@ -128,6 +146,11 @@ export default {
           (this.$refs.form as typeof InboxForm).onAttachFile(file);
         }
       }
+    },
+
+    onMessagesFilePreviewClose(): void {
+      this.filePreview.collection = [];
+      this.filePreview.index = 0;
     }
   }
 };
