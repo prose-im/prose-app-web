@@ -22,7 +22,7 @@
     ]`
     src="/includes/views/messaging.html"
     ref="frame"
-    sandbox="allow-same-origin allow-scripts allow-top-navigation-by-user-activation"
+    sandbox="allow-same-origin allow-scripts allow-popups"
   )
 
   base-overlay(
