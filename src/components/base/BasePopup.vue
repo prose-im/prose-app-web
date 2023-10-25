@@ -87,7 +87,7 @@ $c: ".c-base-popup";
   align-items: center;
   justify-content: center;
   inset: 0;
-  z-index: 1000;
+  z-index: $index-foreground-secondary;
 
   #{$c}__popup {
     background-color: rgb(var(--color-white));

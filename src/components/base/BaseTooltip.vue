@@ -158,7 +158,7 @@ $tooltip-spacing-inline: -3px;
     display: block;
     visibility: hidden;
     position: absolute;
-    z-index: 100;
+    z-index: $index-foreground-tertiary;
   }
 
   #{$c}__value {
