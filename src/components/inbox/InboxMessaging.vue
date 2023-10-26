@@ -78,6 +78,7 @@
 <script lang="ts">
 // NPM
 import { PropType, shallowRef } from "vue";
+// @ts-expect-error download is a dependency w/o any declaration
 import download from "browser-downloads";
 import { JID, Room } from "@prose-im/prose-sdk-js";
 import {
@@ -106,6 +107,7 @@ import {
 } from "@/components/base/BasePopoverList.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 import {
+  Collection as FilePreviewCollection,
   File as FilePreviewFile,
   FileType as FilePreviewFileType
 } from "@/components/inbox/InboxFilePreview.vue";
@@ -175,7 +177,7 @@ export default {
     }
   },
 
-  emits: ["file", "dragover"],
+  emits: ["filePreview", "dragover"],
 
   data() {
     return {
@@ -661,6 +663,14 @@ export default {
       }
     },
 
+    makeFilePreviewFile(event: EventMessageFileView): FilePreviewFile {
+      return {
+        type: event.file.type as FilePreviewFileType,
+        url: event.file.url,
+        name: event.file.name || ""
+      };
+    },
+
     // --> EVENT LISTENERS <--
 
     onFrameLoad(): void {
@@ -1114,12 +1124,29 @@ export default {
       switch (event.action) {
         case MessagingFileAction.Expand: {
           if (event.file.type !== MessagingFileType.Other) {
+            const fileCollection: FilePreviewCollection = [];
+
+            // Map previous files (only expand actions)
+            event.adjacents?.before.forEach(adjacent => {
+              if (adjacent.action === MessagingFileAction.Expand) {
+                fileCollection.push(this.makeFilePreviewFile(adjacent));
+              }
+            });
+
+            // Append current file
+            fileCollection.push(this.makeFilePreviewFile(event));
+
+            const fileIndex = fileCollection.length - 1;
+
+            // Map next files (only expand actions)
+            event.adjacents?.after.forEach(adjacent => {
+              if (adjacent.action === MessagingFileAction.Expand) {
+                fileCollection.push(this.makeFilePreviewFile(adjacent));
+              }
+            });
+
             // Request to expand file into preview
-            this.$emit("file", {
-              type: event.file.type as FilePreviewFileType,
-              url: event.file.url,
-              name: event.file.name || ""
-            } as FilePreviewFile);
+            this.$emit("filePreview", fileCollection, fileIndex);
           } else {
             this.$log.error(
               `Cannot expand non-media file of type: ${event.file.type}`

@@ -165,6 +165,7 @@ teleport(
 
 <script lang="ts">
 // NPM
+// @ts-expect-error download is a dependency w/o any declaration
 import download from "browser-downloads";
 
 // ENUMERATIONS

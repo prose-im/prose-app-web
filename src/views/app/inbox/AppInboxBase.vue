@@ -38,7 +38,7 @@
       inbox-banner
 
       inbox-messaging(
-        @file="onMessagesFile"
+        @file-preview="onMessagesFilePreview"
         @dragover="onMessagesDragOver"
         :room="room"
         class="v-app-inbox-base__timeline"
@@ -71,8 +71,7 @@ import Store from "@/store";
 // PROJECT: COMPONENTS
 import {
   default as InboxFilePreview,
-  Collection as FilePreviewCollection,
-  File as FilePreviewFile
+  Collection as FilePreviewCollection
 } from "@/components/inbox/InboxFilePreview.vue";
 import InboxDropzone from "@/components/inbox/InboxDropzone.vue";
 import InboxBanner from "@/components/inbox/InboxBanner.vue";
@@ -149,9 +148,9 @@ export default {
       }
     },
 
-    onMessagesFile(file: FilePreviewFile): void {
-      this.filePreview.collection = [file];
-      this.filePreview.index = 0;
+    onMessagesFilePreview(collection: FilePreviewCollection, index = 0): void {
+      this.filePreview.collection = collection;
+      this.filePreview.index = index;
     },
 
     onMessagesFilePreviewClose(): void {
