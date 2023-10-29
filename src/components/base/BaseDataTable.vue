@@ -136,6 +136,12 @@ export interface Control {
   type: ControlType;
 }
 
+interface ControlWithIcon {
+  type: ControlType;
+  disabled: boolean;
+  icon?: string;
+}
+
 export default {
   name: "BaseDataTable",
 
@@ -195,7 +201,7 @@ export default {
   },
 
   computed: {
-    controlsWithIcons() {
+    controlsWithIcons(): Array<ControlWithIcon> {
       return this.controls.map((control: Control) => {
         let icon: string,
           disabled = false;
@@ -220,7 +226,7 @@ export default {
       });
     },
 
-    sortedRows() {
+    sortedRows(): Array<Row> {
       // Sortable, and a sort is active?
       if (
         this.sortable === true &&

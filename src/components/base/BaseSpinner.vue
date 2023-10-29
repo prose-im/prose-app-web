@@ -47,7 +47,7 @@ export default {
   },
 
   computed: {
-    spinnerStyle(): object {
+    spinnerStyle(): { [property: string]: string } {
       return {
         height: this.size,
         width: this.size,

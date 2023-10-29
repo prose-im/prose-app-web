@@ -30,7 +30,7 @@ export default {
   },
 
   computed: {
-    spacesHtml() {
+    spacesHtml(): string {
       return Array(this.repeat).fill("&nbsp;").join("");
     }
   }

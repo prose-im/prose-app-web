@@ -171,7 +171,7 @@ export default {
   emits: ["click"],
 
   computed: {
-    iconSize() {
+    iconSize(): string | null {
       if (this.icon) {
         const sizeProperties = AVAILABLE_SIZES[this.size];
 

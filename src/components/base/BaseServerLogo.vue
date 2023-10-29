@@ -52,7 +52,7 @@ export default {
   },
 
   computed: {
-    logoImageUrl() {
+    logoImageUrl(): string {
       // TODO: acquire from cache using provided domain, this is only a \
       //   temporary fixture
       const handle = this.domain.replaceAll(".", "-");
@@ -63,7 +63,7 @@ export default {
       ].join("/");
     },
 
-    backgroundImage() {
+    backgroundImage(): string {
       return `url("${this.logoImageUrl}")`;
     }
   }

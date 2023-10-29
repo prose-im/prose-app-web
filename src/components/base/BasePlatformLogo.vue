@@ -68,7 +68,7 @@ export default {
   },
 
   computed: {
-    platformLabel() {
+    platformLabel(): string {
       const platformProperties = AVAILABLE_PLATFORMS[this.name];
 
       // Return label for platform?

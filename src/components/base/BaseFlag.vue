@@ -61,18 +61,18 @@ export default {
   },
 
   computed: {
-    flagImageUrl() {
+    flagImageUrl(): string {
       return [
         "/src/assets/images/components/base/BaseFlag",
         `${this.code.toLowerCase()}.svg`
       ].join("/");
     },
 
-    backgroundImage() {
+    backgroundImage(): string {
       return `url("${this.flagImageUrl}")`;
     },
 
-    borderRadius() {
+    borderRadius(): string {
       // Acquire numeric size
       const sizeNumeric = parseInt(this.height.replace("px", ""));
 

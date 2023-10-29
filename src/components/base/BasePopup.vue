@@ -48,7 +48,7 @@ export default {
   emits: ["confirm", "close"],
 
   computed: {
-    hotkeys() {
+    hotkeys(): { [name: string]: () => void } {
       return {
         enter: this.onHotkeyEnter,
         esc: this.onHotkeyEscape

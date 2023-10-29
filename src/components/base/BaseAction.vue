@@ -128,7 +128,7 @@ export default {
   emits: ["click"],
 
   computed: {
-    iconTransform() {
+    iconTransform(): string | null {
       if (this.rotate) {
         return `rotate(${this.rotate})`;
       }

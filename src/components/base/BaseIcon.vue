@@ -51,7 +51,7 @@ export default {
   },
 
   computed: {
-    href() {
+    href(): string {
       return `#${ICON_PREFIX}-${this.name}`;
     }
   }
