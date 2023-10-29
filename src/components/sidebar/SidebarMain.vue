@@ -177,6 +177,10 @@ export default {
 
   data() {
     return {
+      // --> DATA <--
+
+      roomType: RoomType,
+
       // --> STATE <--
 
       selectedJID: null as JID | null,
@@ -191,11 +195,7 @@ export default {
           loading: false,
           mode: null as AddContactMode | null
         }
-      },
-
-      // --> DATA <--
-
-      roomType: RoomType
+      }
     };
   },
 
