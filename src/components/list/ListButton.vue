@@ -164,6 +164,7 @@ $c: ".c-list-button";
 
     #{$c}__label {
       font-size: 13px;
+      line-height: 18px;
     }
   }
 
@@ -173,6 +174,7 @@ $c: ".c-list-button";
 
     #{$c}__label {
       font-size: 14px;
+      line-height: 19px;
     }
   }
 
