@@ -18,6 +18,7 @@ list-disclosure(
 )
   list-button(
     v-for="member in members"
+    @click="onMemberClick(member.jid)"
     size="small"
     class="c-inbox-details-group-members__member"
   )
@@ -89,6 +90,13 @@ export default {
 
     onToggle(visible: boolean): void {
       Store.$layout.setInboxDetailsSectionMembers(visible);
+    },
+
+    onMemberClick(jid: JID): void {
+      this.$router.push({
+        name: "app.inbox",
+        params: { roomId: jid.toString() }
+      });
     }
   }
 };
