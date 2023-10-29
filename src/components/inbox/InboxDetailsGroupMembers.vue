@@ -46,6 +46,7 @@ list-disclosure(
       )
 
   list-button(
+    @click="onAddMemberClick"
     size="small"
     class="c-inbox-details-group-members__add"
     emphasis
@@ -63,6 +64,13 @@ list-disclosure(
       v-slot:default
     )
       | Add members
+
+  add-group-member(
+    v-if="modals.addGroupMember.visible"
+    @add="onModalAddGroupMemberAdd"
+    @close="onModalAddGroupMemberClose"
+    :loading="modals.addGroupMember.loading"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -75,11 +83,21 @@ import { Room } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 import { JID } from "@prose-im/prose-sdk-js";
 
+// PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
+
+// PROJECT: MODALS
+import AddGroupMember from "@/modals/inbox/AddGroupMember.vue";
+
 // PROJECT: STORES
 import Store from "@/store";
 
 export default {
   name: "InboxDetailsUserMembers",
+
+  components: {
+    AddGroupMember
+  },
 
   props: {
     room: {
@@ -91,6 +109,19 @@ export default {
       type: String,
       default: null
     }
+  },
+
+  data() {
+    return {
+      // --> STATE <--
+
+      modals: {
+        addGroupMember: {
+          visible: false,
+          loading: false
+        }
+      }
+    };
   },
 
   computed: {
@@ -116,6 +147,31 @@ export default {
         name: "app.inbox",
         params: { roomId: jid.toString() }
       });
+    },
+
+    onAddMemberClick(): void {
+      this.modals.addGroupMember.visible = true;
+    },
+
+    onModalAddGroupMemberAdd(jidString: string): void {
+      if (this.modals.addGroupMember.loading !== true) {
+        this.modals.addGroupMember.loading = true;
+
+        // TODO: remove this
+        setTimeout(() => {
+          this.modals.addGroupMember.visible = false;
+          this.modals.addGroupMember.loading = false;
+
+          BaseAlert.error(
+            "Member not added",
+            `${jidString} could not be added`
+          );
+        }, 1000);
+      }
+    },
+
+    onModalAddGroupMemberClose(): void {
+      this.modals.addGroupMember.visible = false;
     }
   }
 };
