@@ -101,11 +101,11 @@ export default {
   },
 
   computed: {
-    countColor() {
+    countColor(): string {
       return this.active === true ? "white" : "blue";
     },
 
-    unreadCount() {
+    unreadCount(): number {
       // TODO: return a non-zero unread count if there are unread messages
       return 0;
     },
@@ -143,11 +143,12 @@ $c: ".c-sidebar-main-item-user";
   #{$c}__presence {
     margin-inline-start: 5px;
     margin-block-start: 2px;
+    flex: 0 0 auto;
   }
 
   #{$c}__activity {
     margin-inline-start: 9px;
-    margin-block-start: 1px;
+    margin-block-start: 2px;
 
     #{$c}__activity-icon {
       font-size: 16px;

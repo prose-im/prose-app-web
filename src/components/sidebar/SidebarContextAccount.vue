@@ -73,7 +73,7 @@ export default {
   },
 
   computed: {
-    addressJID() {
+    addressJID(): JID {
       return new JID(this.address);
     }
   }
