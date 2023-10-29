@@ -217,9 +217,25 @@ export default {
 
   computed: {
     fieldComposePlaceholder(): string {
+      // Acquire room prefix
+      let roomPrefix;
+
+      switch (this.room?.type) {
+        case RoomType.PrivateChannel:
+        case RoomType.PublicChannel: {
+          roomPrefix = "#";
+
+          break;
+        }
+
+        default: {
+          roomPrefix = "";
+        }
+      }
+
       // Any roster name set?
       if (this.rosterName) {
-        return `Message ${this.rosterName}`;
+        return `Message ${roomPrefix}${this.rosterName}`;
       }
 
       return "Send a message";
