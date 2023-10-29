@@ -44,6 +44,25 @@ list-disclosure(
         class="c-inbox-details-group-members__presence"
         available-only
       )
+
+  list-button(
+    size="small"
+    class="c-inbox-details-group-members__add"
+    emphasis
+  )
+    template(
+      v-slot:icon
+    )
+      base-icon(
+        name="plus.square.fill"
+        size="12px"
+        class="c-inbox-details-group-members__icon"
+      )
+
+    template(
+      v-slot:default
+    )
+      | Add members
 </template>
 
 <!-- **********************************************************************
@@ -115,6 +134,12 @@ $c: ".c-inbox-details-group-members";
       margin-inline-start: 4px;
       margin-block-start: 3px;
       flex: 0 0 auto;
+    }
+  }
+
+  #{$c}__add {
+    #{$c}__icon {
+      fill: rgb(var(--color-base-blue-dark));
     }
   }
 }
