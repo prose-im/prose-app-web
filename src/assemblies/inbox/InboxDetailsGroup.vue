@@ -96,7 +96,12 @@ export default {
 
   computed: {
     actions(): Array<DetailsAction> {
-      return [];
+      return [
+        {
+          id: "leave",
+          title: "Leave this group"
+        }
+      ];
     },
 
     layout(): typeof Store.$layout {

@@ -96,7 +96,22 @@ export default {
 
   computed: {
     actions(): Array<DetailsAction> {
-      return [];
+      return [
+        {
+          id: "delete",
+          title: "Delete this channel"
+        },
+
+        {
+          id: "leave",
+          title: "Leave this channel"
+        },
+
+        {
+          id: "convert",
+          title: "Convert to private group"
+        }
+      ];
     },
 
     layout(): typeof Store.$layout {
