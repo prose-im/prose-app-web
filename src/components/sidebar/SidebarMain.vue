@@ -79,6 +79,7 @@
           :id="room.id"
           :name="room.name"
           :active="room.id === selectedRoomID"
+          type="group"
         )
 
     sidebar-main-item-add(
@@ -98,6 +99,7 @@
       :id="room.id"
       :name="room.name"
       :active="room.id === selectedRoomID"
+      type="channel"
     )
 
     sidebar-main-item-add(

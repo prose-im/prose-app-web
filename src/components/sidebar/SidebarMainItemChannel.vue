@@ -21,10 +21,11 @@ list-button(
   ]`
 )
   template(
+    v-if="icon"
     v-slot:icon
   )
     base-icon(
-      name="circle.grid.2x2"
+      :name="icon"
       size="13px"
       class="c-sidebar-main-item-channel__icon"
     )
@@ -54,6 +55,15 @@ export default {
       required: true
     },
 
+    type: {
+      type: String,
+      default: "channel",
+
+      validator(x: string) {
+        return ["channel", "group"].includes(x);
+      }
+    },
+
     active: {
       type: Boolean,
       default: false
@@ -62,6 +72,24 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    }
+  },
+
+  computed: {
+    icon(): string | null {
+      switch (this.type) {
+        case "group": {
+          return "at";
+        }
+
+        case "channel": {
+          return "circle.grid.2x2";
+        }
+
+        default: {
+          return null;
+        }
+      }
     }
   },
 

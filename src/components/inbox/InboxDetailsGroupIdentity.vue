@@ -12,7 +12,7 @@
 .c-inbox-details-group-identity
   p.c-inbox-details-group-identity__name
     base-icon(
-      name="circle.grid.2x2"
+      :name="nameIcon"
       size="13px"
       class="c-inbox-details-group-identity__name-icon"
     )
@@ -27,7 +27,7 @@
 
 <script lang="ts">
 // NPM
-import { Room } from "@prose-im/prose-sdk-js";
+import { Room, RoomType } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
 export default {
@@ -37,6 +37,20 @@ export default {
     room: {
       type: Object as PropType<Room>,
       required: true
+    }
+  },
+
+  computed: {
+    nameIcon(): string {
+      switch (this.room.type) {
+        case RoomType.Group: {
+          return "at";
+        }
+
+        default: {
+          return "circle.grid.2x2";
+        }
+      }
     }
   }
 };
