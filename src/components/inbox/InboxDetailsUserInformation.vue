@@ -67,6 +67,15 @@ import { getCountryCode, getCountryName } from "crisp-countries-languages";
 // PROJECT: STORES
 import Store from "@/store";
 
+// INTERFACES
+interface Entry {
+  id: string;
+  title: string;
+  icon?: string;
+  flag?: string;
+  emoji?: string;
+}
+
 export default {
   name: "InboxDetailsUserInformation",
 
@@ -96,7 +105,7 @@ export default {
   },
 
   computed: {
-    entries() {
+    entries(): Array<Entry> {
       const entries = [];
 
       if (this.profile.information) {

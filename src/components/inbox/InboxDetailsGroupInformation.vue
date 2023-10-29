@@ -51,6 +51,13 @@ import { PropType } from "vue";
 // PROJECT: STORES
 import Store from "@/store";
 
+// INTERFACES
+interface Entry {
+  id: string;
+  title: string;
+  icon?: string;
+}
+
 export default {
   name: "InboxDetailsUserInformation",
 
@@ -72,7 +79,7 @@ export default {
   },
 
   computed: {
-    entries() {
+    entries(): Array<Entry> {
       let membersCount = this.room.members.length;
 
       return [

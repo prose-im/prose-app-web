@@ -225,7 +225,7 @@ export default {
   },
 
   computed: {
-    hotkeys() {
+    hotkeys(): { [name: string]: () => void } {
       return {
         esc: this.onHotkeyEscape,
         left: this.onHotkeyLeft,

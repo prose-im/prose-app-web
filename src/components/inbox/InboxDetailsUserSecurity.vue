@@ -42,7 +42,7 @@ list-disclosure(
       v-slot:icon
     )
       base-icon(
-        v-if="entry.icon"
+        v-if="entry.icon && entry.kind"
         :name="entry.icon"
         :class=`[
           "c-inbox-details-user-security__icon",
@@ -91,6 +91,16 @@ import InboxDetailsUserSecurityDetailsEncryption from "@/components/inbox/InboxD
 // PROJECT: STORES
 import Store from "@/store";
 
+// INTERFACES
+interface Entry {
+  id: string;
+  title: string;
+  kind?: string;
+  icon?: string;
+  important?: boolean;
+  critical?: boolean;
+}
+
 export default {
   name: "InboxDetailsUserSecurity",
 
@@ -123,7 +133,7 @@ export default {
   },
 
   computed: {
-    entries() {
+    entries(): Array<Entry> {
       const entries = [];
 
       if (this.profile.security) {
