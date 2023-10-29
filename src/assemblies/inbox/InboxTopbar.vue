@@ -79,7 +79,7 @@ layout-toolbar(
         size="medium"
       )
 
-      span.u-bold
+      span.a-inbox-topbar__identity-value.u-bold
         | {{ room.name }}
 
   template(
@@ -101,7 +101,10 @@ layout-toolbar(
           size="16px"
         )
 
-        span.u-regular
+        span(
+          v-if="truncatedJID"
+          class="a-inbox-topbar__identity-value u-regular"
+        )
           | {{ truncatedJID }}
 
     base-separator(
@@ -218,14 +221,18 @@ export default {
       return this.jid.toString();
     },
 
-    truncatedJID(): string {
-      let jid = this.originalJID;
+    truncatedJID(): string | null {
+      if (this.room?.type === RoomType.DirectMessage) {
+        let jid = this.originalJID;
 
-      if (jid.length < JID_TRUNCATE_LENGTH) {
-        return jid;
+        if (jid.length < JID_TRUNCATE_LENGTH) {
+          return jid;
+        }
+
+        return jid.slice(0, JID_TRUNCATE_LENGTH - 1) + "…";
       }
 
-      return jid.slice(0, JID_TRUNCATE_LENGTH - 1) + "…";
+      return null;
     },
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
@@ -429,8 +436,6 @@ $c: ".a-inbox-topbar";
       font-size: 15px;
 
       #{$c}__identity-badge {
-        margin-block-start: 2px;
-
         &--verified {
           fill: rgb(var(--color-base-green-normal));
         }
@@ -439,11 +444,18 @@ $c: ".a-inbox-topbar";
           fill: rgb(var(--color-base-grey-normal));
         }
       }
+
+      #{$c}__identity-value {
+        margin-block-start: -2px;
+      }
     }
 
     #{$c}__identity-badge {
-      margin-inline-end: 5px;
       flex: 0 0 auto;
+
+      + #{$c}__identity-value {
+        margin-inline-start: 5px;
+      }
     }
   }
 }
