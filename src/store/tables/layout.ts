@@ -30,12 +30,13 @@ const $layout = defineStore("layout", {
       },
 
       inbox: {
-        userinfo: {
+        details: {
           visible: true,
 
           sections: {
             information: true,
             security: true,
+            members: true,
             actions: true
           }
         }
@@ -68,27 +69,33 @@ const $layout = defineStore("layout", {
       });
     },
 
-    toggleInboxUserinfoVisible() {
+    toggleInboxDetailsVisible() {
       this.$patch(state => {
-        state.inbox.userinfo.visible = !state.inbox.userinfo.visible;
+        state.inbox.details.visible = !state.inbox.details.visible;
       });
     },
 
-    setInboxUserinfoSectionInformation(visible: boolean) {
+    setInboxDetailsSectionInformation(visible: boolean) {
       this.$patch(state => {
-        state.inbox.userinfo.sections.information = visible;
+        state.inbox.details.sections.information = visible;
       });
     },
 
-    setInboxUserinfoSectionSecurity(visible: boolean) {
+    setInboxDetailsSectionSecurity(visible: boolean) {
       this.$patch(state => {
-        state.inbox.userinfo.sections.security = visible;
+        state.inbox.details.sections.security = visible;
       });
     },
 
-    setInboxUserinfoSectionActions(visible: boolean) {
+    setInboxDetailsSectionMembers(visible: boolean) {
       this.$patch(state => {
-        state.inbox.userinfo.sections.actions = visible;
+        state.inbox.details.sections.members = visible;
+      });
+    },
+
+    setInboxDetailsSectionActions(visible: boolean) {
+      this.$patch(state => {
+        state.inbox.details.sections.actions = visible;
       });
     }
   }

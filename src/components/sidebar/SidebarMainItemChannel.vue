@@ -13,7 +13,12 @@ list-button(
   @click="onButtonClick"
   :active="active"
   :disabled="disabled"
-  class="c-sidebar-main-item-channel"
+  :class=`[
+    "c-sidebar-main-item-channel",
+    {
+      "c-sidebar-main-item-channel--active": active
+    }
+  ]`
 )
   template(
     v-slot:icon
@@ -84,6 +89,14 @@ $c: ".c-sidebar-main-item-channel";
   #{$c}__icon {
     fill: rgb(var(--color-base-blue-dark));
     margin-block-start: 2px;
+  }
+
+  // --> BOOLEANS <--
+
+  &--active {
+    #{$c}__icon {
+      fill: rgb(var(--color-white));
+    }
   }
 }
 </style>

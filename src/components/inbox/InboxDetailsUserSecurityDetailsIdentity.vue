@@ -9,10 +9,10 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-inbox-userinfo-security-details-identity
+.c-inbox-details-user-security-details-identity
   div(
     :class=`[
-      "c-inbox-userinfo-security-details-identity__quickie",
+      "c-inbox-details-user-security-details-identity__quickie",
       {
         [spacingBlockClass]: spacingBlockClass,
         [spacingInlineClass]: spacingInlineClass
@@ -26,7 +26,7 @@
   div(
     v-if="identityUrl"
     :class=`[
-      "c-inbox-userinfo-security-details-identity__disclaimer",
+      "c-inbox-details-user-security-details-identity__disclaimer",
       "u-regular",
       {
         [spacingInlineClass]: spacingInlineClass
@@ -67,7 +67,7 @@ const QUICKIE_DESCRIPTION_PREFIX =
   "Prose checked on the identity server for matches.";
 
 export default {
-  name: "InboxUserinfoSecurityDetailsIdentity",
+  name: "InboxDetailsUserSecurityDetailsIdentity",
 
   props: {
     jid: {
@@ -145,12 +145,12 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-inbox-userinfo-security-details-identity";
+$c: ".c-inbox-details-user-security-details-identity";
 
 // VARIABLES
 $quickie-icon-size: 26px;
 
-.c-inbox-userinfo-security-details-identity {
+.c-inbox-details-user-security-details-identity {
   #{$c}__quickie {
     background-color: rgb(var(--color-background-secondary));
   }

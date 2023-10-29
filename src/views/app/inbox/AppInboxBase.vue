@@ -50,10 +50,11 @@
         class="v-app-inbox-base__form"
       )
 
-    inbox-userinfo(
-      v-if="layout.inbox.userinfo.visible"
+    inbox-details(
+      v-if="layout.inbox.details.visible"
       :jid="jid"
-      class="v-app-inbox-base__userinfo"
+      :room="room"
+      class="v-app-inbox-base__details"
     )
 </template>
 
@@ -80,7 +81,7 @@ import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
 // PROJECT: ASSEMBLIES
 import InboxForm from "@/assemblies/inbox/InboxForm.vue";
 import InboxTopbar from "@/assemblies/inbox/InboxTopbar.vue";
-import InboxUserinfo from "@/assemblies/inbox/InboxUserinfo.vue";
+import InboxDetails from "@/assemblies/inbox/InboxDetails.vue";
 
 export default {
   name: "AppInboxBase",
@@ -91,7 +92,7 @@ export default {
     InboxMessaging,
     InboxBanner,
     InboxTopbar,
-    InboxUserinfo,
+    InboxDetails,
     InboxForm
   },
 
@@ -248,9 +249,9 @@ $content-padding-sides: 14px;
       }
     }
 
-    #{$c}__userinfo {
+    #{$c}__details {
       border-inline-start: 1px solid rgb(var(--color-border-secondary));
-      width: $size-inbox-userinfo-width;
+      width: $size-inbox-details-width;
       overflow-x: hidden;
       overflow-y: auto;
       flex: 0 0 auto;

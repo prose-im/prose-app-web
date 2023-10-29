@@ -123,13 +123,13 @@ layout-toolbar(
         )
 
       base-tooltip(
+        :tooltip="actionDetailsTooltip"
         align="right"
         direction="bottom"
-        tooltip="User Details"
       )
         base-action(
-          @click="onActionUserinfoClick"
-          :active="layout.inbox.userinfo.visible"
+          @click="onActionDetailsClick"
+          :active="layout.inbox.details.visible"
           class="a-inbox-topbar__action"
           icon="info.circle"
           context="grey"
@@ -162,7 +162,7 @@ layout-toolbar(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID, Room, RoomID } from "@prose-im/prose-sdk-js";
+import { JID, Room, RoomID, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -312,6 +312,37 @@ export default {
       }
 
       return items;
+    },
+
+    actionDetailsTooltip(): string {
+      let detailsParts: Array<string> = [];
+
+      // Append room type
+      switch (this.room?.type) {
+        case RoomType.DirectMessage: {
+          detailsParts.push("User");
+
+          break;
+        }
+
+        case RoomType.Group: {
+          detailsParts.push("Group");
+
+          break;
+        }
+
+        case RoomType.PrivateChannel:
+        case RoomType.PublicChannel: {
+          detailsParts.push("Channel");
+
+          break;
+        }
+      }
+
+      // Append tooltip suffix
+      detailsParts.push("Details");
+
+      return detailsParts.join(" ");
     }
   },
 
@@ -337,8 +368,8 @@ export default {
       this.isActionHistoryPopoverVisible = false;
     },
 
-    onActionUserinfoClick(): void {
-      Store.$layout.toggleInboxUserinfoVisible();
+    onActionDetailsClick(): void {
+      Store.$layout.toggleInboxDetailsVisible();
     },
 
     onActionHistoryPreviousClick(): void {

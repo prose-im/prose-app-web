@@ -9,22 +9,22 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-inbox-userinfo-identity
+.c-inbox-details-user-identity
   base-avatar(
     :jid="jid"
-    class="c-inbox-userinfo-identity__avatar"
+    class="c-inbox-details-user-identity__avatar"
     size="100px"
   )
 
-  .c-inbox-userinfo-identity__details
-    p.c-inbox-userinfo-identity__name
+  .c-inbox-details-user-identity__details
+    p.c-inbox-details-user-identity__name
       base-presence(
-        class="c-inbox-userinfo-identity__name-presence"
+        class="c-inbox-details-user-identity__name-presence"
         :jid="jid"
         size="small"
       )
 
-      span.c-inbox-userinfo-identity__name-full.u-bold
+      span.c-inbox-details-user-identity__name-full.u-bold
         template(
           v-if="profile.name"
         )
@@ -35,40 +35,40 @@
         )
           | {{ jid.local }}
 
-    p.c-inbox-userinfo-identity__role(
+    p.c-inbox-details-user-identity__role(
       v-if="profileRole"
     )
       | {{ profileRole }}
 
-  ul.c-inbox-userinfo-identity__actions(
+  ul.c-inbox-details-user-identity__actions(
     v-if="profilePhoneUrl || profileEmailUrl"
   )
-    li.c-inbox-userinfo-identity__action(
+    li.c-inbox-details-user-identity__action(
       v-if="profilePhoneUrl"
     )
       a(
         :href="profilePhoneUrl"
         target="_blank"
-        class="c-inbox-userinfo-identity__action-link"
+        class="c-inbox-details-user-identity__action-link"
       )
         base-button(
-          class="c-inbox-userinfo-identity__action-button"
+          class="c-inbox-details-user-identity__action-button"
           icon="phone.fill"
           size="medium"
           reverse
         )
           | Phone
 
-    li.c-inbox-userinfo-identity__action(
+    li.c-inbox-details-user-identity__action(
       v-if="profileEmailUrl"
     )
       a(
         :href="profileEmailUrl"
         target="_blank"
-        class="c-inbox-userinfo-identity__action-link"
+        class="c-inbox-details-user-identity__action-link"
       )
         base-button(
-          class="c-inbox-userinfo-identity__action-button"
+          class="c-inbox-details-user-identity__action-button"
           icon="envelope.fill"
           size="medium"
           reverse
@@ -90,7 +90,7 @@ import Store from "@/store";
 import { ProfileEntryInformationContact } from "@/store/tables/profile";
 
 export default {
-  name: "InboxUserinfoIdentity",
+  name: "InboxDetailsUserIdentity",
 
   props: {
     jid: {
@@ -150,9 +150,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-inbox-userinfo-identity";
+$c: ".c-inbox-details-user-identity";
 
-.c-inbox-userinfo-identity {
+.c-inbox-details-user-identity {
   text-align: center;
 
   #{$c}__avatar {
@@ -160,6 +160,7 @@ $c: ".c-inbox-userinfo-identity";
   }
 
   #{$c}__details {
+    padding-inline: 8px;
     margin-block-end: 20px;
 
     #{$c}__name {

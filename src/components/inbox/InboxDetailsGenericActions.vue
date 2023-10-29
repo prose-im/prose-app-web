@@ -13,14 +13,14 @@ list-disclosure(
   @toggle="onToggle"
   :header-class="headerClass"
   title="Actions"
-  class="c-inbox-userinfo-actions"
+  class="c-inbox-details-generic-actions"
   separated
 )
   list-button(
     v-for="action in actions"
     :key="action.id"
     :class=`[
-      "c-inbox-userinfo-actions__action",
+      "c-inbox-details-generic-actions__action",
       {
         [itemClass]: itemClass
       }
@@ -42,7 +42,7 @@ list-disclosure(
       base-icon(
         name="chevron.right"
         size="8px"
-        class="c-inbox-userinfo-actions__action-navigate"
+        class="c-inbox-details-generic-actions__action-navigate"
       )
 </template>
 
@@ -52,19 +52,35 @@ list-disclosure(
 
 <script lang="ts">
 // NPM
+import { Room } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
 
+// INTERFACES
+export interface Action {
+  id: string;
+  title: string;
+  navigate?: boolean;
+}
+
 export default {
-  name: "InboxUserinfoActions",
+  name: "InboxDetailsGenericActions",
 
   props: {
-    jid: {
-      type: Object as PropType<JID>,
+    room: {
+      type: Object as PropType<Room>,
       required: true
+    },
+
+    actions: {
+      type: Array,
+      required: true,
+
+      validator(x: Array<Action>): boolean {
+        return x.length > 0;
+      }
     },
 
     headerClass: {
@@ -78,43 +94,11 @@ export default {
     }
   },
 
-  computed: {
-    actions() {
-      return [
-        {
-          id: "files",
-          title: "View shared files",
-          navigate: true
-        },
-
-        {
-          id: "encryption",
-          title: "Encryption settings",
-          navigate: true
-        },
-
-        {
-          id: "remove",
-          title: "Remove from contacts"
-        },
-
-        {
-          id: "block",
-          title: "Block contact"
-        }
-      ];
-    },
-
-    profile(): ReturnType<typeof Store.$profile.getProfile> {
-      return Store.$profile.getProfile(this.jid);
-    }
-  },
-
   methods: {
     // --> EVENT LISTENERS <--
 
     onToggle(visible: boolean): void {
-      Store.$layout.setInboxUserinfoSectionActions(visible);
+      Store.$layout.setInboxDetailsSectionActions(visible);
     }
   }
 };
@@ -125,9 +109,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-inbox-userinfo-actions";
+$c: ".c-inbox-details-generic-actions";
 
-.c-inbox-userinfo-actions {
+.c-inbox-details-generic-actions {
   #{$c}__action {
     #{$c}__action-navigate {
       fill: rgb(var(--color-base-grey-dark));

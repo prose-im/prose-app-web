@@ -13,7 +13,7 @@ list-disclosure(
   @toggle="onToggle"
   :header-class="headerClass"
   title="Information"
-  class="c-inbox-userinfo-information"
+  class="c-inbox-details-user-information"
   separated
 )
   list-entry(
@@ -38,17 +38,19 @@ list-disclosure(
         :width="iconSize"
         height="12px"
         shadow="none"
-        class="c-inbox-userinfo-information__icon"
+        class="c-inbox-details-user-information__icon"
       )
 
       base-icon(
         v-else-if="entry.icon"
         :name="entry.icon"
         :size="iconSize"
-        class="c-inbox-userinfo-information__icon"
+        class="c-inbox-details-user-information__icon"
       )
 
-      span.c-inbox-userinfo-information__emoji
+      span.c-inbox-details-user-information__emoji(
+        v-else-if="entry.emoji"
+      )
         | {{ entry.emoji }}
 </template>
 
@@ -66,7 +68,7 @@ import { getCountryCode, getCountryName } from "crisp-countries-languages";
 import Store from "@/store";
 
 export default {
-  name: "InboxUserinfoInformation",
+  name: "InboxDetailsUserInformation",
 
   props: {
     jid: {
@@ -213,7 +215,7 @@ export default {
     // --> EVENT LISTENERS <--
 
     onToggle(visible: boolean): void {
-      Store.$layout.setInboxUserinfoSectionInformation(visible);
+      Store.$layout.setInboxDetailsSectionInformation(visible);
     }
   }
 };
@@ -224,9 +226,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-inbox-userinfo-information";
+$c: ".c-inbox-details-user-information";
 
-.c-inbox-userinfo-information {
+.c-inbox-details-user-information {
   #{$c}__icon {
     fill: lighten-var(var(--color-base-grey-dark), 10%);
   }

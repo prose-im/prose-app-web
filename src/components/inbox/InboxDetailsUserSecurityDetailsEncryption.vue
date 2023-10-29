@@ -11,7 +11,7 @@
 <template lang="pug">
 div(
   :class=`[
-    "c-inbox-userinfo-security-details-encryption",
+    "c-inbox-details-user-security-details-encryption",
     {
       [spacingBlockClass]: spacingBlockClass,
       [spacingInlineClass]: spacingInlineClass
@@ -40,7 +40,7 @@ import Store from "@/store";
 import { ProfileEntrySecurityEncryption } from "@/store/tables/profile";
 
 export default {
-  name: "InboxUserinfoSecurityDetailsEncryption",
+  name: "InboxDetailsUserSecurityDetailsEncryption",
 
   props: {
     jid: {

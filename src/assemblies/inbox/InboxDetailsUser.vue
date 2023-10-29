@@ -9,37 +9,43 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.a-inbox-userinfo
-  inbox-userinfo-identity(
-    :jid="jid"
-    class="a-inbox-userinfo__identity"
+layout-sidebar-details(
+  class="a-inbox-details-user"
+)
+  template(
+    v-slot:header
   )
+    inbox-details-user-identity(
+      :jid="jid"
+      class="a-inbox-details-user__identity"
+    )
 
-  inbox-userinfo-information(
-    v-if="profile.information"
-    :jid="jid"
-    :expanded="layout.inbox.userinfo.sections.information"
-    class="a-inbox-userinfo__block a-inbox-userinfo__block--information"
-    header-class="a-inbox-userinfo__block-header"
-    item-class="a-inbox-userinfo__block-item"
+  template(
+    v-slot:items
   )
+    inbox-details-user-information(
+      v-if="profile.information"
+      :jid="jid"
+      :header-class="headerClass"
+      :item-class="itemClass"
+      :expanded="layout.inbox.details.sections.information"
+    )
 
-  inbox-userinfo-security(
-    v-if="profile.security"
-    :jid="jid"
-    :expanded="layout.inbox.userinfo.sections.security"
-    class="a-inbox-userinfo__block a-inbox-userinfo__block--security"
-    header-class="a-inbox-userinfo__block-header"
-    item-class="a-inbox-userinfo__block-item"
-  )
+    inbox-details-user-security(
+      v-if="profile.security"
+      :jid="jid"
+      :header-class="headerClass"
+      :item-class="itemClass"
+      :expanded="layout.inbox.details.sections.security"
+    )
 
-  inbox-userinfo-actions(
-    :jid="jid"
-    :expanded="layout.inbox.userinfo.sections.actions"
-    class="a-inbox-userinfo__block a-inbox-userinfo__block--actions"
-    header-class="a-inbox-userinfo__block-header"
-    item-class="a-inbox-userinfo__block-item"
-  )
+    inbox-details-generic-actions(
+      :room="room"
+      :actions="actions"
+      :header-class="headerClass"
+      :item-class="itemClass"
+      :expanded="layout.inbox.details.sections.actions"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -49,7 +55,7 @@
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
@@ -58,25 +64,43 @@ import { useEvents } from "@/composables/events";
 import Store from "@/store";
 
 // PROJECT: COMPONENTS
-import InboxUserinfoIdentity from "@/components/inbox/InboxUserinfoIdentity.vue";
-import InboxUserinfoInformation from "@/components/inbox/InboxUserinfoInformation.vue";
-import InboxUserinfoSecurity from "@/components/inbox/InboxUserinfoSecurity.vue";
-import InboxUserinfoActions from "@/components/inbox/InboxUserinfoActions.vue";
+import InboxDetailsUserIdentity from "@/components/inbox/InboxDetailsUserIdentity.vue";
+import InboxDetailsUserInformation from "@/components/inbox/InboxDetailsUserInformation.vue";
+import InboxDetailsUserSecurity from "@/components/inbox/InboxDetailsUserSecurity.vue";
+import {
+  default as InboxDetailsGenericActions,
+  Action as DetailsAction
+} from "@/components/inbox/InboxDetailsGenericActions.vue";
 
 export default {
-  name: "InboxUserinfo",
+  name: "InboxDetailsUser",
 
   components: {
-    InboxUserinfoIdentity,
-    InboxUserinfoInformation,
-    InboxUserinfoSecurity,
-    InboxUserinfoActions
+    InboxDetailsUserIdentity,
+    InboxDetailsUserInformation,
+    InboxDetailsUserSecurity,
+    InboxDetailsGenericActions
   },
 
   props: {
+    room: {
+      type: Object as PropType<Room>,
+      required: true
+    },
+
     jid: {
       type: Object as PropType<JID>,
       required: true
+    },
+
+    headerClass: {
+      type: String,
+      default: null
+    },
+
+    itemClass: {
+      type: String,
+      default: null
     }
   },
 
@@ -89,6 +113,32 @@ export default {
   },
 
   computed: {
+    actions(): Array<DetailsAction> {
+      return [
+        {
+          id: "files",
+          title: "View shared files",
+          navigate: true
+        },
+
+        {
+          id: "encryption",
+          title: "Encryption settings",
+          navigate: true
+        },
+
+        {
+          id: "remove",
+          title: "Remove from contacts"
+        },
+
+        {
+          id: "block",
+          title: "Block contact"
+        }
+      ];
+    },
+
     layout(): typeof Store.$layout {
       return Store.$layout;
     },
@@ -157,27 +207,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".a-inbox-userinfo";
+$c: ".a-inbox-details-user";
 
-.a-inbox-userinfo {
-  padding: 20px 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  #{$c}__block {
-    &--information {
-      margin-block-start: 22px;
-    }
-
-    &--security,
-    &--actions {
-      margin-block-start: 18px;
-    }
-
-    #{$c}__block-header,
-    #{$c}__block-item {
-      padding-inline: $size-inbox-userinfo-item-padding-sides;
-    }
-  }
+.a-inbox-details-user {
+  /* TODO */
 }
 </style>

@@ -13,7 +13,7 @@ list-disclosure(
   @toggle="onToggle"
   :header-class="headerClass"
   title="Security"
-  class="c-inbox-userinfo-security"
+  class="c-inbox-details-user-security"
   separated
 )
   list-entry(
@@ -28,11 +28,11 @@ list-disclosure(
     )
       span(
         :class=`[
-          "c-inbox-userinfo-security__label",
+          "c-inbox-details-user-security__label",
           {
             "u-medium": entry.critical,
-            "c-inbox-userinfo-security__label--important": entry.important,
-            "c-inbox-userinfo-security__label--critical": entry.critical
+            "c-inbox-details-user-security__label--important": entry.important,
+            "c-inbox-details-user-security__label--critical": entry.critical
           }
         ]`
       )
@@ -45,8 +45,8 @@ list-disclosure(
         v-if="entry.icon"
         :name="entry.icon"
         :class=`[
-          "c-inbox-userinfo-security__icon",
-          "c-inbox-userinfo-security__icon--" + entry.id + "-" + entry.kind
+          "c-inbox-details-user-security__icon",
+          "c-inbox-details-user-security__icon--" + entry.id + "-" + entry.kind
         ]`
         size="16px"
       )
@@ -54,24 +54,24 @@ list-disclosure(
     template(
       v-slot:details
     )
-      a.c-inbox-userinfo-security__details
+      a.c-inbox-details-user-security__details
         base-icon(
           @click="onDetailsIconClick(entry.id)"
           name="info.circle"
           size="13px"
-          class="c-inbox-userinfo-security__details-icon"
+          class="c-inbox-details-user-security__details-icon"
         )
 
         base-popover(
           v-if="detailsPopover.id === entry.id"
           v-click-away="onDetailsPopoverClickAway"
-          class="c-inbox-userinfo-security__details-popover"
+          class="c-inbox-details-user-security__details-popover"
         )
           component(
             :is="detailsPopover.component"
             :jid="jid"
-            spacing-block-class="c-inbox-userinfo-security__details-popover-spacing-block"
-            spacing-inline-class="c-inbox-userinfo-security__details-popover-spacing-inline"
+            spacing-block-class="c-inbox-details-user-security__details-popover-spacing-block"
+            spacing-inline-class="c-inbox-details-user-security__details-popover-spacing-inline"
           )
 </template>
 
@@ -85,14 +85,14 @@ import { shallowRef, PropType } from "vue";
 import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
-import InboxUserinfoSecurityDetailsIdentity from "@/components/inbox/InboxUserinfoSecurityDetailsIdentity.vue";
-import InboxUserinfoSecurityDetailsEncryption from "@/components/inbox/InboxUserinfoSecurityDetailsEncryption.vue";
+import InboxDetailsUserSecurityDetailsIdentity from "@/components/inbox/InboxDetailsUserSecurityDetailsIdentity.vue";
+import InboxDetailsUserSecurityDetailsEncryption from "@/components/inbox/InboxDetailsUserSecurityDetailsEncryption.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
 
 export default {
-  name: "InboxUserinfoSecurity",
+  name: "InboxDetailsUserSecurity",
 
   props: {
     jid: {
@@ -197,7 +197,7 @@ export default {
     // --> EVENT LISTENERS <--
 
     onToggle(visible: boolean): void {
-      Store.$layout.setInboxUserinfoSectionSecurity(visible);
+      Store.$layout.setInboxDetailsSectionSecurity(visible);
     },
 
     onDetailsIconClick(id: string): void {
@@ -205,13 +205,13 @@ export default {
 
       switch (id) {
         case "identity": {
-          component = InboxUserinfoSecurityDetailsIdentity;
+          component = InboxDetailsUserSecurityDetailsIdentity;
 
           break;
         }
 
         case "encryption": {
-          component = InboxUserinfoSecurityDetailsEncryption;
+          component = InboxDetailsUserSecurityDetailsEncryption;
 
           break;
         }
@@ -240,9 +240,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-inbox-userinfo-security";
+$c: ".c-inbox-details-user-security";
 
-.c-inbox-userinfo-security {
+.c-inbox-details-user-security {
   #{$c}__icon {
     &--identity-verified {
       fill: rgb(var(--color-base-green-normal));
@@ -299,11 +299,11 @@ $c: ".c-inbox-userinfo-security";
     #{$c}__details-popover {
       color: rgb(var(--color-text-primary));
       width: (
-        $size-inbox-userinfo-width -
+        $size-inbox-details-width -
           (
             2 *
               (
-                $size-inbox-userinfo-item-padding-sides -
+                $size-inbox-details-item-padding-sides -
                   $size-base-popover-list-inset-block-edge-offset
               )
           )
