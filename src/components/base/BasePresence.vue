@@ -56,7 +56,7 @@ export default {
       default: "medium",
 
       validator(x: string) {
-        return ["small", "medium", "large"].includes(x);
+        return ["tiny", "small", "medium", "large"].includes(x);
       }
     },
 
@@ -95,6 +95,7 @@ $c: ".c-base-presence";
 
 // VARIABLES
 $sizes: (
+  "tiny": 6px,
   "small": 8px,
   "medium": 9px,
   "large": 12px
