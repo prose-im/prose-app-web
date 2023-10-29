@@ -9,15 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-layout-sidebar-details(
-  class="a-inbox-details-group"
-)
+layout-sidebar-details
   template(
     v-slot:header
   )
     inbox-details-group-identity(
       :room="room"
-      class="a-inbox-details-group__identity"
     )
 
   template(
@@ -110,15 +107,3 @@ export default {
   }
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".a-inbox-details-group";
-
-.a-inbox-details-group {
-  /* TODO */
-}
-</style>

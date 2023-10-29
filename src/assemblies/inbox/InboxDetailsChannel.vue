@@ -9,15 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-layout-sidebar-details(
-  class="a-inbox-details-channel"
-)
+layout-sidebar-details
   template(
     v-slot:header
   )
     inbox-details-group-identity(
       :room="room"
-      class="a-inbox-details-channel__identity"
     )
 
   template(
@@ -98,18 +95,14 @@ export default {
     actions(): Array<DetailsAction> {
       return [
         {
-          id: "delete",
-          title: "Delete this channel"
+          id: "manage",
+          title: "Manage channel",
+          navigate: true
         },
 
         {
           id: "leave",
           title: "Leave this channel"
-        },
-
-        {
-          id: "convert",
-          title: "Convert to private group"
         }
       ];
     },
@@ -120,15 +113,3 @@ export default {
   }
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".a-inbox-details-channel";
-
-.a-inbox-details-channel {
-  /* TODO */
-}
-</style>

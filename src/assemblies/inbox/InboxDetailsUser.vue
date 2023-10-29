@@ -9,15 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-layout-sidebar-details(
-  class="a-inbox-details-user"
-)
+layout-sidebar-details
   template(
     v-slot:header
   )
     inbox-details-user-identity(
       :jid="jid"
-      class="a-inbox-details-user__identity"
     )
 
   template(
@@ -201,15 +198,3 @@ export default {
   }
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".a-inbox-details-user";
-
-.a-inbox-details-user {
-  /* TODO */
-}
-</style>
