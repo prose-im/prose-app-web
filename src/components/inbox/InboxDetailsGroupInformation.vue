@@ -73,7 +73,21 @@ export default {
 
   computed: {
     entries() {
-      return [];
+      let membersCount = this.room.members.length;
+
+      return [
+        {
+          id: "topic",
+          title: "(no topic)",
+          icon: "megaphone.fill"
+        },
+
+        {
+          id: "members",
+          title: membersCount === 1 ? "1 member" : `${membersCount} members`,
+          icon: "person.fill.viewfinder"
+        }
+      ];
     }
   },
 
