@@ -88,7 +88,7 @@ export default {
 
   computed: {
     quickieDetails(): Array<BadgeDetail> {
-      let detail;
+      let detail: BadgeDetail;
 
       if (this.isVerified === true) {
         detail = {
@@ -119,7 +119,7 @@ export default {
       if (this.profile.name) {
         return `${this.profile.name.first} ${this.profile.name.last}`;
       } else {
-        return this.jid.local;
+        return this.jid.node;
       }
     },
 

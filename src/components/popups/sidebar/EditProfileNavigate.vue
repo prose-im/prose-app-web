@@ -53,7 +53,7 @@
       template(
         v-else
       )
-        | {{ jid.local }}
+        | {{ jid.node }}
 
     p.p-edit-profile-navigate__identity-address
       | {{ jid }}

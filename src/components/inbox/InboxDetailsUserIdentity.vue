@@ -33,7 +33,7 @@
         template(
           v-else
         )
-          | {{ jid.local }}
+          | {{ jid.node }}
 
     p.c-inbox-details-user-identity__role(
       v-if="profileRole"
