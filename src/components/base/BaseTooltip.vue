@@ -22,7 +22,7 @@ div(
   ]`
 )
   .c-base-tooltip__overlay(
-    v-if="!bypassed"
+    v-if="isInserted && !bypassed"
   )
     span.c-base-tooltip__value
       template(
@@ -88,19 +88,30 @@ export default {
 
       mouseOverApplyTimeout: null as null | ReturnType<typeof setTimeout>,
 
-      // --> DATA <--
-
+      isInserted: false,
       isVisible: false
     };
   },
 
   methods: {
+    // --> HELPERS <--
+
+    setVisible(visible: boolean): void {
+      // Update visibility
+      this.isVisible = visible;
+
+      // Mark as inserted? (insert overlay on first mark-as-visible)
+      if (visible === true && this.isInserted !== true) {
+        this.isInserted = true;
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onClick(): void {
       if (!this.bypassed) {
         // Toggle visibility
-        this.isVisible = !this.isVisible;
+        this.setVisible(!this.isVisible);
       }
     },
 
@@ -110,7 +121,8 @@ export default {
           this.mouseOverApplyTimeout = setTimeout(() => {
             this.mouseOverApplyTimeout = null;
 
-            this.isVisible = true;
+            // Mark as visible
+            this.setVisible(true);
           }, MOUSE_OVER_APPLY_DELAY);
         }
       }
@@ -125,7 +137,8 @@ export default {
           this.mouseOverApplyTimeout = null;
         }
 
-        this.isVisible = false;
+        // Mark as invisible
+        this.setVisible(false);
       }
     }
   }
