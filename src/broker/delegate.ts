@@ -60,7 +60,7 @@ class BrokerDelegate implements ProseClientDelegate {
       `Composing users changed: ${composingUsers.join(", ") || "(none)"}`
     );
 
-    // TODO: Handle multiple composing users in the UI
+    Store.$inbox.setComposing(room.id, composingUsers);
   }
 
   roomsChanged(): void {

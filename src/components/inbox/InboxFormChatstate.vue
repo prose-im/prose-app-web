@@ -16,7 +16,7 @@ transition(
   .c-inbox-form-chatstate(
     v-if="isVisible"
   )
-    | {{ rosterName }} is typing…
+    | {{ typingNames }} {{ typingVerb }} typing…
 </template>
 
 <!-- **********************************************************************
@@ -25,34 +25,48 @@ transition(
 
 <script lang="ts">
 // NPM
-import { Room } from "@prose-im/prose-sdk-js";
-import { PropType } from "vue";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
+
+// CONSTANTS
+const TYPING_NAMES_SEVERAL_AFTER_SIZE = 3;
 
 export default {
   name: "InboxFormChatstate",
 
   props: {
-    room: {
-      type: Object as PropType<Room>,
-      required: true
-    },
+    jids: {
+      type: Array<JID>,
 
-    composing: {
-      type: Boolean,
-      default: false
+      default: (): Array<JID> => {
+        return [];
+      }
     }
   },
 
   computed: {
     isVisible(): boolean {
-      return this.composing;
+      return this.jids.length > 0;
     },
 
-    rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
-      return this.room.name;
+    typingNames(): string {
+      // Several people typing?
+      if (this.jids.length > TYPING_NAMES_SEVERAL_AFTER_SIZE) {
+        return "Several people";
+      }
+
+      // People names typing
+      return this.jids
+        .map(jid => {
+          return Store.$roster.getEntryName(jid);
+        })
+        .join(", ");
+    },
+
+    typingVerb(): string {
+      return this.jids.length === 1 ? "is" : "are";
     }
   }
 };

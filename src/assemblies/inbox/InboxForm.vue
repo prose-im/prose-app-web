@@ -57,9 +57,7 @@ layout-toolbar(
       @submit.prevent="onSubmit"
     )
       inbox-form-chatstate(
-        v-if="room"
-        :room="room"
-        :composing="states.composing"
+        :jids="states.composing"
         class="a-inbox-form__compose-chatstate"
       )
 

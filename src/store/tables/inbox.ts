@@ -13,7 +13,7 @@ import cloneDeep from "lodash.clonedeep";
 import mitt from "mitt";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
-import { Message as CoreMessage, RoomID } from "@prose-im/prose-sdk-js";
+import { Message as CoreMessage, RoomID, JID } from "@prose-im/prose-sdk-js";
 
 /**************************************************************************
  * TYPES
@@ -25,7 +25,7 @@ type InboxEntryMessages = {
 };
 
 type InboxEntryStates = {
-  composing: boolean;
+  composing: Array<JID>;
 };
 
 type EventMessageGeneric = {
@@ -136,7 +136,7 @@ const $inbox = defineStore("inbox", {
             },
 
             states: {
-              composing: false
+              composing: []
             }
           };
         });
@@ -286,7 +286,7 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
-    setComposing(roomId: RoomID, composing: boolean) {
+    setComposing(roomId: RoomID, composing: Array<JID>) {
       this.assert(roomId).states.composing = composing;
     }
   }

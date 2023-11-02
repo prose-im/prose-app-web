@@ -36,7 +36,7 @@ class BrokerModuleMUC extends BrokerModule {
     return (await this._client.client?.loadPublicChannels()) || [];
   }
 
-  async createGroup(participants: JID[]): Promise<void> {
+  async createGroup(participants: Array<JID>): Promise<void> {
     const room = (await this._client.client?.createGroup(
       participants.map(jid => jid.toString())
     )) as Room;
