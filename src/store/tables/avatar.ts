@@ -63,14 +63,6 @@ const $avatar = defineStore("avatar", {
     };
   },
 
-  getters: {
-    getAvatarDataUrl: function () {
-      return (jid: JID): AvatarDataURL | undefined => {
-        return this.assert(jid);
-      };
-    }
-  },
-
   actions: {
     events(): ReturnType<typeof mitt> {
       // Return event bus
@@ -79,6 +71,12 @@ const $avatar = defineStore("avatar", {
 
     assert(jid: JID): AvatarDataURL | undefined {
       return this.entries[jid.toString()];
+    },
+
+    getAvatarDataUrl(jid: JID): AvatarDataURL | undefined {
+      // Notice: pseudo-getter, which needs to be defined as an action since \
+      //   it might mutate the state (as we are asserting).
+      return this.assert(jid);
     },
 
     async load(jid: JID): Promise<void> {

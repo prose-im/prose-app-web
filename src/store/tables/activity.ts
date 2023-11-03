@@ -52,14 +52,6 @@ const $activity = defineStore("activity", {
     };
   },
 
-  getters: {
-    getActivity: function () {
-      return (jid: JID): ActivityEntry => {
-        return this.assert(jid);
-      };
-    }
-  },
-
   actions: {
     assert(jid: JID): ActivityEntry {
       const jidString = jid.toString();
@@ -73,6 +65,12 @@ const $activity = defineStore("activity", {
       }
 
       return this.entries[jidString];
+    },
+
+    getActivity(jid: JID): ActivityEntry {
+      // Notice: pseudo-getter, which needs to be defined as an action since \
+      //   it might mutate the state (as we are asserting).
+      return this.assert(jid);
     },
 
     setActivity(jid: JID, status?: UserActivity): ActivityEntry {

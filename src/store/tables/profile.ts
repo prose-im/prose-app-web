@@ -113,14 +113,6 @@ const $profile = defineStore("profile", {
     };
   },
 
-  getters: {
-    getProfile: function () {
-      return (jid: JID): ProfileEntry => {
-        return this.assert(jid);
-      };
-    }
-  },
-
   actions: {
     assert(jid: JID): ProfileEntry {
       const jidString = jid.toString();
@@ -134,6 +126,12 @@ const $profile = defineStore("profile", {
       }
 
       return this.entries[jidString];
+    },
+
+    getProfile(jid: JID): ProfileEntry {
+      // Notice: pseudo-getter, which needs to be defined as an action since \
+      //   it might mutate the state (as we are asserting).
+      return this.assert(jid);
     },
 
     async load(jid: JID, reload = false): Promise<ProfileEntry> {

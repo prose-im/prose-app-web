@@ -100,26 +100,6 @@ const $inbox = defineStore("inbox", {
     };
   },
 
-  getters: {
-    getMessages: function () {
-      return (roomId: RoomID): Array<InboxEntryMessage> => {
-        return this.assert(roomId).messages.list;
-      };
-    },
-
-    getMessage: function () {
-      return (roomId: RoomID, id: string): InboxEntryMessage | void => {
-        return this.assert(roomId).messages.byId[id] || undefined;
-      };
-    },
-
-    getStates: function () {
-      return (roomId: RoomID): InboxEntryStates => {
-        return this.assert(roomId).states;
-      };
-    }
-  },
-
   actions: {
     events(): ReturnType<typeof mitt> {
       // Return event bus
@@ -147,6 +127,24 @@ const $inbox = defineStore("inbox", {
       }
 
       return entries[roomId];
+    },
+
+    getMessages(roomId: RoomID): Array<InboxEntryMessage> {
+      // Notice: pseudo-getter, which needs to be defined as an action since \
+      //   it might mutate the state (as we are asserting).
+      return this.assert(roomId).messages.list;
+    },
+
+    getMessage(roomId: RoomID, id: string): InboxEntryMessage | void {
+      // Notice: pseudo-getter, which needs to be defined as an action since \
+      //   it might mutate the state (as we are asserting).
+      return this.assert(roomId).messages.byId[id] || undefined;
+    },
+
+    getStates(roomId: RoomID): InboxEntryStates {
+      // Notice: pseudo-getter, which needs to be defined as an action since \
+      //   it might mutate the state (as we are asserting).
+      return this.assert(roomId).states;
     },
 
     insertCoreMessages(roomId: RoomID, messages: CoreMessage[]): boolean {
