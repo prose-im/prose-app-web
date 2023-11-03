@@ -248,7 +248,7 @@ export default {
       return Store.$session;
     },
 
-    rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
+    rosterName(): string {
       return this.room?.name || "";
     }
   },
