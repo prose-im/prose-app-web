@@ -127,7 +127,7 @@ export default {
 
       detailsPopover: {
         id: "",
-        component: null
+        component: null as object | null
       }
     };
   },

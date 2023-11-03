@@ -384,7 +384,7 @@ export default {
 
   props: {
     fieldsets: {
-      type: Array,
+      type: Array<Fieldset>,
       required: true,
 
       validator(x: Array<Fieldset>): boolean {

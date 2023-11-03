@@ -147,7 +147,7 @@ export default {
 
   props: {
     columns: {
-      type: Array,
+      type: Array<Column>,
       required: true,
 
       validator(x: Array<Column>): boolean {
@@ -156,7 +156,7 @@ export default {
     },
 
     rows: {
-      type: Array,
+      type: Array<Row>,
       required: true,
 
       validator(x: Array<Row>): boolean {
@@ -174,7 +174,7 @@ export default {
     },
 
     controls: {
-      type: Array,
+      type: Array<Control>,
 
       default(): Array<Control> {
         return [];
@@ -194,8 +194,8 @@ export default {
       // --> STATE <--
 
       orderBy: {
-        columnId: null,
-        direction: 0
+        columnId: null as string | null,
+        direction: 0 as -1 | 0 | 1
       }
     };
   },
@@ -233,11 +233,11 @@ export default {
         this.orderBy.columnId !== null &&
         this.orderBy.direction !== 0
       ) {
+        const columnId = this.orderBy.columnId,
+          direction = this.orderBy.direction === -1 ? -1 : 1;
+
         return [...this.rows].sort(
-          firstBy(
-            row => row.columns[this.orderBy.columnId],
-            this.orderBy.direction
-          )
+          firstBy(row => row.columns[columnId], direction)
         );
       }
 

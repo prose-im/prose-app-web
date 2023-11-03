@@ -50,7 +50,7 @@ export default {
 
   props: {
     details: {
-      type: Array,
+      type: Array<Detail>,
       required: true,
 
       validator(x: Array<Detail>): boolean {

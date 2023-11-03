@@ -75,7 +75,7 @@ export default {
     },
 
     actions: {
-      type: Array,
+      type: Array<Action>,
       required: true,
 
       validator(x: Array<Action>): boolean {

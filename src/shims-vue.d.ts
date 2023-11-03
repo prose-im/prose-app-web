@@ -5,6 +5,13 @@
  */
 
 /**************************************************************************
+ * IMPORTS
+ * ************************************************************************* */
+
+// PROJECT: FILTERS
+import { Filters } from "@/bootstrap/filters";
+
+/**************************************************************************
  * DECLARES
  * ************************************************************************* */
 
@@ -13,3 +20,11 @@ declare module "*.vue" {
 
   export default Vue;
 }
+
+declare module "@vue/runtime-core" {
+  interface ComponentCustomProperties {
+    $filters: Filters;
+  }
+}
+
+export {};

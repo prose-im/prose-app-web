@@ -15,6 +15,14 @@ import { App } from "vue";
 import dateFilters from "@/filters/date";
 
 /**************************************************************************
+ * INTERFACES
+ * ************************************************************************* */
+
+interface Filters {
+  date: typeof dateFilters;
+}
+
+/**************************************************************************
  * FILTERS
  * ************************************************************************* */
 
@@ -22,7 +30,7 @@ class BootstrapFilters {
   init(app: App): void {
     app.config.globalProperties.$filters = {
       date: dateFilters
-    };
+    } as Filters;
   }
 }
 
@@ -30,4 +38,5 @@ class BootstrapFilters {
  * EXPORTS
  * ************************************************************************* */
 
+export type { Filters };
 export default new BootstrapFilters();

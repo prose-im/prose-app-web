@@ -40,7 +40,7 @@ export default {
 
   props: {
     sections: {
-      type: Array,
+      type: Array<Section>,
       required: true,
 
       validator(x: Array<Section>): boolean {

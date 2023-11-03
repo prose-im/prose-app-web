@@ -117,7 +117,7 @@ export default {
 
   props: {
     items: {
-      type: Array,
+      type: Array<Item>,
       required: true,
 
       validator(x: Array<Item>): boolean {

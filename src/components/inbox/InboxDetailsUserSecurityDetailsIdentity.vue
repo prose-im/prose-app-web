@@ -118,9 +118,9 @@ export default {
     userName(): string {
       if (this.profile.name) {
         return `${this.profile.name.first} ${this.profile.name.last}`;
-      } else {
-        return this.jid.node;
       }
+
+      return this.jid.node || this.jid.toString();
     },
 
     identityUrl(): string {

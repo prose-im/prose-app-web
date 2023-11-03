@@ -106,7 +106,7 @@ export default {
 
   computed: {
     entries(): Array<Entry> {
-      const entries = [];
+      const entries: Array<Entry> = [];
 
       if (this.profile.information) {
         if (this.profile.information.contact) {
@@ -127,7 +127,7 @@ export default {
           }
         }
 
-        if (this.profile.information.lastActive) {
+        if (this.profile.information.lastActive?.timestamp) {
           const activePrefix =
             this.availability !== Availability.Unavailable
               ? "Active"
@@ -190,7 +190,7 @@ export default {
               id: "location",
               title: locationParts.join(", "),
               icon: "location.fill",
-              flag: userCountryCode
+              flag: userCountryCode || undefined
             });
           }
         }

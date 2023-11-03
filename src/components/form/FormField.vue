@@ -245,8 +245,10 @@ export default {
     },
 
     onFieldKeyUp(event: KeyboardEvent): void {
-      // Propagate key event
-      this.$emit("keystroke", event.target.value);
+      if (event.target) {
+        // Propagate key event
+        this.$emit("keystroke", (event.target as HTMLInputElement).value);
+      }
     },
 
     onFieldInput(): void {
