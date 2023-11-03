@@ -95,72 +95,68 @@ const $muc = defineStore("muc", {
       return EventBus;
     },
 
-    load(reload = false): Promise<void> {
+    load(reload = false): void {
       // Load MUC list? (or reload)
-      if (LOCAL_STATES.loaded === true && reload === false) {
-        return Promise.resolve(this.list);
+      if (LOCAL_STATES.loaded !== true || reload === true) {
+        LOCAL_STATES.loaded = true;
+
+        // Initialize entries
+        const directMessages: Room[] = [],
+          channels: Room[] = [],
+          genericRooms: Room[] = [],
+          roomsMap = new Map<RoomID, Room>();
+
+        // Load rooms
+        const rooms = Broker.$muc.connectedRooms();
+
+        rooms.forEach(room => {
+          switch (room.type) {
+            case RoomType.DirectMessage: {
+              directMessages.push(room);
+
+              break;
+            }
+
+            case RoomType.Group: {
+              directMessages.push(room);
+
+              break;
+            }
+
+            case RoomType.PrivateChannel: {
+              channels.push(room);
+
+              break;
+            }
+
+            case RoomType.PublicChannel: {
+              channels.push(room);
+
+              break;
+            }
+
+            case RoomType.Generic: {
+              genericRooms.push(room);
+
+              break;
+            }
+          }
+
+          roomsMap.set(room.id, room);
+        });
+
+        // Append all rooms
+        const compareRooms = (left: Room, right: Room): number => {
+          return left.name.localeCompare(right.name);
+        };
+
+        this.$patch(state => {
+          state.directMessages = directMessages.sort(compareRooms);
+          state.channels = channels.sort(compareRooms);
+          state.genericRooms = genericRooms.sort(compareRooms);
+          state.roomsMap = roomsMap;
+        });
       }
-
-      LOCAL_STATES.loaded = true;
-
-      // Initialize entries
-      const directMessages: Room[] = [],
-        channels: Room[] = [],
-        genericRooms: Room[] = [],
-        roomsMap = new Map<RoomID, Room>();
-
-      // Load rooms
-      const rooms = Broker.$muc.connectedRooms();
-
-      rooms.forEach(room => {
-        switch (room.type) {
-          case RoomType.DirectMessage: {
-            directMessages.push(room);
-
-            break;
-          }
-
-          case RoomType.Group: {
-            directMessages.push(room);
-
-            break;
-          }
-
-          case RoomType.PrivateChannel: {
-            channels.push(room);
-
-            break;
-          }
-
-          case RoomType.PublicChannel: {
-            channels.push(room);
-
-            break;
-          }
-
-          case RoomType.Generic: {
-            genericRooms.push(room);
-
-            break;
-          }
-        }
-
-        roomsMap.set(room.id, room);
-      });
-
-      // Append all rooms
-      const compareRooms = (left: Room, right: Room): number => {
-        return left.name.localeCompare(right.name);
-      };
-
-      this.$patch(state => {
-        state.directMessages = directMessages.sort(compareRooms);
-        state.channels = channels.sort(compareRooms);
-        state.genericRooms = genericRooms.sort(compareRooms);
-        state.roomsMap = roomsMap;
-      });
-
-      return Promise.resolve(this.list);
     },
 
     insertRoom(room: Room): void {
@@ -208,7 +204,7 @@ const $muc = defineStore("muc", {
       });
     },
 
-    markRoomsChanged() {
+    markRoomsChanged(): void {
       EventBus.emit("rooms:changed");
     }
   }

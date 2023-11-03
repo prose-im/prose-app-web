@@ -17,6 +17,7 @@ import { default as mitt, Handler as MittHandler } from "mitt";
  * ************************************************************************* */
 
 type Events = {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [eventName: string]: MittHandler<any>;
 };
 

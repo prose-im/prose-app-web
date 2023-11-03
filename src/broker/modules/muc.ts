@@ -32,7 +32,7 @@ class BrokerModuleMUC extends BrokerModule {
     return this._client.client?.connectedRooms() || [];
   }
 
-  async loadPublicChannels(): Promise<Channel> {
+  async loadPublicChannels(): Promise<Array<Channel>> {
     return (await this._client.client?.loadPublicChannels()) || [];
   }
 

@@ -80,6 +80,7 @@
 import { PropType, shallowRef } from "vue";
 // @ts-expect-error download is a dependency w/o any declaration
 import download from "browser-downloads";
+import { Handler as MittHandler } from "mitt";
 import { JID, Room } from "@prose-im/prose-sdk-js";
 import {
   Modifier as MessagingModifier,
@@ -124,9 +125,6 @@ import Store from "@/store";
 import { EventMessageGeneric } from "@/store/tables/inbox";
 import { EventAvatarGeneric } from "@/store/tables/avatar";
 import { SessionAppearance } from "@/store/tables/session";
-
-// PROJECT: BROKER
-import { MessageReaction } from "@/broker/stanzas/message";
 
 // ENUMERATIONS
 export enum MessageReactionMode {
@@ -344,7 +342,6 @@ export default {
       // Append style element
       const styleElement = runtime.document.createElement("style");
 
-      styleElement.type = "text/css";
       styleElement.innerHTML = inlineStyle;
 
       runtime.document.head.appendChild(styleElement);
@@ -378,12 +375,22 @@ export default {
       for (let [eventName, eventHandler] of Object.entries(
         this.messagingEvents
       )) {
-        runtime.MessagingEvent.on(eventName, eventHandler);
+        runtime.MessagingEvent.on(
+          eventName,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          eventHandler as (event: any) => void
+        );
       }
 
       // Subscribe to store events
       for (let [eventName, eventPath] of Object.entries(this.storeEvents)) {
-        eventPath[0].events().on(eventName, eventPath[1] as MittHandler<any>);
+        // Hack: alias event path store as 'Store.$inbox' since it is \
+        //   guaranteed to contain the 'events()' method. Other stores also \
+        //   implement the same method with the exact same prototype.
+        (eventPath[0] as typeof Store.$inbox)
+          .events()
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .on(eventName, eventPath[1] as MittHandler<any>);
       }
     },
 
@@ -411,7 +418,10 @@ export default {
 
     unsetupStore(): void {
       for (let [eventName, eventPath] of Object.entries(this.storeEvents)) {
-        eventPath[0].events().off(eventName, eventPath[1]);
+        (eventPath[0] as typeof Store.$inbox)
+          .events()
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          .off(eventName, eventPath[1] as MittHandler<any>);
       }
     },
 
@@ -614,11 +624,13 @@ export default {
     async sendMessageReaction(
       mode: MessageReactionMode,
       messageId: string,
-      reaction: MessageReaction
+      reaction: string
     ): Promise<void> {
       // Generate list of reactions
-      const reactions: Set<MessageReaction> = new Set(),
-        existingMessage = Store.$inbox.getMessage(this.jid, messageId);
+      const reactions: Set<string> = new Set(),
+        existingMessage = this.room
+          ? Store.$inbox.getMessage(this.room.id, messageId)
+          : undefined;
 
       if (
         existingMessage !== undefined &&
@@ -630,7 +642,7 @@ export default {
         existingMessage.reactions.forEach(
           (reaction: { reaction: string; authors: string[] }) => {
             if (reaction.authors.includes(selfJIDRaw) === true) {
-              reactions.add(reaction.reaction as MessageReaction);
+              reactions.add(reaction.reaction as string);
             }
           }
         );
@@ -902,11 +914,7 @@ export default {
       this.hidePopover();
 
       // Send message reaction
-      this.sendMessageReaction(
-        MessageReactionMode.Add,
-        messageId,
-        emoji as MessageReaction
-      );
+      this.sendMessageReaction(MessageReactionMode.Add, messageId, emoji);
     },
 
     onStoreConnected(connected: boolean): void {
@@ -938,22 +946,27 @@ export default {
 
     onStoreMessageUpdated(event: EventMessageGeneric): void {
       if (this.room?.id === event.roomId) {
-        // Update in view
-        // Notice: use identifier from original message as reference, if any, \
-        //   otherwise fallback on the actual message. This is done as the \
-        //   message identifier must (should?) be migrated to a new one upon \
-        //   update.
-        this.frame()?.MessagingStore.update(
-          (event.original || event.message).id,
-          event.message
-        );
+        const messageId = (event.original || event.message).id || undefined;
+
+        // Update in view?
+        if (messageId !== undefined) {
+          // Notice: use identifier from original message as reference, if any, \
+          //   otherwise fallback on the actual message. This is done as the \
+          //   message identifier must (should?) be migrated to a new one upon \
+          //   update.
+          this.frame()?.MessagingStore.update(messageId, event.message);
+        }
       }
     },
 
     onStoreMessageRetracted(event: EventMessageGeneric): void {
       if (this.room?.id === event.roomId) {
-        // Retract from view
-        this.frame()?.MessagingStore.retract(event.message.id);
+        const messageId = event.message.id || undefined;
+
+        // Retract from view?
+        if (messageId !== undefined) {
+          this.frame()?.MessagingStore.retract(messageId);
+        }
       }
     },
 
@@ -1117,11 +1130,7 @@ export default {
           ? MessageReactionMode.Retract
           : MessageReactionMode.Add;
 
-      this.sendMessageReaction(
-        reactionMode,
-        event.id,
-        event.reaction as MessageReaction
-      );
+      this.sendMessageReaction(reactionMode, event.id, event.reaction);
     },
 
     onMessagingMessageFileView(event: EventMessageFileView): void {

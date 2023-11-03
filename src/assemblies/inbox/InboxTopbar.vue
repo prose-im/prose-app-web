@@ -269,44 +269,45 @@ export default {
 
     actionHistoryPopoverItems(): Array<PopoverItem> {
       // Acquire inbox JIDs
-      const historyRawJIDs: Set<string> = new Set([]),
-        currentRoute = this.history.current;
+      const historyRawRoomIDs: Set<string> = new Set([]),
+        currentRoute = this.history.current,
+        currentRouteRoomId = currentRoute.params.roomId as string;
 
-      for (const adjacency in this.history.adjacent) {
-        const adjacentRoutes = this.history.adjacent[adjacency];
+      [this.history.adjacent.previous, this.history.adjacent.next].forEach(
+        adjacentRoutes => {
+          adjacentRoutes.forEach(adjacentRoute => {
+            const adjacentRouteRoomId = adjacentRoute.params.roomId as string;
 
-        for (let i in adjacentRoutes) {
-          const adjacentRoute = adjacentRoutes[i];
-
-          if (
-            adjacentRoute.name.startsWith("app.inbox") &&
-            adjacentRoute.params.roomId
-          ) {
-            // Make sure not to push current route JID
             if (
-              !currentRoute.name.startsWith("app.inbox") ||
-              currentRoute.params.roomId !== adjacentRoute.params.roomId
+              adjacentRoute.name.startsWith("app.inbox") &&
+              adjacentRouteRoomId
             ) {
-              historyRawJIDs.add(adjacentRoute.params.roomId);
+              // Make sure not to push current route JID
+              if (
+                !currentRoute.name.startsWith("app.inbox") ||
+                currentRouteRoomId !== adjacentRouteRoomId
+              ) {
+                historyRawRoomIDs.add(adjacentRouteRoomId);
+              }
             }
-          }
+          });
         }
-      }
+      );
 
       // Build popover items
-      const items: Array<PopoverItem> = Array.from(historyRawJIDs)
-        .map(historyRawJID => new JID(historyRawJID))
-        .map(historyJID => {
+      const items: Array<PopoverItem> = Array.from(historyRawRoomIDs).map(
+        historyRoomID => {
           return {
             type: PopoverItemType.Button,
             icon: "clock",
-            label: Store.$roster.getEntryName(historyJID),
+            label: Store.$roster.getEntryName(new JID(historyRoomID)),
 
             click: () => {
-              this.onActionHistoryPopoverEntryClick(historyJID);
+              this.onActionHistoryPopoverEntryClick(historyRoomID as RoomID);
             }
           };
-        });
+        }
+      );
 
       if (items.length === 0) {
         // Append empty indicator?
