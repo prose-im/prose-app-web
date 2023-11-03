@@ -138,6 +138,7 @@ export enum MessageReactionMode {
 
 // TYPES
 type StatePopoverAnchor = { x: number; y: number; height?: number };
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type StatePopoverListeners = { [name: string]: (_: any) => void };
 type StatePopoverInteraction = { id: string; action: string };
 
@@ -208,13 +209,19 @@ export default {
       modals: {
         removeMessage: {
           visible: false,
-          context: {}
+
+          context: {
+            messageId: ""
+          }
         },
 
         editMessage: {
           visible: false,
-          context: {},
-          originalText: ""
+          originalText: "",
+
+          context: {
+            messageId: ""
+          }
         }
       },
 

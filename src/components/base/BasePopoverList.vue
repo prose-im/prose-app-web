@@ -101,6 +101,7 @@ export enum ItemType {
 export interface Item {
   type: ItemType;
   children?: Array<Item>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   click?: (_: any) => void;
   emphasis?: boolean;
   disabled?: boolean;

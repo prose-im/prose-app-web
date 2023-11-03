@@ -66,7 +66,7 @@ class Router {
         {
           path: "/start/login/",
           name: "start.login",
-          component: StartLogin,
+          component: StartLogin as object,
 
           beforeEnter: async (_to, _from, next) => {
             try {
@@ -86,7 +86,7 @@ class Router {
         {
           path: "/",
           name: "app",
-          component: AppBase,
+          component: AppBase as object,
 
           beforeEnter: async (_to, _from, next) => {
             try {
@@ -108,13 +108,13 @@ class Router {
             {
               path: "",
               name: "app.index",
-              component: AppIndex
+              component: AppIndex as object
             },
 
             {
               path: "inbox/:roomId/",
               name: "app.inbox",
-              component: AppInboxBase
+              component: AppInboxBase as object
             }
           ]
         },
@@ -222,6 +222,7 @@ class Router {
     });
 
     history.pushState = new Proxy(history.pushState, {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       apply: (target, self, data: any) => {
         // Update navigation state (always reset, as we are navigating)
         this.__pendingNavigateState = null;
