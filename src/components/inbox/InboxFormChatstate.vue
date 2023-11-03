@@ -25,7 +25,8 @@ transition(
 
 <script lang="ts">
 // NPM
-import { JID } from "@prose-im/prose-sdk-js";
+import { PropType } from "vue";
+import { Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -37,36 +38,37 @@ export default {
   name: "InboxFormChatstate",
 
   props: {
-    jids: {
-      type: Array<JID>,
-
-      default: (): Array<JID> => {
-        return [];
-      }
+    room: {
+      type: Object as PropType<Room>,
+      required: true
     }
   },
 
   computed: {
     isVisible(): boolean {
-      return this.jids.length > 0;
+      return this.states.composing.length > 0;
     },
 
     typingNames(): string {
       // Several people typing?
-      if (this.jids.length > TYPING_NAMES_SEVERAL_AFTER_SIZE) {
+      if (this.states.composing.length > TYPING_NAMES_SEVERAL_AFTER_SIZE) {
         return "Several people";
       }
 
       // People names typing
-      return this.jids
-        .map(jid => {
-          return Store.$roster.getEntryName(jid);
+      return this.states.composing
+        .map(user => {
+          return user.name;
         })
         .join(", ");
     },
 
     typingVerb(): string {
-      return this.jids.length === 1 ? "is" : "are";
+      return this.states.composing.length === 1 ? "is" : "are";
+    },
+
+    states(): ReturnType<typeof Store.$inbox.getStates> {
+      return Store.$inbox.getStates(this.room.id);
     }
   }
 };

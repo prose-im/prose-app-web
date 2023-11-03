@@ -426,8 +426,8 @@ export default {
 
     identifyAllPartiesRemote(runtime: MessagingRuntime): void {
       // Identify remote all parties
-      this.room?.members.forEach((memberJID: JID) => {
-        this.identifyPartyRemote(runtime, memberJID);
+      this.room?.members.forEach(member => {
+        this.identifyPartyRemote(runtime, member.jid);
       });
     },
 
@@ -956,12 +956,12 @@ export default {
 
       if (frameRuntime !== null) {
         // Re-identify remote party?
-        const remotePartyJID = this.room?.members.find((memberJID: JID) => {
-          return memberJID.equals(jid);
+        const remotePartyMember = this.room?.members.find(member => {
+          return member.jid.equals(jid);
         });
 
-        if (remotePartyJID) {
-          this.identifyPartyRemote(frameRuntime, remotePartyJID);
+        if (remotePartyMember) {
+          this.identifyPartyRemote(frameRuntime, remotePartyMember.jid);
         }
 
         // Re-identify local party?
@@ -997,7 +997,7 @@ export default {
             : undefined;
 
         // Build popover items
-        const items = [
+        const items: Array<PopoverItem> = [
           {
             type: PopoverItemType.Button,
             icon: "doc.on.clipboard",

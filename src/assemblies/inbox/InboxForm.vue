@@ -57,7 +57,8 @@ layout-toolbar(
       @submit.prevent="onSubmit"
     )
       inbox-form-chatstate(
-        :jids="states.composing"
+        v-if="room"
+        :room="room"
         class="a-inbox-form__compose-chatstate"
       )
 
@@ -245,10 +246,6 @@ export default {
 
     session(): typeof Store.$session {
       return Store.$session;
-    },
-
-    states(): ReturnType<typeof Store.$inbox.getStates> {
-      return Store.$inbox.getStates(this.room?.id);
     },
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
