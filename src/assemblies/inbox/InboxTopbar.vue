@@ -300,6 +300,8 @@ export default {
           return {
             type: PopoverItemType.Button,
             icon: "clock",
+
+            // TODO: migrate to client-provided room name
             label: Store.$roster.getEntryName(new JID(historyRoomID)),
 
             click: () => {

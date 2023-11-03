@@ -428,15 +428,21 @@ export default {
     identifyPartyLocal(runtime: MessagingRuntime): void {
       // Identify local party
       runtime.MessagingStore.identify(this.selfJID.toString(), {
+        // TODO: migrate to client-provided self name (do not source from \
+        //   roster anymore, returns jid-based nickname)
         name: Store.$roster.getEntryName(this.selfJID),
         avatar: Store.$avatar.getAvatarDataUrl(this.selfJID)
       });
     },
 
-    identifyPartyRemote(runtime: MessagingRuntime, jid: JID): void {
+    identifyPartyRemote(
+      runtime: MessagingRuntime,
+      jid: JID,
+      name: string
+    ): void {
       // Identify remote party
       runtime.MessagingStore.identify(jid.toString(), {
-        name: Store.$roster.getEntryName(jid),
+        name,
         avatar: Store.$avatar.getAvatarDataUrl(jid)
       });
     },
@@ -444,7 +450,7 @@ export default {
     identifyAllPartiesRemote(runtime: MessagingRuntime): void {
       // Identify remote all parties
       this.room?.members.forEach(member => {
-        this.identifyPartyRemote(runtime, member.jid);
+        this.identifyPartyRemote(runtime, member.jid, member.name);
       });
     },
 
@@ -981,7 +987,11 @@ export default {
         });
 
         if (remotePartyMember) {
-          this.identifyPartyRemote(frameRuntime, remotePartyMember.jid);
+          this.identifyPartyRemote(
+            frameRuntime,
+            remotePartyMember.jid,
+            remotePartyMember.name
+          );
         }
 
         // Re-identify local party?

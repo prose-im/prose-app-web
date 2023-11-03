@@ -186,6 +186,8 @@ export default {
     },
 
     rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
+      // TODO: migrate to client-provided name (do not source from roster \
+      //   anymore, might return jid-based nickname)
       return Store.$roster.getEntryName(this.jid);
     }
   },
