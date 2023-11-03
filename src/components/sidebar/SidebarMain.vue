@@ -69,7 +69,7 @@
       )
         sidebar-main-item-user(
           v-if="room.type === roomType.DirectMessage"
-          :jid="room.members[0]"
+          :jid="room.members[0]?.jid"
           :name="room.name"
           :active="room.id === selectedRoomID"
         )

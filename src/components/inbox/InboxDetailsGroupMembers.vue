@@ -17,7 +17,7 @@ list-disclosure(
   separated
 )
   list-button(
-    v-for="member in members"
+    v-for="member in room.members"
     @click="onMemberClick(member.jid)"
     size="small"
     class="c-inbox-details-group-members__member"
@@ -122,17 +122,6 @@ export default {
         }
       }
     };
-  },
-
-  computed: {
-    members(): Array<{ jid: JID; name: string }> {
-      return this.room.members.map((memberJID: JID) => {
-        return {
-          jid: memberJID,
-          name: Store.$roster.getEntryName(memberJID)
-        };
-      });
-    }
   },
 
   methods: {
