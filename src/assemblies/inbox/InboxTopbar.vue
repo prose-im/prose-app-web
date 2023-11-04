@@ -295,21 +295,23 @@ export default {
       );
 
       // Build popover items
-      const items: Array<PopoverItem> = Array.from(historyRawRoomIDs).map(
-        historyRoomID => {
-          return {
+      const items: Array<PopoverItem> = [];
+
+      Array.from(historyRawRoomIDs).forEach((historyRoomID: RoomID) => {
+        const historyRoom = Store.$muc.getRoomByID(historyRoomID) || undefined;
+
+        if (historyRoom !== undefined) {
+          items.push({
             type: PopoverItemType.Button,
             icon: "clock",
-
-            // TODO: migrate to client-provided room name
-            label: Store.$roster.getEntryName(new JID(historyRoomID)),
+            label: historyRoom.name,
 
             click: () => {
-              this.onActionHistoryPopoverEntryClick(historyRoomID as RoomID);
+              this.onActionHistoryPopoverEntryClick(historyRoomID);
             }
-          };
+          });
         }
-      );
+      });
 
       if (items.length === 0) {
         // Append empty indicator?

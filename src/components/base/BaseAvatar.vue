@@ -35,7 +35,7 @@ div(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, RoomID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -140,7 +140,7 @@ export default {
       // Generate content text? (as avatar is textual)
       if (this.isTextual === true) {
         return this.normalizeTextualInitials(
-          this.generateTextualInitials(this.jid, this.rosterName) || undefined
+          this.generateTextualInitials(this.jid, this.roomName) || undefined
         );
       }
 
@@ -185,10 +185,10 @@ export default {
       return parseInt(this.size.replace("px", ""));
     },
 
-    rosterName(): ReturnType<typeof Store.$roster.getEntryName> {
-      // TODO: migrate to client-provided name (do not source from roster \
-      //   anymore, might return jid-based nickname)
-      return Store.$roster.getEntryName(this.jid);
+    roomName(): string {
+      const room = Store.$muc.getRoomByID(this.jid.toString() as RoomID);
+
+      return room?.name || "";
     }
   },
 
