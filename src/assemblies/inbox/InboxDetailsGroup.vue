@@ -95,6 +95,12 @@ export default {
     actions(): Array<DetailsAction> {
       return [
         {
+          id: "manage",
+          title: "Manage group",
+          navigate: true
+        },
+
+        {
           id: "leave",
           title: "Leave this group"
         }
