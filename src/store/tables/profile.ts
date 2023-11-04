@@ -136,8 +136,8 @@ const $profile = defineStore("profile", {
 
     async load(jid: JID, reload = false): Promise<ProfileEntry> {
       // Assert profile data
-      const profile = this.assert(jid);
-      const jidString = jid.toString();
+      const profile = this.assert(jid),
+        jidString = jid.toString();
 
       // Load profile? (or reload)
       if (LOCAL_STATES.loaded[jidString] !== true || reload === true) {
