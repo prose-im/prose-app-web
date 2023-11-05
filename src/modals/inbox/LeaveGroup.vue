@@ -14,6 +14,7 @@ base-modal(
   @confirm="$emit('proceed')"
   :confirm-label="confirmLabel"
   class="m-leave-group"
+  confirm-disabled
   destructive
 )
   p.u-regular
