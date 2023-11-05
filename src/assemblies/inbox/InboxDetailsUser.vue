@@ -47,6 +47,16 @@ layout-sidebar-details
   template(
     v-slot:default
   )
+    shared-files(
+      v-if="popups.sharedFiles.visible"
+      @close="onModalSharedFilesClose"
+    )
+
+    encryption-settings(
+      v-if="popups.encryptionSettings.visible"
+      @close="onModalEncryptionSettingsClose"
+    )
+
     remove-contact(
       v-if="modals.removeContact.visible"
       @proceed="onModalRemoveContactProceed"
@@ -88,6 +98,10 @@ import {
 import RemoveContact from "@/modals/inbox/RemoveContact.vue";
 import BlockUser from "@/modals/inbox/BlockUser.vue";
 
+// PROJECT: POPUPS
+import SharedFiles from "@/popups/inbox/SharedFiles.vue";
+import EncryptionSettings from "@/popups/inbox/EncryptionSettings.vue";
+
 export default {
   name: "InboxDetailsUser",
 
@@ -96,6 +110,8 @@ export default {
     InboxDetailsUserInformation,
     InboxDetailsUserSecurity,
     InboxDetailsGenericActions,
+    SharedFiles,
+    EncryptionSettings,
     RemoveContact,
     BlockUser
   },
@@ -136,6 +152,16 @@ export default {
         blockUser: {
           visible: false
         }
+      },
+
+      popups: {
+        sharedFiles: {
+          visible: false
+        },
+
+        encryptionSettings: {
+          visible: false
+        }
       }
     };
   },
@@ -146,15 +172,15 @@ export default {
         {
           id: "files",
           title: "View shared files",
-          children: [],
-          disabled: true
+          click: this.onActionSharedFilesClick,
+          navigate: true
         },
 
         {
           id: "encryption",
           title: "Encryption settings",
-          children: [],
-          disabled: true
+          click: this.onActionEncryptionSettingsClick,
+          navigate: true
         },
 
         {
@@ -231,12 +257,28 @@ export default {
       }
     },
 
+    onActionSharedFilesClick(): void {
+      this.popups.sharedFiles.visible = true;
+    },
+
+    onActionEncryptionSettingsClick(): void {
+      this.popups.encryptionSettings.visible = true;
+    },
+
     onActionRemoveContactClick(): void {
       this.modals.removeContact.visible = true;
     },
 
     onActionBlockUserClick(): void {
       this.modals.blockUser.visible = true;
+    },
+
+    onModalSharedFilesClose(): void {
+      this.popups.sharedFiles.visible = false;
+    },
+
+    onModalEncryptionSettingsClose(): void {
+      this.popups.encryptionSettings.visible = false;
     },
 
     onModalRemoveContactProceed(): void {
