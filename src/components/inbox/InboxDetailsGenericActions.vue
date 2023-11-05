@@ -18,6 +18,7 @@ list-disclosure(
 )
   list-button(
     v-for="action in actions"
+    @click="action.click ? action.click() : null"
     :key="action.id"
     :class=`[
       "c-inbox-details-generic-actions__action",
@@ -25,6 +26,7 @@ list-disclosure(
         [itemClass]: itemClass
       }
     ]`
+    :color="action.color"
     :disabled="action.disabled"
     size="small"
     color="lighter"
@@ -65,6 +67,7 @@ export interface Action {
   children?: Array<Action>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   click?: (_: any) => void;
+  color?: string;
   disabled?: boolean;
 }
 
