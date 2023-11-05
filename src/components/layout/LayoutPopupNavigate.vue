@@ -20,6 +20,7 @@ base-popup(
   popup-class="c-layout-popup-navigate__popup"
 )
   div(
+    v-if="$slots.navigate"
     :class=`[
       "c-layout-popup-navigate__navigate",
       {
@@ -31,19 +32,19 @@ base-popup(
       name="navigate"
     )
 
-  .c-layout-popup-navigate__content
+  .c-layout-popup-navigate__inner
     div(
       :class=`[
-        "c-layout-popup-navigate__form",
+        "c-layout-popup-navigate__content",
         {
-          "c-layout-popup-navigate__form--locked": locked,
-          [formClass]: formClass
+          "c-layout-popup-navigate__content--locked": locked,
+          [contentClass]: contentClass
         }
       ]`
-      ref="form"
+      ref="content"
     )
       slot(
-        name="form"
+        name="content"
       )
 
       .c-layout-popup-navigate__actions.c-layout-popup-navigate__actions--mask(
@@ -97,12 +98,12 @@ export default {
       default: null
     },
 
-    formClass: {
+    contentClass: {
       type: String,
       default: null
     },
 
-    formSection: {
+    contentSection: {
       type: String,
       default: null
     },
@@ -122,7 +123,7 @@ export default {
   },
 
   watch: {
-    formSection: {
+    contentSection: {
       handler() {
         // Refresh actions separator state
         this.$nextTick(this.autoDetectActionsSeparator);
@@ -148,14 +149,16 @@ export default {
     // --> HELPERS <--
 
     autoDetectActionsSeparator(): void {
-      const formElement = (this.$refs.form as HTMLElement) || null;
+      const contentElement = (this.$refs.content as HTMLElement) || null;
 
-      if (formElement !== null) {
-        const isFormScrollable =
-          formElement.scrollHeight > formElement.clientHeight ? true : false;
+      if (contentElement !== null) {
+        const isContentScrollable =
+          contentElement.scrollHeight > contentElement.clientHeight
+            ? true
+            : false;
 
-        if (isFormScrollable !== this.hasActionsSeparator) {
-          this.hasActionsSeparator = isFormScrollable;
+        if (isContentScrollable !== this.hasActionsSeparator) {
+          this.hasActionsSeparator = isContentScrollable;
         }
       }
     },
@@ -206,17 +209,17 @@ $popup-max-height-small: 540px;
     flex: 0 0 auto;
   }
 
-  #{$c}__content {
+  #{$c}__inner {
     background-color: rgb(var(--color-background-secondary));
     flex: 1;
     position: relative;
 
-    #{$c}__form,
+    #{$c}__content,
     #{$c}__actions {
       padding-inline: $popup-padding-inline;
     }
 
-    #{$c}__form {
+    #{$c}__content {
       padding-block-start: $popup-padding-block-start;
       padding-block-end: $popup-padding-block-end;
       overflow: auto;
@@ -288,8 +291,8 @@ $popup-max-height-small: 540px;
   // --> BOOLEANS <--
 
   &--actions {
-    #{$c}__content {
-      #{$c}__form {
+    #{$c}__inner {
+      #{$c}__content {
         padding-block-end: ($popup-padding-block-end + 20px);
       }
     }
