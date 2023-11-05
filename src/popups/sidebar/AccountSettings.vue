@@ -10,7 +10,7 @@
 
 <template lang="pug">
 layout-popup-navigate(
-  :form-section="section"
+  :content-section="section"
   size="small"
   class="p-account-settings"
   actions-class="p-account-settings__actions"
@@ -25,12 +25,12 @@ layout-popup-navigate(
     )
 
   template(
-    v-slot:form
+    v-slot:content
   )
     component(
-      v-if="formSections[section]"
-      v-bind="formSections[section].properties"
-      :is="formSections[section].component"
+      v-if="contentSections[section]"
+      v-bind="contentSections[section].properties"
+      :is="contentSections[section].component"
     )
 
   template(
@@ -108,7 +108,7 @@ export default {
         }
       ] as Array<NavigateSection>,
 
-      formSections: {
+      contentSections: {
         general: {
           component: shallowRef(AccountSettingsGeneral)
         },

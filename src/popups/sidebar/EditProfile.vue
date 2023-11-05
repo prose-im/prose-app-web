@@ -11,9 +11,9 @@
 <template lang="pug">
 layout-popup-navigate(
   :locked="isPending"
-  :form-section="section"
+  :content-section="section"
   class="p-edit-profile"
-  form-class="p-edit-profile__form"
+  content-class="p-edit-profile__form"
   actions-class="p-edit-profile__actions"
 )
   template(
@@ -29,12 +29,12 @@ layout-popup-navigate(
     )
 
   template(
-    v-slot:form
+    v-slot:content
   )
     component(
-      v-if="formSections[section]"
-      v-bind="formSections[section].properties"
-      :is="formSections[section].component"
+      v-if="contentSections[section]"
+      v-bind="contentSections[section].properties"
+      :is="contentSections[section].component"
       :jid="selfJID"
     )
 
@@ -152,7 +152,7 @@ export default {
         }
       ] as Array<NavigateSection>,
 
-      formSections: {
+      contentSections: {
         identity: {
           component: shallowRef(EditProfileIdentity),
 
@@ -259,8 +259,8 @@ export default {
     },
 
     vCardDataToForms(profile: ProfileEntry): void {
-      const formIdentity = this.formSections.identity.properties.form,
-        formProfile = this.formSections.profile.properties.form;
+      const formIdentity = this.contentSections.identity.properties.form,
+        formProfile = this.contentSections.profile.properties.form;
 
       // Populate identity form
       if (profile.name) {
@@ -350,8 +350,8 @@ export default {
 
         // Generate vCard save data
         const vCardData = this.formsToUserProfile(
-          this.formSections.identity.properties.form,
-          this.formSections.profile.properties.form
+          this.contentSections.identity.properties.form,
+          this.contentSections.profile.properties.form
         );
 
         // Generate avatar save data (might be empty)
