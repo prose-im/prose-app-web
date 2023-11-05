@@ -9,10 +9,10 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.p-edit-profile-encryption
-  settings-editor-form-fieldset(
-    :fieldsets="fieldsets"
-  )
+form-settings-editor(
+  :fieldsets="fieldsets"
+  class="p-edit-profile-encryption"
+)
 </template>
 
 <!-- **********************************************************************
@@ -26,16 +26,16 @@ import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import {
-  default as SettingsEditorFormFieldset,
+  default as FormSettingsEditor,
   Fieldset as FormFieldset
-} from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
+} from "@/components/form/FormSettingsEditor.vue";
 import EditProfileEncryptionDeviceCurrent from "@/components/popups/sidebar/EditProfileEncryptionDeviceCurrent.vue";
 import EditProfileEncryptionDeviceOther from "@/components/popups/sidebar/EditProfileEncryptionDeviceOther.vue";
 
 export default {
   name: "EditProfileEncryption",
 
-  components: { SettingsEditorFormFieldset },
+  components: { FormSettingsEditor },
 
   props: {
     jid: {

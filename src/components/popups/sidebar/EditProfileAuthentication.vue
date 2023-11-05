@@ -9,10 +9,10 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.p-edit-profile-authentication
-  settings-editor-form-fieldset(
-    :fieldsets="fieldsets"
-  )
+form-settings-editor(
+  :fieldsets="fieldsets"
+  class="p-edit-profile-authentication"
+)
 </template>
 
 <!-- **********************************************************************
@@ -26,19 +26,19 @@ import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import {
-  default as SettingsEditorFormFieldset,
+  default as FormSettingsEditor,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataButton as FormFieldsetFieldDataButton,
   FieldsetControlActionType as FormFieldsetControlActionType,
   FieldsetControlActionDataButton as FormFieldsetControlActionDataButton,
   FieldsetControlIconType as FormFieldsetControlIconType
-} from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
+} from "@/components/form/FormSettingsEditor.vue";
 
 export default {
   name: "EditProfileAuthentication",
 
-  components: { SettingsEditorFormFieldset },
+  components: { FormSettingsEditor },
 
   props: {
     jid: {

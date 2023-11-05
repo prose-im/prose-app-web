@@ -9,12 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.p-settings-editor-form-fieldset
-  form-fieldset.p-settings-editor-form-fieldset__fieldset(
+.c-form-settings-editor
+  form-fieldset.c-form-settings-editor__fieldset(
     v-for="fieldset in fieldsets"
     :id="'fieldset_' + fieldset.id"
   )
-    h6.p-settings-editor-form-fieldset__title.u-medium
+    h6.c-form-settings-editor__title.u-medium
       | {{ fieldset.title }}
 
     template(
@@ -32,7 +32,7 @@
       form-fieldset-field(
         v-for="field in fieldset.fields"
         :label="field.label || ''"
-        class="p-settings-editor-form-fieldset__field"
+        class="c-form-settings-editor__field"
       )
         template(
           v-slot:default
@@ -118,14 +118,14 @@
           )
             | {{ field.data.text }}
 
-          span.p-settings-editor-form-fieldset__field-spacer(
+          span.c-form-settings-editor__field-spacer(
             v-else-if="field.type === 'spacer'"
           )
 
         template(
           v-slot:aside
         )
-          .p-settings-editor-form-fieldset__field-aside(
+          .c-form-settings-editor__field-aside(
             v-if="fieldset.options && fieldset.options.aside === true"
           )
             template(
@@ -134,10 +134,10 @@
               a(
                 v-if="field.aside.type === 'link'"
                 :class=`[
-                  "p-settings-editor-form-fieldset__field-aside-link",
+                  "c-form-settings-editor__field-aside-link",
                   "u-medium",
                   {
-                    "p-settings-editor-form-fieldset__field-aside-link--disabled": field.aside.disabled
+                    "c-form-settings-editor__field-aside-link--disabled": field.aside.disabled
                   }
                 ]`
               )
@@ -146,9 +146,9 @@
               span(
                 v-else-if="field.aside.type === 'label'"
                 :class=`[
-                  "p-settings-editor-form-fieldset__field-aside-label",
+                  "c-form-settings-editor__field-aside-label",
                   {
-                    ["p-settings-editor-form-fieldset__field-aside-label--" + field.aside.color]: field.aside.color
+                    ["c-form-settings-editor__field-aside-label--" + field.aside.color]: field.aside.color
                   }
                 ]`
               )
@@ -156,18 +156,18 @@
                   v-if="field.aside.icon"
                   :name="field.aside.icon"
                   size="13px"
-                  class="p-settings-editor-form-fieldset__field-aside-icon"
+                  class="c-form-settings-editor__field-aside-icon"
                 )
 
                 | {{ field.aside.label }}
 
-    .p-settings-editor-form-fieldset__controls(
+    .c-form-settings-editor__controls(
       v-if="fieldset.controls"
     )
       form-fieldset-control(
         v-for="control in fieldset.controls"
         :label="control.label"
-        class="p-settings-editor-form-fieldset__control"
+        class="c-form-settings-editor__control"
       )
         template(
           v-slot:default
@@ -177,8 +177,8 @@
             :name="controlIconToName(control.icon)"
             :size="controlIconToSize(control.icon)"
             :class=`[
-              "p-settings-editor-form-fieldset__control-icon",
-              "p-settings-editor-form-fieldset__control-icon--" + controlIconToColor(control.icon)
+              "c-form-settings-editor__control-icon",
+              "c-form-settings-editor__control-icon--" + controlIconToColor(control.icon)
             ]`
           )
 
@@ -400,7 +400,7 @@ interface FieldsetOptions {
 }
 
 export default {
-  name: "SettingsEditorFormFieldset",
+  name: "FormSettingsEditor",
 
   props: {
     fieldsets: {
@@ -468,9 +468,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".p-settings-editor-form-fieldset";
+$c: ".c-form-settings-editor";
 
-.p-settings-editor-form-fieldset {
+.c-form-settings-editor {
   #{$c}__title {
     color: rgb(var(--color-text-secondary));
     font-size: 14.5px;

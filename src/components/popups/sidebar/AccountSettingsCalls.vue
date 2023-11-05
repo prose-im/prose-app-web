@@ -9,10 +9,10 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.p-account-settings-calls
-  settings-editor-form-fieldset(
-    :fieldsets="fieldsets"
-  )
+form-settings-editor(
+  :fieldsets="fieldsets"
+  class="p-account-settings-calls"
+)
 </template>
 
 <!-- **********************************************************************
@@ -22,14 +22,14 @@
 <script lang="ts">
 // PROJECT: COMPONENTS
 import {
-  default as SettingsEditorFormFieldset,
+  default as FormSettingsEditor,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataButton as FormFieldsetFieldDataButton,
   FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
   FieldsetFieldDataLevel as FormFieldsetFieldDataLevel,
   FieldsetFieldDataStream as FormFieldsetFieldDataStream
-} from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
+} from "@/components/form/FormSettingsEditor.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -37,7 +37,7 @@ import Store from "@/store";
 export default {
   name: "AccountSettingsCalls",
 
-  components: { SettingsEditorFormFieldset },
+  components: { FormSettingsEditor },
 
   data() {
     return {

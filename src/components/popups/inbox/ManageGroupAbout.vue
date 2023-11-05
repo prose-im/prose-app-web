@@ -9,10 +9,10 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.p-manage-group-about
-  settings-editor-form-fieldset(
-    :fieldsets="fieldsets"
-  )
+form-settings-editor(
+  :fieldsets="fieldsets"
+  class="p-manage-group-about"
+)
 </template>
 
 <!-- **********************************************************************
@@ -22,17 +22,17 @@
 <script lang="ts">
 // PROJECT: COMPONENTS
 import {
-  default as SettingsEditorFormFieldset,
+  default as FormSettingsEditor,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
   FieldsetFieldDataTextarea as FormFieldsetFieldDataTextarea
-} from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
+} from "@/components/form/FormSettingsEditor.vue";
 
 export default {
   name: "ManageGroupAbout",
 
-  components: { SettingsEditorFormFieldset },
+  components: { FormSettingsEditor },
 
   props: {
     type: {

@@ -9,10 +9,10 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.p-manage-group-settings
-  settings-editor-form-fieldset(
-    :fieldsets="fieldsets"
-  )
+form-settings-editor(
+  :fieldsets="fieldsets"
+  class="p-manage-group-settings"
+)
 </template>
 
 <!-- **********************************************************************
@@ -25,17 +25,17 @@ import upperFirst from "lodash.upperfirst";
 
 // PROJECT: COMPONENTS
 import {
-  default as SettingsEditorFormFieldset,
+  default as FormSettingsEditor,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
   FieldsetFieldDataButton as FormFieldsetFieldDataButton
-} from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
+} from "@/components/form/FormSettingsEditor.vue";
 
 export default {
   name: "ManageGroupSettings",
 
-  components: { SettingsEditorFormFieldset },
+  components: { FormSettingsEditor },
 
   props: {
     type: {

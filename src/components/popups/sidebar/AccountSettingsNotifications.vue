@@ -9,10 +9,10 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.p-account-settings-notifications
-  settings-editor-form-fieldset(
-    :fieldsets="fieldsets"
-  )
+form-settings-editor(
+  :fieldsets="fieldsets"
+  class="p-account-settings-notifications"
+)
 </template>
 
 <!-- **********************************************************************
@@ -22,12 +22,12 @@
 <script lang="ts">
 // PROJECT: COMPONENTS
 import {
-  default as SettingsEditorFormFieldset,
+  default as FormSettingsEditor,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
   FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
-} from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
+} from "@/components/form/FormSettingsEditor.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -35,7 +35,7 @@ import Store from "@/store";
 export default {
   name: "AccountSettingsNotifications",
 
-  components: { SettingsEditorFormFieldset },
+  components: { FormSettingsEditor },
 
   data() {
     return {

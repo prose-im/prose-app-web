@@ -16,7 +16,7 @@ layout-popup-navigate(
   template(
     v-slot:content
   )
-    settings-editor-form-fieldset(
+    form-settings-editor(
       :fieldsets="fieldsets"
     )
 
@@ -37,16 +37,16 @@ layout-popup-navigate(
 <script lang="ts">
 // PROJECT: COMPONENTS
 import {
-  default as SettingsEditorFormFieldset,
+  default as FormSettingsEditor,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldDataToggle as FormFieldsetFieldDataToggle
-} from "@/components/popups/sidebar/SettingsEditorFormFieldset.vue";
+} from "@/components/form/FormSettingsEditor.vue";
 
 export default {
   name: "EncryptionSettings",
 
-  components: { SettingsEditorFormFieldset },
+  components: { FormSettingsEditor },
 
   emits: ["close"],
 
