@@ -88,7 +88,7 @@ _👉 The Prose Web app reference design [can be found there](https://github.com
 
 As Prose is still being developed, update videos can be found on the Prose blog, month by month:
 
-- [Prose Development Update: November 2023](https://prose.org/blog/prose-development-update-november-2023/)
+- 🎥 [Prose Development Update: November 2023](https://prose.org/blog/prose-development-update-november-2023/)
 
 ## License
 
