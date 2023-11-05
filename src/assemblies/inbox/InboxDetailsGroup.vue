@@ -166,7 +166,8 @@ export default {
         {
           id: "leave",
           title: "Leave this group",
-          click: this.onActionLeaveGroupClick
+          click: this.onActionLeaveGroupClick,
+          color: "red"
         }
       ];
     },

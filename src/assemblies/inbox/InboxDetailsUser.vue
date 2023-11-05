@@ -188,13 +188,15 @@ export default {
         {
           id: "remove",
           title: "Remove from contacts",
-          click: this.onActionRemoveContactClick
+          click: this.onActionRemoveContactClick,
+          color: "red"
         },
 
         {
           id: "block",
           title: "Block user",
-          click: this.onActionBlockUserClick
+          click: this.onActionBlockUserClick,
+          color: "red"
         }
       ];
     },

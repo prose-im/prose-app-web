@@ -166,7 +166,8 @@ export default {
         {
           id: "leave",
           title: "Leave this channel",
-          click: this.onActionLeaveChannelClick
+          click: this.onActionLeaveChannelClick,
+          color: "red"
         }
       ];
     },
