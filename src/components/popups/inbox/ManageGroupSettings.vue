@@ -52,7 +52,7 @@ export default {
     return {
       // --> DATA <--
 
-      fieldsets: []
+      fieldsets: [] as Array<FormFieldset>
     };
   },
 
