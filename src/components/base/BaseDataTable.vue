@@ -9,7 +9,14 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-base-data-table
+div(
+  :class=`[
+    "c-base-data-table",
+    {
+      "c-base-data-table--auto-height": autoHeight
+    }
+  ]`
+)
   .c-base-data-table__header.c-base-data-table__columns
     span.c-base-data-table__column
 
@@ -83,19 +90,27 @@
   .c-base-data-table__controls(
     v-if="controlsWithIcons.length > 0"
   )
-    base-button.c-base-data-table__control(
+    base-tooltip(
       v-for="control in controlsWithIcons"
-      @click="onControlClick(control.type)"
-      :disabled="control.disabled"
-      size="small"
-      tint="light"
-      button-class="c-base-data-table__control-button"
+      :tooltip="control.tooltip"
+      :class=`[
+        "c-base-data-table__control",
+        "c-base-data-table__control--" + control.tint
+      ]`
+      align="left"
     )
-      base-icon(
-        :name="control.icon"
-        size="10px"
-        class="c-base-data-table__control-icon"
+      base-button(
+        @click="onControlClick(control.type)"
+        :tint="control.tint"
+        :disabled="control.disabled"
+        size="small"
+        button-class="c-base-data-table__control-button"
       )
+        base-icon(
+          :name="control.icon"
+          size="10px"
+          class="c-base-data-table__control-icon"
+        )
 </template>
 
 <!-- **********************************************************************
@@ -108,6 +123,8 @@ import { firstBy } from "thenby";
 
 // ENUMERATIONS
 export enum ControlType {
+  // Add control.
+  Add = "add",
   // Remove control.
   Remove = "remove"
 }
@@ -134,10 +151,13 @@ export interface Sizes {
 
 export interface Control {
   type: ControlType;
+  tooltip?: string;
 }
 
 interface ControlWithIcon {
   type: ControlType;
+  tooltip: string;
+  tint: string;
   disabled: boolean;
   icon?: string;
 }
@@ -184,6 +204,11 @@ export default {
     sortable: {
       type: Boolean,
       default: false
+    },
+
+    autoHeight: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -204,11 +229,22 @@ export default {
     controlsWithIcons(): Array<ControlWithIcon> {
       return this.controls.map((control: Control) => {
         let icon: string,
+          tooltip: string,
+          tint = "dark",
           disabled = false;
 
         switch (control.type) {
+          case ControlType.Add: {
+            icon = "plus";
+            tooltip = "Add";
+
+            break;
+          }
+
           case ControlType.Remove: {
             icon = "minus";
+            tooltip = "Remove";
+            tint = "light";
 
             disabled = this.rows.find((row: Row) => row.selected === true)
               ? false
@@ -220,7 +256,9 @@ export default {
 
         return {
           type: control.type,
+          tooltip: control.tooltip || tooltip,
           icon,
+          tint,
           disabled
         };
       });
@@ -291,11 +329,21 @@ $controls-button-height: 22px;
 .c-base-data-table {
   background-color: rgb(var(--color-background-primary));
   border-block: 1px solid rgb(var(--color-border-primary));
+  min-height: 200px;
+  max-height: 340px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
   #{$c}__header,
   #{$c}__rows,
   #{$c}__controls {
     padding-inline: 16px;
+  }
+
+  #{$c}__header,
+  #{$c}__controls {
+    flex: 0 0 auto;
   }
 
   #{$c}__header {
@@ -336,9 +384,9 @@ $controls-button-height: 22px;
   #{$c}__rows {
     font-size: 13px;
     line-height: 13px;
-    min-height: 120px;
     padding-block-start: 4px;
     padding-block-end: 14px;
+    flex: 1;
     overflow: auto;
 
     #{$c}__row {
@@ -392,6 +440,12 @@ $controls-button-height: 22px;
     padding-block: 5px;
 
     #{$c}__control {
+      margin-inline-end: 4px;
+
+      &:last-child {
+        margin-inline-end: 0;
+      }
+
       #{$c}__control-button {
         width: $controls-button-width;
         height: $controls-button-height;
@@ -402,7 +456,26 @@ $controls-button-height: 22px;
         margin-inline: auto;
         display: block;
       }
+
+      &--dark {
+        #{$c}__control-icon {
+          fill: rgb(var(--color-white));
+        }
+      }
+
+      &--light {
+        #{$c}__control-icon {
+          fill: rgb(var(--color-black));
+        }
+      }
     }
+  }
+
+  // --> BOOLEANS <--
+
+  &--auto-height {
+    min-height: auto;
+    max-height: 100%;
   }
 }
 </style>
