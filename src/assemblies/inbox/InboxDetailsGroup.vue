@@ -41,6 +41,16 @@ layout-sidebar-details
       :item-class="itemClass"
       :expanded="layout.inbox.details.sections.actions"
     )
+
+  template(
+    v-slot:default
+  )
+    leave-group(
+      v-if="modals.leaveGroup.visible"
+      @proceed="onModalLeaveGroupProceed"
+      @close="onModalLeaveGroupClose"
+      type="group"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -64,6 +74,9 @@ import {
   Action as DetailsAction
 } from "@/components/inbox/InboxDetailsGenericActions.vue";
 
+// PROJECT: MODALS
+import LeaveGroup from "@/modals/inbox/LeaveGroup.vue";
+
 export default {
   name: "InboxDetailsGroup",
 
@@ -71,7 +84,8 @@ export default {
     InboxDetailsGroupIdentity,
     InboxDetailsGroupInformation,
     InboxDetailsGroupMembers,
-    InboxDetailsGenericActions
+    InboxDetailsGenericActions,
+    LeaveGroup
   },
 
   props: {
@@ -91,6 +105,18 @@ export default {
     }
   },
 
+  data() {
+    return {
+      // --> STATE <--
+
+      modals: {
+        leaveGroup: {
+          visible: false
+        }
+      }
+    };
+  },
+
   computed: {
     actions(): Array<DetailsAction> {
       return [
@@ -104,13 +130,31 @@ export default {
         {
           id: "leave",
           title: "Leave this group",
-          disabled: true
+          click: this.onActionLeaveGroupClick
         }
       ];
     },
 
     layout(): typeof Store.$layout {
       return Store.$layout;
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onActionLeaveGroupClick(): void {
+      this.modals.leaveGroup.visible = true;
+    },
+
+    onModalLeaveGroupProceed(): void {
+      // TODO: proceed
+
+      this.modals.leaveGroup.visible = false;
+    },
+
+    onModalLeaveGroupClose(): void {
+      this.modals.leaveGroup.visible = false;
     }
   }
 };

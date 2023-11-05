@@ -43,6 +43,21 @@ layout-sidebar-details
       :item-class="itemClass"
       :expanded="layout.inbox.details.sections.actions"
     )
+
+  template(
+    v-slot:default
+  )
+    remove-contact(
+      v-if="modals.removeContact.visible"
+      @proceed="onModalRemoveContactProceed"
+      @close="onModalRemoveContactClose"
+    )
+
+    block-user(
+      v-if="modals.blockUser.visible"
+      @proceed="onModalBlockUserProceed"
+      @close="onModalBlockUserClose"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -69,6 +84,10 @@ import {
   Action as DetailsAction
 } from "@/components/inbox/InboxDetailsGenericActions.vue";
 
+// PROJECT: MODALS
+import RemoveContact from "@/modals/inbox/RemoveContact.vue";
+import BlockUser from "@/modals/inbox/BlockUser.vue";
+
 export default {
   name: "InboxDetailsUser",
 
@@ -76,7 +95,9 @@ export default {
     InboxDetailsUserIdentity,
     InboxDetailsUserInformation,
     InboxDetailsUserSecurity,
-    InboxDetailsGenericActions
+    InboxDetailsGenericActions,
+    RemoveContact,
+    BlockUser
   },
 
   props: {
@@ -105,7 +126,17 @@ export default {
     return {
       // --> STATE <--
 
-      isVCardSyncStale: true
+      isVCardSyncStale: true,
+
+      modals: {
+        removeContact: {
+          visible: false
+        },
+
+        blockUser: {
+          visible: false
+        }
+      }
     };
   },
 
@@ -129,13 +160,13 @@ export default {
         {
           id: "remove",
           title: "Remove from contacts",
-          disabled: true
+          click: this.onActionRemoveContactClick
         },
 
         {
           id: "block",
-          title: "Block contact",
-          disabled: true
+          title: "Block user",
+          click: this.onActionBlockUserClick
         }
       ];
     },
@@ -198,6 +229,34 @@ export default {
         // Synchronize vCard eagerly (if stale)
         this.syncVCardEager();
       }
+    },
+
+    onActionRemoveContactClick(): void {
+      this.modals.removeContact.visible = true;
+    },
+
+    onActionBlockUserClick(): void {
+      this.modals.blockUser.visible = true;
+    },
+
+    onModalRemoveContactProceed(): void {
+      // TODO: proceed
+
+      this.modals.removeContact.visible = false;
+    },
+
+    onModalRemoveContactClose(): void {
+      this.modals.removeContact.visible = false;
+    },
+
+    onModalBlockUserProceed(): void {
+      // TODO: proceed
+
+      this.modals.blockUser.visible = false;
+    },
+
+    onModalBlockUserClose(): void {
+      this.modals.blockUser.visible = false;
     }
   }
 };
