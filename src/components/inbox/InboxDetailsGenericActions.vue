@@ -38,7 +38,7 @@ list-disclosure(
       | {{ action.title }}
 
     template(
-      v-if="action.children"
+      v-if="action.navigate"
       v-slot:details
     )
       base-icon(
@@ -64,10 +64,10 @@ import Store from "@/store";
 export interface Action {
   id: string;
   title: string;
-  children?: Array<Action>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   click?: (_: any) => void;
   color?: string;
+  navigate?: boolean;
   disabled?: boolean;
 }
 
