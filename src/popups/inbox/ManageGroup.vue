@@ -11,8 +11,12 @@
 <template lang="pug">
 layout-popup-navigate(
   :content-section="section"
+  :class=`[
+    "p-manage-group",
+    "p-manage-group--" + section
+  ]`
   size="small"
-  class="p-manage-group"
+  content-class="p-manage-group__form"
 )
   template(
     v-slot:navigate
@@ -30,6 +34,7 @@ layout-popup-navigate(
       v-if="contentSections[section]"
       v-bind="contentSections[section].properties"
       :is="contentSections[section].component"
+      class="p-manage-group__form-inner"
     )
 
   template(
@@ -113,7 +118,12 @@ export default {
         },
 
         members: {
-          component: shallowRef(ManageGroupMembers)
+          component: shallowRef(ManageGroupMembers),
+
+          properties: {
+            type: this.type,
+            dataTableClass: "p-manage-group__form-offset-sides"
+          }
         },
 
         settings: {
@@ -151,6 +161,23 @@ export default {
 $c: ".p-manage-group";
 
 .p-manage-group {
-  /* TODO */
+  #{$c}__form {
+    #{$c}__form-offset-sides {
+      margin-inline: (-1 * $size-layout-popup-navigate-padding-inline);
+    }
+  }
+
+  // --> SECTIONS <--
+
+  &--members {
+    #{$c}__form {
+      display: flex;
+      flex-direction: column;
+
+      #{$c}__form-inner {
+        flex: 1;
+      }
+    }
+  }
 }
 </style>
