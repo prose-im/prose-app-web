@@ -10,11 +10,25 @@
 
 <template lang="pug">
 .c-form-settings-editor
-  form-fieldset.c-form-settings-editor__fieldset(
+  form-fieldset(
     v-for="fieldset in fieldsets"
     :id="'fieldset_' + fieldset.id"
+    :class=`[
+      "c-form-settings-editor__fieldset",
+      {
+        [fieldsetClass]: fieldsetClass
+      }
+    ]`
   )
-    h6.c-form-settings-editor__title.u-medium
+    h6(
+      :class=`[
+        "c-form-settings-editor__title",
+        "u-medium",
+        {
+          [titleClass]: titleClass
+        }
+      ]`
+    )
       | {{ fieldset.title }}
 
     template(
@@ -24,6 +38,11 @@
         v-for="part in fieldset.parts"
         v-bind="part.properties"
         :is="part.component"
+        :class=`[
+          {
+            [partClass]: partClass
+          }
+        ]`
       )
 
     template(
@@ -410,6 +429,21 @@ export default {
       validator(x: Array<Fieldset>): boolean {
         return x.length > 0;
       }
+    },
+
+    fieldsetClass: {
+      type: String,
+      default: null
+    },
+
+    titleClass: {
+      type: String,
+      default: null
+    },
+
+    partClass: {
+      type: String,
+      default: null
     }
   },
 
