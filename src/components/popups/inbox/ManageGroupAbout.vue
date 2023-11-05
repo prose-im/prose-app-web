@@ -66,7 +66,8 @@ export default {
                   inner: ""
                 }, // TODO: bind form model
 
-                placeholder: "Enter a short topic…"
+                placeholder: "Enter a short topic…",
+                disabled: true
               } as FormFieldsetFieldDataInput
             },
 
@@ -81,7 +82,8 @@ export default {
                 }, // TODO: bind form model
 
                 type: "textarea",
-                placeholder: "Enter a long description…"
+                placeholder: "Enter a long description…",
+                disabled: true
               } as FormFieldsetFieldDataTextarea
             }
           ],

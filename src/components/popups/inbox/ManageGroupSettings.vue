@@ -83,7 +83,8 @@ export default {
                 inner: ""
               }, // TODO: bind form model
 
-              placeholder: `Enter ${this.type} name…`
+              placeholder: `Enter ${this.type} name…`,
+              disabled: true
             } as FormFieldsetFieldDataInput
           }
         ],
