@@ -97,12 +97,14 @@ export default {
         {
           id: "manage",
           title: "Manage group",
-          navigate: true
+          children: [],
+          disabled: true
         },
 
         {
           id: "leave",
-          title: "Leave this group"
+          title: "Leave this group",
+          disabled: true
         }
       ];
     },

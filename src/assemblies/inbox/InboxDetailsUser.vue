@@ -115,23 +115,27 @@ export default {
         {
           id: "files",
           title: "View shared files",
-          navigate: true
+          children: [],
+          disabled: true
         },
 
         {
           id: "encryption",
           title: "Encryption settings",
-          navigate: true
+          children: [],
+          disabled: true
         },
 
         {
           id: "remove",
-          title: "Remove from contacts"
+          title: "Remove from contacts",
+          disabled: true
         },
 
         {
           id: "block",
-          title: "Block contact"
+          title: "Block contact",
+          disabled: true
         }
       ];
     },

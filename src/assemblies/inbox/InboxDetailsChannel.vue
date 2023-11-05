@@ -97,12 +97,14 @@ export default {
         {
           id: "manage",
           title: "Manage channel",
-          navigate: true
+          children: [],
+          disabled: true
         },
 
         {
           id: "leave",
-          title: "Leave this channel"
+          title: "Leave this channel",
+          disabled: true
         }
       ];
     },

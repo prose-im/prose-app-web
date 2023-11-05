@@ -25,10 +25,10 @@ list-disclosure(
         [itemClass]: itemClass
       }
     ]`
+    :disabled="action.disabled"
     size="small"
     color="lighter"
     emphasis
-    disabled
   )
     template(
       v-slot:default
@@ -36,7 +36,7 @@ list-disclosure(
       | {{ action.title }}
 
     template(
-      v-if="action.navigate"
+      v-if="action.children"
       v-slot:details
     )
       base-icon(
@@ -62,7 +62,10 @@ import Store from "@/store";
 export interface Action {
   id: string;
   title: string;
-  navigate?: boolean;
+  children?: Array<Action>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  click?: (_: any) => void;
+  disabled?: boolean;
 }
 
 export default {
