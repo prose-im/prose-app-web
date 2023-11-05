@@ -45,10 +45,21 @@ layout-sidebar-details
   template(
     v-slot:default
   )
+    shared-files(
+      v-if="popups.sharedFiles.visible"
+      @close="onPopupSharedFilesClose"
+    )
+
     leave-group(
       v-if="modals.leaveGroup.visible"
       @proceed="onModalLeaveGroupProceed"
       @close="onModalLeaveGroupClose"
+      type="group"
+    )
+
+    manage-group(
+      v-if="popups.manageGroup.visible"
+      @close="onPopupManageGroupClose"
       type="group"
     )
 </template>
@@ -77,6 +88,10 @@ import {
 // PROJECT: MODALS
 import LeaveGroup from "@/modals/inbox/LeaveGroup.vue";
 
+// PROJECT: POPUPS
+import SharedFiles from "@/popups/inbox/SharedFiles.vue";
+import ManageGroup from "@/popups/inbox/ManageGroup.vue";
+
 export default {
   name: "InboxDetailsGroup",
 
@@ -85,7 +100,9 @@ export default {
     InboxDetailsGroupInformation,
     InboxDetailsGroupMembers,
     InboxDetailsGenericActions,
-    LeaveGroup
+    LeaveGroup,
+    SharedFiles,
+    ManageGroup
   },
 
   props: {
@@ -113,6 +130,16 @@ export default {
         leaveGroup: {
           visible: false
         }
+      },
+
+      popups: {
+        sharedFiles: {
+          visible: false
+        },
+
+        manageGroup: {
+          visible: false
+        }
       }
     };
   },
@@ -121,10 +148,17 @@ export default {
     actions(): Array<DetailsAction> {
       return [
         {
+          id: "files",
+          title: "View shared files",
+          click: this.onActionSharedFilesClick,
+          navigate: true
+        },
+
+        {
           id: "manage",
           title: "Manage group",
-          children: [],
-          disabled: true
+          click: this.onActionManageGroupClick,
+          navigate: true
         },
 
         {
@@ -143,8 +177,24 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
+    onActionSharedFilesClick(): void {
+      this.popups.sharedFiles.visible = true;
+    },
+
+    onActionManageGroupClick(): void {
+      this.popups.manageGroup.visible = true;
+    },
+
     onActionLeaveGroupClick(): void {
       this.modals.leaveGroup.visible = true;
+    },
+
+    onPopupSharedFilesClose(): void {
+      this.popups.sharedFiles.visible = false;
+    },
+
+    onPopupManageGroupClose(): void {
+      this.popups.manageGroup.visible = false;
     },
 
     onModalLeaveGroupProceed(): void {

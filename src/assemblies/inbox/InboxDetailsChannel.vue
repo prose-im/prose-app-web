@@ -45,10 +45,21 @@ layout-sidebar-details
   template(
     v-slot:default
   )
+    shared-files(
+      v-if="popups.sharedFiles.visible"
+      @close="onPopupSharedFilesClose"
+    )
+
     leave-group(
       v-if="modals.leaveChannel.visible"
       @proceed="onModalLeaveChannelProceed"
       @close="onModalLeaveChannelClose"
+      type="channel"
+    )
+
+    manage-group(
+      v-if="popups.manageChannel.visible"
+      @close="onPopupManageChannelClose"
       type="channel"
     )
 </template>
@@ -77,6 +88,10 @@ import {
 // PROJECT: MODALS
 import LeaveGroup from "@/modals/inbox/LeaveGroup.vue";
 
+// PROJECT: POPUPS
+import SharedFiles from "@/popups/inbox/SharedFiles.vue";
+import ManageGroup from "@/popups/inbox/ManageGroup.vue";
+
 export default {
   name: "InboxDetailsChannel",
 
@@ -85,7 +100,9 @@ export default {
     InboxDetailsGroupInformation,
     InboxDetailsGroupMembers,
     InboxDetailsGenericActions,
-    LeaveGroup
+    LeaveGroup,
+    SharedFiles,
+    ManageGroup
   },
 
   props: {
@@ -113,6 +130,16 @@ export default {
         leaveChannel: {
           visible: false
         }
+      },
+
+      popups: {
+        sharedFiles: {
+          visible: false
+        },
+
+        manageChannel: {
+          visible: false
+        }
       }
     };
   },
@@ -121,10 +148,17 @@ export default {
     actions(): Array<DetailsAction> {
       return [
         {
+          id: "files",
+          title: "View shared files",
+          click: this.onActionSharedFilesClick,
+          navigate: true
+        },
+
+        {
           id: "manage",
           title: "Manage channel",
-          children: [],
-          disabled: true
+          click: this.onActionManageChannelClick,
+          navigate: true
         },
 
         {
@@ -143,8 +177,24 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
+    onActionSharedFilesClick(): void {
+      this.popups.sharedFiles.visible = true;
+    },
+
+    onActionManageChannelClick(): void {
+      this.popups.manageChannel.visible = true;
+    },
+
     onActionLeaveChannelClick(): void {
       this.modals.leaveChannel.visible = true;
+    },
+
+    onPopupSharedFilesClose(): void {
+      this.popups.sharedFiles.visible = false;
+    },
+
+    onPopupManageChannelClose(): void {
+      this.popups.manageChannel.visible = false;
     },
 
     onModalLeaveChannelProceed(): void {

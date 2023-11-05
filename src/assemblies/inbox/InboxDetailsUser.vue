@@ -49,12 +49,12 @@ layout-sidebar-details
   )
     shared-files(
       v-if="popups.sharedFiles.visible"
-      @close="onModalSharedFilesClose"
+      @close="onPopupSharedFilesClose"
     )
 
     encryption-settings(
       v-if="popups.encryptionSettings.visible"
-      @close="onModalEncryptionSettingsClose"
+      @close="onPopupEncryptionSettingsClose"
     )
 
     remove-contact(
@@ -273,11 +273,11 @@ export default {
       this.modals.blockUser.visible = true;
     },
 
-    onModalSharedFilesClose(): void {
+    onPopupSharedFilesClose(): void {
       this.popups.sharedFiles.visible = false;
     },
 
-    onModalEncryptionSettingsClose(): void {
+    onPopupEncryptionSettingsClose(): void {
       this.popups.encryptionSettings.visible = false;
     },
 
