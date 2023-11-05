@@ -9,16 +9,18 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.p-edit-profile-encryption-device-other
-  base-data-table(
-    @control="onDataTableControlClick"
-    :columns="table.columns"
-    :rows="table.rows"
-    :sizes="table.sizes"
-    :controls="table.controls"
-    :class="dataTableClass"
-    sortable
-  )
+base-data-table(
+  @control="onDataTableControlClick"
+  :columns="table.columns"
+  :rows="table.rows"
+  :sizes="table.sizes"
+  :controls="table.controls"
+  :class=`[
+    "p-edit-profile-encryption-device-other",
+    dataTableClass
+  ]`
+  sortable
+)
 </template>
 
 <!-- **********************************************************************
