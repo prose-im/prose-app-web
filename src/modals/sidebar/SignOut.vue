@@ -11,7 +11,7 @@
 <template lang="pug">
 base-modal(
   @close="$emit('close')"
-  @confirm="$emit('proceed', context)"
+  @confirm="$emit('proceed')"
   confirm-label="Sign Out"
   class="m-sign-out"
   size="large"
