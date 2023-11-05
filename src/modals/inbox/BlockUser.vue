@@ -13,6 +13,7 @@ base-modal(
   @close="$emit('close')"
   @confirm="$emit('proceed')"
   confirm-label="Block This User"
+  class="m-block-user"
   destructive
 )
   p.u-regular

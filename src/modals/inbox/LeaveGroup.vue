@@ -13,6 +13,7 @@ base-modal(
   @close="$emit('close')"
   @confirm="$emit('proceed')"
   :confirm-label="confirmLabel"
+  class="m-leave-group"
   destructive
 )
   p.u-regular

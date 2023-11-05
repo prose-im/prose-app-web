@@ -13,6 +13,7 @@ base-modal(
   @close="$emit('close')"
   @confirm="$emit('proceed')"
   confirm-label="Remove Contact"
+  class="m-remove-contact"
   destructive
 )
   p.u-regular

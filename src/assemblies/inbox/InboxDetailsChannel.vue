@@ -9,7 +9,9 @@
      ********************************************************************** -->
 
 <template lang="pug">
-layout-sidebar-details
+layout-sidebar-details(
+  class="a-inbox-details-channel"
+)
   template(
     v-slot:header
   )
