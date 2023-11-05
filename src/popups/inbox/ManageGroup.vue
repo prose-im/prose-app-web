@@ -88,6 +88,12 @@ export default {
           id: "members",
           title: "Members",
           icon: "person.fill.viewfinder"
+        },
+
+        {
+          id: "settings",
+          title: "Settings",
+          icon: "gearshape.fill"
         }
       ] as Array<NavigateSection>,
 
