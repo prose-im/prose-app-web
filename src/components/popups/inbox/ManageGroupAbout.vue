@@ -51,7 +51,6 @@ export default {
 
       fieldsets: [
         {
-          // TODO: fill this up
           id: "information",
           title: "Information",
 
