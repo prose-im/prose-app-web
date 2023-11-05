@@ -84,6 +84,12 @@ PROSE_CORE_VIEWS_PATH="../prose-core-views" npm run dev
 
 _👉 The Prose Web app reference design [can be found there](https://github.com/prose-im/prose-medley/blob/master/designs/app/prose-app-web.sketch)._
 
+## Updates
+
+As Prose is still being developed, update videos can be found on the Prose blog, month by month:
+
+- [Prose Development Update: November 2023](https://prose.org/blog/prose-development-update-november-2023/)
+
 ## License
 
 Licensing information can be found in the [LICENSE.md](./LICENSE.md) document.
