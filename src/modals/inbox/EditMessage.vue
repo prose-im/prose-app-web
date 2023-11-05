@@ -21,6 +21,7 @@ base-modal(
 
   form-field(
     v-model="editedText"
+    :rows="5"
     placeholder="Enter edited message…"
     class="m-edit-message__field"
     type="textarea"
@@ -28,7 +29,7 @@ base-modal(
     size="large"
     align="left"
     field-class="m-edit-message__field-textarea"
-    autofocus
+    autogrow
   )
 </template>
 
@@ -95,7 +96,7 @@ $c: ".m-edit-message";
 .m-edit-message {
   #{$c}__field {
     #{$c}__field-textarea {
-      min-height: 100px;
+      max-height: 320px;
     }
   }
 }

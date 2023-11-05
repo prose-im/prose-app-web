@@ -32,6 +32,7 @@ div(
     @contextmenu.stop
     :name="name"
     :value="value"
+    :rows="rows"
     :placeholder="placeholder"
     :disabled="disabled"
     :class=`[
@@ -41,7 +42,6 @@ div(
         [fieldClass]: fieldClass
       }
     ]`
-    rows="1"
     ref="field"
   )
 
@@ -135,6 +135,11 @@ export default {
     placeholder: {
       type: String,
       default: null
+    },
+
+    rows: {
+      type: Number,
+      default: 4
     },
 
     autogrow: {

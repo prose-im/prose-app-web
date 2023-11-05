@@ -68,6 +68,7 @@ layout-toolbar(
           @keystroke="onKeystroke"
           @submit="onSubmit"
           :disabled="isFormDisabled"
+          :rows="1"
           :placeholder="fieldComposePlaceholder"
           class="a-inbox-form__compose-field"
           type="textarea"
