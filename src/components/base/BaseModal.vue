@@ -34,6 +34,7 @@ base-popup(
     :confirm-label="confirmLabel"
     :cancel-label="closeLabel"
     :confirm-loading="confirmLoading"
+    :confirm-disabled="confirmDisabled"
     :destructive="destructive"
     class="c-base-modal__actions"
   )
@@ -63,6 +64,11 @@ export default {
       default: false
     },
 
+    confirmDisabled: {
+      type: Boolean,
+      default: false
+    },
+
     size: {
       type: String,
       default: "medium",
@@ -84,7 +90,7 @@ export default {
     // --> EVENT LISTENERS <--
 
     onConfirm(): void {
-      if (this.confirmLoading !== true) {
+      if (this.confirmLoading !== true && this.confirmDisabled !== true) {
         this.$emit("confirm");
       }
     },
