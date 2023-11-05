@@ -47,8 +47,14 @@ layout-popup-navigate(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { shallowRef } from "vue";
+
 // PROJECT: COMPONENTS
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
+import ManageGroupAbout from "@/components/popups/inbox/ManageGroupAbout.vue";
+import ManageGroupMembers from "@/components/popups/inbox/ManageGroupMembers.vue";
+import ManageGroupSettings from "@/components/popups/inbox/ManageGroupSettings.vue";
 
 // CONSTANTS
 const SECTION_INITIAL = "about";
@@ -98,7 +104,25 @@ export default {
       ] as Array<NavigateSection>,
 
       contentSections: {
-        /* TODO */
+        about: {
+          component: shallowRef(ManageGroupAbout),
+
+          properties: {
+            type: this.type
+          }
+        },
+
+        members: {
+          component: shallowRef(ManageGroupMembers)
+        },
+
+        settings: {
+          component: shallowRef(ManageGroupSettings),
+
+          properties: {
+            type: this.type
+          }
+        }
       }
     };
   },
