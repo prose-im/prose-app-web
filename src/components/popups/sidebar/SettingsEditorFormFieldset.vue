@@ -49,6 +49,18 @@
             align="left"
           )
 
+          form-field(
+            v-else-if="field.type === 'textarea'"
+            v-model="field.data.value.inner"
+            @change="field.data.value.change"
+            :name="field.id"
+            :placeholder="field.data.placeholder"
+            :disabled="field.data.disabled"
+            type="textarea"
+            size="mid-medium"
+            align="left"
+          )
+
           form-select(
             v-else-if="field.type === 'select'"
             v-model="field.data.value.inner"
@@ -99,8 +111,9 @@
 
           base-button(
             v-else-if="field.type === 'button'",
+            :tint="field.data.tint || 'light'"
+            :reverse="field.data.reverse"
             :disabled="field.data.disabled"
-            tint="light"
             size="mid-medium"
           )
             | {{ field.data.text }}
@@ -210,6 +223,8 @@ import {
 export enum FieldsetFieldType {
   // Input type.
   Input = "input",
+  // Textarea type.
+  Textarea = "textarea",
   // Select type.
   Select = "select",
   // Checkbox type.
@@ -261,6 +276,8 @@ type FieldsetFieldDataInputValue = {
   inner: string;
   change?: (_: string | number) => void;
 };
+
+export type FieldsetFieldDataTextarea = FieldsetFieldDataInput;
 
 export type FieldsetFieldDataSelect = {
   value: FieldsetFieldDataSelectValue;
@@ -317,6 +334,8 @@ type FieldsetFieldDataStreamValue = {
 
 export type FieldsetFieldDataButton = {
   text: string;
+  tint?: string;
+  reverse?: boolean;
   disabled?: boolean;
 };
 
@@ -345,6 +364,7 @@ interface FieldsetField {
   label?: string;
   data?:
     | FieldsetFieldDataInput
+    | FieldsetFieldDataTextarea
     | FieldsetFieldDataSelect
     | FieldsetFieldDataCheckbox
     | FieldsetFieldDataToggle
