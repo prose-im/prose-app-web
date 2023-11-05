@@ -520,6 +520,7 @@ $form-compose-send-button-size: (
     position: absolute;
     inset-block-end: 100%;
     inset-inline: 0;
+    z-index: 0;
   }
 }
 </style>
