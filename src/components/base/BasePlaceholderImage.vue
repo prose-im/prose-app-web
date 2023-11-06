@@ -45,7 +45,7 @@ export default {
       required: true,
 
       validator(x: string) {
-        return ["empty", "goodbye", "welcome"].includes(x);
+        return ["conversation-empty", "goodbye", "welcome"].includes(x);
       }
     },
 
@@ -81,7 +81,7 @@ $illustration-image-scale-factor: 3;
 $illustration-margin-sides: 40px;
 
 $illustration-images: (
-  "empty": 550px,
+  "conversation-empty": 550px,
   "goodbye": 437px,
   "welcome": 477px
 );

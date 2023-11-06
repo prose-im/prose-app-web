@@ -30,7 +30,7 @@
     class="c-inbox-messaging__placeholder"
   )
     base-placeholder-image(
-      illustration="empty"
+      illustration="conversation-empty"
       title="Don't be shy!"
       description="It's pretty quiet around here, send your first message to get the conversation rolling."
     )
