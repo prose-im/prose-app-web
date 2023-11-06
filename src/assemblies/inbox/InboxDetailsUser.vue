@@ -170,7 +170,10 @@ export default {
 
   computed: {
     actions(): Array<DetailsAction> {
-      return [
+      const actions = [];
+
+      // Append common actions
+      actions.push(
         {
           id: "files",
           title: "View shared files",
@@ -183,22 +186,37 @@ export default {
           title: "Encryption settings",
           click: this.onActionEncryptionSettingsClick,
           navigate: true
-        },
-
-        {
-          id: "remove",
-          title: "Remove from contacts",
-          click: this.onActionRemoveContactClick,
-          color: "red"
-        },
-
-        {
-          id: "block",
-          title: "Block user",
-          click: this.onActionBlockUserClick,
-          color: "red"
         }
-      ];
+      );
+
+      // Non-local user? Add ability to remove contact or block
+      if (this.jid.domain !== this.selfJID.domain) {
+        actions.push(
+          {
+            id: "remove",
+            title: "Remove from contacts",
+            click: this.onActionRemoveContactClick,
+            color: "red"
+          },
+
+          {
+            id: "block",
+            title: "Block user",
+            click: this.onActionBlockUserClick,
+            color: "red"
+          }
+        );
+      }
+
+      return actions;
+    },
+
+    selfJID(): JID {
+      return this.account.getLocalJID();
+    },
+
+    account(): typeof Store.$account {
+      return Store.$account;
     },
 
     layout(): typeof Store.$layout {
