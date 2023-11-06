@@ -118,7 +118,7 @@ teleport(
 
           base-placeholder-image(
             v-else-if="error"
-            illustration="welcome"
+            illustration="file-not-found"
             title="Could not load file!"
             description="This file might have been removed. Could you maybe try again?"
           )

@@ -14,7 +14,7 @@ base-overlay(
 )
   base-placeholder-image(
     :title="title"
-    illustration="welcome"
+    illustration="file-upload"
     description="Drop file here. You can send multiple files at once."
     class="c-inbox-dropzone__placeholder"
     auto-width
