@@ -62,11 +62,6 @@ export default {
           {
             id: "jid",
             label: "Address"
-          },
-
-          {
-            id: "role",
-            label: "Role"
           }
         ] as Array<DataTableColumn>,
 
@@ -78,8 +73,7 @@ export default {
 
             columns: {
               name: "Member #1",
-              jid: "(no address)",
-              role: "(no role)"
+              jid: "(no address)"
             }
           },
 
@@ -88,8 +82,7 @@ export default {
 
             columns: {
               name: "Member #2",
-              jid: "(no address)",
-              role: "(no role)"
+              jid: "(no address)"
             }
           },
 
@@ -98,8 +91,7 @@ export default {
 
             columns: {
               name: "Member #3",
-              jid: "(no address)",
-              role: "(no role)"
+              jid: "(no address)"
             }
           },
 
@@ -108,13 +100,12 @@ export default {
 
             columns: {
               name: "Member #4",
-              jid: "(no address)",
-              role: "(no role)"
+              jid: "(no address)"
             }
           }
         ] as Array<DataTableRow>,
 
-        sizes: { name: "35%", jid: "45%", role: "20%" } as DataTableSizes,
+        sizes: { name: "40%", jid: "60%" } as DataTableSizes,
 
         controls: [
           {
