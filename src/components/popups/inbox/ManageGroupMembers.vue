@@ -30,10 +30,7 @@ import upperFirst from "lodash.upperfirst";
 // PROJECT: COMPONENTS
 import {
   default as FormSettingsEditor,
-  Fieldset as FormFieldset,
-  FieldsetFieldType as FormFieldsetFieldType,
-  FieldsetFieldDataInput as FormFieldsetFieldDataInput,
-  FieldsetFieldDataTextarea as FormFieldsetFieldDataTextarea
+  Fieldset as FormFieldset
 } from "@/components/form/FormSettingsEditor.vue";
 import ManageGroupMembersTable from "@/components/popups/inbox/ManageGroupMembersTable.vue";
 
