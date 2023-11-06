@@ -67,47 +67,49 @@ export default {
     makeFieldsets(): Array<FormFieldset> {
       const fieldsets = [];
 
-      // Append identity
-      fieldsets.push({
-        id: "identity",
-        title: "Identity",
-
-        fields: [
-          {
-            id: "name",
-            type: FormFieldsetFieldType.Input,
-            label: `${upperFirst(this.type)} name:`,
-
-            data: {
-              value: {
-                inner: ""
-              }, // TODO: bind form model
-
-              placeholder: `Enter ${this.type} name…`,
-              disabled: true
-            } as FormFieldsetFieldDataInput
-          }
-        ],
-
-        notes: [
-          `The ${this.type} name is what users see in the app sidebar. It must be unique across your team.`
-        ]
-      });
-
-      // Append maintenance fields? (only for public channels)
+      // Append channel-specific fields?
       if (this.type === "channel") {
+        // Append identity
+        fieldsets.push({
+          id: "identity",
+          title: "Identity",
+
+          fields: [
+            {
+              id: "name",
+              type: FormFieldsetFieldType.Input,
+              label: `${upperFirst(this.type)} name:`,
+
+              data: {
+                value: {
+                  inner: ""
+                }, // TODO: bind form model
+
+                placeholder: `Enter ${this.type} name…`,
+                disabled: true
+              } as FormFieldsetFieldDataInput
+            }
+          ],
+
+          notes: [
+            `The ${this.type} name is what users see in the app sidebar. It must be unique across your team.`
+          ]
+        });
+
+        // Append maintenance fields
         fieldsets.push({
           id: "maintenance",
           title: "Housekeeping",
 
           fields: [
+            // TODO: only if channel is currently public
             {
               id: "convert",
               type: FormFieldsetFieldType.Button,
               label: "Convert:",
 
               data: {
-                text: "Convert to private group",
+                text: "Convert to private channel",
                 disabled: true
               } as FormFieldsetFieldDataButton
             },
