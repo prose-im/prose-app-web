@@ -25,11 +25,11 @@ layout-popup-navigate(
   template(
     v-slot:content
   )
-    component(
-      v-if="contentSections[section]"
-      v-bind="contentSections[section].properties"
-      :is="contentSections[section].component"
-    )
+    ul.p-shared-files__mosaic
+      li.p-shared-files__file(
+        v-for="file in sectionFiles"
+      )
+        a.p-shared-files__thumbnail
 
   template(
     v-slot:actions
@@ -91,10 +91,16 @@ export default {
         }
       ] as Array<NavigateSection>,
 
-      contentSections: {
-        /* TODO */
-      }
+      // TODO: dummy files
+      files: [{}, {}, {}, {}, {}, {}, {}, {}, {}]
     };
+  },
+
+  computed: {
+    sectionFiles(): Array<object> {
+      // TODO: filter files based on section
+      return this.files;
+    }
   },
 
   methods: {
@@ -112,3 +118,39 @@ export default {
   }
 };
 </script>
+
+<!-- **********************************************************************
+     STYLE
+     ********************************************************************** -->
+
+<style lang="scss">
+$c: ".p-shared-files";
+
+.p-shared-files {
+  #{$c}__mosaic {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 14px;
+
+    #{$c}__file {
+      #{$c}__thumbnail {
+        background-color: rgb(var(--color-background-primary));
+        border: 1px solid rgb(var(--color-border-primary));
+        aspect-ratio: 1;
+        width: 100%;
+        display: block;
+        border-radius: 6px;
+        transition: border-color 100ms linear;
+
+        &:hover {
+          border-color: darken-var(var(--color-border-primary), 5%);
+        }
+
+        &:active {
+          border-color: darken-var(var(--color-border-primary), 8%);
+        }
+      }
+    }
+  }
+}
+</style>
