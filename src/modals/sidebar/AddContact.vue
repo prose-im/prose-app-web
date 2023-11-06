@@ -13,7 +13,7 @@ base-modal(
   @close="$emit('close')"
   @confirm="onConfirm"
   :confirm-loading="loading"
-  confirm-label="Send Request"
+  :confirm-label="confirmLabel"
   class="m-add-contact"
   size="large"
 )
@@ -190,6 +190,10 @@ export default {
       return this.isVerified === true
         ? "checkmark.circle.fill"
         : "questionmark.circle.fill";
+    },
+
+    confirmLabel(): string {
+      return this.isMember === true ? "Send Request" : "Create Channel";
     }
   },
 

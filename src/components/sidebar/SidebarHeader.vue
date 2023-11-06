@@ -70,8 +70,13 @@ import {
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
 
+// PROJECT: MODALS
+import { Mode as AddContactMode } from "@/modals/sidebar/AddContact.vue";
+
 export default {
   name: "SidebarHeader",
+
+  emits: ["addContact"],
 
   data() {
     return {
@@ -87,13 +92,13 @@ export default {
         {
           type: PopoverItemType.Button,
           label: "Invite people",
-          disabled: true
+          click: this.onIdentityPopoverInvitePeopleClick
         },
 
         {
           type: PopoverItemType.Button,
-          label: "Create a group",
-          disabled: true
+          label: "Create a channel",
+          click: this.onIdentityPopoverCreateChannelClick
         },
 
         {
@@ -121,6 +126,16 @@ export default {
     onIdentityPopoverClickAway(): void {
       // Close popover
       this.isIdentityPopoverVisible = false;
+    },
+
+    onIdentityPopoverInvitePeopleClick(): void {
+      // Request to show add contact modal (in member mode)
+      this.$emit("addContact", AddContactMode.Member);
+    },
+
+    onIdentityPopoverCreateChannelClick(): void {
+      // Request to show add contact modal (in channel mode)
+      this.$emit("addContact", AddContactMode.Channel);
     }
   }
 };

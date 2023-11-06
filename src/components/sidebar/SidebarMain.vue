@@ -106,14 +106,6 @@
       @click="onChannelsAddClick"
       title="Add channels"
     )
-
-  add-contact(
-    v-if="modals.addContact.visible"
-    @add="onModalAddContactAdd"
-    @close="onModalAddContactClose"
-    :mode="modals.addContact.mode"
-    :loading="modals.addContact.loading"
-  )
 </template>
 
 <!-- **********************************************************************
@@ -136,20 +128,17 @@ import { useEvents } from "@/composables/events";
 import Store from "@/store";
 import { RosterList } from "@/store/tables/roster";
 
+// PROJECT: BROKER
 import Broker from "@/broker";
 
 // PROJECT: COMPONENTS
-import BaseAlert from "@/components/base/BaseAlert.vue";
 import SidebarMainItemAdd from "@/components/sidebar/SidebarMainItemAdd.vue";
 import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
 import SidebarMainItemSection from "@/components/sidebar/SidebarMainItemSection.vue";
 import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
 
 // PROJECT: MODALS
-import {
-  default as AddContact,
-  Mode as AddContactMode
-} from "@/modals/sidebar/AddContact.vue";
+import { Mode as AddContactMode } from "@/modals/sidebar/AddContact.vue";
 
 // INTERFACES
 interface RosterDisplayItem {
@@ -164,8 +153,7 @@ export default {
     SidebarMainItemUser,
     SidebarMainItemChannel,
     SidebarMainItemSection,
-    SidebarMainItemAdd,
-    AddContact
+    SidebarMainItemAdd
   },
 
   props: {
@@ -174,6 +162,8 @@ export default {
       default: null
     }
   },
+
+  emits: ["addContact"],
 
   data() {
     return {
@@ -187,15 +177,7 @@ export default {
       selectedRoomID: null as string | null,
 
       isRosterSyncStale: true,
-      isRosterLoading: false,
-
-      modals: {
-        addContact: {
-          visible: false,
-          loading: false,
-          mode: null as AddContactMode | null
-        }
-      }
+      isRosterLoading: false
     };
   },
 
@@ -306,21 +288,6 @@ export default {
       });
     },
 
-    async addContactGroup(jidString: string): Promise<void> {
-      const jids = jidString.split(",").map(value => new JID(value.trim()));
-
-      // Add contact
-      await Broker.$muc.createGroup(jids);
-
-      BaseAlert.success("Group added", "Group has been added");
-    },
-
-    async addContactChannel(jidString: string): Promise<void> {
-      await Broker.$muc.createPublicChannel(jidString);
-
-      BaseAlert.success("Channel added", "Channel has been added");
-    },
-
     // --> EVENT LISTENERS <--
 
     onSpotlightToggle(visible: boolean): void {
@@ -332,13 +299,13 @@ export default {
     },
 
     onDirectMessageAddClick(): void {
-      this.modals.addContact.mode = AddContactMode.Member;
-      this.modals.addContact.visible = true;
+      // Request to show add contact modal (in member mode)
+      this.$emit("addContact", AddContactMode.Member);
     },
 
     onChannelsAddClick(): void {
-      this.modals.addContact.mode = AddContactMode.Channel;
-      this.modals.addContact.visible = true;
+      // Request to show add contact modal (in channel mode)
+      this.$emit("addContact", AddContactMode.Channel);
     },
 
     onGroupsToggle(visible: boolean): void {
@@ -374,42 +341,6 @@ export default {
 
       // Forcibly reload roster
       this.syncRosterEager(true);
-    },
-
-    async onModalAddContactAdd(jidString: string): Promise<void> {
-      if (this.modals.addContact.loading !== true) {
-        this.modals.addContact.loading = true;
-
-        try {
-          switch (this.modals.addContact.mode) {
-            case AddContactMode.Member:
-              await this.addContactGroup(jidString);
-
-              break;
-
-            case AddContactMode.Channel:
-              await this.addContactChannel(jidString);
-
-              break;
-          }
-
-          this.modals.addContact.visible = false;
-        } catch (error) {
-          BaseAlert.error(
-            "Contact not added",
-            `${jidString} could not be added`
-          );
-
-          this.$log.error("Failed adding contact", error);
-        } finally {
-          this.modals.addContact.loading = false;
-        }
-      }
-    },
-
-    onModalAddContactClose(): void {
-      this.modals.addContact.visible = false;
-      this.modals.addContact.mode = null;
     }
   }
 };

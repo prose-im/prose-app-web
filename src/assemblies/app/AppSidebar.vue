@@ -11,6 +11,7 @@
 <template lang="pug">
 .a-app-sidebar
   sidebar-header(
+    @add-contact="onAddContact"
     :class=`[
       "a-app-sidebar__header",
       {
@@ -20,6 +21,7 @@
   )
 
   sidebar-main(
+    @add-contact="onAddContact"
     @scroll="onMainScroll"
     class="a-app-sidebar__main"
     disclosure-list-class="a-app-sidebar__main-list"
@@ -29,6 +31,14 @@
     :jid="selfJID"
     class="a-app-sidebar__context"
     avatar-presence-class="a-app-sidebar__context-presence"
+  )
+
+  add-contact(
+    v-if="modals.addContact.visible"
+    @add="onModalAddContactAdd"
+    @close="onModalAddContactClose"
+    :mode="modals.addContact.mode"
+    :loading="modals.addContact.loading"
   )
 </template>
 
@@ -41,12 +51,22 @@
 import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import SidebarHeader from "@/components/sidebar/SidebarHeader.vue";
 import SidebarMain from "@/components/sidebar/SidebarMain.vue";
 import SidebarContext from "@/components/sidebar/SidebarContext.vue";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 // PROJECT: STORES
 import Store from "@/store";
+
+// PROJECT: MODALS
+import {
+  default as AddContact,
+  Mode as AddContactMode
+} from "@/modals/sidebar/AddContact.vue";
 
 // CONSTANTS
 const MAIN_SCROLLED_THRESHOLD_VERTICAL = 16;
@@ -54,13 +74,21 @@ const MAIN_SCROLLED_THRESHOLD_VERTICAL = 16;
 export default {
   name: "AppSidebar",
 
-  components: { SidebarHeader, SidebarMain, SidebarContext },
+  components: { SidebarHeader, SidebarMain, SidebarContext, AddContact },
 
   data() {
     return {
       // --> STATES <--
 
-      isHeaderFloating: false
+      isHeaderFloating: false,
+
+      modals: {
+        addContact: {
+          visible: false,
+          loading: false,
+          mode: null as AddContactMode | null
+        }
+      }
     };
   },
 
@@ -75,7 +103,29 @@ export default {
   },
 
   methods: {
+    // --> HELPERS <--
+
+    async addContactGroup(jidString: string): Promise<void> {
+      const jids = jidString.split(",").map(value => new JID(value.trim()));
+
+      // Add contact
+      await Broker.$muc.createGroup(jids);
+
+      BaseAlert.success("Group added", "Group has been added");
+    },
+
+    async addContactChannel(jidString: string): Promise<void> {
+      await Broker.$muc.createPublicChannel(jidString);
+
+      BaseAlert.success("Channel added", "Channel has been added");
+    },
+
     // --> EVENT LISTENERS <--
+
+    onAddContact(mode: AddContactMode): void {
+      this.modals.addContact.mode = mode;
+      this.modals.addContact.visible = true;
+    },
 
     onMainScroll(event: Event): void {
       if (event.target) {
@@ -88,6 +138,42 @@ export default {
           this.isHeaderFloating = forceFloating;
         }
       }
+    },
+
+    async onModalAddContactAdd(jidString: string): Promise<void> {
+      if (this.modals.addContact.loading !== true) {
+        this.modals.addContact.loading = true;
+
+        try {
+          switch (this.modals.addContact.mode) {
+            case AddContactMode.Member:
+              await this.addContactGroup(jidString);
+
+              break;
+
+            case AddContactMode.Channel:
+              await this.addContactChannel(jidString);
+
+              break;
+          }
+
+          this.modals.addContact.visible = false;
+        } catch (error) {
+          BaseAlert.error(
+            "Contact not added",
+            `${jidString} could not be added`
+          );
+
+          this.$log.error("Failed adding contact", error);
+        } finally {
+          this.modals.addContact.loading = false;
+        }
+      }
+    },
+
+    onModalAddContactClose(): void {
+      this.modals.addContact.visible = false;
+      this.modals.addContact.mode = null;
     }
   }
 };
