@@ -45,7 +45,16 @@ export default {
       required: true,
 
       validator(x: string) {
-        return ["conversation-empty", "goodbye", "welcome"].includes(x);
+        return [
+          "contact-empty", // TODO: unused, bind somewhere
+          "contact-not-found", // TODO: unused, bind somewhere
+          "conversation-empty",
+          "file-not-found",
+          "file-upload",
+          "invitations-empty", // TODO: unused, bind somewhere
+          "goodbye",
+          "welcome"
+        ].includes(x);
       }
     },
 
@@ -81,7 +90,12 @@ $illustration-image-scale-factor: 3;
 $illustration-margin-sides: 40px;
 
 $illustration-images: (
+  "contact-empty": 543px,
+  "contact-not-found": 526px,
   "conversation-empty": 550px,
+  "file-not-found": 499px,
+  "file-upload": 506px,
+  "invitations-empty": 590px,
   "goodbye": 437px,
   "welcome": 477px
 );
