@@ -9,7 +9,14 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-base-overlay
+div(
+  :class=`[
+    "c-base-overlay",
+    {
+      "c-base-overlay--transparent": transparent
+    }
+  ]`
+)
   slot
 </template>
 
@@ -19,7 +26,14 @@
 
 <script lang="ts">
 export default {
-  name: "BaseOverlay"
+  name: "BaseOverlay",
+
+  props: {
+    transparent: {
+      type: Boolean,
+      default: false
+    }
+  }
 };
 </script>
 
@@ -36,5 +50,12 @@ $c: ".c-base-overlay";
   display: flex;
   align-items: center;
   justify-content: center;
+
+  // --> BOOLEANS <--
+
+  &--transparent {
+    background-color: transparent;
+    backdrop-filter: none;
+  }
 }
 </style>
