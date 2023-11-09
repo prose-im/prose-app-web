@@ -11,6 +11,7 @@
 <template lang="pug">
 layout-popup-navigate(
   :content-section="section"
+  content-class="p-shared-files__content"
   class="p-shared-files"
 )
   template(
@@ -25,11 +26,24 @@ layout-popup-navigate(
   template(
     v-slot:content
   )
-    ul.p-shared-files__mosaic
+    ul.p-shared-files__mosaic(
+      v-if="sectionFiles.length > 0"
+    )
       li.p-shared-files__file(
         v-for="file in sectionFiles"
       )
         a.p-shared-files__thumbnail
+
+    base-overlay(
+      v-else
+      class="p-shared-files__overlay"
+      transparent
+    )
+      base-placeholder-image(
+        :title="emptyTitle"
+        illustration="file-not-found"
+        description="There are no files of this type just yet"
+      )
 
   template(
     v-slot:actions
@@ -92,7 +106,7 @@ export default {
       ] as Array<NavigateSection>,
 
       // TODO: dummy files
-      files: [{}, {}, {}, {}, {}, {}, {}, {}, {}]
+      files: Array(40).fill({})
     };
   },
 
@@ -100,6 +114,13 @@ export default {
     sectionFiles(): Array<object> {
       // TODO: filter files based on section
       return this.files;
+    },
+
+    emptyTitle(): string {
+      const sectionLabel =
+        this.section === "others" ? "other files" : this.section;
+
+      return `No ${sectionLabel} shared`;
     }
   },
 
@@ -127,6 +148,15 @@ export default {
 $c: ".p-shared-files";
 
 .p-shared-files {
+  #{$c}__content {
+    display: flex;
+    flex-direction: column;
+
+    #{$c}__overlay {
+      flex: 1;
+    }
+  }
+
   #{$c}__mosaic {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
