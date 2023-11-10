@@ -11,7 +11,12 @@
 // NPM
 import mitt from "mitt";
 import { defineStore } from "pinia";
-import { Room as CoreRoom, RoomID, RoomType } from "@prose-im/prose-sdk-js";
+import {
+  Room as CoreRoom,
+  RoomID,
+  SidebarSection,
+  SidebarItem
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -21,10 +26,13 @@ import Broker from "@/broker";
  * ************************************************************************* */
 
 interface Room {
-  directMessages: CoreRoom[];
-  channels: CoreRoom[];
-  genericRooms: CoreRoom[];
-  roomsMap: Map<RoomID, CoreRoom>;
+  items: {
+    favorites: SidebarItem[];
+    directMessages: SidebarItem[];
+    channels: SidebarItem[];
+  };
+
+  byId: Map<RoomID, CoreRoom>;
 }
 
 /**************************************************************************
@@ -50,41 +58,38 @@ const $room = defineStore("room", {
 
   state: (): Room => {
     return {
-      directMessages: [],
-      channels: [],
-      genericRooms: [],
-      roomsMap: new Map()
+      items: {
+        favorites: [],
+        directMessages: [],
+        channels: []
+      },
+
+      byId: new Map()
     };
   },
 
   getters: {
-    getDirectMessages: function () {
-      return (): CoreRoom[] => {
-        return this.directMessages;
+    getItemFavorites: function () {
+      return (): SidebarItem[] => {
+        return this.items.favorites;
       };
     },
 
-    getChannels: function () {
-      return (): CoreRoom[] => {
-        return this.channels;
+    getItemDirectMessages: function () {
+      return (): SidebarItem[] => {
+        return this.items.directMessages;
       };
     },
 
-    getGenericRooms: function () {
-      return (): CoreRoom[] => {
-        return this.genericRooms;
+    getItemChannels: function () {
+      return (): SidebarItem[] => {
+        return this.items.channels;
       };
     },
 
-    getRoomByID: function () {
+    getRoom: function () {
       return (roomID: RoomID): CoreRoom | undefined => {
-        return this.roomsMap.get(roomID);
-      };
-    },
-
-    getAvailableRoomIDs: function () {
-      return (): RoomID[] => {
-        return Array.from(this.roomsMap.keys());
+        return this.byId.get(roomID);
       };
     }
   },
@@ -101,107 +106,56 @@ const $room = defineStore("room", {
         LOCAL_STATES.loaded = true;
 
         // Initialize entries
-        const directMessages: CoreRoom[] = [],
-          channels: CoreRoom[] = [],
-          genericRooms: CoreRoom[] = [],
-          roomsMap = new Map<RoomID, CoreRoom>();
+        const favorites: SidebarItem[] = [],
+          directMessages: SidebarItem[] = [],
+          channels: SidebarItem[] = [],
+          roomsById = new Map<RoomID, CoreRoom>();
 
         // Load rooms
-        const rooms = Broker.$room.connectedRooms();
+        const sidebarItems = Broker.$room.sidebarItems();
 
-        rooms.forEach(room => {
-          switch (room.type) {
-            case RoomType.DirectMessage: {
-              directMessages.push(room);
-
-              break;
-            }
-
-            case RoomType.Group: {
-              directMessages.push(room);
+        sidebarItems.forEach(item => {
+          switch (item.section) {
+            case SidebarSection.Favorites: {
+              favorites.push(item);
 
               break;
             }
 
-            case RoomType.PrivateChannel: {
-              channels.push(room);
+            case SidebarSection.DirectMessage: {
+              directMessages.push(item);
 
               break;
             }
 
-            case RoomType.PublicChannel: {
-              channels.push(room);
-
-              break;
-            }
-
-            case RoomType.Generic: {
-              genericRooms.push(room);
+            case SidebarSection.Channel: {
+              channels.push(item);
 
               break;
             }
           }
 
-          roomsMap.set(room.id, room);
+          roomsById.set(item.room.id, item.room);
         });
 
         // Append all rooms
-        const compareRooms = (left: CoreRoom, right: CoreRoom): number => {
+        const compareRooms = (
+          left: SidebarItem,
+          right: SidebarItem
+        ): number => {
           return left.name.localeCompare(right.name);
         };
 
         this.$patch(state => {
-          state.directMessages = directMessages.sort(compareRooms);
-          state.channels = channels.sort(compareRooms);
-          state.genericRooms = genericRooms.sort(compareRooms);
-          state.roomsMap = roomsMap;
+          // Store items
+          state.items.favorites = favorites.sort(compareRooms);
+          state.items.directMessages = directMessages.sort(compareRooms);
+          state.items.channels = channels.sort(compareRooms);
+
+          // Store rooms map
+          state.byId = roomsById;
         });
       }
-    },
-
-    insertRoom(room: CoreRoom): void {
-      const compareRooms = (left: CoreRoom, right: CoreRoom): number => {
-        return left.name.localeCompare(right.name);
-      };
-
-      this.$patch(state => {
-        switch (room.type) {
-          case RoomType.DirectMessage: {
-            state.directMessages.push(room);
-            state.directMessages.sort(compareRooms);
-
-            break;
-          }
-
-          case RoomType.Group: {
-            state.directMessages.push(room);
-            state.directMessages.sort(compareRooms);
-
-            break;
-          }
-
-          case RoomType.PrivateChannel: {
-            state.channels.push(room);
-            state.channels.sort(compareRooms);
-
-            break;
-          }
-
-          case RoomType.PublicChannel: {
-            state.channels.push(room);
-            state.channels.sort(compareRooms);
-
-            break;
-          }
-
-          case RoomType.Generic: {
-            state.genericRooms.push(room);
-            state.genericRooms.sort(compareRooms);
-
-            break;
-          }
-        }
-      });
     },
 
     markRoomsChanged(): void {

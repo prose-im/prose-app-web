@@ -63,7 +63,7 @@ class BrokerDelegate implements ProseClientDelegate {
     Store.$inbox.setComposing(room.id, composingUsers);
   }
 
-  roomsChanged(): void {
+  sidebarChanged(): void {
     Store.$room.markRoomsChanged();
     Store.$room.load();
   }
