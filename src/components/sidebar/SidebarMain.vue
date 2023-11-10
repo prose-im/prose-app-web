@@ -49,8 +49,9 @@
   )
     sidebar-main-item-user(
       v-for="item in itemFavorites"
-      :jid="item.room.jid"
-      :name="item.room.name"
+      :jid="item.room.members[0]?.jid"
+      :name="item.name"
+      :unread="item.unreadCount"
       :active="selectedJID && item.room.jid.equals(selectedJID)"
     )
 
@@ -67,14 +68,16 @@
       sidebar-main-item-user(
         v-if="item.room.type === roomType.DirectMessage"
         :jid="item.room.members[0]?.jid"
-        :name="item.room.name"
+        :name="item.name"
+        :unread="item.unreadCount"
         :active="item.room.id === selectedRoomID"
       )
 
       sidebar-main-item-channel(
         v-else-if="item.room.type === roomType.Group"
         :id="item.room.id"
-        :name="item.room.name"
+        :name="item.name"
+        :unread="item.unreadCount"
         :active="item.room.id === selectedRoomID"
         type="group"
       )
@@ -94,7 +97,8 @@
     sidebar-main-item-channel(
       v-for="item in itemChannels"
       :id="item.room.id"
-      :name="item.room.name"
+      :name="item.name"
+      :unread="item.unreadCount"
       :active="item.room.id === selectedRoomID"
       type="channel"
     )

@@ -12,6 +12,7 @@
 list-button(
   @click="onButtonClick"
   :active="active"
+  :important="unread > 0"
   :disabled="disabled"
   :class=`[
     "c-sidebar-main-item-channel",
@@ -34,6 +35,15 @@ list-button(
     v-slot:default
   )
     | {{ name }}
+
+  template(
+    v-if="unread > 0"
+    v-slot:details
+  )
+    base-count(
+      :count="unread"
+      :color="countColor"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -64,6 +74,11 @@ export default {
       }
     },
 
+    unread: {
+      type: Number,
+      default: 0
+    },
+
     active: {
       type: Boolean,
       default: false
@@ -90,6 +105,10 @@ export default {
           return null;
         }
       }
+    },
+
+    countColor(): string {
+      return this.active === true ? "white" : "blue";
     }
   },
 

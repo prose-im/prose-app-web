@@ -12,7 +12,7 @@
 list-button(
   @click="onButtonClick"
   :active="active"
-  :important="unreadCount > 0"
+  :important="unread > 0"
   class="c-sidebar-main-item-user"
 )
   template(
@@ -59,11 +59,11 @@ list-button(
           | {{ statusActivity.status.icon }}
 
   template(
-    v-if="unreadCount > 0"
+    v-if="unread > 0"
     v-slot:details
   )
     base-count(
-      :count="unreadCount"
+      :count="unread"
       :color="countColor"
     )
 </template>
@@ -94,6 +94,11 @@ export default {
       required: true
     },
 
+    unread: {
+      type: Number,
+      default: 0
+    },
+
     active: {
       type: Boolean,
       default: false
@@ -103,11 +108,6 @@ export default {
   computed: {
     countColor(): string {
       return this.active === true ? "white" : "blue";
-    },
-
-    unreadCount(): number {
-      // TODO: return a non-zero unread count if there are unread messages
-      return 0;
     },
 
     statusActivity(): ReturnType<typeof Store.$activity.getActivity> {

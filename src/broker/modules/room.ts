@@ -31,8 +31,8 @@ class BrokerModuleRoom extends BrokerModule {
     return (await this._client.client?.loadPublicChannels()) || [];
   }
 
-  async createGroup(participants: Array<JID>): Promise<void> {
-    await this._client.client?.createGroup(
+  async startConversation(participants: Array<JID>): Promise<void> {
+    await this._client.client?.startConversation(
       participants.map(jid => jid.toString())
     );
   }
