@@ -117,6 +117,7 @@ export default {
     },
 
     async addContactChannel(jidString: string): Promise<void> {
+      // TODO: also support creating a private channel w/ createPrivateChannel?
       await Broker.$room.createPublicChannel(jidString);
 
       BaseAlert.success("Channel added", "Channel has been added");
