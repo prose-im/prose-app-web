@@ -114,7 +114,7 @@ $c: ".v-start-login";
 
   #{$c}__box {
     background: rgba(var(--color-white), 0.8);
-    border: 1px solid rgba(var(--color-base-purple-light), 0.325);
+    border-block: 1px solid rgba(var(--color-base-purple-light), 0.325);
     backdrop-filter: blur(20px);
     display: flex;
     align-items: center;
