@@ -11,7 +11,7 @@
 // NPM
 import mitt from "mitt";
 import { defineStore } from "pinia";
-import { Room, RoomID, RoomType } from "@prose-im/prose-sdk-js";
+import { Room as CoreRoom, RoomID, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -20,11 +20,11 @@ import Broker from "@/broker";
  * INTERFACES
  * ************************************************************************* */
 
-interface MUC {
-  directMessages: Room[];
-  channels: Room[];
-  genericRooms: Room[];
-  roomsMap: Map<RoomID, Room>;
+interface Room {
+  directMessages: CoreRoom[];
+  channels: CoreRoom[];
+  genericRooms: CoreRoom[];
+  roomsMap: Map<RoomID, CoreRoom>;
 }
 
 /**************************************************************************
@@ -45,10 +45,10 @@ const LOCAL_STATES = {
  * TABLE
  * ************************************************************************* */
 
-const $muc = defineStore("muc", {
+const $room = defineStore("room", {
   persist: false,
 
-  state: (): MUC => {
+  state: (): Room => {
     return {
       directMessages: [],
       channels: [],
@@ -59,25 +59,25 @@ const $muc = defineStore("muc", {
 
   getters: {
     getDirectMessages: function () {
-      return (): Room[] => {
+      return (): CoreRoom[] => {
         return this.directMessages;
       };
     },
 
     getChannels: function () {
-      return (): Room[] => {
+      return (): CoreRoom[] => {
         return this.channels;
       };
     },
 
     getGenericRooms: function () {
-      return (): Room[] => {
+      return (): CoreRoom[] => {
         return this.genericRooms;
       };
     },
 
     getRoomByID: function () {
-      return (roomID: RoomID): Room | undefined => {
+      return (roomID: RoomID): CoreRoom | undefined => {
         return this.roomsMap.get(roomID);
       };
     },
@@ -96,18 +96,18 @@ const $muc = defineStore("muc", {
     },
 
     load(reload = false): void {
-      // Load MUC list? (or reload)
+      // Load room list? (or reload)
       if (LOCAL_STATES.loaded !== true || reload === true) {
         LOCAL_STATES.loaded = true;
 
         // Initialize entries
-        const directMessages: Room[] = [],
-          channels: Room[] = [],
-          genericRooms: Room[] = [],
-          roomsMap = new Map<RoomID, Room>();
+        const directMessages: CoreRoom[] = [],
+          channels: CoreRoom[] = [],
+          genericRooms: CoreRoom[] = [],
+          roomsMap = new Map<RoomID, CoreRoom>();
 
         // Load rooms
-        const rooms = Broker.$muc.connectedRooms();
+        const rooms = Broker.$room.connectedRooms();
 
         rooms.forEach(room => {
           switch (room.type) {
@@ -146,7 +146,7 @@ const $muc = defineStore("muc", {
         });
 
         // Append all rooms
-        const compareRooms = (left: Room, right: Room): number => {
+        const compareRooms = (left: CoreRoom, right: CoreRoom): number => {
           return left.name.localeCompare(right.name);
         };
 
@@ -159,8 +159,8 @@ const $muc = defineStore("muc", {
       }
     },
 
-    insertRoom(room: Room): void {
-      const compareRooms = (left: Room, right: Room): number => {
+    insertRoom(room: CoreRoom): void {
+      const compareRooms = (left: CoreRoom, right: CoreRoom): number => {
         return left.name.localeCompare(right.name);
       };
 
@@ -214,4 +214,4 @@ const $muc = defineStore("muc", {
  * EXPORTS
  * ************************************************************************* */
 
-export default $muc;
+export default $room;

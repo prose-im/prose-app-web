@@ -186,7 +186,7 @@ export default {
     },
 
     roomName(): string {
-      const room = Store.$muc.getRoomByID(this.jid.toString() as RoomID);
+      const room = Store.$room.getRoomByID(this.jid.toString() as RoomID);
 
       return room?.name || "";
     }

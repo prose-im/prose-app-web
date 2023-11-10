@@ -203,11 +203,11 @@ export default {
     },
 
     itemDirectMessages(): Room[] {
-      return Store.$muc.getDirectMessages();
+      return Store.$room.getDirectMessages();
     },
 
     itemChannels(): Room[] {
-      return Store.$muc.getChannels();
+      return Store.$room.getChannels();
     }
   },
 
@@ -244,8 +244,8 @@ export default {
       connected: this.onStoreConnected
     });
 
-    // Bind MUC event handlers
-    useEvents(Store.$muc, {
+    // Bind room event handlers
+    useEvents(Store.$room, {
       "rooms:changed": this.onRoomsChanged
     });
 
@@ -319,7 +319,7 @@ export default {
     async onStoreConnected(connected: boolean): Promise<void> {
       if (connected === true) {
         // Synchronize roster eagerly
-        await Broker.$muc.startObservingRooms();
+        await Broker.$room.startObservingRooms();
       } else {
         // Mark synchronization as stale (will re-synchronize when connection \
         //   is restored)

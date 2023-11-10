@@ -109,7 +109,7 @@ class BrokerClient {
   }
 
   async observe(): Promise<void> {
-    await Broker.$muc.startObservingRooms();
+    await Broker.$room.startObservingRooms();
   }
 
   async logout(): Promise<void> {

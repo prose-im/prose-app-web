@@ -14,8 +14,6 @@ import { Channel, JID, Room } from "@prose-im/prose-sdk-js";
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
 
-// PROJECT: UTILITIES
-
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -23,7 +21,7 @@ import Store from "@/store";
  * CLASS
  * ************************************************************************* */
 
-class BrokerModuleMUC extends BrokerModule {
+class BrokerModuleRoom extends BrokerModule {
   async startObservingRooms(): Promise<void> {
     await this._client.client?.startObservingRooms();
   }
@@ -42,7 +40,7 @@ class BrokerModuleMUC extends BrokerModule {
     )) as Room;
 
     if (room) {
-      Store.$muc.insertRoom(room);
+      Store.$room.insertRoom(room);
     }
   }
 
@@ -50,7 +48,7 @@ class BrokerModuleMUC extends BrokerModule {
     const room = (await this._client.client?.createPublicChannel(name)) as Room;
 
     if (room) {
-      Store.$muc.insertRoom(room);
+      Store.$room.insertRoom(room);
     }
   }
 
@@ -60,7 +58,7 @@ class BrokerModuleMUC extends BrokerModule {
     )) as Room;
 
     if (room) {
-      Store.$muc.insertRoom(room);
+      Store.$room.insertRoom(room);
     }
   }
 }
@@ -69,4 +67,4 @@ class BrokerModuleMUC extends BrokerModule {
  * EXPORTS
  * ************************************************************************* */
 
-export default BrokerModuleMUC;
+export default BrokerModuleRoom;

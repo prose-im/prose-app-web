@@ -109,13 +109,13 @@ export default {
       const jids = jidString.split(",").map(value => new JID(value.trim()));
 
       // Add contact
-      await Broker.$muc.createGroup(jids);
+      await Broker.$room.createGroup(jids);
 
       BaseAlert.success("Group added", "Group has been added");
     },
 
     async addContactChannel(jidString: string): Promise<void> {
-      await Broker.$muc.createPublicChannel(jidString);
+      await Broker.$room.createPublicChannel(jidString);
 
       BaseAlert.success("Channel added", "Channel has been added");
     },

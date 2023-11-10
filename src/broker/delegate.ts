@@ -64,8 +64,8 @@ class BrokerDelegate implements ProseClientDelegate {
   }
 
   roomsChanged(): void {
-    Store.$muc.markRoomsChanged();
-    Store.$muc.load();
+    Store.$room.markRoomsChanged();
+    Store.$room.load();
   }
 
   contactChanged(_client: ProseClient, jid: JID): void {

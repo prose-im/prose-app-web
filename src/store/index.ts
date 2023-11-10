@@ -20,7 +20,7 @@ import $avatar from "@/store/tables/avatar";
 import $history from "@/store/tables/history";
 import $inbox from "@/store/tables/inbox";
 import $layout from "@/store/tables/layout";
-import $muc from "@/store/tables/muc";
+import $room from "@/store/tables/room";
 import $presence from "@/store/tables/presence";
 import $profile from "@/store/tables/profile";
 import $roster from "@/store/tables/roster";
@@ -58,7 +58,7 @@ class Store {
   $roster!: ReturnType<typeof $roster>;
   $activity!: ReturnType<typeof $activity>;
   $presence!: ReturnType<typeof $presence>;
-  $muc!: ReturnType<typeof $muc>;
+  $room!: ReturnType<typeof $room>;
   $settings!: ReturnType<typeof $settings>;
 
   constructor() {
@@ -117,7 +117,7 @@ class Store {
     this.$roster = $roster(this.__store);
     this.$activity = $activity(this.__store);
     this.$presence = $presence(this.__store);
-    this.$muc = $muc(this.__store);
+    this.$room = $room(this.__store);
     this.$settings = $settings(this.__store);
   }
 }

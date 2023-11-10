@@ -298,7 +298,7 @@ export default {
       const items: Array<PopoverItem> = [];
 
       Array.from(historyRawRoomIDs).forEach((historyRoomID: RoomID) => {
-        const historyRoom = Store.$muc.getRoomByID(historyRoomID) || undefined;
+        const historyRoom = Store.$room.getRoomByID(historyRoomID) || undefined;
 
         if (historyRoom !== undefined) {
           items.push({
