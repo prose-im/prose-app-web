@@ -73,7 +73,7 @@ const $activity = defineStore("activity", {
       return this.assert(jid);
     },
 
-    setActivity(jid: JID, status?: UserActivity): ActivityEntry {
+    setActivity(jid: JID, status: UserActivity | void): ActivityEntry {
       // Assert activity
       const activity = this.assert(jid);
 

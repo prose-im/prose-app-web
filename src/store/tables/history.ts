@@ -123,7 +123,7 @@ const $history = defineStore("history", {
     moveDirection(
       direction: HistoryDirection,
       adjacency: HistoryAdjacency,
-      targetRoute: HistoryRoute | undefined
+      targetRoute: HistoryRoute | void
     ): HistoryRoute | null {
       if (targetRoute !== undefined) {
         // Stack previous current route to adjacent routes? (if any)

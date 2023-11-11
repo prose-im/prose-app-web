@@ -47,7 +47,7 @@ interface SaveAvatarRequestMetadata {
  * ************************************************************************* */
 
 class BrokerModuleProfile extends BrokerModule {
-  async loadUserProfile(jid: JID): Promise<UserProfile | undefined> {
+  async loadUserProfile(jid: JID): Promise<UserProfile | void> {
     // XEP-0292: vCard4 Over XMPP
     // https://xmpp.org/extensions/xep-0292.html
 
@@ -56,7 +56,7 @@ class BrokerModuleProfile extends BrokerModule {
     return await this._client.client?.loadUserProfile(jid);
   }
 
-  async loadUserMetadata(jid: JID): Promise<UserMetadata | undefined> {
+  async loadUserMetadata(jid: JID): Promise<UserMetadata | void> {
     // XEP-0012: Last Activity + XEP-0202: Entity Time
     // https://xmpp.org/extensions/xep-0012.html + \
     //   https://xmpp.org/extensions/xep-0202.html
