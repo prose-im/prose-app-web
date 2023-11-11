@@ -90,13 +90,13 @@ const $room = defineStore("room", {
     },
 
     getRoomItem: function () {
-      return (roomID: RoomID): SidebarItem | undefined => {
+      return (roomID: RoomID): SidebarItem | void => {
         return this.items.byRoomId.get(roomID);
       };
     },
 
     getRoom: function () {
-      return (roomID: RoomID): CoreRoom | undefined => {
+      return (roomID: RoomID): CoreRoom | void => {
         return this.byId.get(roomID);
       };
     }
