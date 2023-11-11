@@ -151,6 +151,7 @@ $c: ".c-list-button";
   }
 
   #{$c}__details {
+    line-height: 0;
     margin-inline-start: $size-list-item-details-margin-inline-start;
     display: flex;
     align-items: center;
