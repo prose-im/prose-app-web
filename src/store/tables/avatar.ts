@@ -69,11 +69,11 @@ const $avatar = defineStore("avatar", {
       return EventBus;
     },
 
-    assert(jid: JID): AvatarDataURL | undefined {
+    assert(jid: JID): AvatarDataURL | void {
       return this.entries[jid.toString()];
     },
 
-    getAvatarDataUrl(jid: JID): AvatarDataURL | undefined {
+    getAvatarDataUrl(jid: JID): AvatarDataURL | void {
       // Notice: pseudo-getter, which needs to be defined as an action since \
       //   it might mutate the state (as we are asserting).
       return this.assert(jid);

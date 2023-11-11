@@ -36,7 +36,7 @@ class BrokerModuleStatus extends BrokerModule {
     await this._client.client?.sendActivity(icon, text);
 
     if (this._client.jid) {
-      let activity: UserActivity | undefined;
+      let activity: UserActivity | void;
 
       if (icon && text) {
         activity = new UserActivity(icon, text);

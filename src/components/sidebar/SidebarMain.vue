@@ -47,12 +47,40 @@
     :list-class="disclosureListClass"
     title="Favorites"
   )
-    sidebar-main-item-user(
-      v-for="itemFavorite in itemFavorites"
-      :jid="itemFavorite.jid"
-      :name="itemFavorite.name"
-      :active="selectedJID && itemFavorite.jid.equals(selectedJID)"
+    template(
+      v-for="item in itemFavorites"
     )
+      sidebar-main-item-user(
+        v-if="item.room.type === roomType.DirectMessage"
+        :jid="item.room.members[0]?.jid"
+        :name="item.name"
+        :unread="item.unreadCount"
+        :error="item.error"
+        :draft="item.hasDraft"
+        :active="item.room.id === selectedRoomID"
+      )
+
+      sidebar-main-item-channel(
+        v-else-if="item.room.type === roomType.Group"
+        :id="item.room.id"
+        :name="item.name"
+        :unread="item.unreadCount"
+        :error="item.error"
+        :draft="item.hasDraft"
+        :active="item.room.id === selectedRoomID"
+        type="group"
+      )
+
+      sidebar-main-item-channel(
+        v-else-if="item.room.type === roomType.PublicChannel || item.room.type === roomType.PrivateChannel"
+        :id="item.room.id"
+        :name="item.name"
+        :unread="item.unreadCount"
+        :error="item.error"
+        :draft="item.hasDraft"
+        :active="item.room.id === selectedRoomID"
+        type="channel"
+      )
 
   list-disclosure(
     @toggle="onGroupsToggle"
@@ -62,25 +90,28 @@
     expanded
   )
     template(
-      v-for="room in itemDirectMessages"
+      v-for="item in itemDirectMessages"
     )
-      template(
-        v-if="!itemFavoriteRawJIDs.has(room.id)"
+      sidebar-main-item-user(
+        v-if="item.room.type === roomType.DirectMessage"
+        :jid="item.room.members[0]?.jid"
+        :name="item.name"
+        :unread="item.unreadCount"
+        :error="item.error"
+        :draft="item.hasDraft"
+        :active="item.room.id === selectedRoomID"
       )
-        sidebar-main-item-user(
-          v-if="room.type === roomType.DirectMessage"
-          :jid="room.members[0]?.jid"
-          :name="room.name"
-          :active="room.id === selectedRoomID"
-        )
 
-        sidebar-main-item-channel(
-          v-if="room.type === roomType.Group"
-          :id="room.id"
-          :name="room.name"
-          :active="room.id === selectedRoomID"
-          type="group"
-        )
+      sidebar-main-item-channel(
+        v-else-if="item.room.type === roomType.Group"
+        :id="item.room.id"
+        :name="item.name"
+        :unread="item.unreadCount"
+        :error="item.error"
+        :draft="item.hasDraft"
+        :active="item.room.id === selectedRoomID"
+        type="group"
+      )
 
     sidebar-main-item-add(
       @click="onDirectMessageAddClick"
@@ -95,10 +126,13 @@
     expanded
   )
     sidebar-main-item-channel(
-      v-for="room in itemChannels"
-      :id="room.id"
-      :name="room.name"
-      :active="room.id === selectedRoomID"
+      v-for="item in itemChannels"
+      :id="item.room.id"
+      :name="item.name"
+      :unread="item.unreadCount"
+      :error="item.error"
+      :draft="item.hasDraft"
+      :active="item.room.id === selectedRoomID"
       type="channel"
     )
 
@@ -114,19 +148,13 @@
 
 <script lang="ts">
 // NPM
-import {
-  JID,
-  Room,
-  RoomType,
-  Group as RosterGroup
-} from "@prose-im/prose-sdk-js";
+import { JID, SidebarItem, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
 
 // PROJECT: STORES
 import Store from "@/store";
-import { RosterList } from "@/store/tables/roster";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -139,12 +167,6 @@ import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
 
 // PROJECT: MODALS
 import { Mode as AddContactMode } from "@/modals/sidebar/AddContact.vue";
-
-// INTERFACES
-interface RosterDisplayItem {
-  jid: JID;
-  name: string;
-}
 
 export default {
   name: "SidebarMain",
@@ -186,28 +208,16 @@ export default {
       return Store.$layout;
     },
 
-    itemFavoriteRawJIDs(): Set<string> {
-      const favoriteJIDs: Set<string> = new Set([]);
-
-      this.itemFavorites.forEach(itemFavorite => {
-        favoriteJIDs.add(itemFavorite.jid.toString());
-      });
-
-      return favoriteJIDs;
+    itemFavorites(): SidebarItem[] {
+      return Store.$room.getItemFavorites();
     },
 
-    itemFavorites(): RosterDisplayItem[] {
-      return this.intoRosterDisplayItems(
-        Store.$roster.getList(RosterGroup.Favorite)
-      );
+    itemDirectMessages(): SidebarItem[] {
+      return Store.$room.getItemDirectMessages();
     },
 
-    itemDirectMessages(): Room[] {
-      return Store.$room.getDirectMessages();
-    },
-
-    itemChannels(): Room[] {
-      return Store.$room.getChannels();
+    itemChannels(): SidebarItem[] {
+      return Store.$room.getItemChannels();
     }
   },
 
@@ -277,15 +287,6 @@ export default {
 
         this.isRosterLoading = false;
       }
-    },
-
-    intoRosterDisplayItems(list: RosterList): Array<RosterDisplayItem> {
-      return list.map(item => {
-        return {
-          jid: new JID(item.jid),
-          name: item.name
-        };
-      });
     },
 
     // --> EVENT LISTENERS <--

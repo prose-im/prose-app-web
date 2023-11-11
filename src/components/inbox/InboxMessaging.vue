@@ -431,7 +431,7 @@ export default {
         // TODO: migrate to client-provided self name (do not source from \
         //   roster anymore, returns jid-based nickname)
         name: Store.$roster.getEntryName(this.selfJID),
-        avatar: Store.$avatar.getAvatarDataUrl(this.selfJID)
+        avatar: Store.$avatar.getAvatarDataUrl(this.selfJID) || undefined
       });
     },
 
@@ -443,7 +443,7 @@ export default {
       // Identify remote party
       runtime.MessagingStore.identify(jid.toString(), {
         name,
-        avatar: Store.$avatar.getAvatarDataUrl(jid)
+        avatar: Store.$avatar.getAvatarDataUrl(jid) || undefined
       });
     },
 

@@ -167,7 +167,7 @@ const $profile = defineStore("profile", {
       this.setUserMetadata(jid, metadata);
     },
 
-    setUserProfile(jid: JID, userProfile?: UserProfile): ProfileEntry {
+    setUserProfile(jid: JID, userProfile: UserProfile | void): ProfileEntry {
       const profile = this.assert(jid),
         information = this.ensureProfileInformation(profile);
 
@@ -230,7 +230,7 @@ const $profile = defineStore("profile", {
       return profile;
     },
 
-    setUserMetadata(jid: JID, metadata: UserMetadata | undefined) {
+    setUserMetadata(jid: JID, metadata: UserMetadata | void) {
       const profile = this.assert(jid),
         information = this.ensureProfileInformation(profile),
         location = this.ensureProfileInformationLocation(information);

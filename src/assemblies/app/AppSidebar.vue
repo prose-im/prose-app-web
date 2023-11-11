@@ -108,13 +108,16 @@ export default {
     async addContactGroup(jidString: string): Promise<void> {
       const jids = jidString.split(",").map(value => new JID(value.trim()));
 
-      // Add contact
-      await Broker.$room.createGroup(jids);
+      await Broker.$room.startConversation(jids);
 
-      BaseAlert.success("Group added", "Group has been added");
+      // More than one JID involved? A group was created.
+      if (jids.length > 1) {
+        BaseAlert.success("Group added", "Group has been added");
+      }
     },
 
     async addContactChannel(jidString: string): Promise<void> {
+      // TODO: also support creating a private channel w/ createPrivateChannel?
       await Broker.$room.createPublicChannel(jidString);
 
       BaseAlert.success("Channel added", "Channel has been added");

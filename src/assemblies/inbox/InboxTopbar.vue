@@ -82,6 +82,20 @@ layout-toolbar(
       span.a-inbox-topbar__identity-value.u-bold
         | {{ room.name }}
 
+      base-tooltip(
+        align="right"
+        direction="bottom"
+        tooltip="Toggle favorite"
+        class="a-inbox-topbar__identity-action"
+      )
+        base-icon(
+          v-if="identityFavoriteIcon"
+          @click="onIdentityActionFavoriteClick"
+          :name="identityFavoriteIcon"
+          size="14px"
+          class="a-inbox-topbar__identity-action-icon"
+        )
+
   template(
     v-slot:right
   )
@@ -171,6 +185,7 @@ import { JID, Room, RoomID, RoomType } from "@prose-im/prose-sdk-js";
 import Store from "@/store";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import {
   Item as PopoverItem,
   ItemType as PopoverItemType
@@ -217,6 +232,14 @@ export default {
       return Store.$history;
     },
 
+    profile(): ReturnType<typeof Store.$profile.getProfile> {
+      return Store.$profile.getProfile(this.jid);
+    },
+
+    roomItem(): ReturnType<typeof Store.$room.getRoomItem> {
+      return this.room ? Store.$room.getRoomItem(this.room.id) : undefined;
+    },
+
     originalJID(): string {
       return this.jid.toString();
     },
@@ -235,10 +258,6 @@ export default {
       return null;
     },
 
-    profile(): ReturnType<typeof Store.$profile.getProfile> {
-      return Store.$profile.getProfile(this.jid);
-    },
-
     identityBadge(): IdentityBadge {
       // Identity verified?
       if (this.profile.security && this.profile.security.verification) {
@@ -253,6 +272,14 @@ export default {
         status: "unknown",
         icon: "xmark.seal.fill"
       };
+    },
+
+    identityFavoriteIcon(): string | null {
+      if (this.roomItem !== undefined) {
+        return this.roomItem.isFavorite === true ? "star.fill" : "star";
+      }
+
+      return null;
     },
 
     hasActionHistoryPrevious(): boolean {
@@ -298,7 +325,7 @@ export default {
       const items: Array<PopoverItem> = [];
 
       Array.from(historyRawRoomIDs).forEach((historyRoomID: RoomID) => {
-        const historyRoom = Store.$room.getRoomByID(historyRoomID) || undefined;
+        const historyRoom = Store.$room.getRoom(historyRoomID) || undefined;
 
         if (historyRoom !== undefined) {
           items.push({
@@ -395,6 +422,34 @@ export default {
     onActionHistoryDropdownClick(): void {
       // Toggle popover
       this.isActionHistoryPopoverVisible = !this.isActionHistoryPopoverVisible;
+    },
+
+    async onIdentityActionFavoriteClick(): Promise<void> {
+      if (this.roomItem) {
+        try {
+          const wasFavorite = this.roomItem.isFavorite || false;
+
+          // Toggle favorite mode
+          await this.roomItem.toggleFavorite();
+
+          // Acknowledge toggle
+          BaseAlert.info(
+            wasFavorite === true ? "Unset from favorites" : "Set as favorite",
+            (wasFavorite === true ? "Removed from" : "Added to") + " favorites"
+          );
+        } catch (error) {
+          // Alert of toggle error
+          this.$log.error(
+            `Could not toggle favorite status on room: ${this.roomItem.room.id}`,
+            error
+          );
+
+          BaseAlert.error(
+            "Cannot toggle favorite",
+            "Failed changing favorite status. Try again?"
+          );
+        }
+      }
     }
   }
 };
@@ -431,8 +486,13 @@ $c: ".a-inbox-topbar";
       color: rgb(var(--color-text-primary));
       font-size: 16px;
 
-      #{$c}__identity-badge {
+      #{$c}__identity-badge,
+      #{$c}__identity-action {
         margin-block-start: 1px;
+      }
+
+      #{$c}__identity-action {
+        margin-inline-start: 8px;
       }
     }
 
@@ -455,11 +515,38 @@ $c: ".a-inbox-topbar";
       }
     }
 
-    #{$c}__identity-badge {
-      flex: 0 0 auto;
+    &:hover {
+      #{$c}__identity-action {
+        visibility: visible;
+      }
+    }
 
+    #{$c}__identity-badge,
+    #{$c}__identity-action {
+      flex: 0 0 auto;
+    }
+
+    #{$c}__identity-badge {
       + #{$c}__identity-value {
         margin-inline-start: 5px;
+      }
+    }
+
+    #{$c}__identity-action {
+      visibility: hidden;
+
+      #{$c}__identity-action-icon {
+        fill: rgb(var(--color-base-blue-normal));
+        display: block;
+        cursor: pointer;
+
+        &:hover {
+          fill: rgb(var(--color-base-blue-dark));
+        }
+
+        &:active {
+          fill: darken-var(var(--color-base-blue-dark), 5%);
+        }
       }
     }
   }

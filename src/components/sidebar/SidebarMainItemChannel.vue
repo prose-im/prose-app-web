@@ -12,6 +12,7 @@
 list-button(
   @click="onButtonClick"
   :active="active"
+  :important="draft || unread > 0"
   :disabled="disabled"
   :class=`[
     "c-sidebar-main-item-channel",
@@ -34,6 +35,38 @@ list-button(
     v-slot:default
   )
     | {{ name }}
+
+  template(
+    v-if="error || draft || unread > 0"
+    v-slot:details
+  )
+    base-tooltip(
+      v-if="error"
+      :tooltip="error"
+      align="right"
+    )
+      base-icon(
+        name="exclamationmark.triangle.fill"
+        size="15px"
+        class="c-sidebar-main-item-channel__error"
+      )
+
+    base-tooltip(
+      v-if="draft"
+      align="right"
+      tooltip="Draft Pending"
+    )
+      base-icon(
+        name="pencil"
+        size="12px"
+        class="c-sidebar-main-item-channel__draft"
+      )
+
+    base-count(
+      v-if="unread > 0"
+      :count="unread"
+      :color="countColor"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -64,6 +97,21 @@ export default {
       }
     },
 
+    unread: {
+      type: Number,
+      default: 0
+    },
+
+    error: {
+      type: String,
+      default: null
+    },
+
+    draft: {
+      type: Boolean,
+      default: false
+    },
+
     active: {
       type: Boolean,
       default: false
@@ -90,6 +138,10 @@ export default {
           return null;
         }
       }
+    },
+
+    countColor(): string {
+      return this.active === true ? "white" : "blue";
     }
   },
 
@@ -119,10 +171,23 @@ $c: ".c-sidebar-main-item-channel";
     margin-block-start: 2px;
   }
 
+  #{$c}__draft {
+    fill: rgb(var(--color-base-grey-dark));
+  }
+
+  #{$c}__error {
+    fill: rgb(var(--color-base-orange-normal));
+  }
+
   // --> BOOLEANS <--
 
   &--active {
     #{$c}__icon {
+      fill: rgb(var(--color-white));
+    }
+
+    #{$c}__draft,
+    #{$c}__error {
       fill: rgb(var(--color-white));
     }
   }

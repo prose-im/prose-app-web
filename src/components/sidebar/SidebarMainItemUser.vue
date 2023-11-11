@@ -12,8 +12,13 @@
 list-button(
   @click="onButtonClick"
   :active="active"
-  :important="unreadCount > 0"
-  class="c-sidebar-main-item-user"
+  :important="draft || unread > 0"
+  :class=`[
+    "c-sidebar-main-item-user",
+    {
+      "c-sidebar-main-item-user--active": active
+    }
+  ]`
 )
   template(
     v-slot:icon
@@ -59,11 +64,34 @@ list-button(
           | {{ statusActivity.status.icon }}
 
   template(
-    v-if="unreadCount > 0"
+    v-if="error || draft || unread > 0"
     v-slot:details
   )
+    base-tooltip(
+      v-if="error"
+      :tooltip="error"
+      align="right"
+    )
+      base-icon(
+        name="exclamationmark.triangle.fill"
+        size="15px"
+        class="c-sidebar-main-item-user__error"
+      )
+
+    base-tooltip(
+      v-if="draft"
+      align="right"
+      tooltip="Draft Pending"
+    )
+      base-icon(
+        name="pencil"
+        size="12px"
+        class="c-sidebar-main-item-user__draft"
+      )
+
     base-count(
-      :count="unreadCount"
+      v-if="unread > 0"
+      :count="unread"
       :color="countColor"
     )
 </template>
@@ -94,6 +122,21 @@ export default {
       required: true
     },
 
+    unread: {
+      type: Number,
+      default: 0
+    },
+
+    error: {
+      type: String,
+      default: null
+    },
+
+    draft: {
+      type: Boolean,
+      default: false
+    },
+
     active: {
       type: Boolean,
       default: false
@@ -103,11 +146,6 @@ export default {
   computed: {
     countColor(): string {
       return this.active === true ? "white" : "blue";
-    },
-
-    unreadCount(): number {
-      // TODO: return a non-zero unread count if there are unread messages
-      return 0;
     },
 
     statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
@@ -152,6 +190,23 @@ $c: ".c-sidebar-main-item-user";
 
     #{$c}__activity-icon {
       font-size: 16px;
+    }
+  }
+
+  #{$c}__draft {
+    fill: rgb(var(--color-base-grey-dark));
+  }
+
+  #{$c}__error {
+    fill: rgb(var(--color-base-orange-normal));
+  }
+
+  // --> BOOLEANS <--
+
+  &--active {
+    #{$c}__draft,
+    #{$c}__error {
+      fill: rgb(var(--color-white));
     }
   }
 }

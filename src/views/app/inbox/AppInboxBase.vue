@@ -119,7 +119,7 @@ export default {
     },
 
     room(): Room | void {
-      return Store.$room.getRoomByID(this.roomId);
+      return Store.$room.getRoom(this.roomId);
     },
 
     layout(): typeof Store.$layout {

@@ -9,13 +9,10 @@
  * ************************************************************************* */
 
 // NPM
-import { Channel, JID, Room } from "@prose-im/prose-sdk-js";
+import { Channel, JID, SidebarItem } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
-
-// PROJECT: STORES
-import Store from "@/store";
 
 /**************************************************************************
  * CLASS
@@ -26,40 +23,26 @@ class BrokerModuleRoom extends BrokerModule {
     await this._client.client?.startObservingRooms();
   }
 
-  connectedRooms(): Room[] {
-    return this._client.client?.connectedRooms() || [];
+  sidebarItems(): SidebarItem[] {
+    return this._client.client?.sidebarItems() || [];
   }
 
   async loadPublicChannels(): Promise<Array<Channel>> {
     return (await this._client.client?.loadPublicChannels()) || [];
   }
 
-  async createGroup(participants: Array<JID>): Promise<void> {
-    const room = (await this._client.client?.createGroup(
+  async startConversation(participants: Array<JID>): Promise<void> {
+    await this._client.client?.startConversation(
       participants.map(jid => jid.toString())
-    )) as Room;
-
-    if (room) {
-      Store.$room.insertRoom(room);
-    }
+    );
   }
 
   async createPublicChannel(name: string): Promise<void> {
-    const room = (await this._client.client?.createPublicChannel(name)) as Room;
-
-    if (room) {
-      Store.$room.insertRoom(room);
-    }
+    await this._client.client?.createPublicChannel(name);
   }
 
   async createPrivateChannel(name: string): Promise<void> {
-    const room = (await this._client.client?.createPrivateChannel(
-      name
-    )) as Room;
-
-    if (room) {
-      Store.$room.insertRoom(room);
-    }
+    await this._client.client?.createPrivateChannel(name);
   }
 }
 

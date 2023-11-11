@@ -40,6 +40,8 @@ class BrokerDelegate implements ProseClientDelegate {
   }
 
   clientConnected(): void {
+    logger.info("Client connected");
+
     this.__eventBus.emit("client:connected");
   }
 
@@ -48,6 +50,8 @@ class BrokerDelegate implements ProseClientDelegate {
       const message = "message" in error ? error.message : "<no message>";
 
       logger.warn(`Client disconnected. Reason: ${error.code}. ${message}`);
+    } else {
+      logger.info(`Client disconnected`);
     }
 
     this.__eventBus.emit("client:disconnected");
@@ -63,16 +67,22 @@ class BrokerDelegate implements ProseClientDelegate {
     Store.$inbox.setComposing(room.id, composingUsers);
   }
 
-  roomsChanged(): void {
+  sidebarChanged(): void {
+    logger.info("Sidebar changed");
+
     Store.$room.markRoomsChanged();
     Store.$room.load();
   }
 
   contactChanged(_client: ProseClient, jid: JID): void {
+    logger.info(`Contact changed: ${jid}`);
+
     Store.$roster.markContactChanged(jid);
   }
 
   avatarChanged(_client: ProseClient, jid: JID): void {
+    logger.info(`Avatar changed: ${jid}`);
+
     Store.$avatar.load(jid);
   }
 
@@ -81,6 +91,12 @@ class BrokerDelegate implements ProseClientDelegate {
     room: Room,
     messageIDs: string[]
   ): Promise<void> {
+    logger.info(
+      `Messages appended in room: ${
+        room.id
+      } with identifiers: ${messageIDs.join(", ")}`
+    );
+
     const messages = await room.loadMessagesWithIDs(messageIDs);
 
     // Insert all appended messages
@@ -108,6 +124,12 @@ class BrokerDelegate implements ProseClientDelegate {
     room: Room,
     messageIDs: string[]
   ): void {
+    logger.info(
+      `Messages deleted in room: ${room.id} with identifiers: ${messageIDs.join(
+        ", "
+      )}`
+    );
+
     for (const messageID of messageIDs) {
       Store.$inbox.retractMessage(room.id, messageID);
     }
@@ -118,6 +140,12 @@ class BrokerDelegate implements ProseClientDelegate {
     room: Room,
     messageIDs: string[]
   ): Promise<void> {
+    logger.info(
+      `Messages updated in room: ${room.id} with identifiers: ${messageIDs.join(
+        ", "
+      )}`
+    );
+
     const messages = await room.loadMessagesWithIDs(messageIDs);
 
     for (const message of messages) {
