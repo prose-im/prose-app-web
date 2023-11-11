@@ -47,15 +47,40 @@
     :list-class="disclosureListClass"
     title="Favorites"
   )
-    sidebar-main-item-user(
+    template(
       v-for="item in itemFavorites"
-      :jid="item.room.members[0]?.jid"
-      :name="item.name"
-      :unread="item.unreadCount"
-      :error="item.error"
-      :draft="item.hasDraft"
-      :active="selectedJID && item.room.jid.equals(selectedJID)"
     )
+      sidebar-main-item-user(
+        v-if="item.room.type === roomType.DirectMessage"
+        :jid="item.room.members[0]?.jid"
+        :name="item.name"
+        :unread="item.unreadCount"
+        :error="item.error"
+        :draft="item.hasDraft"
+        :active="item.room.id === selectedRoomID"
+      )
+
+      sidebar-main-item-channel(
+        v-else-if="item.room.type === roomType.Group"
+        :id="item.room.id"
+        :name="item.name"
+        :unread="item.unreadCount"
+        :error="item.error"
+        :draft="item.hasDraft"
+        :active="item.room.id === selectedRoomID"
+        type="group"
+      )
+
+      sidebar-main-item-channel(
+        v-else-if="item.room.type === roomType.PublicChannel || item.room.type === roomType.PrivateChannel"
+        :id="item.room.id"
+        :name="item.name"
+        :unread="item.unreadCount"
+        :error="item.error"
+        :draft="item.hasDraft"
+        :active="item.room.id === selectedRoomID"
+        type="channel"
+      )
 
   list-disclosure(
     @toggle="onGroupsToggle"
