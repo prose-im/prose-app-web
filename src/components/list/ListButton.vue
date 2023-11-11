@@ -153,7 +153,16 @@ $c: ".c-list-button";
   #{$c}__details {
     margin-inline-start: $size-list-item-details-margin-inline-start;
     display: flex;
+    align-items: center;
     flex: 0 0 auto;
+
+    > * {
+      margin-inline-end: 6px;
+
+      &:last-child {
+        margin-inline-end: 0;
+      }
+    }
   }
 
   // --> SIZES <--
