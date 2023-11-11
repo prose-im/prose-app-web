@@ -82,13 +82,19 @@ layout-toolbar(
       span.a-inbox-topbar__identity-value.u-bold
         | {{ room.name }}
 
-      base-icon(
-        v-if="identityFavoriteIcon"
-        @click="onIdentityActionFavoriteClick"
-        :name="identityFavoriteIcon"
-        size="14px"
+      base-tooltip(
+        align="right"
+        direction="bottom"
+        tooltip="Toggle favorite"
         class="a-inbox-topbar__identity-action"
       )
+        base-icon(
+          v-if="identityFavoriteIcon"
+          @click="onIdentityActionFavoriteClick"
+          :name="identityFavoriteIcon"
+          size="14px"
+          class="a-inbox-topbar__identity-action-icon"
+        )
 
   template(
     v-slot:right
@@ -527,16 +533,20 @@ $c: ".a-inbox-topbar";
     }
 
     #{$c}__identity-action {
-      fill: rgb(var(--color-base-blue-normal));
-      cursor: pointer;
       visibility: hidden;
 
-      &:hover {
-        fill: rgb(var(--color-base-blue-dark));
-      }
+      #{$c}__identity-action-icon {
+        fill: rgb(var(--color-base-blue-normal));
+        display: block;
+        cursor: pointer;
 
-      &:active {
-        fill: darken-var(var(--color-base-blue-dark), 5%);
+        &:hover {
+          fill: rgb(var(--color-base-blue-dark));
+        }
+
+        &:active {
+          fill: darken-var(var(--color-base-blue-dark), 5%);
+        }
       }
     }
   }
