@@ -179,6 +179,7 @@ import { JID, Room, RoomID, RoomType } from "@prose-im/prose-sdk-js";
 import Store from "@/store";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import {
   Item as PopoverItem,
   ItemType as PopoverItemType
@@ -417,9 +418,32 @@ export default {
       this.isActionHistoryPopoverVisible = !this.isActionHistoryPopoverVisible;
     },
 
-    onIdentityActionFavoriteClick(): void {
-      // Toggle favorite mode
-      // TODO
+    async onIdentityActionFavoriteClick(): Promise<void> {
+      if (this.roomItem) {
+        try {
+          const wasFavorite = this.roomItem.isFavorite || false;
+
+          // Toggle favorite mode
+          await this.roomItem.toggleFavorite();
+
+          // Acknowledge toggle
+          BaseAlert.info(
+            wasFavorite === true ? "Unset from favorites" : "Set as favorite",
+            (wasFavorite === true ? "Removed from" : "Added to") + " favorites"
+          );
+        } catch (error) {
+          // Alert of toggle error
+          this.$log.error(
+            `Could not toggle favorite status on room: ${this.roomItem.room.id}`,
+            error
+          );
+
+          BaseAlert.error(
+            "Cannot toggle favorite",
+            "Failed changing favorite status. Try again?"
+          );
+        }
+      }
     }
   }
 };
