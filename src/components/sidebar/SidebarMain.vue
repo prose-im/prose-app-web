@@ -52,6 +52,7 @@
       :jid="item.room.members[0]?.jid"
       :name="item.name"
       :unread="item.unreadCount"
+      :draft="item.hasDraft"
       :active="selectedJID && item.room.jid.equals(selectedJID)"
     )
 
@@ -70,6 +71,7 @@
         :jid="item.room.members[0]?.jid"
         :name="item.name"
         :unread="item.unreadCount"
+        :draft="item.hasDraft"
         :active="item.room.id === selectedRoomID"
       )
 
@@ -78,6 +80,7 @@
         :id="item.room.id"
         :name="item.name"
         :unread="item.unreadCount"
+        :draft="item.hasDraft"
         :active="item.room.id === selectedRoomID"
         type="group"
       )
@@ -99,6 +102,7 @@
       :id="item.room.id"
       :name="item.name"
       :unread="item.unreadCount"
+      :draft="item.hasDraft"
       :active="item.room.id === selectedRoomID"
       type="channel"
     )

@@ -12,8 +12,13 @@
 list-button(
   @click="onButtonClick"
   :active="active"
-  :important="unread > 0"
-  class="c-sidebar-main-item-user"
+  :important="draft || unread > 0"
+  :class=`[
+    "c-sidebar-main-item-user",
+    {
+      "c-sidebar-main-item-user--active": active
+    }
+  ]`
 )
   template(
     v-slot:icon
@@ -59,10 +64,22 @@ list-button(
           | {{ statusActivity.status.icon }}
 
   template(
-    v-if="unread > 0"
+    v-if="draft || unread > 0"
     v-slot:details
   )
+    base-tooltip(
+      v-if="draft"
+      align="right"
+      tooltip="Draft Pending"
+    )
+      base-icon(
+        name="pencil"
+        size="12px"
+        class="c-sidebar-main-item-user__draft"
+      )
+
     base-count(
+      v-if="unread > 0"
       :count="unread"
       :color="countColor"
     )
@@ -97,6 +114,11 @@ export default {
     unread: {
       type: Number,
       default: 0
+    },
+
+    draft: {
+      type: Boolean,
+      default: false
     },
 
     active: {
@@ -152,6 +174,18 @@ $c: ".c-sidebar-main-item-user";
 
     #{$c}__activity-icon {
       font-size: 16px;
+    }
+  }
+
+  #{$c}__draft {
+    fill: rgb(var(--color-base-grey-dark));
+  }
+
+  // --> BOOLEANS <--
+
+  &--active {
+    #{$c}__draft {
+      fill: rgb(var(--color-white));
     }
   }
 }
