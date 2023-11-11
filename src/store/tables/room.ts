@@ -30,6 +30,7 @@ interface Room {
     favorites: SidebarItem[];
     directMessages: SidebarItem[];
     channels: SidebarItem[];
+    byRoomId: Map<RoomID, SidebarItem>;
   };
 
   byId: Map<RoomID, CoreRoom>;
@@ -61,7 +62,8 @@ const $room = defineStore("room", {
       items: {
         favorites: [],
         directMessages: [],
-        channels: []
+        channels: [],
+        byRoomId: new Map()
       },
 
       byId: new Map()
@@ -87,6 +89,12 @@ const $room = defineStore("room", {
       };
     },
 
+    getRoomItem: function () {
+      return (roomID: RoomID): SidebarItem | undefined => {
+        return this.items.byRoomId.get(roomID);
+      };
+    },
+
     getRoom: function () {
       return (roomID: RoomID): CoreRoom | undefined => {
         return this.byId.get(roomID);
@@ -109,6 +117,7 @@ const $room = defineStore("room", {
         const favorites: SidebarItem[] = [],
           directMessages: SidebarItem[] = [],
           channels: SidebarItem[] = [],
+          itemsByRoomId = new Map<RoomID, SidebarItem>(),
           roomsById = new Map<RoomID, CoreRoom>();
 
         // Load rooms
@@ -135,6 +144,7 @@ const $room = defineStore("room", {
             }
           }
 
+          itemsByRoomId.set(item.room.id, item);
           roomsById.set(item.room.id, item.room);
         });
 
@@ -151,6 +161,7 @@ const $room = defineStore("room", {
           state.items.favorites = favorites.sort(compareRooms);
           state.items.directMessages = directMessages.sort(compareRooms);
           state.items.channels = channels.sort(compareRooms);
+          state.items.byRoomId = itemsByRoomId;
 
           // Store rooms map
           state.byId = roomsById;
