@@ -37,9 +37,20 @@ list-button(
     | {{ name }}
 
   template(
-    v-if="draft || unread > 0"
+    v-if="error || draft || unread > 0"
     v-slot:details
   )
+    base-tooltip(
+      v-if="error"
+      :tooltip="error"
+      align="right"
+    )
+      base-icon(
+        name="exclamationmark.triangle.fill"
+        size="15px"
+        class="c-sidebar-main-item-channel__error"
+      )
+
     base-tooltip(
       v-if="draft"
       align="right"
@@ -89,6 +100,11 @@ export default {
     unread: {
       type: Number,
       default: 0
+    },
+
+    error: {
+      type: String,
+      default: null
     },
 
     draft: {
@@ -159,6 +175,10 @@ $c: ".c-sidebar-main-item-channel";
     fill: rgb(var(--color-base-grey-dark));
   }
 
+  #{$c}__error {
+    fill: rgb(var(--color-base-orange-normal));
+  }
+
   // --> BOOLEANS <--
 
   &--active {
@@ -166,7 +186,8 @@ $c: ".c-sidebar-main-item-channel";
       fill: rgb(var(--color-white));
     }
 
-    #{$c}__draft {
+    #{$c}__draft,
+    #{$c}__error {
       fill: rgb(var(--color-white));
     }
   }
