@@ -12,7 +12,7 @@
 list-button(
   @click="onButtonClick"
   :active="active"
-  :important="draft || unread > 0"
+  :important="draft || unread > 0 || mentions > 0"
   :class=`[
     "c-sidebar-main-item-user",
     {
@@ -64,7 +64,7 @@ list-button(
           | {{ statusActivity.status.icon }}
 
   template(
-    v-if="error || draft || unread > 0"
+    v-if="error || draft || unread > 0 || mentions > 0"
     v-slot:details
   )
     base-tooltip(
@@ -90,7 +90,13 @@ list-button(
       )
 
     base-count(
-      v-if="unread > 0"
+      v-if="mentions > 0"
+      :color="countColor"
+      icon="at"
+    )
+
+    base-count(
+      v-else-if="unread > 0"
       :count="unread"
       :color="countColor"
     )
@@ -123,6 +129,11 @@ export default {
     },
 
     unread: {
+      type: Number,
+      default: 0
+    },
+
+    mentions: {
       type: Number,
       default: 0
     },
