@@ -75,7 +75,7 @@ class BuilderInline {
         videoElement.loop = true;
         videoElement.muted = true;
 
-        // Append video sources
+        // Append video sources (in priority order, most efficient first)
         const videoSources = [
           ["av1", "webm"],
           ["vp9", "webm"],
