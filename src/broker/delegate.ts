@@ -70,8 +70,9 @@ class BrokerDelegate implements ProseClientDelegate {
   sidebarChanged(): void {
     logger.info("Sidebar changed");
 
+    // Force reload all rooms
     Store.$room.markRoomsChanged();
-    Store.$room.load();
+    Store.$room.load(true);
   }
 
   contactChanged(_client: ProseClient, jid: JID): void {
