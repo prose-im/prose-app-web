@@ -12,23 +12,14 @@
 sidebar-main-item-user(
   v-if="item.room.type === roomType.DirectMessage"
   :jid="item.room.members[0]?.jid"
-  :name="item.name"
-  :unread="item.unreadCount"
-  :mentions="item.mentionsCount"
-  :error="item.error"
-  :draft="item.hasDraft"
+  :item="item"
   :active="item.room.id === selection"
   class="c-sidebar-main-item"
 )
 
 sidebar-main-item-channel(
   v-else-if="item.room.type === roomType.Group"
-  :id="item.room.id"
-  :name="item.name"
-  :unread="item.unreadCount"
-  :mentions="item.mentionsCount"
-  :error="item.error"
-  :draft="item.hasDraft"
+  :item="item"
   :active="item.room.id === selection"
   type="group"
   class="c-sidebar-main-item"
@@ -36,12 +27,7 @@ sidebar-main-item-channel(
 
 sidebar-main-item-channel(
   v-else-if="item.room.type === roomType.PublicChannel || item.room.type === roomType.PrivateChannel"
-  :id="item.room.id"
-  :name="item.name"
-  :unread="item.unreadCount"
-  :mentions="item.mentionsCount"
-  :error="item.error"
-  :draft="item.hasDraft"
+  :item="item"
   :active="item.room.id === selection"
   type="channel"
   class="c-sidebar-main-item"
@@ -55,7 +41,7 @@ sidebar-main-item-channel(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { RoomID, RoomType } from "@prose-im/prose-sdk-js";
+import { RoomID, RoomType, SidebarItem } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
@@ -71,7 +57,7 @@ export default {
 
   props: {
     item: {
-      type: Object,
+      type: Object as PropType<SidebarItem>,
       required: true
     },
 

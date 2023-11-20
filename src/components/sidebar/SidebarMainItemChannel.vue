@@ -12,8 +12,7 @@
 list-button(
   @click="onButtonClick"
   :active="active"
-  :important="draft || unread > 0 || mentions > 0"
-  :disabled="disabled"
+  :important="item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
   :class=`[
     "c-sidebar-main-item-channel",
     {
@@ -34,15 +33,15 @@ list-button(
   template(
     v-slot:default
   )
-    | {{ name }}
+    | {{ item.name }}
 
   template(
-    v-if="error || draft || unread > 0 || mentions > 0"
+    v-if="item.error || item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
     v-slot:details
   )
     base-tooltip(
-      v-if="error"
-      :tooltip="error"
+      v-if="item.error"
+      :tooltip="item.error"
       align="right"
     )
       base-icon(
@@ -52,7 +51,7 @@ list-button(
       )
 
     base-tooltip(
-      v-if="draft"
+      v-if="item.hasDraft"
       align="right"
       tooltip="Draft Pending"
     )
@@ -63,14 +62,14 @@ list-button(
       )
 
     base-count(
-      v-if="mentions > 0"
+      v-if="item.mentionsCount > 0"
       :color="countColor"
       icon="at"
     )
 
     base-count(
-      v-else-if="unread > 0"
-      :count="unread"
+      v-else-if="item.unreadCount > 0"
+      :count="item.unreadCount"
       :color="countColor"
     )
 </template>
@@ -80,17 +79,16 @@ list-button(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { SidebarItem } from "@prose-im/prose-sdk-js";
+import { PropType } from "vue";
+
 export default {
   name: "SidebarMainItemChannel",
 
   props: {
-    id: {
-      type: String,
-      required: true
-    },
-
-    name: {
-      type: String,
+    item: {
+      type: Object as PropType<SidebarItem>,
       required: true
     },
 
@@ -103,32 +101,7 @@ export default {
       }
     },
 
-    unread: {
-      type: Number,
-      default: 0
-    },
-
-    mentions: {
-      type: Number,
-      default: 0
-    },
-
-    error: {
-      type: String,
-      default: null
-    },
-
-    draft: {
-      type: Boolean,
-      default: false
-    },
-
     active: {
-      type: Boolean,
-      default: false
-    },
-
-    disabled: {
       type: Boolean,
       default: false
     }
@@ -162,7 +135,7 @@ export default {
     onButtonClick(): void {
       this.$router.push({
         name: "app.inbox",
-        params: { roomId: this.id }
+        params: { roomId: this.item.room.id }
       });
     }
   }

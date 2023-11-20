@@ -12,7 +12,7 @@
 list-button(
   @click="onButtonClick"
   :active="active"
-  :important="draft || unread > 0 || mentions > 0"
+  :important="item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
   :class=`[
     "c-sidebar-main-item-user",
     {
@@ -34,7 +34,7 @@ list-button(
     v-slot:default
   )
     span.c-sidebar-main-item-user__name
-      | {{ name }}
+      | {{ item.name }}
 
     base-presence(
       :jid="jid"
@@ -64,12 +64,12 @@ list-button(
           | {{ statusActivity.status.icon }}
 
   template(
-    v-if="error || draft || unread > 0 || mentions > 0"
+    v-if="item.error || item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
     v-slot:details
   )
     base-tooltip(
-      v-if="error"
-      :tooltip="error"
+      v-if="item.error"
+      :tooltip="item.error"
       align="right"
     )
       base-icon(
@@ -79,7 +79,7 @@ list-button(
       )
 
     base-tooltip(
-      v-if="draft"
+      v-if="item.hasDraft"
       align="right"
       tooltip="Draft Pending"
     )
@@ -90,14 +90,14 @@ list-button(
       )
 
     base-count(
-      v-if="mentions > 0"
+      v-if="item.mentionsCount > 0"
       :color="countColor"
       icon="at"
     )
 
     base-count(
-      v-else-if="unread > 0"
-      :count="unread"
+      v-else-if="item.unreadCount > 0"
+      :count="item.unreadCount"
       :color="countColor"
     )
 </template>
@@ -108,7 +108,7 @@ list-button(
 
 <script lang="ts">
 // NPM
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, SidebarItem } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
 // PROJECT: STORES
@@ -118,34 +118,14 @@ export default {
   name: "SidebarMainItemUser",
 
   props: {
+    item: {
+      type: Object as PropType<SidebarItem>,
+      required: true
+    },
+
     jid: {
       type: Object as PropType<JID>,
       required: true
-    },
-
-    name: {
-      type: String,
-      required: true
-    },
-
-    unread: {
-      type: Number,
-      default: 0
-    },
-
-    mentions: {
-      type: Number,
-      default: 0
-    },
-
-    error: {
-      type: String,
-      default: null
-    },
-
-    draft: {
-      type: Boolean,
-      default: false
     },
 
     active: {
