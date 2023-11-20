@@ -12,7 +12,7 @@
 list-button(
   :active="active"
   :disabled="disabled"
-  class="c-sidebar-main-item-section"
+  class="c-sidebar-main-section"
 )
   template(
     v-slot:icon
@@ -20,7 +20,7 @@ list-button(
     base-icon(
       :name="icon"
       size="16px"
-      class="c-sidebar-main-item-section__icon"
+      class="c-sidebar-main-section__icon"
     )
 
   template(
@@ -35,7 +35,7 @@ list-button(
 
 <script lang="ts">
 export default {
-  name: "SidebarMainItemSection",
+  name: "SidebarMainSection",
 
   props: {
     title: {
@@ -66,9 +66,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-sidebar-main-item-section";
+$c: ".c-sidebar-main-section";
 
-.c-sidebar-main-item-section {
+.c-sidebar-main-section {
   #{$c}__icon {
     fill: rgb(var(--color-base-blue-dark));
   }

@@ -11,7 +11,7 @@
 <template lang="pug">
 list-button(
   :disabled="disabled"
-  class="c-sidebar-main-item-add"
+  class="c-sidebar-main-action-add"
   emphasis
 )
   template(
@@ -20,7 +20,7 @@ list-button(
     base-icon(
       name="plus.square.fill"
       size="13px"
-      class="c-sidebar-main-item-add__icon"
+      class="c-sidebar-main-action-add__icon"
     )
 
   template(
@@ -35,7 +35,7 @@ list-button(
 
 <script lang="ts">
 export default {
-  name: "SidebarMainItemAdd",
+  name: "SidebarMainActionAdd",
 
   props: {
     title: {
@@ -56,9 +56,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-sidebar-main-item-add";
+$c: ".c-sidebar-main-action-add";
 
-.c-sidebar-main-item-add {
+.c-sidebar-main-action-add {
   #{$c}__icon {
     fill: rgb(var(--color-base-blue-dark));
   }

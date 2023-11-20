@@ -16,25 +16,25 @@
     :list-class="disclosureListClass"
     title="Spotlight"
   )
-    sidebar-main-item-section(
+    sidebar-main-section(
       title="Unread stack"
       icon="tray.2"
       disabled
     )
 
-    sidebar-main-item-section(
+    sidebar-main-section(
       title="Replies"
       icon="arrowshape.turn.up.left.2"
       disabled
     )
 
-    sidebar-main-item-section(
+    sidebar-main-section(
       title="Direct messages"
       icon="message"
       disabled
     )
 
-    sidebar-main-item-section(
+    sidebar-main-section(
       title="People & groups"
       icon="text.book.closed"
       disabled
@@ -47,43 +47,11 @@
     :list-class="disclosureListClass"
     title="Favorites"
   )
-    template(
+    sidebar-main-item(
       v-for="item in itemFavorites"
+      :item="item"
+      :selection="selectedRoomID"
     )
-      sidebar-main-item-user(
-        v-if="item.room.type === roomType.DirectMessage"
-        :jid="item.room.members[0]?.jid"
-        :name="item.name"
-        :unread="item.unreadCount"
-        :mentions="item.mentionsCount"
-        :error="item.error"
-        :draft="item.hasDraft"
-        :active="item.room.id === selectedRoomID"
-      )
-
-      sidebar-main-item-channel(
-        v-else-if="item.room.type === roomType.Group"
-        :id="item.room.id"
-        :name="item.name"
-        :unread="item.unreadCount"
-        :mentions="item.mentionsCount"
-        :error="item.error"
-        :draft="item.hasDraft"
-        :active="item.room.id === selectedRoomID"
-        type="group"
-      )
-
-      sidebar-main-item-channel(
-        v-else-if="item.room.type === roomType.PublicChannel || item.room.type === roomType.PrivateChannel"
-        :id="item.room.id"
-        :name="item.name"
-        :unread="item.unreadCount"
-        :mentions="item.mentionsCount"
-        :error="item.error"
-        :draft="item.hasDraft"
-        :active="item.room.id === selectedRoomID"
-        type="channel"
-      )
 
   list-disclosure(
     @toggle="onGroupsToggle"
@@ -92,33 +60,13 @@
     title="Direct Messages"
     expanded
   )
-    template(
+    sidebar-main-item(
       v-for="item in itemDirectMessages"
+      :item="item"
+      :selection="selectedRoomID"
     )
-      sidebar-main-item-user(
-        v-if="item.room.type === roomType.DirectMessage"
-        :jid="item.room.members[0]?.jid"
-        :name="item.name"
-        :unread="item.unreadCount"
-        :mentions="item.mentionsCount"
-        :error="item.error"
-        :draft="item.hasDraft"
-        :active="item.room.id === selectedRoomID"
-      )
 
-      sidebar-main-item-channel(
-        v-else-if="item.room.type === roomType.Group"
-        :id="item.room.id"
-        :name="item.name"
-        :unread="item.unreadCount"
-        :mentions="item.mentionsCount"
-        :error="item.error"
-        :draft="item.hasDraft"
-        :active="item.room.id === selectedRoomID"
-        type="group"
-      )
-
-    sidebar-main-item-add(
+    sidebar-main-action-add(
       @click="onDirectMessageAddClick"
       title="Open a direct message"
     )
@@ -130,19 +78,13 @@
     title="Channels"
     expanded
   )
-    sidebar-main-item-channel(
+    sidebar-main-item(
       v-for="item in itemChannels"
-      :id="item.room.id"
-      :name="item.name"
-      :unread="item.unreadCount"
-      :mentions="item.mentionsCount"
-      :error="item.error"
-      :draft="item.hasDraft"
-      :active="item.room.id === selectedRoomID"
-      type="channel"
+      :item="item"
+      :selection="selectedRoomID"
     )
 
-    sidebar-main-item-add(
+    sidebar-main-action-add(
       @click="onChannelsAddClick"
       title="Add channels"
     )
@@ -154,7 +96,7 @@
 
 <script lang="ts">
 // NPM
-import { JID, SidebarItem, RoomType } from "@prose-im/prose-sdk-js";
+import { JID, SidebarItem } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
@@ -166,10 +108,9 @@ import Store from "@/store";
 import Broker from "@/broker";
 
 // PROJECT: COMPONENTS
-import SidebarMainItemAdd from "@/components/sidebar/SidebarMainItemAdd.vue";
-import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
-import SidebarMainItemSection from "@/components/sidebar/SidebarMainItemSection.vue";
-import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
+import SidebarMainSection from "@/components/sidebar/SidebarMainSection.vue";
+import SidebarMainItem from "@/components/sidebar/SidebarMainItem.vue";
+import SidebarMainActionAdd from "@/components/sidebar/SidebarMainActionAdd.vue";
 
 // PROJECT: MODALS
 import { Mode as AddContactMode } from "@/modals/sidebar/AddContact.vue";
@@ -178,10 +119,9 @@ export default {
   name: "SidebarMain",
 
   components: {
-    SidebarMainItemUser,
-    SidebarMainItemChannel,
-    SidebarMainItemSection,
-    SidebarMainItemAdd
+    SidebarMainSection,
+    SidebarMainItem,
+    SidebarMainActionAdd
   },
 
   props: {
@@ -195,10 +135,6 @@ export default {
 
   data() {
     return {
-      // --> DATA <--
-
-      roomType: RoomType,
-
       // --> STATE <--
 
       selectedJID: null as JID | null,
