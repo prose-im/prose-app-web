@@ -9,16 +9,11 @@
      ********************************************************************** -->
 
 <template lang="pug">
-list-button(
-  @click="onButtonClick"
+sidebar-main-item-generic(
+  @click="onClick"
+  :item="item"
   :active="active"
-  :important="item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
-  :class=`[
-    "c-sidebar-main-item-user",
-    {
-      "c-sidebar-main-item-user--active": active
-    }
-  ]`
+  class="c-sidebar-main-item-user"
 )
   template(
     v-slot:icon
@@ -62,44 +57,6 @@ list-button(
           class="c-sidebar-main-item-user__activity-icon"
         )
           | {{ statusActivity.status.icon }}
-
-  template(
-    v-if="item.error || item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
-    v-slot:details
-  )
-    base-tooltip(
-      v-if="item.error"
-      :tooltip="item.error"
-      align="right"
-    )
-      base-icon(
-        name="exclamationmark.triangle.fill"
-        size="15px"
-        class="c-sidebar-main-item-user__error"
-      )
-
-    base-tooltip(
-      v-if="item.hasDraft"
-      align="right"
-      tooltip="Draft Pending"
-    )
-      base-icon(
-        name="pencil"
-        size="12px"
-        class="c-sidebar-main-item-user__draft"
-      )
-
-    base-count(
-      v-if="item.mentionsCount > 0"
-      :color="countColor"
-      icon="at"
-    )
-
-    base-count(
-      v-else-if="item.unreadCount > 0"
-      :count="item.unreadCount"
-      :color="countColor"
-    )
 </template>
 
 <!-- **********************************************************************
@@ -111,11 +68,16 @@ list-button(
 import { JID, SidebarItem } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
+// PROJECT: COMPONENTS
+import SidebarMainItemGeneric from "@/components/sidebar/SidebarMainItemGeneric.vue";
+
 // PROJECT: STORES
 import Store from "@/store";
 
 export default {
   name: "SidebarMainItemUser",
+
+  components: { SidebarMainItemGeneric },
 
   props: {
     item: {
@@ -135,10 +97,6 @@ export default {
   },
 
   computed: {
-    countColor(): string {
-      return this.active === true ? "white" : "blue";
-    },
-
     statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
       return Store.$activity.getActivity(this.jid);
     }
@@ -147,7 +105,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onButtonClick(): void {
+    onClick(): void {
       this.$router.push({
         name: "app.inbox",
         params: { roomId: this.jid.toString() }
@@ -181,23 +139,6 @@ $c: ".c-sidebar-main-item-user";
 
     #{$c}__activity-icon {
       font-size: 16px;
-    }
-  }
-
-  #{$c}__draft {
-    fill: rgb(var(--color-base-grey-dark));
-  }
-
-  #{$c}__error {
-    fill: rgb(var(--color-base-orange-normal));
-  }
-
-  // --> BOOLEANS <--
-
-  &--active {
-    #{$c}__draft,
-    #{$c}__error {
-      fill: rgb(var(--color-white));
     }
   }
 }

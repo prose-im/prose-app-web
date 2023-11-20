@@ -9,10 +9,10 @@
      ********************************************************************** -->
 
 <template lang="pug">
-list-button(
-  @click="onButtonClick"
+sidebar-main-item-generic(
+  @click="onClick"
+  :item="item"
   :active="active"
-  :important="item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
   :class=`[
     "c-sidebar-main-item-channel",
     {
@@ -34,44 +34,6 @@ list-button(
     v-slot:default
   )
     | {{ item.name }}
-
-  template(
-    v-if="item.error || item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
-    v-slot:details
-  )
-    base-tooltip(
-      v-if="item.error"
-      :tooltip="item.error"
-      align="right"
-    )
-      base-icon(
-        name="exclamationmark.triangle.fill"
-        size="15px"
-        class="c-sidebar-main-item-channel__error"
-      )
-
-    base-tooltip(
-      v-if="item.hasDraft"
-      align="right"
-      tooltip="Draft Pending"
-    )
-      base-icon(
-        name="pencil"
-        size="12px"
-        class="c-sidebar-main-item-channel__draft"
-      )
-
-    base-count(
-      v-if="item.mentionsCount > 0"
-      :color="countColor"
-      icon="at"
-    )
-
-    base-count(
-      v-else-if="item.unreadCount > 0"
-      :count="item.unreadCount"
-      :color="countColor"
-    )
 </template>
 
 <!-- **********************************************************************
@@ -83,8 +45,13 @@ list-button(
 import { SidebarItem } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
+// PROJECT: COMPONENTS
+import SidebarMainItemGeneric from "@/components/sidebar/SidebarMainItemGeneric.vue";
+
 export default {
   name: "SidebarMainItemChannel",
+
+  components: { SidebarMainItemGeneric },
 
   props: {
     item: {
@@ -122,17 +89,13 @@ export default {
           return null;
         }
       }
-    },
-
-    countColor(): string {
-      return this.active === true ? "white" : "blue";
     }
   },
 
   methods: {
     // --> EVENT LISTENERS <--
 
-    onButtonClick(): void {
+    onClick(): void {
       this.$router.push({
         name: "app.inbox",
         params: { roomId: this.item.room.id }
@@ -155,23 +118,10 @@ $c: ".c-sidebar-main-item-channel";
     margin-block-start: 2px;
   }
 
-  #{$c}__draft {
-    fill: rgb(var(--color-base-grey-dark));
-  }
-
-  #{$c}__error {
-    fill: rgb(var(--color-base-orange-normal));
-  }
-
   // --> BOOLEANS <--
 
   &--active {
     #{$c}__icon {
-      fill: rgb(var(--color-white));
-    }
-
-    #{$c}__draft,
-    #{$c}__error {
       fill: rgb(var(--color-white));
     }
   }
