@@ -169,6 +169,17 @@ const $room = defineStore("room", {
       }
     },
 
+    updateRoom(roomID: RoomID, roomData: CoreRoom): CoreRoom | void {
+      // Assert room
+      const room = this.getRoom(roomID);
+
+      if (room) {
+        Object.assign(room, roomData);
+      }
+
+      return room;
+    },
+
     markRoomsChanged(): void {
       EventBus.emit("rooms:changed");
     }
