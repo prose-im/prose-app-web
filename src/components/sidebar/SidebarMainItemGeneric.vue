@@ -96,8 +96,6 @@ export default {
     }
   },
 
-  emits: ["click"],
-
   computed: {
     countColor(): string {
       return this.active === true ? "white" : "blue";
@@ -108,7 +106,10 @@ export default {
     // --> EVENT LISTENERS <--
 
     onButtonClick(): void {
-      this.$emit("click");
+      this.$router.push({
+        name: "app.inbox",
+        params: { roomId: this.item.room.id }
+      });
     }
   }
 };

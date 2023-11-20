@@ -10,7 +10,6 @@
 
 <template lang="pug">
 sidebar-main-item-generic(
-  @click="onClick"
   :item="item"
   :active="active"
   :class=`[
@@ -89,17 +88,6 @@ export default {
           return null;
         }
       }
-    }
-  },
-
-  methods: {
-    // --> EVENT LISTENERS <--
-
-    onClick(): void {
-      this.$router.push({
-        name: "app.inbox",
-        params: { roomId: this.item.room.id }
-      });
     }
   }
 };

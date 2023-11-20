@@ -10,7 +10,6 @@
 
 <template lang="pug">
 sidebar-main-item-generic(
-  @click="onClick"
   :item="item"
   :active="active"
   class="c-sidebar-main-item-user"
@@ -99,17 +98,6 @@ export default {
   computed: {
     statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
       return Store.$activity.getActivity(this.jid);
-    }
-  },
-
-  methods: {
-    // --> EVENT LISTENERS <--
-
-    onClick(): void {
-      this.$router.push({
-        name: "app.inbox",
-        params: { roomId: this.jid.toString() }
-      });
     }
   }
 };
