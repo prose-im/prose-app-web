@@ -74,6 +74,7 @@ layout-toolbar(
       v-if="room"
     )
       base-presence(
+        v-if="isDirectMessage"
         :jid="jid"
         class="a-inbox-topbar__identity-badge"
         size="medium"
@@ -245,7 +246,7 @@ export default {
     },
 
     truncatedJID(): string | null {
-      if (this.room?.type === RoomType.DirectMessage) {
+      if (this.isDirectMessage === true) {
         let jid = this.originalJID;
 
         if (jid.length < JID_TRUNCATE_LENGTH) {
@@ -280,6 +281,10 @@ export default {
       }
 
       return null;
+    },
+
+    isDirectMessage(): boolean {
+      return this.room?.type === RoomType.DirectMessage;
     },
 
     hasActionHistoryPrevious(): boolean {
