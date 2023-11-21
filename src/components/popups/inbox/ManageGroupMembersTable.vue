@@ -29,6 +29,10 @@ base-data-table(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { Room } from "@prose-im/prose-sdk-js";
+
 // PROJECT: COMPONENTS
 import {
   Column as DataTableColumn,
@@ -42,6 +46,11 @@ export default {
   name: "ManageGroupMembersTable",
 
   props: {
+    room: {
+      type: Object as PropType<Room>,
+      required: true
+    },
+
     dataTableClass: {
       type: String,
       required: true
@@ -65,45 +74,16 @@ export default {
           }
         ] as Array<DataTableColumn>,
 
-        rows: [
-          // TODO: from dynamic data (those are fixtures)
-
-          {
+        rows: this.room.members.map(room => {
+          return {
             selected: false,
 
             columns: {
-              name: "Member #1",
-              jid: "(no address)"
+              name: room.name,
+              jid: room.jid.toString()
             }
-          },
-
-          {
-            selected: false,
-
-            columns: {
-              name: "Member #2",
-              jid: "(no address)"
-            }
-          },
-
-          {
-            selected: false,
-
-            columns: {
-              name: "Member #3",
-              jid: "(no address)"
-            }
-          },
-
-          {
-            selected: false,
-
-            columns: {
-              name: "Member #4",
-              jid: "(no address)"
-            }
-          }
-        ] as Array<DataTableRow>,
+          };
+        }) as Array<DataTableRow>,
 
         sizes: { name: "40%", jid: "60%" } as DataTableSizes,
 

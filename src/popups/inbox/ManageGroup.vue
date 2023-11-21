@@ -136,6 +136,7 @@ export default {
 
           properties: {
             type: this.type,
+            room: this.room,
             dataTableClass: "p-manage-group__form-offset-sides"
           }
         },

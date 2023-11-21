@@ -24,8 +24,9 @@ form-settings-editor(
 
 <script lang="ts">
 // NPM
-import { shallowRef } from "vue";
+import { shallowRef, PropType } from "vue";
 import upperFirst from "lodash.upperfirst";
+import { Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import {
@@ -49,6 +50,11 @@ export default {
       }
     },
 
+    room: {
+      type: Object as PropType<Room>,
+      required: true
+    },
+
     dataTableClass: {
       type: String,
       required: true
@@ -70,6 +76,7 @@ export default {
               component: shallowRef(ManageGroupMembersTable),
 
               properties: {
+                room: this.room,
                 dataTableClass: this.dataTableClass
               }
             }
