@@ -53,13 +53,22 @@ layout-popup-navigate(
 
 <script lang="ts">
 // NPM
-import { shallowRef } from "vue";
+import { shallowRef, PropType } from "vue";
+import { Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
 import ManageGroupAbout from "@/components/popups/inbox/ManageGroupAbout.vue";
 import ManageGroupMembers from "@/components/popups/inbox/ManageGroupMembers.vue";
 import ManageGroupSettings from "@/components/popups/inbox/ManageGroupSettings.vue";
+
+// TYPES
+type FormValueString = { inner: string };
+
+// INTERFACES
+export interface FormSettings {
+  name: FormValueString;
+}
 
 // CONSTANTS
 const SECTION_INITIAL = "about";
@@ -68,6 +77,11 @@ export default {
   name: "ManageGroup",
 
   props: {
+    room: {
+      type: Object as PropType<Room>,
+      required: true
+    },
+
     type: {
       type: String,
       default: "channel",
@@ -130,7 +144,12 @@ export default {
           component: shallowRef(ManageGroupSettings),
 
           properties: {
-            type: this.type
+            type: this.type,
+            room: this.room,
+
+            form: {
+              name: { inner: this.room.name }
+            } as FormSettings
           }
         }
       }

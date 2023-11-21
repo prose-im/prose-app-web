@@ -152,11 +152,12 @@
             )
               a(
                 v-if="field.aside.type === 'link'"
+                @click="field.aside.click"
                 :class=`[
                   "c-form-settings-editor__field-aside-link",
                   "u-medium",
                   {
-                    "c-form-settings-editor__field-aside-link--disabled": field.aside.disabled
+                    "c-form-settings-editor__field-aside-link--disabled": (field.aside.disabled || (field.data.initial && field.data.initial === field.data.value.inner))
                   }
                 ]`
               )
@@ -288,6 +289,7 @@ export enum FieldsetControlIconType {
 export type FieldsetFieldDataInput = {
   value: FieldsetFieldDataInputValue;
   placeholder: string;
+  initial?: string;
   disabled?: boolean;
 };
 
@@ -399,6 +401,7 @@ interface FieldsetFieldAside {
   color?: string;
   icon?: string;
   disabled?: boolean;
+  click?: () => void;
 }
 
 interface FieldsetControl {

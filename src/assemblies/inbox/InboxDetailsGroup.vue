@@ -62,6 +62,7 @@ layout-sidebar-details(
     manage-group(
       v-if="popups.manageGroup.visible"
       @close="onPopupManageGroupClose"
+      :room="room"
       type="group"
     )
 </template>

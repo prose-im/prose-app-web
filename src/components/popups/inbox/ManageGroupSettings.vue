@@ -21,16 +21,23 @@ form-settings-editor(
 
 <script lang="ts">
 // NPM
+import { PropType } from "vue";
 import upperFirst from "lodash.upperfirst";
+import { Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import {
   default as FormSettingsEditor,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
+  FieldsetFieldAsideType as FormFieldsetFieldAsideType,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
   FieldsetFieldDataButton as FormFieldsetFieldDataButton
 } from "@/components/form/FormSettingsEditor.vue";
+
+// PROJECT: POPUPS
+import { FormSettings as GroupFormSettings } from "@/popups/inbox/ManageGroup.vue";
 
 export default {
   name: "ManageGroupSettings",
@@ -45,6 +52,16 @@ export default {
       validator(x: string) {
         return ["channel", "group"].includes(x);
       }
+    },
+
+    room: {
+      type: Object as PropType<Room>,
+      required: true
+    },
+
+    form: {
+      type: Object as PropType<GroupFormSettings>,
+      required: true
     }
   },
 
@@ -58,11 +75,15 @@ export default {
 
   beforeMount() {
     // Generate fieldsets (they are conditional)
-    this.fieldsets = this.makeFieldsets();
+    this.assignFieldsets();
   },
 
   methods: {
     // --> HELPERS <--
+
+    assignFieldsets(): void {
+      this.fieldsets = this.makeFieldsets();
+    },
 
     makeFieldsets(): Array<FormFieldset> {
       const fieldsets = [];
@@ -81,19 +102,55 @@ export default {
               label: `${upperFirst(this.type)} name:`,
 
               data: {
-                value: {
-                  inner: ""
-                }, // TODO: bind form model
+                value: this.form.name,
+                initial: this.form.name.inner,
+                placeholder: `Enter ${this.type} name…`
+              } as FormFieldsetFieldDataInput,
 
-                placeholder: `Enter ${this.type} name…`,
-                disabled: true
-              } as FormFieldsetFieldDataInput
+              aside: {
+                type: FormFieldsetFieldAsideType.Link,
+                label: "Apply",
+
+                click: async () => {
+                  try {
+                    const name = this.form.name.inner || null;
+
+                    if (name === null) {
+                      throw new Error("No name");
+                    }
+
+                    // Re-assign fieldsets (with new initial value)
+                    this.assignFieldsets();
+
+                    // Set room name
+                    await this.room.setName(name);
+
+                    // Show success alert
+                    BaseAlert.success(
+                      "Name set",
+                      `The ${this.type} name has been changed`
+                    );
+                  } catch (error) {
+                    this.$log.error("Failed setting name", error);
+
+                    // Show error alert
+                    BaseAlert.error(
+                      "Cannot set name",
+                      `The ${this.type} name could not be changed`
+                    );
+                  }
+                }
+              }
             }
           ],
 
           notes: [
             `The ${this.type} name is what users see in the app sidebar. It must be unique across your team.`
-          ]
+          ],
+
+          options: {
+            aside: true
+          }
         });
 
         // Append maintenance fields
@@ -117,7 +174,7 @@ export default {
             {
               id: "archive",
               type: FormFieldsetFieldType.Button,
-              label: `Archive ${this.type}:`,
+              label: "Archive:",
 
               data: {
                 text: `Archive ${this.type}`,
@@ -141,7 +198,7 @@ export default {
           {
             id: "delete",
             type: FormFieldsetFieldType.Button,
-            label: `Destroy ${this.type}:`,
+            label: "Destroy:",
 
             data: {
               text: `Remove ${this.type} and all messages`,
