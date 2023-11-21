@@ -20,6 +20,10 @@ form-settings-editor(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { Room, RoomMUC } from "@prose-im/prose-sdk-js";
+
 // PROJECT: COMPONENTS
 import {
   default as FormSettingsEditor,
@@ -42,6 +46,11 @@ export default {
       validator(x: string) {
         return ["channel", "group"].includes(x);
       }
+    },
+
+    room: {
+      type: Object as PropType<Room>,
+      required: true
     }
   },
 
@@ -62,11 +71,10 @@ export default {
 
               data: {
                 value: {
-                  inner: ""
-                }, // TODO: bind form model
+                  inner: (this.room as RoomMUC).subject || ""
+                },
 
-                placeholder: "Enter a short topic…",
-                disabled: true
+                placeholder: "Enter a short topic…"
               } as FormFieldsetFieldDataInput
             },
 

@@ -127,7 +127,8 @@ export default {
           component: shallowRef(ManageGroupAbout),
 
           properties: {
-            type: this.type
+            type: this.type,
+            room: this.room
           }
         },
 

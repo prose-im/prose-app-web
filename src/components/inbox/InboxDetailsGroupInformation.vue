@@ -45,7 +45,7 @@ list-disclosure(
 
 <script lang="ts">
 // NPM
-import { Room } from "@prose-im/prose-sdk-js";
+import { Room, RoomMUC } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
 // PROJECT: STORES
@@ -80,21 +80,26 @@ export default {
 
   computed: {
     entries(): Array<Entry> {
-      let membersCount = this.room.members.length;
+      const entries = [];
 
-      return [
-        {
+      let membersCount = this.room.members.length,
+        topic = (this.room as RoomMUC).subject;
+
+      if (topic) {
+        entries.push({
           id: "topic",
-          title: "(no topic)",
+          title: topic,
           icon: "megaphone.fill"
-        },
+        });
+      }
 
-        {
-          id: "members",
-          title: membersCount === 1 ? "1 member" : `${membersCount} members`,
-          icon: "person.fill.viewfinder"
-        }
-      ];
+      entries.push({
+        id: "members",
+        title: membersCount === 1 ? "1 member" : `${membersCount} members`,
+        icon: "person.fill.viewfinder"
+      });
+
+      return entries;
     }
   },
 
