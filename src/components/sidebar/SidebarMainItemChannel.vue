@@ -41,8 +41,8 @@ sidebar-main-item-generic(
 
 <script lang="ts">
 // NPM
-import { SidebarItem } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
+import { SidebarItem, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import SidebarMainItemGeneric from "@/components/sidebar/SidebarMainItemGeneric.vue";
@@ -81,7 +81,9 @@ export default {
         }
 
         case "channel": {
-          return "circle.grid.2x2";
+          return this.item.room.type === RoomType.PrivateChannel
+            ? "lock"
+            : "circle.grid.2x2";
         }
 
         default: {

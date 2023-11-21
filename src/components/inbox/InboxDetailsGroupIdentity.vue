@@ -47,8 +47,16 @@ export default {
           return "at";
         }
 
-        default: {
+        case RoomType.PrivateChannel: {
+          return "lock";
+        }
+
+        case RoomType.PublicChannel: {
           return "circle.grid.2x2";
+        }
+
+        default: {
+          return "questionmark.square.dashed";
         }
       }
     }
