@@ -144,8 +144,12 @@
         template(
           v-slot:aside
         )
-          .c-form-settings-editor__field-aside(
-            v-if="fieldset.options && fieldset.options.aside === true"
+          div(
+            v-if="fieldset.options && fieldset.options.aside"
+            :class=`[
+              "c-form-settings-editor__field-aside",
+              "c-form-settings-editor__field-aside--" + fieldset.options.aside
+            ]`
           )
             template(
               v-if="field.aside"
@@ -284,6 +288,13 @@ export enum FieldsetControlIconType {
   StatusDisabled = "status-disabled"
 }
 
+export enum FieldsetOptionAside {
+  // Fixed size.
+  Fixed = "fixed",
+  // Auto size.
+  Auto = "auto"
+}
+
 // TYPES
 
 export type FieldsetFieldDataInput = {
@@ -418,7 +429,7 @@ interface FieldsetControlAction {
 }
 
 interface FieldsetOptions {
-  aside?: boolean;
+  aside?: FieldsetOptionAside;
 }
 
 export default {
@@ -523,7 +534,6 @@ $c: ".c-form-settings-editor";
     #{$c}__field-aside {
       margin-inline-start: 11px;
       margin-block-start: -3px;
-      min-width: 120px;
 
       > * {
         font-size: 13.5px;
@@ -558,6 +568,14 @@ $c: ".c-form-settings-editor";
             fill: rgb(var(--color-base-green-normal));
           }
         }
+      }
+
+      &--fixed {
+        min-width: 120px;
+      }
+
+      &--auto {
+        margin-inline-end: 10px;
       }
     }
   }

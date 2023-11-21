@@ -36,7 +36,8 @@ import {
   FieldsetFieldDataToggle as FormFieldsetFieldDataToggle,
   FieldsetControlActionType as FormFieldsetControlActionType,
   FieldsetControlActionDataButton as FormFieldsetControlActionDataButton,
-  FieldsetControlIconType as FormFieldsetControlIconType
+  FieldsetControlIconType as FormFieldsetControlIconType,
+  FieldsetOptionAside as FormFieldsetOptionAside
 } from "@/components/form/FormSettingsEditor.vue";
 
 // PROJECT: POPUPS
@@ -97,7 +98,7 @@ export default {
           ],
 
           options: {
-            aside: true
+            aside: FormFieldsetOptionAside.Fixed
           }
         },
 
@@ -195,7 +196,7 @@ export default {
           ],
 
           options: {
-            aside: true
+            aside: FormFieldsetOptionAside.Fixed
           }
         }
       ] as Array<FormFieldset>

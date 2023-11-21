@@ -30,7 +30,8 @@ import {
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldAsideType as FormFieldsetFieldAsideType,
-  FieldsetFieldDataInput as FormFieldsetFieldDataInput
+  FieldsetFieldDataInput as FormFieldsetFieldDataInput,
+  FieldsetOptionAside as FormFieldsetOptionAside
 } from "@/components/form/FormSettingsEditor.vue";
 
 // PROJECT: POPUPS
@@ -98,7 +99,7 @@ export default {
           ],
 
           options: {
-            aside: true
+            aside: FormFieldsetOptionAside.Fixed
           }
         },
 
@@ -149,7 +150,7 @@ export default {
           ],
 
           options: {
-            aside: true
+            aside: FormFieldsetOptionAside.Fixed
           }
         }
       ] as Array<FormFieldset>

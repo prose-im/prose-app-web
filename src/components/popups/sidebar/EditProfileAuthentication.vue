@@ -32,7 +32,8 @@ import {
   FieldsetFieldDataButton as FormFieldsetFieldDataButton,
   FieldsetControlActionType as FormFieldsetControlActionType,
   FieldsetControlActionDataButton as FormFieldsetControlActionDataButton,
-  FieldsetControlIconType as FormFieldsetControlIconType
+  FieldsetControlIconType as FormFieldsetControlIconType,
+  FieldsetOptionAside as FormFieldsetOptionAside
 } from "@/components/form/FormSettingsEditor.vue";
 
 export default {
@@ -93,7 +94,7 @@ export default {
           ],
 
           options: {
-            aside: true
+            aside: FormFieldsetOptionAside.Fixed
           }
         },
 
@@ -146,7 +147,7 @@ export default {
           ],
 
           options: {
-            aside: true
+            aside: FormFieldsetOptionAside.Fixed
           }
         }
       ] as Array<FormFieldset>
