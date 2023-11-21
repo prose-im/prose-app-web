@@ -23,7 +23,7 @@ form-settings-editor(
 // NPM
 import { PropType } from "vue";
 import upperFirst from "lodash.upperfirst";
-import { Room } from "@prose-im/prose-sdk-js";
+import { Room, RoomMutableName } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -123,7 +123,7 @@ export default {
                     this.assignFieldsets();
 
                     // Set room name
-                    await this.room.setName(name);
+                    await (this.room as RoomMutableName).setName(name);
 
                     // Show success alert
                     BaseAlert.success(
