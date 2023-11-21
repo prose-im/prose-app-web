@@ -25,13 +25,18 @@ import { PropType } from "vue";
 import { Room, RoomMUC } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import {
   default as FormSettingsEditor,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
+  FieldsetFieldAsideType as FormFieldsetFieldAsideType,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
-  FieldsetFieldDataTextarea as FormFieldsetFieldDataTextarea
+  FieldsetOptionAside as FormFieldsetOptionAside
 } from "@/components/form/FormSettingsEditor.vue";
+
+// PROJECT: POPUPS
+import { FormAbout as GroupFormAbout } from "@/popups/inbox/ManageGroup.vue";
 
 export default {
   name: "ManageGroupAbout",
@@ -51,6 +56,11 @@ export default {
     room: {
       type: Object as PropType<Room>,
       required: true
+    },
+
+    form: {
+      type: Object as PropType<GroupFormAbout>,
+      required: true
     }
   },
 
@@ -58,7 +68,24 @@ export default {
     return {
       // --> DATA <--
 
-      fieldsets: [
+      fieldsets: [] as Array<FormFieldset>
+    };
+  },
+
+  beforeMount() {
+    // Generate fieldsets (they are conditional)
+    this.assignFieldsets();
+  },
+
+  methods: {
+    // --> HELPERS <--
+
+    assignFieldsets(): void {
+      this.fieldsets = this.makeFieldsets();
+    },
+
+    makeFieldsets(): Array<FormFieldset> {
+      return [
         {
           id: "information",
           title: "Information",
@@ -70,28 +97,45 @@ export default {
               label: "Topic:",
 
               data: {
-                value: {
-                  inner: (this.room as RoomMUC).subject || ""
-                },
-
+                value: this.form.topic,
+                initial: this.form.topic.inner,
                 placeholder: "Enter a short topic…"
-              } as FormFieldsetFieldDataInput
-            },
+              } as FormFieldsetFieldDataInput,
 
-            {
-              id: "description",
-              type: FormFieldsetFieldType.Textarea,
-              label: "Description:",
+              aside: {
+                type: FormFieldsetFieldAsideType.Link,
+                label: "Apply",
 
-              data: {
-                value: {
-                  inner: ""
-                }, // TODO: bind form model
+                click: async () => {
+                  try {
+                    const topic = this.form.topic.inner || null;
 
-                type: "textarea",
-                placeholder: "Enter a long description…",
-                disabled: true
-              } as FormFieldsetFieldDataTextarea
+                    if (topic === null) {
+                      throw new Error("No topic");
+                    }
+
+                    // Re-assign fieldsets (with new initial value)
+                    this.assignFieldsets();
+
+                    // Set room topic
+                    await (this.room as RoomMUC).setTopic(topic);
+
+                    // Show success alert
+                    BaseAlert.success(
+                      "Topic set",
+                      `The ${this.type} topic has been changed`
+                    );
+                  } catch (error) {
+                    this.$log.error("Failed setting topic", error);
+
+                    // Show error alert
+                    BaseAlert.error(
+                      "Cannot set topic",
+                      `The ${this.type} topic could not be changed`
+                    );
+                  }
+                }
+              }
             }
           ],
 
@@ -100,10 +144,14 @@ export default {
               (this.type === "channel"
                 ? `Those details are public to everyone.`
                 : `Those details are only visible to members.`)
-          ]
+          ],
+
+          options: {
+            aside: FormFieldsetOptionAside.Auto
+          }
         }
-      ] as Array<FormFieldset>
-    };
+      ];
+    }
   }
 };
 </script>

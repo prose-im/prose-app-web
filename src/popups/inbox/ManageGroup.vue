@@ -54,7 +54,7 @@ layout-popup-navigate(
 <script lang="ts">
 // NPM
 import { shallowRef, PropType } from "vue";
-import { Room } from "@prose-im/prose-sdk-js";
+import { Room, RoomMUC } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
@@ -66,6 +66,10 @@ import ManageGroupSettings from "@/components/popups/inbox/ManageGroupSettings.v
 type FormValueString = { inner: string };
 
 // INTERFACES
+export interface FormAbout {
+  topic: FormValueString;
+}
+
 export interface FormSettings {
   name: FormValueString;
 }
@@ -128,7 +132,13 @@ export default {
 
           properties: {
             type: this.type,
-            room: this.room
+            room: this.room,
+
+            form: {
+              topic: {
+                inner: (this.room as RoomMUC).subject || ""
+              }
+            }
           }
         },
 
