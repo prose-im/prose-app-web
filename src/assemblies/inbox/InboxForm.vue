@@ -178,6 +178,7 @@ import logger from "@/utilities/logger";
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
+const DRAFT_AUTOSAVE_DEBOUNCE = 4000; // 4 seconds
 
 export default {
   name: "InboxForm",
@@ -211,7 +212,9 @@ export default {
 
       isUserComposing: false,
       isAttachFilePending: false,
-      chatStateComposeTimeout: null as null | ReturnType<typeof setTimeout>
+
+      chatStateComposeTimeout: null as null | ReturnType<typeof setTimeout>,
+      draftAutoSaveTimeout: null as null | ReturnType<typeof setTimeout>
     };
   },
 
@@ -254,20 +257,43 @@ export default {
     }
   },
 
+  watch: {
+    room: {
+      immediate: true,
+
+      handler(newValue: Room, oldValue: Room) {
+        // Save draft for old room, and stop composing?
+        if (oldValue && (!newValue || newValue.id !== oldValue.id)) {
+          this.propagateChatState(false, oldValue);
+          this.fireDraftAutoSave(false, oldValue);
+        }
+
+        // Load draft for new room?
+        if (newValue && (!oldValue || newValue.id !== oldValue.id)) {
+          this.attemptDraftRestore(newValue);
+        }
+      }
+    }
+  },
+
   beforeUnmount() {
     // Clear registered timeouts
     this.unscheduleChatStateComposeTimeout();
+    this.fireDraftAutoSave();
   },
 
   methods: {
     // --> HELPERS <--
 
-    async propagateChatState(composing: boolean): Promise<void> {
+    async propagateChatState(composing: boolean, room?: Room): Promise<void> {
+      // Clear compose chat state timeout (as needed)
+      this.unscheduleChatStateComposeTimeout();
+
       // Propagate new chat state?
       if (composing !== this.isUserComposing) {
         this.isUserComposing = composing;
 
-        await this.room?.setUserIsComposing(composing);
+        await (room || this.room)?.setUserIsComposing(composing);
       }
     },
 
@@ -283,6 +309,48 @@ export default {
         clearTimeout(this.chatStateComposeTimeout);
 
         this.chatStateComposeTimeout = null;
+      }
+    },
+
+    debounceDraftAutoSave(): void {
+      // Schedule debounce timer? (if none)
+      if (this.draftAutoSaveTimeout === null) {
+        this.draftAutoSaveTimeout = setTimeout(
+          this.fireDraftAutoSave.bind(this),
+          DRAFT_AUTOSAVE_DEBOUNCE
+        );
+      }
+    },
+
+    fireDraftAutoSave(force = false, room?: Room): void {
+      let maySave = force;
+
+      // Stop debounce timer? (if any)
+      if (this.draftAutoSaveTimeout !== null) {
+        clearTimeout(this.draftAutoSaveTimeout);
+
+        this.draftAutoSaveTimeout = null;
+
+        // Mark as 'may save' (since there was a scheduled de-bounce timer)
+        maySave = true;
+      }
+
+      // Proceed saving draft?
+      if (maySave === true) {
+        (room || this.room)?.saveDraft(this.message);
+      }
+    },
+
+    async attemptDraftRestore(room?: Room): Promise<void> {
+      // Clear message field value
+      this.message = "";
+
+      // Load draft
+      const draft = await (room || this.room)?.loadDraft();
+
+      // Apply non-empty draft?
+      if (draft) {
+        this.message = draft;
       }
     },
 
@@ -351,18 +419,18 @@ export default {
     },
 
     onKeystroke(value: string): void {
-      // Clear compose chat state timeout (as needed)
-      this.unscheduleChatStateComposeTimeout();
-
       // Acquire current chat state
       const isComposing = value.length > 0;
 
       // Propagate new chat state (as needed)
       this.propagateChatState(isComposing);
 
-      // Re-schedule compose timeout?
+      // Schedule next compose timeout and de-bounce draft save?
       if (isComposing === true) {
         this.scheduleChatStateComposeTimeout();
+        this.debounceDraftAutoSave();
+      } else {
+        this.fireDraftAutoSave();
       }
     },
 
@@ -403,6 +471,9 @@ export default {
 
         // Clear message field
         this.message = "";
+
+        // Fire draft auto-save (to new empty message)
+        this.fireDraftAutoSave(true);
       }
     }
   }
