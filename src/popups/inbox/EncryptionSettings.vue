@@ -68,7 +68,9 @@ export default {
               data: {
                 value: {
                   inner: true // TODO: save somewhere
-                }
+                },
+
+                disabled: true
               } as FormFieldsetFieldDataToggle
             },
 
@@ -80,7 +82,9 @@ export default {
               data: {
                 value: {
                   inner: true // TODO: save somewhere
-                }
+                },
+
+                disabled: true
               } as FormFieldsetFieldDataToggle
             },
 
@@ -92,7 +96,9 @@ export default {
               data: {
                 value: {
                   inner: true // TODO: save somewhere
-                }
+                },
+
+                disabled: true
               } as FormFieldsetFieldDataToggle
             }
           ],
@@ -117,7 +123,9 @@ export default {
               data: {
                 value: {
                   inner: true // TODO: save somewhere
-                }
+                },
+
+                disabled: true
               } as FormFieldsetFieldDataToggle
             }
           ],
