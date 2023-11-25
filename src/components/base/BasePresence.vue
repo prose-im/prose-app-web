@@ -136,7 +136,7 @@ $availabilities: (
       }
 
       &#{$c}--active {
-        background-color: rgb(var(--color-white));
+        background-color: rgb(var(--color-always-white));
       }
     }
   }

@@ -14,6 +14,7 @@
 
   // White
   --color-white: #{hex-var($color-white)};
+  --color-always-white: #{hex-var($color-white)};
 
   // Bases
   --color-base-blue-normal: #{hex-var($color-base-blue-normal)};
@@ -49,25 +50,20 @@
 
   &--dark {
     // Black
-    --color-black: #{hex-var(invert($color-black))};
+    --color-black: #{hex-var($color-gray-100)};
 
     // White
-    --color-white: #{hex-var(invert($color-white))};
+    --color-white: #{hex-var($color-gray-950)};
+    --color-always-white: #{hex-var($color-white)};
 
     // Bases
-    --color-base-blue-normal: #{hex-var(lighten($color-base-blue-normal, 4%))};
+    --color-base-blue-normal: #{hex-var($color-base-indigo)};
     --color-base-blue-dark: #{hex-var(lighten($color-base-blue-dark, 6%))};
     --color-base-blue-link: #{hex-var(lighten($color-base-blue-link, 4%))};
     --color-base-green-normal: #{hex-var(lighten($color-base-green-normal, 18%))};
-    --color-base-grey-dark: #{hex-var(
-        lighten(invert($color-base-grey-dark), 2%)
-      )};
-    --color-base-grey-light: #{hex-var(
-        lighten(invert($color-base-grey-light), 2%)
-      )};
-    --color-base-grey-normal: #{hex-var(
-        lighten(invert($color-base-grey-normal), 4%)
-      )};
+    --color-base-grey-dark: #{hex-var($color-gray-100)};
+    --color-base-grey-light: #{hex-var($color-gray-900)};
+    --color-base-grey-normal: #{hex-var($color-gray-400)};
     --color-base-orange-light: #{hex-var(lighten($color-base-orange-light, 6%))};
     --color-base-orange-normal: #{hex-var(
         lighten($color-base-orange-normal, 2%)
@@ -82,20 +78,18 @@
     --color-border-primary: #{hex-var(
         lighten(invert($color-border-primary), 8%)
       )};
-    --color-border-secondary: #{hex-var(
-        lighten(invert($color-border-secondary), 4%)
-      )};
+    --color-border-secondary: #{hex-var($color-gray-800)};
     --color-border-tertiary: #{hex-var(
         lighten(invert($color-border-tertiary), 4%)
       )};
 
     // Backgrounds
-    --color-background-primary: #{hex-var(invert($color-background-primary))};
-    --color-background-secondary: #{hex-var(invert($color-background-secondary))};
+    --color-background-primary: #{hex-var($color-gray-900)};
+    --color-background-secondary: #{hex-var($color-gray-900)};
 
     // Texts
-    --color-text-primary: #{hex-var(invert($color-text-primary))};
-    --color-text-secondary: #{hex-var(invert($color-text-secondary))};
+    --color-text-primary: #{hex-var($color-gray-100)};
+    --color-text-secondary: #{hex-var($color-gray-400)};
     --color-text-tertiary: #{hex-var(invert($color-text-tertiary))};
     --color-text-reverse: #{hex-var(invert($color-text-reverse))};
   }

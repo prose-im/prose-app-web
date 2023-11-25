@@ -267,7 +267,7 @@ $c: ".c-list-button";
     }
 
     #{$c}__label {
-      color: rgb(var(--color-white));
+      color: rgb(var(--color-always-white));
     }
   }
 

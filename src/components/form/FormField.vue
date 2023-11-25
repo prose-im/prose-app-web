@@ -311,7 +311,7 @@ $c: ".c-form-field";
 
   #{$c}__inner {
     background-color: rgb(var(--color-white));
-    border: 1px solid rgba(var(--color-black), 0.1);
+    border: 1px solid rgba(var(--color-border-secondary));
     outline: 0 none;
     color: rgb(var(--color-text-primary));
     font-family: inherit;
