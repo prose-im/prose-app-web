@@ -19,6 +19,9 @@ import {
   RoomID
 } from "@prose-im/prose-sdk-js";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
@@ -289,7 +292,12 @@ const $inbox = defineStore("inbox", {
     },
 
     setComposing(roomId: RoomID, composing: Array<CoreUser>) {
-      this.assert(roomId).states.composing = composing;
+      // Filter-out local JID in the list of composing users
+      const selfJID = Store.$account.getLocalJID();
+
+      this.assert(roomId).states.composing = composing.filter(user => {
+        return !user.jid.equals(selfJID);
+      });
     }
   }
 });

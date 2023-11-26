@@ -61,7 +61,9 @@ class BrokerDelegate implements ProseClientDelegate {
     const composingUsers = await room.loadComposingUsers();
 
     logger.info(
-      `Composing users changed: ${composingUsers.join(", ") || "(none)"}`
+      `Composing users changed: ${
+        composingUsers.map(user => user.jid).join(", ") || "(none)"
+      }`
     );
 
     Store.$inbox.setComposing(room.id, composingUsers);
