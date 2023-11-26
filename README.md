@@ -10,6 +10,12 @@ Copyright 2023, Prose Foundation - Released under the [Mozilla Public License 2.
 
 _Tested at NodeJS version: `v20.5.0`_
 
+## 👉 Prose is looking for a VueJS developer!
+
+**We are looking for a VueJS developer to take over development of this project, and other Prose projects built with VueJS. You will work on aside from [@valeriansaliou](https://github.com/valeriansaliou).**
+
+**Interested? [Contact us there](https://prose.org/contact/).**
+
 ## Architecture
 
 The Prose Web app consists mostly of VueJS views, bound to core libraries, namely the [client](https://github.com/prose-im/prose-core-client) and [views](https://github.com/prose-im/prose-core-views) cores, that are common to all platforms Prose runs on.
