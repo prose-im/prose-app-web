@@ -30,11 +30,11 @@ layout-sidebar-details(
     )
 
     inbox-details-group-members(
-      @add="onMembersAdd"
       :room="room"
       :header-class="headerClass"
       :item-class="itemClass"
       :expanded="layout.inbox.details.sections.members"
+      type="group"
     )
 
     inbox-details-generic-actions(
@@ -63,17 +63,9 @@ layout-sidebar-details(
 
     manage-group(
       v-if="popups.manageGroup.visible"
-      @add="onPopupManageGroupAdd"
       @close="onPopupManageGroupClose"
       :room="room"
       type="group"
-    )
-
-    add-group-member(
-      v-if="modals.addGroupMember.visible"
-      @add="onModalAddGroupMemberAdd"
-      @close="onModalAddGroupMemberClose"
-      :loading="modals.addGroupMember.loading"
     )
 </template>
 
@@ -101,7 +93,6 @@ import {
 
 // PROJECT: MODALS
 import LeaveGroup from "@/modals/inbox/LeaveGroup.vue";
-import AddGroupMember from "@/modals/inbox/AddGroupMember.vue";
 
 // PROJECT: POPUPS
 import SharedFiles from "@/popups/inbox/SharedFiles.vue";
@@ -117,8 +108,7 @@ export default {
     InboxDetailsGenericActions,
     SharedFiles,
     ManageGroup,
-    LeaveGroup,
-    AddGroupMember
+    LeaveGroup
   },
 
   props: {
@@ -144,11 +134,6 @@ export default {
 
       modals: {
         leaveGroup: {
-          visible: false,
-          loading: false
-        },
-
-        addGroupMember: {
           visible: false,
           loading: false
         }
@@ -204,10 +189,6 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onMembersAdd(): void {
-      this.modals.addGroupMember.visible = true;
-    },
-
     onActionSharedFilesClick(): void {
       this.popups.sharedFiles.visible = true;
     },
@@ -222,10 +203,6 @@ export default {
 
     onPopupSharedFilesClose(): void {
       this.popups.sharedFiles.visible = false;
-    },
-
-    onPopupManageGroupAdd(): void {
-      this.onMembersAdd();
     },
 
     onPopupManageGroupClose(): void {
@@ -264,27 +241,6 @@ export default {
 
     onModalLeaveGroupClose(): void {
       this.modals.leaveGroup.visible = false;
-    },
-
-    onModalAddGroupMemberAdd(jidString: string): void {
-      if (this.modals.addGroupMember.loading !== true) {
-        this.modals.addGroupMember.loading = true;
-
-        // TODO: remove this
-        setTimeout(() => {
-          this.modals.addGroupMember.visible = false;
-          this.modals.addGroupMember.loading = false;
-
-          BaseAlert.error(
-            "Member not added",
-            `${jidString} could not be added`
-          );
-        }, 1000);
-      }
-    },
-
-    onModalAddGroupMemberClose(): void {
-      this.modals.addGroupMember.visible = false;
     }
   }
 };

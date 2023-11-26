@@ -46,6 +46,7 @@ list-disclosure(
       )
 
   list-button(
+    v-if="hasAddMember"
     @click="onAddMemberClick"
     size="small"
     class="c-inbox-details-group-members__add"
@@ -88,6 +89,15 @@ export default {
       required: true
     },
 
+    type: {
+      type: String,
+      default: "channel",
+
+      validator(x: string) {
+        return ["channel", "group"].includes(x);
+      }
+    },
+
     headerClass: {
       type: String,
       default: null
@@ -95,6 +105,12 @@ export default {
   },
 
   emits: ["add"],
+
+  computed: {
+    hasAddMember(): boolean {
+      return this.type === "channel";
+    }
+  },
 
   methods: {
     // --> EVENT LISTENERS <--

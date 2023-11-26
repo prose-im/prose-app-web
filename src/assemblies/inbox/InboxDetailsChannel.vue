@@ -35,6 +35,7 @@ layout-sidebar-details(
       :header-class="headerClass"
       :item-class="itemClass"
       :expanded="layout.inbox.details.sections.members"
+      type="channel"
     )
 
     inbox-details-generic-actions(

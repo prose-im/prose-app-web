@@ -79,6 +79,7 @@ export default {
 
               properties: {
                 room: this.room,
+                type: this.type,
                 dataTableClass: this.dataTableClass
               },
 

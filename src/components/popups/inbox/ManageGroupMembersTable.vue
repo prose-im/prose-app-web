@@ -15,6 +15,7 @@ base-data-table(
   :rows="table.rows"
   :sizes="table.sizes"
   :controls="table.controls"
+  :read-only="isReadOnly"
   :class=`[
     "p-manage-group-members-table",
     dataTableClass
@@ -49,6 +50,15 @@ export default {
     room: {
       type: Object as PropType<Room>,
       required: true
+    },
+
+    type: {
+      type: String,
+      default: "channel",
+
+      validator(x: string) {
+        return ["channel", "group"].includes(x);
+      }
     },
 
     dataTableClass: {
@@ -89,18 +99,26 @@ export default {
 
         sizes: { name: "40%", jid: "60%" } as DataTableSizes,
 
-        controls: [
-          {
-            type: DataTableControlType.Add,
-            tooltip: "Add members"
-          },
+        controls: (this.type === "channel"
+          ? [
+              {
+                type: DataTableControlType.Add,
+                tooltip: "Add members"
+              },
 
-          {
-            type: DataTableControlType.Remove
-          }
-        ] as Array<DataTableControl>
+              {
+                type: DataTableControlType.Remove
+              }
+            ]
+          : []) as Array<DataTableControl>
       }
     };
+  },
+
+  computed: {
+    isReadOnly(): boolean {
+      return this.type !== "channel";
+    }
   },
 
   methods: {
