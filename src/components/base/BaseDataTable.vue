@@ -63,6 +63,7 @@ div(
       span.c-base-data-table__column
         form-checkbox(
           v-model="row.selected"
+          :disabled="readOnly"
           size="small"
         )
 
@@ -102,7 +103,7 @@ div(
       base-button(
         @click="onControlClick(control.type)"
         :tint="control.tint"
-        :disabled="control.disabled"
+        :disabled="readOnly || control.disabled"
         size="small"
         button-class="c-base-data-table__control-button"
       )
@@ -202,6 +203,11 @@ export default {
     },
 
     sortable: {
+      type: Boolean,
+      default: false
+    },
+
+    readOnly: {
       type: Boolean,
       default: false
     },
