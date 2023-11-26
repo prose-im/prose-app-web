@@ -12,7 +12,7 @@ _Tested at NodeJS version: `v20.5.0`_
 
 ## 👉 Prose is looking for a VueJS developer!
 
-**We are looking for a VueJS developer to take over development of this project, and other Prose projects built with VueJS. You will work with [@valeriansaliou](https://github.com/valeriansaliou).**
+**We are looking for a VueJS developer to take over development of this project, and other Prose projects built with VueJS. You will work with [@valeriansaliou](https://github.com/valeriansaliou), we are 100% remote and [async](https://remote.com/blog/why-you-should-be-doing-async-work).**
 
 Interested? **[Contact us there](https://prose.org/contact/).**
 
