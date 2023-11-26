@@ -52,6 +52,7 @@
 
     inbox-details(
       v-if="layout.inbox.details.visible"
+      @file-preview="onDetailsFilePreview"
       :jid="jid"
       :room="room"
       class="v-app-inbox-base__details"
@@ -156,6 +157,10 @@ export default {
 
     onMessagesFilePreviewClose(): void {
       this.filePreview.collection = [];
+    },
+
+    onDetailsFilePreview(collection: FilePreviewCollection, index = 0): void {
+      this.onMessagesFilePreview(collection, index);
     }
   }
 };

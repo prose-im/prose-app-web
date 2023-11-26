@@ -15,6 +15,7 @@
   )
     inbox-details-user(
       v-if="room.type === roomType.DirectMessage"
+      @file-preview="onFilePreview"
       :room="room"
       :jid="jid"
       header-class="a-inbox-details__header"
@@ -23,6 +24,7 @@
 
     inbox-details-group(
       v-else-if="room.type === roomType.Group"
+      @file-preview="onFilePreview"
       :room="room"
       header-class="a-inbox-details__header"
       item-class="a-inbox-details__item"
@@ -30,6 +32,7 @@
 
     inbox-details-channel(
       v-else-if="room.type === roomType.PrivateChannel || room.type === roomType.PublicChannel"
+      @file-preview="onFilePreview"
       :room="room"
       header-class="a-inbox-details__header"
       item-class="a-inbox-details__item"
@@ -44,6 +47,9 @@
 // NPM
 import { PropType } from "vue";
 import { JID, Room, RoomType } from "@prose-im/prose-sdk-js";
+
+// PROJECT: COMPONENTS
+import { Collection as FilePreviewCollection } from "@/components/inbox/InboxFilePreview.vue";
 
 // PROJECT: ASSEMBLIES
 import InboxDetailsUser from "@/assemblies/inbox/InboxDetailsUser.vue";
@@ -71,12 +77,22 @@ export default {
     }
   },
 
+  emits: ["filePreview"],
+
   data() {
     return {
       // --> DATA <--
 
       roomType: RoomType
     };
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onFilePreview(collection: FilePreviewCollection, index = 0): void {
+      this.$emit("filePreview", collection, index);
+    }
   }
 };
 </script>

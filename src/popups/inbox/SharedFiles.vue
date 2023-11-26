@@ -32,7 +32,9 @@ layout-popup-navigate(
       li.p-shared-files__file(
         v-for="file in sectionFiles"
       )
-        a.p-shared-files__thumbnail
+        a.p-shared-files__thumbnail(
+          @click="onThumbnailClick"
+        )
 
     base-overlay(
       v-else
@@ -60,8 +62,16 @@ layout-popup-navigate(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+// @ts-expect-error download is a dependency w/o any declaration
+import download from "browser-downloads";
+
 // PROJECT: COMPONENTS
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
+import {
+  Collection as FilePreviewCollection,
+  FileType as FilePreviewFileType
+} from "@/components/inbox/InboxFilePreview.vue";
 
 // CONSTANTS
 const SECTION_INITIAL = "images";
@@ -69,7 +79,7 @@ const SECTION_INITIAL = "images";
 export default {
   name: "SharedFiles",
 
-  emits: ["close"],
+  emits: ["filePreview", "close"],
 
   data() {
     return {
@@ -93,12 +103,6 @@ export default {
         },
 
         {
-          id: "audios",
-          title: "Audios",
-          icon: "waveform"
-        },
-
-        {
           id: "others",
           title: "Others",
           icon: "archivebox.fill"
@@ -106,7 +110,7 @@ export default {
       ] as Array<NavigateSection>,
 
       // TODO: dummy files
-      files: Array(40).fill({})
+      files: Array(6).fill({})
     };
   },
 
@@ -132,6 +136,53 @@ export default {
     },
 
     // --> EVENT LISTENERS <--
+
+    onThumbnailClick(): void {
+      const fileCollection: FilePreviewCollection = [],
+        fileIndex = 0;
+
+      let fileDownloadUrl: string | null = null,
+        fileDownloadName: string | null = null;
+
+      // TODO: remove this fixture
+      switch (this.section) {
+        case "images": {
+          fileCollection.push({
+            type: FilePreviewFileType.Image,
+            url: "https://crisp.chat/static/blog/content/images/size/w2000/2023/09/product-update-august-2023.jpeg",
+            name: "product-update-august-2023.jpeg"
+          });
+
+          break;
+        }
+
+        case "videos": {
+          fileCollection.push({
+            type: FilePreviewFileType.Video,
+            url: "https://plugins.crisp.chat/urn:crisp.im:bot:0/config/videos/editor/add_blocks_quick/add_blocks_quick-vp9.webm",
+            name: "add_blocks_quick-vp9.webm"
+          });
+
+          break;
+        }
+
+        case "others": {
+          fileDownloadUrl =
+            "https://storage.crisp.chat/public/documents/Brand%20Assets.zip";
+          fileDownloadName = "Brand Assets.zip";
+
+          break;
+        }
+      }
+
+      if (fileDownloadUrl !== null) {
+        // Download target file
+        download(fileDownloadUrl, fileDownloadName || undefined);
+      } else {
+        // Preview files
+        this.$emit("filePreview", fileCollection, fileIndex);
+      }
+    },
 
     onClose(): void {
       this.$emit("close");

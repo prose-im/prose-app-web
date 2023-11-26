@@ -51,6 +51,7 @@ layout-sidebar-details(
   )
     shared-files(
       v-if="popups.sharedFiles.visible"
+      @file-preview="onPopupSharedFilesFilePreview"
       @close="onPopupSharedFilesClose"
     )
 
@@ -92,6 +93,7 @@ import Store from "@/store";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
+import { Collection as FilePreviewCollection } from "@/components/inbox/InboxFilePreview.vue";
 import InboxDetailsGroupIdentity from "@/components/inbox/InboxDetailsGroupIdentity.vue";
 import InboxDetailsGroupInformation from "@/components/inbox/InboxDetailsGroupInformation.vue";
 import InboxDetailsGroupMembers from "@/components/inbox/InboxDetailsGroupMembers.vue";
@@ -138,6 +140,8 @@ export default {
       default: null
     }
   },
+
+  emits: ["filePreview"],
 
   data() {
     return {
@@ -219,6 +223,13 @@ export default {
 
     onActionLeaveChannelClick(): void {
       this.modals.leaveChannel.visible = true;
+    },
+
+    onPopupSharedFilesFilePreview(
+      collection: FilePreviewCollection,
+      index = 0
+    ): void {
+      this.$emit("filePreview", collection, index);
     },
 
     onPopupSharedFilesClose(): void {
