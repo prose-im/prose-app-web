@@ -59,6 +59,13 @@ layout-sidebar-details(
       @close="onPopupEncryptionSettingsClose"
     )
 
+    close-user(
+      v-if="modals.closeUser.visible"
+      @proceed="onModalCloseUserProceed"
+      @close="onModalCloseUserClose"
+      :loading="modals.closeUser.loading"
+    )
+
     remove-contact(
       v-if="modals.removeContact.visible"
       @proceed="onModalRemoveContactProceed"
@@ -88,6 +95,7 @@ import { useEvents } from "@/composables/events";
 import Store from "@/store";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import InboxDetailsUserIdentity from "@/components/inbox/InboxDetailsUserIdentity.vue";
 import InboxDetailsUserInformation from "@/components/inbox/InboxDetailsUserInformation.vue";
 import InboxDetailsUserSecurity from "@/components/inbox/InboxDetailsUserSecurity.vue";
@@ -97,6 +105,7 @@ import {
 } from "@/components/inbox/InboxDetailsGenericActions.vue";
 
 // PROJECT: MODALS
+import CloseUser from "@/modals/inbox/CloseUser.vue";
 import RemoveContact from "@/modals/inbox/RemoveContact.vue";
 import BlockUser from "@/modals/inbox/BlockUser.vue";
 
@@ -114,6 +123,7 @@ export default {
     InboxDetailsGenericActions,
     SharedFiles,
     EncryptionSettings,
+    CloseUser,
     RemoveContact,
     BlockUser
   },
@@ -147,6 +157,11 @@ export default {
       isVCardSyncStale: true,
 
       modals: {
+        closeUser: {
+          visible: false,
+          loading: false
+        },
+
         removeContact: {
           visible: false
         },
@@ -208,6 +223,16 @@ export default {
         );
       }
 
+      // Non-favorited? Add ability to close chat
+      if (this.roomItem?.isFavorite !== true) {
+        actions.push({
+          id: "close",
+          title: "Close this chat",
+          click: this.onActionCloseUserClick,
+          color: "red"
+        });
+      }
+
       return actions;
     },
 
@@ -225,6 +250,10 @@ export default {
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
+    },
+
+    roomItem(): ReturnType<typeof Store.$room.getRoomItem> {
+      return this.room ? Store.$room.getRoomItem(this.room.id) : undefined;
     }
   },
 
@@ -295,12 +324,45 @@ export default {
       this.modals.blockUser.visible = true;
     },
 
+    onActionCloseUserClick(): void {
+      this.modals.closeUser.visible = true;
+    },
+
     onPopupSharedFilesClose(): void {
       this.popups.sharedFiles.visible = false;
     },
 
     onPopupEncryptionSettingsClose(): void {
       this.popups.encryptionSettings.visible = false;
+    },
+
+    async onModalCloseUserProceed(): Promise<void> {
+      try {
+        if (!this.roomItem) {
+          throw new Error("No room item");
+        }
+
+        // Remove item from sidebar
+        this.modals.closeUser.loading = true;
+
+        await this.roomItem.removeFromSidebar();
+
+        // Show closed alert
+        BaseAlert.info("Closed chat", "You can re-open this chat anytime");
+
+        this.modals.closeUser.visible = false;
+      } catch (error) {
+        this.$log.error("Failed closing chat", error);
+
+        // Show error alert
+        BaseAlert.error("Cannot close chat", "Could you try again?");
+      } finally {
+        this.modals.closeUser.loading = false;
+      }
+    },
+
+    onModalCloseUserClose(): void {
+      this.modals.closeUser.visible = false;
     },
 
     onModalRemoveContactProceed(): void {
