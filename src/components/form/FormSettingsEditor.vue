@@ -37,6 +37,7 @@
       component(
         v-for="part in fieldset.parts"
         v-bind="part.properties"
+        v-on="part.listeners || {}"
         :is="part.component"
         :class=`[
           {
@@ -388,6 +389,7 @@ interface FieldsetPart {
   id: string;
   component: object;
   properties?: object;
+  listeners?: object;
 }
 
 interface FieldsetField {

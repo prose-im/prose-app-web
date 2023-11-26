@@ -61,6 +61,8 @@ export default {
     }
   },
 
+  emits: ["add"],
+
   data() {
     return {
       // --> DATA <--
@@ -78,12 +80,24 @@ export default {
               properties: {
                 room: this.room,
                 dataTableClass: this.dataTableClass
+              },
+
+              listeners: {
+                add: this.onMembersTableAdd
               }
             }
           ]
         }
       ] as Array<FormFieldset>
     };
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onMembersTableAdd(): void {
+      this.$emit("add");
+    }
   }
 };
 </script>

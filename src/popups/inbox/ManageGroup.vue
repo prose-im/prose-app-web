@@ -33,6 +33,7 @@ layout-popup-navigate(
     component(
       v-if="contentSections[section]"
       v-bind="contentSections[section].properties"
+      v-on="contentSections[section].listeners || {}"
       :is="contentSections[section].component"
       class="p-manage-group__form-inner"
     )
@@ -96,7 +97,7 @@ export default {
     }
   },
 
-  emits: ["close"],
+  emits: ["add", "close"],
 
   data() {
     return {
@@ -149,6 +150,10 @@ export default {
             type: this.type,
             room: this.room,
             dataTableClass: "p-manage-group__form-offset-sides"
+          },
+
+          listeners: {
+            add: this.onMembersAdd
           }
         },
 
@@ -176,6 +181,10 @@ export default {
     },
 
     // --> EVENT LISTENERS <--
+
+    onMembersAdd(): void {
+      this.$emit("add");
+    },
 
     onClose(): void {
       this.$emit("close");

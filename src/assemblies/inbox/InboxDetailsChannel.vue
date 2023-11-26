@@ -30,6 +30,7 @@ layout-sidebar-details(
     )
 
     inbox-details-group-members(
+      @add="onMembersAdd"
       :room="room"
       :header-class="headerClass"
       :item-class="itemClass"
@@ -52,6 +53,14 @@ layout-sidebar-details(
       @close="onPopupSharedFilesClose"
     )
 
+    manage-group(
+      v-if="popups.manageChannel.visible"
+      @add="onPopupManageChannelAdd"
+      @close="onPopupManageChannelClose"
+      :room="room"
+      type="channel"
+    )
+
     leave-group(
       v-if="modals.leaveChannel.visible"
       @proceed="onModalLeaveChannelProceed"
@@ -60,11 +69,11 @@ layout-sidebar-details(
       type="channel"
     )
 
-    manage-group(
-      v-if="popups.manageChannel.visible"
-      @close="onPopupManageChannelClose"
-      :room="room"
-      type="channel"
+    add-group-member(
+      v-if="modals.addChannelMember.visible"
+      @add="onModalAddChannelMemberAdd"
+      @close="onModalAddChannelMemberClose"
+      :loading="modals.addChannelMember.loading"
     )
 </template>
 
@@ -92,6 +101,7 @@ import {
 
 // PROJECT: MODALS
 import LeaveGroup from "@/modals/inbox/LeaveGroup.vue";
+import AddGroupMember from "@/modals/inbox/AddGroupMember.vue";
 
 // PROJECT: POPUPS
 import SharedFiles from "@/popups/inbox/SharedFiles.vue";
@@ -105,9 +115,10 @@ export default {
     InboxDetailsGroupInformation,
     InboxDetailsGroupMembers,
     InboxDetailsGenericActions,
-    LeaveGroup,
     SharedFiles,
-    ManageGroup
+    ManageGroup,
+    LeaveGroup,
+    AddGroupMember
   },
 
   props: {
@@ -133,6 +144,11 @@ export default {
 
       modals: {
         leaveChannel: {
+          visible: false,
+          loading: false
+        },
+
+        addChannelMember: {
           visible: false,
           loading: false
         }
@@ -188,6 +204,10 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
+    onMembersAdd(): void {
+      this.modals.addChannelMember.visible = true;
+    },
+
     onActionSharedFilesClick(): void {
       this.popups.sharedFiles.visible = true;
     },
@@ -202,6 +222,10 @@ export default {
 
     onPopupSharedFilesClose(): void {
       this.popups.sharedFiles.visible = false;
+    },
+
+    onPopupManageChannelAdd(): void {
+      this.onMembersAdd();
     },
 
     onPopupManageChannelClose(): void {
@@ -240,6 +264,27 @@ export default {
 
     onModalLeaveChannelClose(): void {
       this.modals.leaveChannel.visible = false;
+    },
+
+    onModalAddChannelMemberAdd(jidString: string): void {
+      if (this.modals.addChannelMember.loading !== true) {
+        this.modals.addChannelMember.loading = true;
+
+        // TODO: remove this
+        setTimeout(() => {
+          this.modals.addChannelMember.visible = false;
+          this.modals.addChannelMember.loading = false;
+
+          BaseAlert.error(
+            "Member not added",
+            `${jidString} could not be added`
+          );
+        }, 1000);
+      }
+    },
+
+    onModalAddChannelMemberClose(): void {
+      this.modals.addChannelMember.visible = false;
     }
   }
 };

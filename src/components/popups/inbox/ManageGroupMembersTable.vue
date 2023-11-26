@@ -57,6 +57,8 @@ export default {
     }
   },
 
+  emits: ["add"],
+
   data() {
     return {
       // --> DATA <--
@@ -104,8 +106,20 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onDataTableControlClick(): void {
-      // TODO: handle action for type
+    onDataTableControlClick(control: DataTableControlType): void {
+      switch (control) {
+        case DataTableControlType.Add: {
+          this.$emit("add");
+
+          break;
+        }
+
+        case DataTableControlType.Remove: {
+          // TODO: handle remove
+
+          break;
+        }
+      }
     }
   }
 };
