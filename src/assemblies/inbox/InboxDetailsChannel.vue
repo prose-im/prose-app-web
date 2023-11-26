@@ -83,7 +83,7 @@ layout-sidebar-details(
 
 <script lang="ts">
 // NPM
-import { Room } from "@prose-im/prose-sdk-js";
+import { Room, RoomChannel } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
 // PROJECT: STORES
@@ -266,20 +266,29 @@ export default {
       this.modals.leaveChannel.visible = false;
     },
 
-    onModalAddChannelMemberAdd(jidString: string): void {
+    async onModalAddChannelMemberAdd(jidString: string): Promise<void> {
       if (this.modals.addChannelMember.loading !== true) {
-        this.modals.addChannelMember.loading = true;
+        try {
+          this.modals.addChannelMember.loading = true;
 
-        // TODO: remove this
-        setTimeout(() => {
+          // Invite user to channel
+          await (this.room as RoomChannel).inviteUsers([jidString]);
+
+          // Show success alert
+          BaseAlert.success("Member added", `${jidString} has been added`);
+
           this.modals.addChannelMember.visible = false;
-          this.modals.addChannelMember.loading = false;
+        } catch (error) {
+          this.$log.error("Failed adding member", error);
 
+          // Show error alert
           BaseAlert.error(
             "Member not added",
             `${jidString} could not be added`
           );
-        }, 1000);
+        } finally {
+          this.modals.addChannelMember.loading = false;
+        }
       }
     },
 
