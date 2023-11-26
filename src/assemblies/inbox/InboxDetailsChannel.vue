@@ -56,6 +56,7 @@ layout-sidebar-details(
       v-if="modals.leaveChannel.visible"
       @proceed="onModalLeaveChannelProceed"
       @close="onModalLeaveChannelClose"
+      :loading="modals.leaveChannel.loading"
       type="channel"
     )
 
@@ -80,6 +81,7 @@ import { PropType } from "vue";
 import Store from "@/store";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import InboxDetailsGroupIdentity from "@/components/inbox/InboxDetailsGroupIdentity.vue";
 import InboxDetailsGroupInformation from "@/components/inbox/InboxDetailsGroupInformation.vue";
 import InboxDetailsGroupMembers from "@/components/inbox/InboxDetailsGroupMembers.vue";
@@ -131,7 +133,8 @@ export default {
 
       modals: {
         leaveChannel: {
-          visible: false
+          visible: false,
+          loading: false
         }
       },
 
@@ -175,6 +178,10 @@ export default {
 
     layout(): typeof Store.$layout {
       return Store.$layout;
+    },
+
+    roomItem(): ReturnType<typeof Store.$room.getRoomItem> {
+      return this.room ? Store.$room.getRoomItem(this.room.id) : undefined;
     }
   },
 
@@ -201,10 +208,34 @@ export default {
       this.popups.manageChannel.visible = false;
     },
 
-    onModalLeaveChannelProceed(): void {
-      // TODO: proceed
+    async onModalLeaveChannelProceed(): Promise<void> {
+      try {
+        if (!this.roomItem) {
+          throw new Error("No room item");
+        }
 
-      this.modals.leaveChannel.visible = false;
+        const roomName = this.roomItem.name;
+
+        // Remove item from sidebar (effectively leave the room)
+        this.modals.leaveChannel.loading = true;
+
+        await this.roomItem.removeFromSidebar();
+
+        // Show left alert
+        BaseAlert.info(
+          `Left #${roomName}`,
+          "You are no longer a member of channel"
+        );
+
+        this.modals.leaveChannel.visible = false;
+      } catch (error) {
+        this.$log.error("Failed leaving channel", error);
+
+        // Show error alert
+        BaseAlert.error("Cannot leave channel", "Could you try again?");
+      } finally {
+        this.modals.leaveChannel.loading = false;
+      }
     },
 
     onModalLeaveChannelClose(): void {

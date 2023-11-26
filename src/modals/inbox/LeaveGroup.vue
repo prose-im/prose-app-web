@@ -13,8 +13,8 @@ base-modal(
   @close="$emit('close')"
   @confirm="$emit('proceed')"
   :confirm-label="confirmLabel"
+  :confirm-loading="loading"
   class="m-leave-group"
-  confirm-disabled
   destructive
 )
   p.u-regular
@@ -40,6 +40,11 @@ export default {
       validator(x: string) {
         return ["channel", "group"].includes(x);
       }
+    },
+
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
 
