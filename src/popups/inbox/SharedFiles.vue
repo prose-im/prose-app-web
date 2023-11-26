@@ -26,15 +26,34 @@ layout-popup-navigate(
   template(
     v-slot:content
   )
-    ul.p-shared-files__mosaic(
+    ul(
       v-if="sectionFiles.length > 0"
+      :class=`[
+        "p-shared-files__mosaic",
+        {
+          "p-shared-files__mosaic--medias": isSectionMedia,
+          "p-shared-files__mosaic--downloads": !isSectionMedia
+        }
+      ]`
     )
       li.p-shared-files__file(
         v-for="file in sectionFiles"
       )
-        a.p-shared-files__thumbnail(
+        a.p-shared-files__target(
           @click="onThumbnailClick"
         )
+          template(
+            v-if="!isSectionMedia"
+          )
+            base-action(
+              class="p-shared-files__action"
+              icon="arrow.down.circle.dotted"
+              context="grey"
+              size="18px"
+            )
+
+            span.p-shared-files__name.u-ellipsis
+              | {{ file.name }}
 
     base-overlay(
       v-else
@@ -110,7 +129,10 @@ export default {
       ] as Array<NavigateSection>,
 
       // TODO: dummy files
-      files: Array(6).fill({})
+      files: Array(6).fill({
+        name: "Brand Assets.zip",
+        url: "https://storage.crisp.chat/public/documents/Brand%20Assets.zip"
+      })
     };
   },
 
@@ -125,6 +147,19 @@ export default {
         this.section === "others" ? "other files" : this.section;
 
       return `No ${sectionLabel} shared`;
+    },
+
+    isSectionMedia(): boolean {
+      switch (this.section) {
+        case "images":
+        case "videos": {
+          return true;
+        }
+
+        default: {
+          return false;
+        }
+      }
     }
   },
 
@@ -209,26 +244,68 @@ $c: ".p-shared-files";
   }
 
   #{$c}__mosaic {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-gap: 14px;
-
     #{$c}__file {
-      #{$c}__thumbnail {
+      #{$c}__target {
         background-color: rgb(var(--color-background-primary));
         border: 1px solid rgb(var(--color-border-primary));
-        aspect-ratio: 1;
-        width: 100%;
+        outline: 0 solid rgba(var(--color-base-blue-normal), 0.16);
         display: block;
         border-radius: 6px;
-        transition: border-color 100ms linear;
+        transition: border-color 100ms linear, outline-width 150ms linear;
+
+        &:hover,
+        &:active {
+          outline-width: 2px;
+        }
 
         &:hover {
-          border-color: darken-var(var(--color-border-primary), 5%);
+          border-color: darken-var(var(--color-base-blue-normal), 8%);
         }
 
         &:active {
-          border-color: darken-var(var(--color-border-primary), 8%);
+          border-color: darken-var(var(--color-base-blue-normal), 18%);
+        }
+      }
+    }
+
+    &--medias {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-gap: 14px;
+
+      #{$c}__file {
+        #{$c}__target {
+          width: 100%;
+          aspect-ratio: 1;
+        }
+      }
+    }
+
+    &--downloads {
+      #{$c}__file {
+        margin-block-end: 7px;
+        display: block;
+
+        &:last-child {
+          margin-block-end: 0;
+        }
+
+        #{$c}__target {
+          padding: 6px 10px;
+          display: flex;
+          align-items: center;
+
+          #{$c}__action {
+            flex: 0 0 auto;
+            margin-inline-end: 8px;
+          }
+
+          #{$c}__name {
+            color: rgb(var(--color-text-primary));
+            font-size: 12.5px;
+            line-height: 24px;
+            flex: 1;
+          }
         }
       }
     }
