@@ -87,10 +87,7 @@ import download from "browser-downloads";
 
 // PROJECT: COMPONENTS
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
-import {
-  Collection as FilePreviewCollection,
-  FileType as FilePreviewFileType
-} from "@/components/inbox/InboxFilePreview.vue";
+import { Collection as FilePreviewCollection } from "@/components/inbox/InboxFilePreview.vue";
 
 // CONSTANTS
 const SECTION_INITIAL = "images";
@@ -128,11 +125,8 @@ export default {
         }
       ] as Array<NavigateSection>,
 
-      // TODO: dummy files
-      files: Array(6).fill({
-        name: "Brand Assets.zip",
-        url: "https://storage.crisp.chat/public/documents/Brand%20Assets.zip"
-      })
+      // TODO: populate from somewhere
+      files: []
     };
   },
 
@@ -179,36 +173,7 @@ export default {
       let fileDownloadUrl: string | null = null,
         fileDownloadName: string | null = null;
 
-      // TODO: remove this fixture
-      switch (this.section) {
-        case "images": {
-          fileCollection.push({
-            type: FilePreviewFileType.Image,
-            url: "https://crisp.chat/static/blog/content/images/size/w2000/2023/09/product-update-august-2023.jpeg",
-            name: "product-update-august-2023.jpeg"
-          });
-
-          break;
-        }
-
-        case "videos": {
-          fileCollection.push({
-            type: FilePreviewFileType.Video,
-            url: "https://plugins.crisp.chat/urn:crisp.im:bot:0/config/videos/editor/add_blocks_quick/add_blocks_quick-vp9.webm",
-            name: "add_blocks_quick-vp9.webm"
-          });
-
-          break;
-        }
-
-        case "others": {
-          fileDownloadUrl =
-            "https://storage.crisp.chat/public/documents/Brand%20Assets.zip";
-          fileDownloadName = "Brand Assets.zip";
-
-          break;
-        }
-      }
+      // TODO: add file data
 
       if (fileDownloadUrl !== null) {
         // Download target file
