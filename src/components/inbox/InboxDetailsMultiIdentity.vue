@@ -9,15 +9,15 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-inbox-details-group-identity
-  p.c-inbox-details-group-identity__name
+.c-inbox-details-multi-identity
+  p.c-inbox-details-multi-identity__name
     base-icon(
       :name="nameIcon"
       size="13px"
-      class="c-inbox-details-group-identity__name-icon"
+      class="c-inbox-details-multi-identity__name-icon"
     )
 
-    span.c-inbox-details-group-identity__name-full.u-bold
+    span.c-inbox-details-multi-identity__name-full.u-bold
       | {{ room.name }}
 </template>
 
@@ -69,9 +69,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-inbox-details-group-identity";
+$c: ".c-inbox-details-multi-identity";
 
-.c-inbox-details-group-identity {
+.c-inbox-details-multi-identity {
   #{$c}__name {
     font-size: 14px;
     padding-inline: 8px;

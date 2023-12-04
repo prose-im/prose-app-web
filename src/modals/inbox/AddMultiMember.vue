@@ -14,7 +14,7 @@ base-modal(
   @confirm="onConfirm"
   :confirm-loading="loading"
   confirm-label="Add Member"
-  class="m-add-group-member"
+  class="m-add-multi-member"
   size="large"
 )
   p.u-medium
@@ -28,7 +28,7 @@ base-modal(
     name="address"
     size="large"
     align="left"
-    class="m-add-group-member__field"
+    class="m-add-multi-member__field"
     submittable
     autofocus
   )
@@ -46,7 +46,7 @@ import { JID } from "@prose-im/prose-sdk-js";
 import BaseAlert from "@/components/base/BaseAlert.vue";
 
 export default {
-  name: "AddGroupMember",
+  name: "AddMultiMember",
 
   props: {
     loading: {
@@ -100,9 +100,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".m-add-group-member";
+$c: ".m-add-multi-member";
 
-.m-add-group-member {
+.m-add-multi-member {
   #{$c}__field {
     margin-block-start: 20px;
   }

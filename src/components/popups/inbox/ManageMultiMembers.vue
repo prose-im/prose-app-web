@@ -11,10 +11,10 @@
 <template lang="pug">
 form-settings-editor(
   :fieldsets="fieldsets"
-  class="p-manage-group-members"
-  fieldset-class="p-manage-group-members__fieldset"
-  title-class="p-manage-group-members__title"
-  part-class="p-manage-group-members__part"
+  class="p-manage-multi-members"
+  fieldset-class="p-manage-multi-members__fieldset"
+  title-class="p-manage-multi-members__title"
+  part-class="p-manage-multi-members__part"
 )
 </template>
 
@@ -33,12 +33,12 @@ import {
   default as FormSettingsEditor,
   Fieldset as FormFieldset
 } from "@/components/form/FormSettingsEditor.vue";
-import ManageGroupMembersTable from "@/components/popups/inbox/ManageGroupMembersTable.vue";
+import ManageMultiMembersTable from "@/components/popups/inbox/ManageMultiMembersTable.vue";
 
 export default {
-  name: "ManageGroupMembers",
+  name: "ManageMultiMembers",
 
-  components: { FormSettingsEditor, ManageGroupMembersTable },
+  components: { FormSettingsEditor, ManageMultiMembersTable },
 
   props: {
     type: {
@@ -75,7 +75,7 @@ export default {
           parts: [
             {
               id: "table",
-              component: shallowRef(ManageGroupMembersTable),
+              component: shallowRef(ManageMultiMembersTable),
 
               properties: {
                 room: this.room,
@@ -108,9 +108,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".p-manage-group-members";
+$c: ".p-manage-multi-members";
 
-.p-manage-group-members {
+.p-manage-multi-members {
   &,
   #{$c}__fieldset {
     display: flex;

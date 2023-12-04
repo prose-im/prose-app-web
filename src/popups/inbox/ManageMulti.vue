@@ -12,11 +12,11 @@
 layout-popup-navigate(
   :content-section="section"
   :class=`[
-    "p-manage-group",
-    "p-manage-group--" + section
+    "p-manage-multi",
+    "p-manage-multi--" + section
   ]`
   size="small"
-  content-class="p-manage-group__form"
+  content-class="p-manage-multi__form"
 )
   template(
     v-slot:navigate
@@ -35,7 +35,7 @@ layout-popup-navigate(
       v-bind="contentSections[section].properties"
       v-on="contentSections[section].listeners || {}"
       :is="contentSections[section].component"
-      class="p-manage-group__form-inner"
+      class="p-manage-multi__form-inner"
     )
 
   template(
@@ -59,9 +59,9 @@ import { Room, RoomMUC } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
-import ManageGroupAbout from "@/components/popups/inbox/ManageGroupAbout.vue";
-import ManageGroupMembers from "@/components/popups/inbox/ManageGroupMembers.vue";
-import ManageGroupSettings from "@/components/popups/inbox/ManageGroupSettings.vue";
+import ManageMultiAbout from "@/components/popups/inbox/ManageMultiAbout.vue";
+import ManageMultiMembers from "@/components/popups/inbox/ManageMultiMembers.vue";
+import ManageMultiSettings from "@/components/popups/inbox/ManageMultiSettings.vue";
 
 // TYPES
 type FormValueString = { inner: string };
@@ -79,7 +79,7 @@ export interface FormSettings {
 const SECTION_INITIAL = "about";
 
 export default {
-  name: "ManageGroup",
+  name: "ManageMulti",
 
   props: {
     room: {
@@ -129,7 +129,7 @@ export default {
 
       contentSections: {
         about: {
-          component: shallowRef(ManageGroupAbout),
+          component: shallowRef(ManageMultiAbout),
 
           properties: {
             type: this.type,
@@ -144,12 +144,12 @@ export default {
         },
 
         members: {
-          component: shallowRef(ManageGroupMembers),
+          component: shallowRef(ManageMultiMembers),
 
           properties: {
             type: this.type,
             room: this.room,
-            dataTableClass: "p-manage-group__form-offset-sides"
+            dataTableClass: "p-manage-multi__form-offset-sides"
           },
 
           listeners: {
@@ -158,7 +158,7 @@ export default {
         },
 
         settings: {
-          component: shallowRef(ManageGroupSettings),
+          component: shallowRef(ManageMultiSettings),
 
           properties: {
             type: this.type,
@@ -198,9 +198,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".p-manage-group";
+$c: ".p-manage-multi";
 
-.p-manage-group {
+.p-manage-multi {
   #{$c}__form {
     #{$c}__form-offset-sides {
       margin-inline: (-1 * $size-layout-popup-navigate-padding-inline);

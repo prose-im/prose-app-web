@@ -13,21 +13,21 @@ list-disclosure(
   @toggle="onToggle"
   :header-class="headerClass"
   title="Members"
-  class="c-inbox-details-group-members"
+  class="c-inbox-details-multi-members"
   separated
 )
   list-button(
     v-for="member in room.members"
     @click="onMemberClick(member.jid)"
     size="small"
-    class="c-inbox-details-group-members__member"
+    class="c-inbox-details-multi-members__member"
   )
     template(
       v-slot:icon
     )
       base-avatar(
         :jid="member.jid"
-        class="c-inbox-details-group-members__avatar"
+        class="c-inbox-details-multi-members__avatar"
         size="20px"
         shadow="none"
       )
@@ -35,13 +35,13 @@ list-disclosure(
     template(
       v-slot:default
     )
-      span.c-inbox-details-group-members__name.u-ellipsis
+      span.c-inbox-details-multi-members__name.u-ellipsis
         | {{ member.name }}
 
       base-presence(
         :jid="member.jid"
         size="tiny"
-        class="c-inbox-details-group-members__presence"
+        class="c-inbox-details-multi-members__presence"
         available-only
       )
 
@@ -49,7 +49,7 @@ list-disclosure(
     v-if="hasAddMember"
     @click="onAddMemberClick"
     size="small"
-    class="c-inbox-details-group-members__add"
+    class="c-inbox-details-multi-members__add"
     emphasis
   )
     template(
@@ -58,7 +58,7 @@ list-disclosure(
       base-icon(
         name="plus.square.fill"
         size="12px"
-        class="c-inbox-details-group-members__icon"
+        class="c-inbox-details-multi-members__icon"
       )
 
     template(
@@ -138,9 +138,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-inbox-details-group-members";
+$c: ".c-inbox-details-multi-members";
 
-.c-inbox-details-group-members {
+.c-inbox-details-multi-members {
   #{$c}__member {
     #{$c}__presence {
       margin-inline-start: 4px;

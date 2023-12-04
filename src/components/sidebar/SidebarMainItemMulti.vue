@@ -13,9 +13,9 @@ sidebar-main-item-generic(
   :item="item"
   :active="active"
   :class=`[
-    "c-sidebar-main-item-channel",
+    "c-sidebar-main-item-multi",
     {
-      "c-sidebar-main-item-channel--active": active
+      "c-sidebar-main-item-multi--active": active
     }
   ]`
 )
@@ -26,7 +26,7 @@ sidebar-main-item-generic(
     base-icon(
       :name="icon"
       size="13px"
-      class="c-sidebar-main-item-channel__icon"
+      class="c-sidebar-main-item-multi__icon"
     )
 
   template(
@@ -48,7 +48,7 @@ import { SidebarItem, RoomType } from "@prose-im/prose-sdk-js";
 import SidebarMainItemGeneric from "@/components/sidebar/SidebarMainItemGeneric.vue";
 
 export default {
-  name: "SidebarMainItemChannel",
+  name: "SidebarMainItemMulti",
 
   components: { SidebarMainItemGeneric },
 
@@ -100,9 +100,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-sidebar-main-item-channel";
+$c: ".c-sidebar-main-item-multi";
 
-.c-sidebar-main-item-channel {
+.c-sidebar-main-item-multi {
   #{$c}__icon {
     fill: rgb(var(--color-base-blue-dark));
     margin-block-start: 2px;

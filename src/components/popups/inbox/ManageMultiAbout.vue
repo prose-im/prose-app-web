@@ -11,7 +11,7 @@
 <template lang="pug">
 form-settings-editor(
   :fieldsets="fieldsets"
-  class="p-manage-group-about"
+  class="p-manage-multi-about"
 )
 </template>
 
@@ -36,10 +36,10 @@ import {
 } from "@/components/form/FormSettingsEditor.vue";
 
 // PROJECT: POPUPS
-import { FormAbout as GroupFormAbout } from "@/popups/inbox/ManageGroup.vue";
+import { FormAbout as MultiFormAbout } from "@/popups/inbox/ManageMulti.vue";
 
 export default {
-  name: "ManageGroupAbout",
+  name: "ManageMultiAbout",
 
   components: { FormSettingsEditor },
 
@@ -59,7 +59,7 @@ export default {
     },
 
     form: {
-      type: Object as PropType<GroupFormAbout>,
+      type: Object as PropType<MultiFormAbout>,
       required: true
     }
   },

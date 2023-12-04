@@ -13,7 +13,7 @@ list-disclosure(
   @toggle="onToggle"
   :header-class="headerClass"
   title="Information"
-  class="c-inbox-details-group-information"
+  class="c-inbox-details-multi-information"
   separated
 )
   list-entry(
@@ -35,7 +35,7 @@ list-disclosure(
         v-if="entry.icon"
         :name="entry.icon"
         size="14px"
-        class="c-inbox-details-group-information__icon"
+        class="c-inbox-details-multi-information__icon"
       )
 </template>
 
@@ -118,9 +118,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-inbox-details-group-information";
+$c: ".c-inbox-details-multi-information";
 
-.c-inbox-details-group-information {
+.c-inbox-details-multi-information {
   #{$c}__icon {
     fill: lighten-var(var(--color-base-grey-dark), 10%);
   }

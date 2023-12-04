@@ -15,21 +15,21 @@ layout-sidebar-details(
   template(
     v-slot:header
   )
-    inbox-details-group-identity(
+    inbox-details-multi-identity(
       :room="room"
     )
 
   template(
     v-slot:items
   )
-    inbox-details-group-information(
+    inbox-details-multi-information(
       :room="room"
       :header-class="headerClass"
       :item-class="itemClass"
       :expanded="layout.inbox.details.sections.information"
     )
 
-    inbox-details-group-members(
+    inbox-details-multi-members(
       @add="onMembersAdd"
       :room="room"
       :header-class="headerClass"
@@ -55,7 +55,7 @@ layout-sidebar-details(
       @close="onPopupSharedFilesClose"
     )
 
-    manage-group(
+    manage-multi(
       v-if="popups.manageChannel.visible"
       @add="onPopupManageChannelAdd"
       @close="onPopupManageChannelClose"
@@ -63,7 +63,7 @@ layout-sidebar-details(
       type="channel"
     )
 
-    leave-group(
+    leave-multi(
       v-if="modals.leaveChannel.visible"
       @proceed="onModalLeaveChannelProceed"
       @close="onModalLeaveChannelClose"
@@ -71,7 +71,7 @@ layout-sidebar-details(
       type="channel"
     )
 
-    add-group-member(
+    add-multi-member(
       v-if="modals.addChannelMember.visible"
       @add="onModalAddChannelMemberAdd"
       @close="onModalAddChannelMemberClose"
@@ -94,34 +94,34 @@ import Store from "@/store";
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import { Collection as FilePreviewCollection } from "@/components/inbox/InboxFilePreview.vue";
-import InboxDetailsGroupIdentity from "@/components/inbox/InboxDetailsGroupIdentity.vue";
-import InboxDetailsGroupInformation from "@/components/inbox/InboxDetailsGroupInformation.vue";
-import InboxDetailsGroupMembers from "@/components/inbox/InboxDetailsGroupMembers.vue";
+import InboxDetailsMultiIdentity from "@/components/inbox/InboxDetailsMultiIdentity.vue";
+import InboxDetailsMultiInformation from "@/components/inbox/InboxDetailsMultiInformation.vue";
+import InboxDetailsMultiMembers from "@/components/inbox/InboxDetailsMultiMembers.vue";
 import {
   default as InboxDetailsGenericActions,
   Action as DetailsAction
 } from "@/components/inbox/InboxDetailsGenericActions.vue";
 
 // PROJECT: MODALS
-import LeaveGroup from "@/modals/inbox/LeaveGroup.vue";
-import AddGroupMember from "@/modals/inbox/AddGroupMember.vue";
+import LeaveMulti from "@/modals/inbox/LeaveMulti.vue";
+import AddMultiMember from "@/modals/inbox/AddMultiMember.vue";
 
 // PROJECT: POPUPS
 import SharedFiles from "@/popups/inbox/SharedFiles.vue";
-import ManageGroup from "@/popups/inbox/ManageGroup.vue";
+import ManageMulti from "@/popups/inbox/ManageMulti.vue";
 
 export default {
   name: "InboxDetailsChannel",
 
   components: {
-    InboxDetailsGroupIdentity,
-    InboxDetailsGroupInformation,
-    InboxDetailsGroupMembers,
+    InboxDetailsMultiIdentity,
+    InboxDetailsMultiInformation,
+    InboxDetailsMultiMembers,
     InboxDetailsGenericActions,
     SharedFiles,
-    ManageGroup,
-    LeaveGroup,
-    AddGroupMember
+    ManageMulti,
+    LeaveMulti,
+    AddMultiMember
   },
 
   props: {

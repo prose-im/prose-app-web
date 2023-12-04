@@ -17,7 +17,7 @@ sidebar-main-item-user(
   class="c-sidebar-main-item"
 )
 
-sidebar-main-item-channel(
+sidebar-main-item-multi(
   v-else-if="item.room.type === roomType.Group"
   :item="item"
   :active="active"
@@ -25,7 +25,7 @@ sidebar-main-item-channel(
   class="c-sidebar-main-item"
 )
 
-sidebar-main-item-channel(
+sidebar-main-item-multi(
   v-else-if="item.room.type === roomType.PublicChannel || item.room.type === roomType.PrivateChannel"
   :item="item"
   :active="active"
@@ -52,7 +52,7 @@ import { RoomID, RoomType, SidebarItem } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import SidebarMainItemGeneric from "@/components/sidebar/SidebarMainItemGeneric.vue";
-import SidebarMainItemChannel from "@/components/sidebar/SidebarMainItemChannel.vue";
+import SidebarMainItemMulti from "@/components/sidebar/SidebarMainItemMulti.vue";
 import SidebarMainItemUser from "@/components/sidebar/SidebarMainItemUser.vue";
 
 export default {
@@ -60,7 +60,7 @@ export default {
 
   components: {
     SidebarMainItemGeneric,
-    SidebarMainItemChannel,
+    SidebarMainItemMulti,
     SidebarMainItemUser
   },
 

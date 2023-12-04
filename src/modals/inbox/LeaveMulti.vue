@@ -14,7 +14,7 @@ base-modal(
   @confirm="$emit('proceed')"
   :confirm-label="confirmLabel"
   :confirm-loading="loading"
-  class="m-leave-group"
+  class="m-leave-multi"
   destructive
 )
   p.u-regular
@@ -30,7 +30,7 @@ base-modal(
 
 <script lang="ts">
 export default {
-  name: "LeaveGroup",
+  name: "LeaveMulti",
 
   props: {
     type: {

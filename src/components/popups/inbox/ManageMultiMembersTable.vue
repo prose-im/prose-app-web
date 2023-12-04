@@ -17,7 +17,7 @@ base-data-table(
   :controls="table.controls"
   :read-only="isReadOnly"
   :class=`[
-    "p-manage-group-members-table",
+    "p-manage-multi-members-table",
     dataTableClass
   ]`
   sortable
@@ -44,7 +44,7 @@ import {
 } from "@/components/base/BaseDataTable.vue";
 
 export default {
-  name: "ManageGroupMembersTable",
+  name: "ManageMultiMembersTable",
 
   props: {
     room: {
