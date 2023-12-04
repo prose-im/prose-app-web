@@ -77,6 +77,9 @@ import { Room } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 import { JID } from "@prose-im/prose-sdk-js";
 
+// PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -109,6 +112,14 @@ export default {
   computed: {
     hasAddMember(): boolean {
       return this.type === "channel";
+    },
+
+    selfJID(): JID {
+      return this.account.getLocalJID();
+    },
+
+    account(): typeof Store.$account {
+      return Store.$account;
     }
   },
 
@@ -120,10 +131,14 @@ export default {
     },
 
     onMemberClick(jid: JID): void {
-      this.$router.push({
-        name: "app.inbox",
-        params: { roomId: jid.toString() }
-      });
+      if (jid.equals(this.selfJID) === false) {
+        this.$router.push({
+          name: "app.inbox",
+          params: { roomId: jid.toString() }
+        });
+      } else {
+        BaseAlert.info("This is you", "Cannot start a chat with yourself!");
+      }
     },
 
     onAddMemberClick(): void {
