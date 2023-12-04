@@ -80,19 +80,19 @@ const $room = defineStore("room", {
 
   getters: {
     getItemFavorites: function () {
-      return (): SidebarItem[] => {
+      return (): Array<SidebarItem> => {
         return this.items.favorites;
       };
     },
 
     getItemDirectMessages: function () {
-      return (): SidebarItem[] => {
+      return (): Array<SidebarItem> => {
         return this.items.directMessages;
       };
     },
 
     getItemChannels: function () {
-      return (): SidebarItem[] => {
+      return (): Array<SidebarItem> => {
         return this.items.channels;
       };
     },
@@ -122,9 +122,9 @@ const $room = defineStore("room", {
         LOCAL_STATES.loaded = true;
 
         // Initialize entries
-        const favorites: SidebarItem[] = [],
-          directMessages: SidebarItem[] = [],
-          channels: SidebarItem[] = [],
+        const favorites: Array<SidebarItem> = [],
+          directMessages: Array<SidebarItem> = [],
+          channels: Array<SidebarItem> = [],
           itemsByRoomId = new Map<RoomID, SidebarItem>(),
           roomsById = new Map<RoomID, CoreRoom>();
 
