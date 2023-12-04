@@ -51,6 +51,14 @@ const LOCAL_STATES = {
 };
 
 /**************************************************************************
+ * METHODS
+ * ************************************************************************* */
+
+const compareRooms = function (left: SidebarItem, right: SidebarItem): number {
+  return left.name.localeCompare(right.name);
+};
+
+/**************************************************************************
  * TABLE
  * ************************************************************************* */
 
@@ -124,6 +132,7 @@ const $room = defineStore("room", {
         const sidebarItems = Broker.$room.sidebarItems();
 
         sidebarItems.forEach(item => {
+          // Append item in its section
           switch (item.section) {
             case SidebarSection.Favorites: {
               favorites.push(item);
@@ -144,18 +153,12 @@ const $room = defineStore("room", {
             }
           }
 
+          // Reference item by its identifier
           itemsByRoomId.set(item.room.id, item);
           roomsById.set(item.room.id, item.room);
         });
 
         // Append all rooms
-        const compareRooms = (
-          left: SidebarItem,
-          right: SidebarItem
-        ): number => {
-          return left.name.localeCompare(right.name);
-        };
-
         this.$patch(state => {
           // Store items
           state.items.favorites = favorites.sort(compareRooms);
