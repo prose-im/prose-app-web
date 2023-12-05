@@ -1,0 +1,270 @@
+<!--
+ * This file is part of prose-app-web
+ *
+ * Copyright 2023, Prose Foundation
+ -->
+
+<!-- **********************************************************************
+     TEMPLATE
+     ********************************************************************** -->
+
+<template lang="pug">
+ul(
+  v-hotkey="hotkeys"
+  :class=`[
+    "c-form-field-suggest",
+    "c-form-field-suggest--" + size
+  ]`
+  ref="suggest"
+)
+  li(
+    v-for="(suggestion, index) in suggestions"
+    :class=`[
+      "c-form-field-suggest__item",
+      {
+        "c-form-field-suggest__item--active": (index === activeIndex)
+      }
+    ]`
+  )
+    a.c-form-field-suggest__link.u-medium(
+      @click="onLinkClick(suggestion)"
+      @mouseover="onLinkMouseOver(index)"
+    )
+      | {{ suggestion.label }}
+</template>
+
+<!-- **********************************************************************
+     SCRIPT
+     ********************************************************************** -->
+
+<script lang="ts">
+// INTERFACES
+export interface Suggestion {
+  label: string;
+  value: string;
+}
+
+export default {
+  name: "FormFieldSuggest",
+
+  props: {
+    suggestions: {
+      type: Array<Suggestion>,
+      required: true,
+
+      validator(x: Array<Suggestion>): boolean {
+        return x.length > 0;
+      }
+    },
+
+    size: {
+      type: String,
+      default: "large",
+
+      validator(x: string) {
+        return [
+          "medium",
+          "mid-medium",
+          "large",
+          "mid-large",
+          "ultra-large"
+        ].includes(x);
+      }
+    }
+  },
+
+  emits: ["select"],
+
+  data() {
+    return {
+      // --> STATE <--
+
+      activeIndex: 0
+    };
+  },
+
+  computed: {
+    hasSuggestions(): boolean {
+      return this.suggestions.length > 0;
+    },
+
+    hotkeys(): { [name: string]: (event: Event) => void } {
+      return {
+        down: this.onHotkeyDown,
+        up: this.onHotkeyUp
+      };
+    }
+  },
+
+  methods: {
+    // --> HELPERS <--
+
+    select(): void {
+      if (this.hasSuggestions === true) {
+        const activeSuggestion = this.suggestions[this.activeIndex] || null;
+
+        if (activeSuggestion !== null) {
+          this.$emit("select", activeSuggestion);
+        }
+      }
+    },
+
+    navigate(increment = 1): void {
+      if (this.hasSuggestions === true) {
+        const futureActiveIndex = this.activeIndex + increment;
+
+        if (increment < 0) {
+          this.activeIndex =
+            futureActiveIndex >= 0
+              ? futureActiveIndex
+              : this.suggestions.length - 1;
+        } else {
+          this.activeIndex =
+            futureActiveIndex < this.suggestions.length ? futureActiveIndex : 0;
+        }
+
+        this.scrollToItemIndex(this.activeIndex);
+      }
+    },
+
+    scrollToItemIndex(index: number): void {
+      const suggestElement = (this.$refs.suggest as HTMLElement) || null;
+
+      if (suggestElement !== null) {
+        const suggestItemElement = suggestElement.children[index] || null;
+
+        if (suggestItemElement !== null) {
+          suggestItemElement.scrollIntoView({
+            behavior: "auto",
+            block: "nearest"
+          });
+        }
+      }
+    },
+
+    eventOverrides(event: Event): void {
+      event.stopPropagation();
+      event.preventDefault();
+    },
+
+    // --> EVENT LISTENERS <--
+
+    onHotkeyDown(event: Event): void {
+      this.eventOverrides(event);
+
+      // Navigate by +1 increment
+      this.navigate(1);
+    },
+
+    onHotkeyUp(event: Event): void {
+      this.eventOverrides(event);
+
+      // Navigate by -1 increment
+      this.navigate(-1);
+    },
+
+    onLinkClick(suggestion: Suggestion) {
+      // Select clicked suggestion
+      this.$emit("select", suggestion);
+    },
+
+    onLinkMouseOver(index: number) {
+      this.activeIndex = index;
+    }
+  }
+};
+</script>
+
+<!-- **********************************************************************
+     STYLE
+     ********************************************************************** -->
+
+<style lang="scss">
+$c: ".c-form-field-suggest";
+
+// VARIABLES
+$suggest-padding: 4px;
+$suggest-border-radius: $size-form-field-border-radius;
+
+$suggest-sizes: (
+  "medium": (
+    "link": (
+      "padding-inline": $size-form-field-medium-padding-sides
+    )
+  ),
+
+  "mid-medium": (
+    "link": (
+      "padding-inline": $size-form-field-mid-medium-padding-sides
+    )
+  ),
+
+  "large": (
+    "link": (
+      "padding-inline": $size-form-field-large-padding-sides
+    )
+  ),
+
+  "mid-large": (
+    "link": (
+      "padding-inline": $size-form-field-mid-large-padding-sides
+    )
+  ),
+
+  "ultra-large": (
+    "link": (
+      "padding-inline": $size-form-field-ultra-large-padding-sides
+    )
+  )
+);
+
+.c-form-field-suggest {
+  background-color: rgb(var(--color-background-secondary));
+  border: 1px solid rgb(var(--color-border-primary));
+  padding: 4px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: $suggest-border-radius;
+  box-shadow: 0 3px 6px 0 rgba(var(--color-shadow-primary), 0.05);
+
+  #{$c}__item {
+    &,
+    #{$c}__link {
+      display: block;
+    }
+
+    #{$c}__link {
+      color: rgb(var(--color-text-primary));
+      font-size: 12.5px;
+      line-height: 28px;
+      transition: none;
+      border-radius: ($suggest-border-radius - 2px);
+    }
+
+    &--active {
+      #{$c}__link {
+        color: rgb(var(--color-text-reverse));
+        background-color: rgb(var(--color-base-blue-normal));
+
+        &:active {
+          background-color: darken-var(var(--color-base-blue-normal), 4%);
+        }
+      }
+    }
+  }
+
+  // --> SIZES <--
+
+  @each $name, $size in $suggest-sizes {
+    &--#{$name} {
+      #{$c}__item {
+        #{$c}__link {
+          padding-inline: (
+            map-get(map-get($size, "link"), "padding-inline") - $suggest-padding
+          );
+        }
+      }
+    }
+  }
+}
+</style>
