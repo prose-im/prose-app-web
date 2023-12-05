@@ -30,6 +30,13 @@ ul(
       @click="onLinkClick(suggestion)"
       @mouseover="onLinkMouseOver(index)"
     )
+      component(
+        v-if="suggestion.icon"
+        v-bind="suggestion.icon.properties"
+        :is="suggestion.icon.component"
+        class="c-form-field-suggest__link-icon"
+      )
+
       span.c-form-field-suggest__link-label.u-ellipsis.u-medium
         | {{ suggestion.label }}
 
@@ -46,6 +53,11 @@ ul(
 export interface Suggestion {
   label: string;
   value: string;
+
+  icon?: {
+    component: object;
+    properties?: object;
+  };
 }
 
 export default {
@@ -252,12 +264,21 @@ $suggest-sizes: (
     #{$c}__link {
       font-size: 12.5px;
       display: flex;
+      align-items: center;
       transition: none;
       border-radius: ($suggest-border-radius - 2px);
 
+      #{$c}__link-icon,
+      #{$c}__link-label {
+        flex: 0 1 auto;
+      }
+
+      #{$c}__link-icon {
+        margin-inline-end: 8px;
+      }
+
       #{$c}__link-label {
         color: rgb(var(--color-text-primary));
-        flex: 0 1 auto;
       }
 
       #{$c}__link-value {
