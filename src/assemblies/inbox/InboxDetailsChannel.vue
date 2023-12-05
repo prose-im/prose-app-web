@@ -85,7 +85,7 @@ layout-sidebar-details(
 
 <script lang="ts">
 // NPM
-import { Room, RoomChannel } from "@prose-im/prose-sdk-js";
+import { JID, Room, RoomChannel } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
 // PROJECT: STORES
@@ -278,8 +278,10 @@ export default {
       this.modals.leaveChannel.visible = false;
     },
 
-    async onModalAddChannelMemberAdd(jidString: string): Promise<void> {
+    async onModalAddChannelMemberAdd(jid: JID): Promise<void> {
       if (this.modals.addChannelMember.loading !== true) {
+        const jidString = jid.toString();
+
         try {
           this.modals.addChannelMember.loading = true;
 
