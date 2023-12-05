@@ -26,11 +26,15 @@ ul(
       }
     ]`
   )
-    a.c-form-field-suggest__link.u-medium(
+    a.c-form-field-suggest__link(
       @click="onLinkClick(suggestion)"
       @mouseover="onLinkMouseOver(index)"
     )
-      | {{ suggestion.label }}
+      span.c-form-field-suggest__link-label.u-ellipsis.u-medium
+        | {{ suggestion.label }}
+
+      span.c-form-field-suggest__link-value.u-ellipsis
+        | {{ suggestion.value }}
 </template>
 
 <!-- **********************************************************************
@@ -234,20 +238,35 @@ $suggest-sizes: (
     }
 
     #{$c}__link {
-      color: rgb(var(--color-text-primary));
       font-size: 12.5px;
       line-height: 28px;
+      display: flex;
       transition: none;
       border-radius: ($suggest-border-radius - 2px);
+
+      #{$c}__link-label {
+        color: rgb(var(--color-text-primary));
+        flex: 0 1 auto;
+      }
+
+      #{$c}__link-value {
+        color: rgb(var(--color-text-secondary));
+        margin-inline-start: 10px;
+        flex: 1;
+      }
     }
 
     &--active {
       #{$c}__link {
-        color: rgb(var(--color-text-reverse));
         background-color: rgb(var(--color-base-blue-normal));
 
         &:active {
           background-color: darken-var(var(--color-base-blue-normal), 4%);
+        }
+
+        #{$c}__link-label,
+        #{$c}__link-value {
+          color: rgb(var(--color-text-reverse));
         }
       }
     }
