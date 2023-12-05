@@ -67,6 +67,14 @@ div(
     ]`
     ref="field"
   )
+
+  form-field-suggest(
+    v-if="hasSuggestions"
+    @select="onSuggestSelect"
+    :suggestions="suggestions"
+    ref="suggest"
+    class="c-form-field__suggest"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -76,6 +84,12 @@ div(
 <script lang="ts">
 // NPM
 import { codes as keyCodes } from "keycode";
+
+// PROJECT: COMPONENTS
+import {
+  default as FormFieldSuggest,
+  Suggestion as FormFieldSuggestSuggestion
+} from "@/components/form/FormFieldSuggest.vue";
 
 export default {
   name: "FormField",
@@ -167,6 +181,11 @@ export default {
       default: false
     },
 
+    suggestions: {
+      type: Array<FormFieldSuggestSuggestion>,
+      default: []
+    },
+
     fieldClass: {
       type: String,
       default: null
@@ -180,9 +199,16 @@ export default {
       // --> STATE <--
 
       isFocused: false,
+      areSuggestionsHidden: false,
 
       value: ""
     };
+  },
+
+  computed: {
+    hasSuggestions(): boolean {
+      return this.suggestions.length > 0 && this.areSuggestionsHidden !== true;
+    }
   },
 
   watch: {
@@ -190,11 +216,14 @@ export default {
       immediate: true,
 
       handler(value) {
-        this.value = value;
-
-        // Refresh auto-grow (if enabled)
-        this.$nextTick(this.refreshAutogrow);
+        // Update value in the state
+        this.updateStateValue(value);
       }
+    },
+
+    suggestions() {
+      // Ensure suggestions are not hidden (when they change)
+      this.areSuggestionsHidden = false;
     }
   },
 
@@ -219,6 +248,18 @@ export default {
       }
     },
 
+    updateStateValue(value: string): void {
+      this.value = value;
+
+      // Refresh auto-grow (if enabled)
+      this.$nextTick(this.refreshAutogrow);
+    },
+
+    updateModelValue(value: string | number): void {
+      this.$emit("update:modelValue", value);
+      this.$emit("change", value);
+    },
+
     refreshAutogrow(): void {
       if (this.autogrow === true) {
         const fieldElement = (this.$refs.field as HTMLElement) || null;
@@ -234,17 +275,70 @@ export default {
       }
     },
 
+    selectActiveSuggestion(): void {
+      // Select active suggestion
+      (this.$refs.suggest as typeof FormFieldSuggest)?.select();
+    },
+
+    navigateSuggestions(increment: number): void {
+      // Navigate forwards or backwards in suggestions
+      (this.$refs.suggest as typeof FormFieldSuggest)?.navigate(increment);
+    },
+
+    clearAllSuggestions(): void {
+      // Hide suggestions
+      this.areSuggestionsHidden = true;
+    },
+
     // --> EVENT LISTENERS <--
 
     onFieldKeyDown(event: KeyboardEvent): void {
-      // Submittable field? Handle key presses.
-      if (this.submittable === true) {
-        // Handle 'Enter' key press? (if not new line)
-        if (event.keyCode === keyCodes.enter && event.shiftKey !== true) {
-          event.preventDefault();
+      const keyCode = event.keyCode;
 
-          // Trigger field submit event
-          this.$emit("submit");
+      switch (keyCode) {
+        // Enter
+        case keyCodes.enter: {
+          if (this.hasSuggestions === true) {
+            event.preventDefault();
+
+            // Select active suggestion
+            this.selectActiveSuggestion();
+          } else {
+            // Handle 'Enter' key press? (if not new line and submittable field)
+            if (event.shiftKey !== true && this.submittable === true) {
+              event.preventDefault();
+
+              // Trigger field submit event
+              this.$emit("submit");
+            }
+          }
+
+          break;
+        }
+
+        // Escape
+        case keyCodes.esc: {
+          if (this.hasSuggestions === true) {
+            event.preventDefault();
+
+            // Hide suggestions
+            this.clearAllSuggestions();
+          }
+
+          break;
+        }
+
+        // Down + Up
+        case keyCodes.down:
+        case keyCodes.up: {
+          if (this.hasSuggestions === true) {
+            event.preventDefault();
+
+            // Navigate in suggestions
+            this.navigateSuggestions(keyCode === keyCodes.up ? -1 : 1);
+          }
+
+          break;
         }
       }
     },
@@ -266,8 +360,7 @@ export default {
       }
 
       // Update model value and send change event
-      this.$emit("update:modelValue", inputValue);
-      this.$emit("change", inputValue);
+      this.updateModelValue(inputValue);
     },
 
     onFieldFocus(): void {
@@ -276,6 +369,13 @@ export default {
 
     onFieldBlur(): void {
       this.isFocused = false;
+    },
+
+    onSuggestSelect(suggestion: FormFieldSuggestSuggestion): void {
+      this.areSuggestionsHidden = true;
+
+      // Update model value
+      this.updateModelValue(suggestion.value);
     }
   }
 };
@@ -344,6 +444,13 @@ $c: ".c-form-field";
       box-shadow: 0 3px 4px 0 rgba(var(--color-shadow-primary), 0.1),
         inset 0 1px 2px 0 rgba(var(--color-black), 0.04);
     }
+  }
+
+  #{$c}__suggest {
+    max-height: 160px;
+    position: absolute;
+    inset-block-start: calc(100% + 5px);
+    inset-inline: 0;
   }
 
   // --> TYPES <--
