@@ -100,6 +100,13 @@ export default {
     }
   },
 
+  watch: {
+    suggestions() {
+      // Reset active suggestion index to first one
+      this.activeIndex = 0;
+    }
+  },
+
   methods: {
     // --> HELPERS <--
 
