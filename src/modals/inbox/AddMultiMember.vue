@@ -42,11 +42,13 @@ base-modal(
 
 <script lang="ts">
 // NPM
+import { shallowRef } from "vue";
 import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/FormFieldSuggest.vue";
 import BaseAlert from "@/components/base/BaseAlert.vue";
+import BaseAvatar from "@/components/base/BaseAvatar.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -154,7 +156,17 @@ export default {
         .map((part: RosterListPart) => {
           return {
             label: part.entry.name,
-            value: part.entry.jid
+            value: part.entry.jid,
+
+            icon: {
+              component: shallowRef(BaseAvatar),
+
+              properties: {
+                jid: new JID(part.entry.jid),
+                size: "18px",
+                shadow: "none"
+              }
+            }
           };
         });
     },
