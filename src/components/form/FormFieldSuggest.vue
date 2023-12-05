@@ -200,30 +200,35 @@ $suggest-border-radius: $size-form-field-border-radius;
 $suggest-sizes: (
   "medium": (
     "link": (
+      "line-height": 22px,
       "padding-inline": $size-form-field-medium-padding-sides
     )
   ),
 
   "mid-medium": (
     "link": (
+      "line-height": 24px,
       "padding-inline": $size-form-field-mid-medium-padding-sides
     )
   ),
 
   "large": (
     "link": (
+      "line-height": 28px,
       "padding-inline": $size-form-field-large-padding-sides
     )
   ),
 
   "mid-large": (
     "link": (
+      "line-height": 30px,
       "padding-inline": $size-form-field-mid-large-padding-sides
     )
   ),
 
   "ultra-large": (
     "link": (
+      "line-height": 32px,
       "padding-inline": $size-form-field-ultra-large-padding-sides
     )
   )
@@ -246,7 +251,6 @@ $suggest-sizes: (
 
     #{$c}__link {
       font-size: 12.5px;
-      line-height: 28px;
       display: flex;
       transition: none;
       border-radius: ($suggest-border-radius - 2px);
@@ -285,6 +289,7 @@ $suggest-sizes: (
     &--#{$name} {
       #{$c}__item {
         #{$c}__link {
+          line-height: map-get(map-get($size, "link"), "line-height");
           padding-inline: (
             map-get(map-get($size, "link"), "padding-inline") - $suggest-padding
           );

@@ -71,6 +71,7 @@ div(
   form-field-suggest(
     v-if="hasSuggestions"
     @select="onSuggestSelect"
+    :size="size"
     :suggestions="suggestions"
     ref="suggest"
     class="c-form-field__suggest"
