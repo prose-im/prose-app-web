@@ -8,6 +8,7 @@
  * IMPORTS
  * ************************************************************************* */
 
+import fs from "fs";
 import path from "path";
 import merge from "lodash.merge";
 import vue from "@vitejs/plugin-vue";
@@ -182,6 +183,17 @@ export default {
         default: {
           merge(config, developmentConfig);
         }
+      }
+
+      // Merge local configuration? (if any)
+      try {
+        const localConfig = JSON.parse(
+          fs.readFileSync("./config/local.json", "utf8")
+        );
+
+        merge(config, localConfig);
+      } catch (_) {
+        // Ignore errors (local configuration not found)
       }
 
       return config;

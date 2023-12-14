@@ -10,6 +10,9 @@ node_modules/
 # Builds
 dist
 
+# Configuration
+config/local.json
+
 # Editor
 .nova
 .idea
