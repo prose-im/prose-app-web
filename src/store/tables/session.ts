@@ -41,6 +41,7 @@ const $session = defineStore("session", {
     return {
       connected: false,
       connecting: false,
+      tryReconnect: false,
 
       protocol: "",
 
@@ -60,6 +61,10 @@ const $session = defineStore("session", {
 
     setConnecting(connecting: boolean): void {
       this.setGeneric("connecting", this.connecting, connecting);
+    },
+
+    setTryReconnect(tryReconnect: boolean): void {
+      this.setGeneric("tryReconnect", this.tryReconnect, tryReconnect);
     },
 
     setProtocol(protocol = ""): void {

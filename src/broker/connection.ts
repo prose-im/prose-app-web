@@ -97,6 +97,10 @@ class BrokerConnectionStrophe implements ProseConnection {
           case Strophe.Status.AUTHFAIL: {
             logger.error("Authentication failure");
 
+            reject(new Error("The prose address and/or password is invalid"));
+
+            this.__eventHandler?.handleDisconnect();
+
             break;
           }
 
@@ -104,6 +108,14 @@ class BrokerConnectionStrophe implements ProseConnection {
           case Strophe.Status.CONNFAIL: {
             logger.error("Connection failure");
 
+            // if the websocket address is "wss://chat.prose.org/websocket/"
+            // and you attempt to sign in with "username@movim.eu", the server returns
+            // <stream:error xmlns='jabber:client' xmlns:stream='http://etherx.jabber.org/streams'>
+            // <host-unknown xmlns='urn:ietf:params:xml:ns:xmpp-streams'/>
+            // <text xmlns='urn:ietf:params:xml:ns:xmpp-streams'>This server does not serve chat.lazytapir.comaoeu</text>
+            // </stream:error>
+            // and CONNFAIL of AUTHFAIL
+            // This is a really ambigous error for that
             reject(new Error("Something went wrong"));
 
             break;

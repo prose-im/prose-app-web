@@ -119,12 +119,16 @@ class BrokerClient {
     // Void stored credentials
     this.__credentials = undefined;
 
+    // Don't attempt reconnects
+    Store.$session.setTryReconnect(false);
+
     await this.client?.disconnect();
     await this.client?.deleteCachedData();
   }
 
   private __onClientConnected(): void {
     Store.$session.setConnected(true);
+    Store.$session.setTryReconnect(true);
     Store.$session.setConnecting(false);
   }
 
@@ -132,11 +136,9 @@ class BrokerClient {
     Store.$session.setConnected(false);
     Store.$session.setConnecting(false);
 
-    if (!this.__credentials) {
-      return;
+    if (this.__credentials && Store.$session.tryReconnect) {
+      this.reconnect(RECONNECT_INTERVAL);
     }
-
-    this.reconnect(RECONNECT_INTERVAL);
   }
 
   private async __connect(jid: JID, password: string): Promise<void> {
@@ -153,11 +155,7 @@ class BrokerClient {
     this.client = client;
 
     // Connect client
-    try {
-      await client.connect(jid, password);
-    } catch (error) {
-      logger.error("Something went wrong", error);
-    }
+    await client.connect(jid, password);
   }
 
   private __configuration(): ProseClientConfig {

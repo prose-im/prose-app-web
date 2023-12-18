@@ -75,10 +75,12 @@ export default {
           });
         } catch (error) {
           // Show error alert
+          // ugly hack because I didn't immediatly see why the error message was being changed
+          const removeRegex = /^"DomException Error: |"$/g;
           BaseAlert.error(
             "Cannot authenticate",
             error
-              ? (error as Error).message || (error as Error).toString()
+              ? (error as Error).message.replace(removeRegex, '') || (error as Error).toString()
               : undefined
           );
 
