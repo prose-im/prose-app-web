@@ -17,7 +17,7 @@ list-disclosure(
   separated
 )
   list-button(
-    v-for="member in room.members"
+    v-for="member in room.participants"
     @click="onMemberClick(member.jid)"
     size="small"
     class="c-inbox-details-multi-members__member"
@@ -73,9 +73,8 @@ list-disclosure(
 
 <script lang="ts">
 // NPM
-import { Room } from "@prose-im/prose-sdk-js";
+import { JID, Room } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";

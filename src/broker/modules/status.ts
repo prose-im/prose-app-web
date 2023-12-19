@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { UserActivity, Availability } from "@prose-im/prose-sdk-js";
+import { Availability, UserStatus } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -36,10 +36,10 @@ class BrokerModuleStatus extends BrokerModule {
     await this._client.client?.sendActivity(icon, text);
 
     if (this._client.jid) {
-      let activity: UserActivity | void;
+      let activity: UserStatus | void;
 
       if (icon && text) {
-        activity = new UserActivity(icon, text);
+        activity = new UserStatus(icon, text);
       }
 
       // TODO: we should load our own status from the store as another

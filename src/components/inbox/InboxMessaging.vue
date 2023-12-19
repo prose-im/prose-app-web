@@ -79,23 +79,23 @@
 // NPM
 import { PropType, shallowRef } from "vue";
 // @ts-expect-error download is a dependency w/o any declaration
-import download from "browser-downloads";
-import { Handler as MittHandler } from "mitt";
-import { JID, Room } from "@prose-im/prose-sdk-js";
 import {
+  EventMessageActionsView,
+  EventMessageFileView,
+  EventMessageHistorySeek,
+  EventMessageReactionsReact,
+  EventMessageReactionsView,
+  FileAction as MessagingFileAction,
+  FileType as MessagingFileType,
   Modifier as MessagingModifier,
   Platform as MessagingPlatform,
   Messaging as MessagingRuntime,
   SeekDirection as MessagingSeekDirection,
-  Theme as MessagingTheme,
-  FileType as MessagingFileType,
-  FileAction as MessagingFileAction,
-  EventMessageActionsView,
-  EventMessageReactionsView,
-  EventMessageReactionsReact,
-  EventMessageFileView,
-  EventMessageHistorySeek
+  Theme as MessagingTheme
 } from "@prose-im/prose-core-views/types/messaging";
+import { JID, Room } from "@prose-im/prose-sdk-js";
+import download from "browser-downloads";
+import { Handler as MittHandler } from "mitt";
 
 // PROJECT: STYLES
 import styleElementsFonts from "@/assets/stylesheets/elements/_elements.fonts.scss?inline";
@@ -106,12 +106,12 @@ import {
   Item as PopoverItem,
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
-import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 import {
   Collection as FilePreviewCollection,
   File as FilePreviewFile,
   FileType as FilePreviewFileType
 } from "@/components/inbox/InboxFilePreview.vue";
+import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 
 // PROJECT: MODALS
 import EditMessage from "@/modals/inbox/EditMessage.vue";
@@ -122,8 +122,8 @@ import { useEvents } from "@/composables/events";
 
 // PROJECT: STORES
 import Store from "@/store";
-import { EventMessageGeneric } from "@/store/tables/inbox";
 import { EventAvatarGeneric } from "@/store/tables/avatar";
+import { EventMessageGeneric } from "@/store/tables/inbox";
 import { SessionAppearance } from "@/store/tables/session";
 
 // ENUMERATIONS
@@ -449,7 +449,7 @@ export default {
 
     identifyAllPartiesRemote(runtime: MessagingRuntime): void {
       // Identify remote all parties
-      this.room?.members.forEach(member => {
+      this.room?.participants.forEach(member => {
         this.identifyPartyRemote(runtime, member.jid, member.name);
       });
     },

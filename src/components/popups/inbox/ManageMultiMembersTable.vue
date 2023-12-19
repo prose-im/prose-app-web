@@ -31,16 +31,16 @@ base-data-table(
 
 <script lang="ts">
 // NPM
-import { PropType } from "vue";
 import { Room } from "@prose-im/prose-sdk-js";
+import { PropType } from "vue";
 
 // PROJECT: COMPONENTS
 import {
   Column as DataTableColumn,
-  Row as DataTableRow,
-  Sizes as DataTableSizes,
   Control as DataTableControl,
-  ControlType as DataTableControlType
+  ControlType as DataTableControlType,
+  Row as DataTableRow,
+  Sizes as DataTableSizes
 } from "@/components/base/BaseDataTable.vue";
 
 export default {
@@ -86,7 +86,7 @@ export default {
           }
         ] as Array<DataTableColumn>,
 
-        rows: this.room.members.map(room => {
+        rows: this.room.participants.map(room => {
           return {
             selected: false,
 

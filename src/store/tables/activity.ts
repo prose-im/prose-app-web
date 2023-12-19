@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, UserActivity } from "@prose-im/prose-sdk-js";
+import { JID, UserStatus } from "@prose-im/prose-sdk-js";
 import { defineStore } from "pinia";
 
 /**************************************************************************
@@ -73,7 +73,7 @@ const $activity = defineStore("activity", {
       return this.assert(jid);
     },
 
-    setActivity(jid: JID, status: UserActivity | void): ActivityEntry {
+    setActivity(jid: JID, status: UserStatus | void): ActivityEntry {
       // Assert activity
       const activity = this.assert(jid);
 

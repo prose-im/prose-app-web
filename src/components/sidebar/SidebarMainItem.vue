@@ -11,7 +11,7 @@
 <template lang="pug">
 sidebar-main-item-user(
   v-if="item.room.type === roomType.DirectMessage"
-  :jid="item.room.members[0]?.jid"
+  :jid="item.room.participants[0]?.jid"
   :item="item"
   :active="active"
   class="c-sidebar-main-item"
@@ -47,8 +47,8 @@ sidebar-main-item-generic(
 
 <script lang="ts">
 // NPM
-import { PropType } from "vue";
 import { RoomID, RoomType, SidebarItem } from "@prose-im/prose-sdk-js";
+import { PropType } from "vue";
 
 // PROJECT: COMPONENTS
 import SidebarMainItemGeneric from "@/components/sidebar/SidebarMainItemGeneric.vue";

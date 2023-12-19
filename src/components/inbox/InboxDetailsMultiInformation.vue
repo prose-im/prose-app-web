@@ -82,7 +82,7 @@ export default {
     entries(): Array<Entry> {
       const entries = [];
 
-      let membersCount = this.room.members.length,
+      let membersCount = this.room.participants.length,
         topic = (this.room as RoomMUC).subject;
 
       if (topic) {
