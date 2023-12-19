@@ -77,8 +77,6 @@
 
 <script lang="ts">
 // NPM
-import { PropType, shallowRef } from "vue";
-// @ts-expect-error download is a dependency w/o any declaration
 import {
   EventMessageActionsView,
   EventMessageFileView,
@@ -94,6 +92,8 @@ import {
   Theme as MessagingTheme
 } from "@prose-im/prose-core-views/types/messaging";
 import { JID, Room } from "@prose-im/prose-sdk-js";
+import { PropType, shallowRef } from "vue";
+// @ts-expect-error download is a dependency w/o any declaration
 import download from "browser-downloads";
 import { Handler as MittHandler } from "mitt";
 
