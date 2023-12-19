@@ -23,8 +23,8 @@ class BrokerModuleRoom extends BrokerModule {
     await this._client.client?.startObservingRooms();
   }
 
-  sidebarItems(): SidebarItem[] {
-    return this._client.client?.sidebarItems() || [];
+  async sidebarItems(): Promise<SidebarItem[]> {
+    return (await this._client.client?.sidebarItems()) || [];
   }
 
   async loadPublicChannels(): Promise<Array<Channel>> {

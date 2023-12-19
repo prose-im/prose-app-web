@@ -22,8 +22,8 @@ import Store from "@/store";
 import { fromCoreMessage as inboxMessageFromCore } from "@/store/tables/inbox";
 
 // PROJECT: UTILITIES
+import { AudioSound, default as UtilitiesAudio } from "@/utilities/audio";
 import logger from "@/utilities/logger";
-import { default as UtilitiesAudio, AudioSound } from "@/utilities/audio";
 
 // PROJECT: BROKER
 import mitt from "mitt";
@@ -69,12 +69,12 @@ class BrokerDelegate implements ProseClientDelegate {
     Store.$inbox.setComposing(room.id, composingUsers);
   }
 
-  sidebarChanged(): void {
+  async sidebarChanged(): Promise<void> {
     logger.info("Sidebar changed");
 
     // Force reload all rooms
     Store.$room.markRoomsChanged();
-    Store.$room.load(true);
+    await Store.$room.load(true);
   }
 
   roomAttributesChanged(_client: ProseClient, room: Room): void {

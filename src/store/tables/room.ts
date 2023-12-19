@@ -9,14 +9,14 @@
  * ************************************************************************* */
 
 // NPM
-import mitt from "mitt";
-import { defineStore } from "pinia";
 import {
   Room as CoreRoom,
   RoomID,
-  SidebarSection,
-  SidebarItem
+  SidebarItem,
+  SidebarSection
 } from "@prose-im/prose-sdk-js";
+import mitt from "mitt";
+import { defineStore } from "pinia";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -116,7 +116,7 @@ const $room = defineStore("room", {
       return EventBus;
     },
 
-    load(reload = false): void {
+    async load(reload = false): Promise<void> {
       // Load room list? (or reload)
       if (LOCAL_STATES.loaded !== true || reload === true) {
         LOCAL_STATES.loaded = true;
@@ -129,7 +129,7 @@ const $room = defineStore("room", {
           roomsById = new Map<RoomID, CoreRoom>();
 
         // Load rooms
-        const sidebarItems = Broker.$room.sidebarItems();
+        const sidebarItems = await Broker.$room.sidebarItems();
 
         sidebarItems.forEach(item => {
           // Append item in its section
