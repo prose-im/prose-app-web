@@ -83,6 +83,10 @@ class BrokerDelegate implements ProseClientDelegate {
     Store.$room.updateRoom(room.id, room);
   }
 
+  roomParticipantsChanged(_client: ProseClient, room: Room): void {
+    logger.info(`TODO: Room participants changed in room: ${room.id}`);
+  }
+
   contactChanged(_client: ProseClient, jid: JID): void {
     logger.info(`Contact changed: ${jid}`);
 
