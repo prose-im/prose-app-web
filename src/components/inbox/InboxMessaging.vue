@@ -450,7 +450,9 @@ export default {
     identifyAllPartiesRemote(runtime: MessagingRuntime): void {
       // Identify remote all parties
       this.room?.participants.forEach(member => {
-        this.identifyPartyRemote(runtime, member.jid, member.name);
+        if (member.jid) {
+          this.identifyPartyRemote(runtime, member.jid, member.name);
+        }
       });
     },
 
@@ -982,11 +984,11 @@ export default {
 
       if (frameRuntime !== null) {
         // Re-identify remote party?
-        const remotePartyMember = this.room?.members.find(member => {
-          return member.jid.equals(jid);
+        const remotePartyMember = this.room?.participants.find(member => {
+          return member.jid && member.jid.equals(jid);
         });
 
-        if (remotePartyMember) {
+        if (remotePartyMember && remotePartyMember.jid) {
           this.identifyPartyRemote(
             frameRuntime,
             remotePartyMember.jid,

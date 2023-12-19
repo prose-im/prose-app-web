@@ -9,12 +9,12 @@
  * ************************************************************************* */
 
 // NPM
-import { defineStore } from "pinia";
 import {
   Availability,
   JID,
   Group as RosterGroup
 } from "@prose-im/prose-sdk-js";
+import { defineStore } from "pinia";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -126,7 +126,7 @@ const $roster = defineStore("roster", {
         const contacts = await Broker.$roster.loadContacts();
 
         contacts.forEach(contact => {
-          Store.$activity.setActivity(contact.jid, contact.activity);
+          Store.$activity.setActivity(contact.jid, contact.status);
 
           // Append roster entry
           // Important: JID must be stored as string so that persistence works.
@@ -174,5 +174,5 @@ const $roster = defineStore("roster", {
  * EXPORTS
  * ************************************************************************* */
 
-export type { RosterList, RosterEntry };
+export type { RosterEntry, RosterList };
 export default $roster;

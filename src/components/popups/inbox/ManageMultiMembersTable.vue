@@ -92,7 +92,7 @@ export default {
 
             columns: {
               name: room.name,
-              jid: room.jid.toString()
+              jid: room.jid ? room.jid.toString() : "<unknown jid>"
             }
           };
         }) as Array<DataTableRow>,
