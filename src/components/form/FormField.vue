@@ -35,6 +35,7 @@ div(
     :rows="rows"
     :placeholder="placeholder"
     :disabled="disabled"
+    :autocomplete="autocomplete"
     :class=`[
       "c-form-field__inner",
       "c-form-field__inner--textarea",
@@ -58,6 +59,7 @@ div(
     :value="value"
     :placeholder="placeholder"
     :disabled="disabled"
+    :autocomplete="autocomplete"
     :class=`[
       "c-form-field__inner",
       "c-form-field__inner--input",
@@ -155,6 +157,11 @@ export default {
     rows: {
       type: Number,
       default: 4
+    },
+
+    autocomplete: {
+      type: String,
+      default: null
     },
 
     autogrow: {
