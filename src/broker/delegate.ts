@@ -74,6 +74,7 @@ class BrokerDelegate implements ProseClientDelegate {
 
     // Force reload all rooms
     Store.$room.markRoomsChanged();
+
     await Store.$room.load(true);
   }
 

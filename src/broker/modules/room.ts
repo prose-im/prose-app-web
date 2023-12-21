@@ -31,18 +31,18 @@ class BrokerModuleRoom extends BrokerModule {
     return (await this._client.client?.loadPublicChannels()) || [];
   }
 
-  async startConversation(participants: Array<JID>): Promise<void> {
-    await this._client.client?.startConversation(
+  async startConversation(participants: Array<JID>): Promise<JID | undefined> {
+    return this._client.client?.startConversation(
       participants.map(jid => jid.toString())
     );
   }
 
-  async createPublicChannel(name: string): Promise<void> {
-    await this._client.client?.createPublicChannel(name);
+  async createPublicChannel(name: string): Promise<JID | undefined> {
+    return this._client.client?.createPublicChannel(name);
   }
 
-  async createPrivateChannel(name: string): Promise<void> {
-    await this._client.client?.createPrivateChannel(name);
+  async createPrivateChannel(name: string): Promise<JID | undefined> {
+    return this._client.client?.createPrivateChannel(name);
   }
 }
 

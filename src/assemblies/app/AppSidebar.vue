@@ -108,19 +108,40 @@ export default {
     async addContactGroup(jidString: string): Promise<void> {
       const jids = jidString.split(",").map(value => new JID(value.trim()));
 
-      await Broker.$room.startConversation(jids);
+      // Start conversation
+      const roomJID = await Broker.$room.startConversation(jids);
 
       // More than one JID involved? A group was created.
       if (jids.length > 1) {
         BaseAlert.success("Group added", "Group has been added");
       }
+
+      // Attempt to navigate to the created room
+      this.navigateToCreatedRoom(roomJID);
     },
 
     async addContactChannel(jidString: string): Promise<void> {
+      // Create target public channel
       // TODO: also support creating a private channel w/ createPrivateChannel?
-      await Broker.$room.createPublicChannel(jidString);
+      const roomJID = await Broker.$room.createPublicChannel(jidString);
 
       BaseAlert.success("Channel added", "Channel has been added");
+
+      // Attempt to navigate to the created room
+      this.navigateToCreatedRoom(roomJID);
+    },
+
+    navigateToCreatedRoom(jid?: JID) {
+      // Navigate to the created room? (if any JID provided)
+      if (jid !== undefined) {
+        this.$router.push({
+          name: "app.inbox",
+
+          params: {
+            roomId: jid.toString()
+          }
+        });
+      }
     },
 
     // --> EVENT LISTENERS <--
