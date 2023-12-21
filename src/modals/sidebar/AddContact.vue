@@ -58,15 +58,17 @@ base-modal(
       | {{ identity.name }}
 
     form-field(
-      v-model="contact.jid"
+      v-model="jid"
       @change="onAddressChange"
       @submit="onConfirm"
+      :suggestions="suggestions"
       :placeholder="fieldAddressPlacehokder"
       class="m-add-contact__form-field"
       type="email"
       name="address"
       size="large"
       align="left"
+      autocomplete="off"
       submittable
       autofocus
     )
@@ -118,6 +120,10 @@ import { PropType } from "vue";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
+import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/FormFieldSuggest.vue";
+
+// PROJECT: COMPOSABLES
+import { useRosterSuggestor } from "@/composables/roster";
 
 // ENUMERATIONS
 export enum Mode {
@@ -147,13 +153,18 @@ export default {
 
   emits: ["close", "add"],
 
+  setup() {
+    const { query, suggestions } = useRosterSuggestor();
+
+    return {
+      jid: query,
+      memberSuggestions: suggestions
+    };
+  },
+
   data() {
     return {
       // --> STATE <--
-
-      contact: {
-        jid: ""
-      },
 
       identity: {
         id: 0,
@@ -178,6 +189,18 @@ export default {
 
     isVerified(): boolean {
       return this.hasIdentity === true && this.identity.name ? true : false;
+    },
+
+    suggestions(): Array<FormFieldSuggestSuggestion> {
+      switch (this.mode) {
+        case Mode.Member: {
+          return this.memberSuggestions;
+        }
+
+        default: {
+          return [];
+        }
+      }
     },
 
     fieldAddressPlacehokder(): string {
@@ -257,7 +280,7 @@ export default {
     },
 
     onConfirm(): void {
-      const jidUnsafeString = this.contact.jid || null;
+      const jidUnsafeString = this.jid || null;
 
       if (jidUnsafeString === null) {
         BaseAlert.warning("Address required", "Please enter an address");
