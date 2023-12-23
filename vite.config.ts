@@ -82,7 +82,7 @@ export default {
   },
 
   build: {
-    target: "modules",
+    target: "es2022",
     outDir: "dist",
     assetsDir: "assets",
     cssCodeSplit: true,
