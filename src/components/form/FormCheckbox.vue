@@ -151,7 +151,7 @@ $c: ".c-form-checkbox";
 
     &:after {
       content: "";
-      background-image: url("@/assets/images/components/form/FormCheckbox/check.svg");
+      background-image: url("/images/components/form/FormCheckbox/check.svg");
       background-position: center;
       background-size: cover;
       background-repeat: no-repeat;

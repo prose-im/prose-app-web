@@ -63,7 +63,7 @@ export default {
   computed: {
     flagImageUrl(): string {
       return [
-        "/src/assets/images/components/base/BaseFlag",
+        "/images/components/base/BaseFlag",
         `${this.code.toLowerCase()}.svg`
       ].join("/");
     },

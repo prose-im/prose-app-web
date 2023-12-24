@@ -58,7 +58,7 @@ export default {
       const handle = this.domain.replaceAll(".", "-");
 
       return [
-        "/src/assets/images/components/base/BaseServerLogo",
+        "/images/components/base/BaseServerLogo",
         `logo-${handle}.png`
       ].join("/");
     },

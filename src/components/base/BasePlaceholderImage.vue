@@ -140,7 +140,7 @@ $illustration-images: (
   @each $illustration, $height in $illustration-images {
     &--#{$illustration} {
       #{$c}__illustration {
-        background-image: url("@/assets/images/components/base/BasePlaceholderImage/illustration-#{$illustration}.webp");
+        background-image: url("/images/components/base/BasePlaceholderImage/illustration-#{$illustration}.webp");
         height: calc($height / $illustration-image-scale-factor);
       }
     }

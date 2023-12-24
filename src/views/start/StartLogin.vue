@@ -132,7 +132,7 @@ $c: ".v-start-login";
   }
 
   #{$c}__background {
-    background-image: url("@/assets/images/views/start/StartLogin/background-wave.svg");
+    background-image: url("/images/views/start/StartLogin/background-wave.svg");
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;

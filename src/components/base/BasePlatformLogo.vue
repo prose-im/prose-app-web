@@ -128,7 +128,7 @@ $name-logos: ("web", "macos", "ios", "windows", "android", "linux");
     &--#{$name} {
       #{$c}__icon {
         &:before {
-          background-image: url("@/assets/images/components/base/BasePlatformLogo/logo-#{$name}.svg");
+          background-image: url("/images/components/base/BasePlatformLogo/logo-#{$name}.svg");
         }
       }
     }

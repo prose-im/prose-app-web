@@ -65,9 +65,7 @@ $size-widths: (
 );
 
 .c-base-prose-logo {
-  @include mask-image(
-    "@/assets/images/components/base/BaseProseLogo/logo-path.svg"
-  );
+  @include mask-image("/images/components/base/BaseProseLogo/logo-path.svg");
   @include mask-repeat(no-repeat);
   @include mask-size(contain);
   @include mask-position(left);
@@ -89,7 +87,7 @@ $size-widths: (
 
   &--normal {
     background-color: rgb(var(--color-base-blue-normal));
-    background-image: url("@/assets/images/components/base/BaseProseLogo/logo-tint-normal.webp");
+    background-image: url("/images/components/base/BaseProseLogo/logo-tint-normal.webp");
     background-repeat: no-repeat;
     background-size: contain;
     background-position: left;

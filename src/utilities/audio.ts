@@ -179,7 +179,7 @@ class UtilitiesAudio {
     const player = this.__assertPlayer();
 
     // Fetch target audio file
-    const response = await fetch(`/src/assets/sounds/${path}`);
+    const response = await fetch(`/sounds/${path}`);
 
     if (response.ok === false) {
       throw new Error(`Failed loading audio file: HTTP ${response.status}`);
