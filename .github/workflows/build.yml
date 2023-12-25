@@ -74,7 +74,6 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ needs.build.outputs.tag }} Release
-          path: ./release-${{ needs.build.outputs.tag }}.tar.gz
 
       - name: Extract build artifacts
         run: tar -xzvf ./release-${{ needs.build.outputs.tag }}.tar.gz
