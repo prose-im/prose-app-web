@@ -67,7 +67,7 @@ jobs:
 
   deploy:
     needs: build
-    environment: prose.org
+    environment: app.prose.org
     runs-on: ubuntu-latest
 
     steps:
