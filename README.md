@@ -53,7 +53,7 @@ The production build expects your endpoints to be local to the domain where the 
 
 ### Development target
 
-Before you start, please make sure that a local `prose-pod-server` ([repository](https://github.com/prose-im/prose-pod-server)) is running on your development machine. Configurations for your local server can be sourced from `prose-pod-system` ([repository](https://github.com/prose-im/prose-pod-system)).
+_👉 Before you start, please make sure that a local `prose-pod-server` ([repository](https://github.com/prose-im/prose-pod-server)) is running on your development machine. Configurations for your local server can be sourced from `prose-pod-system` ([repository](https://github.com/prose-im/prose-pod-system))._
 
 #### 📦 Develop with a release core (default)
 
