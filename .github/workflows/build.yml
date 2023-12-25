@@ -77,7 +77,7 @@ jobs:
           path: ./release-${{ needs.build.outputs.tag }}.tar.gz
 
       - name: Extract build artifacts
-        run: tar -xzvf ./release-${{ steps.current_tag.outputs.tag }}.tar.gz
+        run: tar -xzvf ./release-${{ needs.build.outputs.tag }}.tar.gz
 
       - name: Deploy website
         env:
