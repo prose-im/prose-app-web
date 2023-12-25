@@ -1,3 +1,8 @@
 {
-  "environment": "production"
+  "environment": "production",
+
+  "hosts": {
+    "websocket": "/websocket/",
+    "identity": "/identity/"
+  }
 }

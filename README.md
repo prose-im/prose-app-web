@@ -46,7 +46,14 @@ To build Prose for a production environment (with all optimizations, meaning the
 npm run build
 ```
 
+The production build expects your endpoints to be local to the domain where the Prose application is running, using proxied paths:
+
+- `/websocket/` for the XMPP over WebSocket endpoint
+- `/identity/` for the Prose Identity responder endpoint
+
 ### Development target
+
+Before you start, please make sure that a local `prose-pod-server` ([repository](https://github.com/prose-im/prose-pod-server)) is running on your development machine. Configurations for your local server can be sourced from `prose-pod-system` ([repository](https://github.com/prose-im/prose-pod-system)).
 
 #### 📦 Develop with a release core (default)
 

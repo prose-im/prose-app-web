@@ -1,3 +1,8 @@
 {
-  "environment": "development"
+  "environment": "development",
+
+  "hosts": {
+    "websocket": "ws://localhost:5280/xmpp-websocket/",
+    "identity": "https://localhost:5280/prose-identity/"
+  }
 }
