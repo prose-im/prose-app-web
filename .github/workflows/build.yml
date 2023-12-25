@@ -53,7 +53,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: ${{ steps.current_tag.outputs.tag }} Release
-          path: ./release-${{ steps.current_tag.outputs.tag }}.tar.gz
+          path: dist/
           retention-days: 30
 
       - name: Release new version
@@ -74,6 +74,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: ${{ needs.build.outputs.tag }} Release
+          path: dist/
 
       - name: Deploy website
         env:
