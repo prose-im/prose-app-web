@@ -1,0 +1,63 @@
+on:
+  push:
+    tags:
+      - "*.*.*"
+
+name: Build and Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v1
+        with:
+          node-version: 20.x
+          registry-url: https://registry.npmjs.org
+
+      - name: Verify versions
+        run: node --version && npm --version && node -p process.versions.v8
+
+      - name: Cache build context
+        id: cache-node
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node
+
+      - name: Get current tag
+        id: current_tag
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+        with:
+          fallback: 0.0.0
+
+      - name: Install dependencies
+        run: npm install --no-audit
+
+      - name: Run build
+        run: npm run build
+
+      - name: Archive output files
+        run: tar -zcvf ./release-${{ steps.current_tag.outputs.tag }}.tar.gz dist/
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ steps.current_tag.outputs.tag }} Release
+          path: ./release-${{ steps.current_tag.outputs.tag }}.tar.gz
+          retention-days: 30
+
+      - name: Release new version
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ steps.current_tag.outputs.tag }}
+          body: "⚠️ Changelog not yet provided."
+          files: ./release-${{ steps.current_tag.outputs.tag }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

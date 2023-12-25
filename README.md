@@ -1,6 +1,6 @@
 # <picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/prose-im/prose-app-web/assets/1451907/8e6c83c6-26a0-4505-9561-50a9c97bf236" /><img src="https://github.com/prose-im/prose-app-web/assets/1451907/dd3f7cb4-b156-4ecc-a15f-744dea259e27" alt="prose-app-web" width="150" height="60" /></picture>
 
-[![Test and Lint](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml)
+[![Test and Lint](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml) [![Build and Release](https://github.com/prose-im/prose-app-web/actions/workflows/build.yml/badge.svg)](https://github.com/prose-im/prose-app-web/actions/workflows/build.yml)
 
 **Prose Web application. Built in TypeScript / VueJS.**
 
