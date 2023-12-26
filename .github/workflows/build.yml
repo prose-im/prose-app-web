@@ -79,7 +79,7 @@ jobs:
       - name: Extract build artifacts
         run: tar -xzvf ./release-${{ needs.build.outputs.tag }}.tar.gz
 
-      - name: Deploy website
+      - name: Deploy application
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
