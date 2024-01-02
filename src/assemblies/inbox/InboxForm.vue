@@ -40,15 +40,23 @@ layout-toolbar(
             )
 
       base-tooltip(
+        v-if="!isActionRecordRecorderVisible"
         align="left"
         tooltip="Record Audio"
       )
         base-action(
-          :disabled="true || isFormDisabled"
+          @click="onActionRecordClick"
+          :disabled="isFormDisabled"
           :size="actionIconSize"
           class="a-inbox-form__action"
           icon="mic"
         )
+
+      inbox-form-recorder(
+        v-else
+        @audio="onRecorderAudio"
+        @cancel="onRecorderCancel"
+      )
 
   template(
     v-slot:middle
@@ -166,6 +174,7 @@ import {
   default as InboxFormFormatting,
   FormattingAction
 } from "@/components/inbox/InboxFormFormatting.vue";
+import InboxFormRecorder from "@/components/inbox/InboxFormRecorder.vue";
 import InboxFormAttach from "@/components/inbox/InboxFormAttach.vue";
 import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 import InboxFormLoader from "@/components/inbox/InboxFormLoader.vue";
@@ -185,6 +194,7 @@ export default {
 
   components: {
     InboxFormFormatting,
+    InboxFormRecorder,
     InboxFormAttach,
     InboxFormChatstate,
     InboxFormLoader
@@ -208,6 +218,7 @@ export default {
       message: "",
 
       isActionFormattingPopoverVisible: false,
+      isActionRecordRecorderVisible: false,
       isActionEmojisPopoverVisible: false,
 
       isUserComposing: false,
@@ -367,6 +378,11 @@ export default {
       this.isActionFormattingPopoverVisible = false;
     },
 
+    onActionRecordClick(): void {
+      // Toggle popover
+      this.isActionRecordRecorderVisible = !this.isActionRecordRecorderVisible;
+    },
+
     onActionAttachClick(): void {
       // TODO: open file picker
     },
@@ -386,6 +402,20 @@ export default {
       this.isActionFormattingPopoverVisible = false;
 
       // TODO: apply formatting to text
+    },
+
+    onRecorderAudio(audio: AudioBuffer) {
+      // Close recorder
+      this.isActionRecordRecorderVisible = false;
+
+      // TODO: encode audio file to WebM
+      // TODO: upload audio file
+      // TODO: send audio message
+    },
+
+    onRecorderCancel() {
+      // Close recorder
+      this.isActionRecordRecorderVisible = false;
     },
 
     onAttachFile(file: File): void {
