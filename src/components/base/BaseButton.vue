@@ -17,6 +17,7 @@ div(
     {
       "c-base-button--reverse": reverse,
       "c-base-button--round": round,
+      "c-base-button--borderless": borderless,
       "c-base-button--disabled": disabled,
       "c-base-button--loading": loading
     }
@@ -143,6 +144,11 @@ export default {
     },
 
     round: {
+      type: Boolean,
+      default: false
+    },
+
+    borderless: {
       type: Boolean,
       default: false
     },
@@ -457,6 +463,12 @@ $size-ultra-large-padding-sides: 44px;
   &--round {
     #{$c}__inner {
       border-radius: 100%;
+    }
+  }
+
+  &--borderless {
+    #{$c}__inner {
+      border-width: 0;
     }
   }
 
