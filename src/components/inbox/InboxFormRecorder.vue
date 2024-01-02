@@ -11,7 +11,7 @@
 <template lang="pug">
 .c-inbox-form-recorder
   span.c-inbox-form-recorder__timer.u-medium.u-animate.u-animate--infinite.u-animate--superslow.u-animate--delayed.u-animate--blink
-    | 0:00
+    | {{ timerText }}
 
   .c-inbox-form-recorder__actions(
     v-if="actions.length > 0"
@@ -31,6 +31,7 @@
         size="custom"
         button-class="c-inbox-form-recorder__action-button"
         round
+        borderless
       )
         template(
           v-slot:custom
@@ -47,6 +48,11 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// CONSTANTS
+const MINUTE_TO_SECONDS = 60; // 1 minute
+
+const TIMER_INTERVAL_TIME = 1000; // 1 second
+
 export default {
   name: "InboxFormRecorder",
 
@@ -78,11 +84,66 @@ export default {
             size: "11px"
           }
         }
-      ]
+      ],
+
+      // --> STATE <--
+
+      timerSeconds: 0,
+      timerInterval: null as null | ReturnType<typeof setInterval>
     };
   },
 
+  computed: {
+    timerText(): string {
+      // Compute seconds and minutes
+      let timerSeconds = this.timerSeconds % MINUTE_TO_SECONDS,
+        timerMinutes = Math.floor(this.timerSeconds / MINUTE_TO_SECONDS);
+
+      // Convert numbers to text
+      let timerMinutesText = `${timerMinutes}`,
+        timerSecondsText = `${timerSeconds}`;
+
+      if (timerSecondsText.length === 1) {
+        timerSecondsText = `0${timerSecondsText}`;
+      }
+
+      return [timerMinutesText, timerSecondsText].join(":");
+    }
+  },
+
+  mounted() {
+    // Setup timer
+    this.setupTimer();
+  },
+
+  beforeUnmount() {
+    // Unsetup timer
+    this.setupTimer(false);
+  },
+
   methods: {
+    // --> HELPERS <--
+
+    setupTimer(register = true): void {
+      // Unsetup any previously-running timer
+      if (this.timerInterval !== null) {
+        clearInterval(this.timerInterval);
+
+        this.timerInterval = null;
+      }
+
+      // Register new timer?
+      if (register === true) {
+        // Reset timer count back to zero
+        this.timerSeconds = 0;
+
+        // Start timer
+        this.timerInterval = setInterval(() => {
+          this.timerSeconds += 1;
+        }, TIMER_INTERVAL_TIME);
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onSendClick(): void {
@@ -110,6 +171,7 @@ $recorder-send-button-size: 24px;
 
 .c-inbox-form-recorder {
   background-color: rgb(var(--color-base-green-normal));
+  border: 1px solid rgba(var(--color-black), 0.09);
   color: rgb(var(--color-text-reverse));
   padding: 0 6px;
   display: flex;
