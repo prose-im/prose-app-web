@@ -9,8 +9,25 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-inbox-form-recorder
-  span.c-inbox-form-recorder__timer.u-medium.u-animate.u-animate--infinite.u-animate--superslow.u-animate--delayed.u-animate--blink
+.c-inbox-form-recorder(
+  v-hotkey="hotkeys"
+)
+  base-icon(
+    name="mic.fill"
+    size="15px"
+    :class=`[
+      "c-inbox-form-recorder__icon",
+      {
+        "u-animate": isRecording,
+        "u-animate--infinite": isRecording,
+        "u-animate--superslow": isRecording,
+        "u-animate--delayed": isRecording,
+        "u-animate--blink": isRecording
+      }
+    ]`
+  )
+
+  span.c-inbox-form-recorder__timer.u-medium
     | {{ timerText }}
 
   .c-inbox-form-recorder__actions(
@@ -23,6 +40,8 @@
     )
       base-button(
         @click="action.click"
+        :disabled="emitAudioProcessing"
+        :loading="emitAudioProcessing"
         :class=`[
           "c-inbox-form-recorder__action",
           "c-inbox-form-recorder__action--" + action.id
@@ -48,15 +67,39 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
+// ENUMERATIONS
+enum TimerMode {
+  // Register mode.
+  Register = "register",
+  // Unregister mode.
+  Unregister = "unregister"
+}
+
+// INTERFACES
+export interface Audio {
+  file: File;
+  duration: number;
+}
+
 // CONSTANTS
 const MINUTE_TO_SECONDS = 60; // 1 minute
 
 const TIMER_INTERVAL_TIME = 1000; // 1 second
+const TIMER_SECONDS_MAXIMUM = 600; // 10 minutes
+
+const RECORDER_AUDIO_BITRATE = 64000; // 64 Kbps
+const RECORDER_AUDIO_EXTENSION = "weba";
+const RECORDER_AUDIO_MIME = "audio/webm";
+const RECORDER_AUDIO_CODEC = "opus";
+const RECORDER_AUDIO_FILE_TITLE = "Audio Recording";
 
 export default {
   name: "InboxFormRecorder",
 
-  emits: ["audio", "cancel"],
+  emits: ["audio", "cancel", "error"],
 
   data() {
     return {
@@ -88,6 +131,12 @@ export default {
 
       // --> STATE <--
 
+      recorder: null as null | MediaRecorder,
+      audioChunks: [] as Array<Blob>,
+
+      emitAudioProcessing: false,
+      emitAudioOnStop: false,
+
       timerSeconds: 0,
       timerInterval: null as null | ReturnType<typeof setInterval>
     };
@@ -108,50 +157,254 @@ export default {
       }
 
       return [timerMinutesText, timerSecondsText].join(":");
+    },
+
+    isRecording(): boolean {
+      return this.timerInterval !== null;
+    },
+
+    hotkeys(): { [name: string]: (event: Event) => void } {
+      return {
+        escape: this.onHotkeyEscape
+      };
     }
   },
 
-  mounted() {
-    // Setup timer
-    this.setupTimer();
+  async mounted() {
+    // Start audio acquire
+    await this.startAudioAcquire();
   },
 
   beforeUnmount() {
-    // Unsetup timer
-    this.setupTimer(false);
+    // Stop recording (forced; if any)
+    this.destroyMediaRecorder();
+
+    // Unsetup timer (forced + reset)
+    this.setupTimer(TimerMode.Unregister, true);
   },
 
   methods: {
     // --> HELPERS <--
 
-    setupTimer(register = true): void {
-      // Unsetup any previously-running timer
+    setupTimer(mode: TimerMode, reset = false): void {
+      // Unsetup any previously-running timer (regardless of mode)
       if (this.timerInterval !== null) {
         clearInterval(this.timerInterval);
 
         this.timerInterval = null;
       }
 
-      // Register new timer?
-      if (register === true) {
-        // Reset timer count back to zero
+      // Reset current timer seconds?
+      if (reset === true) {
         this.timerSeconds = 0;
+      }
 
+      // Register new timer?
+      if (mode === TimerMode.Register) {
         // Start timer
         this.timerInterval = setInterval(() => {
           this.timerSeconds += 1;
+
+          // Request audio data to be drained
+          this.recorder?.requestData();
+
+          // Timer should be stopped? (maximum audio duration reached)
+          if (this.timerSeconds >= TIMER_SECONDS_MAXIMUM) {
+            // Stop recording (if any)
+            this.recorder?.stop();
+
+            // Stop timer (forced)
+            this.setupTimer(TimerMode.Unregister);
+          }
         }, TIMER_INTERVAL_TIME);
+      }
+    },
+
+    async startAudioAcquire(): Promise<void> {
+      try {
+        // Another audio recorder already exists?
+        if (this.recorder !== null) {
+          throw new Error("Audio recorder instance already bound");
+        }
+
+        // Capture media stream
+        const stream = await this.captureMediaStream();
+
+        // Create media recorder
+        this.recorder = this.createMediaRecorder(stream);
+
+        // Start recording
+        this.recorder.start();
+      } catch (error) {
+        logger.error("Could not start audio acquire", error);
+
+        // Raise an error
+        this.$emit("error", error);
+      }
+    },
+
+    async captureMediaStream(): Promise<MediaStream> {
+      if (typeof navigator.mediaDevices?.getUserMedia === "function") {
+        return await navigator.mediaDevices.getUserMedia({
+          audio: true
+        });
+      }
+
+      throw new Error("Audio recording unavailable");
+    },
+
+    createMediaRecorder(stream: MediaStream): MediaRecorder {
+      const recorder = new MediaRecorder(stream, {
+        mimeType: `${RECORDER_AUDIO_MIME}; codecs=${RECORDER_AUDIO_CODEC}`,
+        audioBitsPerSecond: RECORDER_AUDIO_BITRATE
+      });
+
+      // Bind event listeners
+      recorder.addEventListener("start", () => {
+        logger.info("Audio recorder started");
+
+        // Start timer (reset timer)
+        this.setupTimer(TimerMode.Register, true);
+      });
+
+      recorder.addEventListener("stop", () => {
+        logger.info("Audio recorder stopped");
+
+        // Stop timer
+        this.setupTimer(TimerMode.Unregister);
+
+        // Emit audio now?
+        if (this.emitAudioOnStop === true) {
+          this.emitAudio();
+        }
+      });
+
+      recorder.addEventListener("resume", () => {
+        logger.info("Audio recorder resumed");
+
+        // Resume timer
+        this.setupTimer(TimerMode.Register);
+      });
+
+      recorder.addEventListener("pause", () => {
+        logger.info("Audio recorder paused");
+
+        // Pause timer
+        this.setupTimer(TimerMode.Unregister);
+      });
+
+      recorder.addEventListener("error", () => {
+        logger.error("Audio recorder error");
+
+        // Raise a generic error
+        this.$emit("error", new Error("Recorder error"));
+      });
+
+      recorder.addEventListener("dataavailable", (event: BlobEvent) => {
+        logger.info(
+          `Audio recorder data received (chunk #${this.audioChunks.length})`
+        );
+
+        // Assign audio data
+        this.audioChunks.push(event.data);
+      });
+
+      return recorder;
+    },
+
+    destroyMediaRecorder() {
+      if (this.recorder !== null) {
+        try {
+          // Stop recording (forced)
+          this.recorder.stop();
+        } catch (error) {
+          logger.warn("Failed destroying existing media recorder", error);
+        }
+      }
+
+      // Forcibly unset recorder instance
+      this.recorder = null;
+      this.audioChunks = [];
+      this.emitAudioOnStop = false;
+    },
+
+    emitAudio() {
+      try {
+        // Mark as processing audio
+        this.emitAudioProcessing = true;
+
+        // Acquire audio duration
+        const audioDuration = this.timerSeconds;
+
+        if (audioDuration === 0) {
+          throw new Error("Cannot emit audio with a duration of zero");
+        }
+
+        // Acquire audio chunks
+        const audioChunks = this.audioChunks;
+
+        if (audioChunks.length === 0) {
+          throw new Error("Cannot emit audio with no audio chunks");
+        }
+
+        // Create audio file
+        const nowTime = Date.now();
+
+        let audioFile = new File(
+          audioChunks,
+          `${RECORDER_AUDIO_FILE_TITLE} ${nowTime}.${RECORDER_AUDIO_EXTENSION}`,
+
+          {
+            type: RECORDER_AUDIO_MIME,
+            lastModified: nowTime
+          }
+        );
+
+        // Emit final audio
+        this.$emit("audio", {
+          file: audioFile,
+          duration: audioDuration
+        });
+      } catch (error) {
+        // Emit error
+        this.$emit("error", error);
+      } finally {
+        // Not processing audio anymore
+        this.emitAudioProcessing = false;
       }
     },
 
     // --> EVENT LISTENERS <--
 
+    onHotkeyEscape(): void {
+      // Trigger cancel click event
+      this.onCancelClick();
+    },
+
     onSendClick(): void {
-      // TODO: fill this up
-      this.$emit("audio", null);
+      // Any recorder? Send audio
+      if (this.recorder !== null) {
+        // Mark as eligible for sending (once stopped)
+        this.emitAudioOnStop = true;
+
+        // Finalize audio
+        if (this.recorder.state === "recording") {
+          // Stop recording (and wait for final audio chunk)
+          this.recorder.stop();
+        } else {
+          // Emit audio in buffer straight away (already stopped)
+          this.emitAudio();
+        }
+      } else {
+        // No recorder, equivalent to cancel
+        this.$emit("cancel");
+      }
     },
 
     onCancelClick(): void {
+      // Stop recording
+      this.recorder?.stop();
+
       this.$emit("cancel");
     }
   }
@@ -178,13 +431,22 @@ $recorder-send-button-size: 24px;
   align-items: center;
   border-radius: 16px;
 
+  #{$c}__icon {
+    fill: rgb(var(--color-white));
+    margin-inline-start: 3px;
+    margin-inline-end: 5px;
+  }
+
   #{$c}__timer {
     font-size: 12.5px;
-    margin-inline-start: 4px;
+    margin-block-start: -1px;
+
+    /* This normalizes different glyphs/numbers horizontal widths */
+    min-width: 30px;
   }
 
   #{$c}__actions {
-    margin-inline-start: 7px;
+    margin-inline-start: 4px;
     display: flex;
     align-items: center;
 
