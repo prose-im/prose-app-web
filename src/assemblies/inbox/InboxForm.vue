@@ -56,6 +56,7 @@ layout-toolbar(
         v-else
         @audio="onRecorderAudio"
         @cancel="onRecorderCancel"
+        @error="onRecorderError"
       )
 
   template(
@@ -174,7 +175,10 @@ import {
   default as InboxFormFormatting,
   FormattingAction
 } from "@/components/inbox/InboxFormFormatting.vue";
-import InboxFormRecorder from "@/components/inbox/InboxFormRecorder.vue";
+import {
+  default as InboxFormRecorder,
+  Audio as RecorderAudio
+} from "@/components/inbox/InboxFormRecorder.vue";
 import InboxFormAttach from "@/components/inbox/InboxFormAttach.vue";
 import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
 import InboxFormLoader from "@/components/inbox/InboxFormLoader.vue";
@@ -404,18 +408,26 @@ export default {
       // TODO: apply formatting to text
     },
 
-    onRecorderAudio(audio: AudioBuffer) {
+    onRecorderAudio(audio: RecorderAudio) {
       // Close recorder
       this.isActionRecordRecorderVisible = false;
 
-      // TODO: encode audio file to WebM
-      // TODO: upload audio file
-      // TODO: send audio message
+      // Attach file
+      // TODO: send duration as well
+      this.onAttachFile(audio.file);
     },
 
     onRecorderCancel() {
       // Close recorder
       this.isActionRecordRecorderVisible = false;
+    },
+
+    onRecorderError() {
+      // Close recorder
+      this.isActionRecordRecorderVisible = false;
+
+      // Show error
+      BaseAlert.error("Failed recording audio", "Did you refuse recording?");
     },
 
     onAttachFile(file: File): void {
