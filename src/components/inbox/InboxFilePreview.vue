@@ -284,6 +284,11 @@ export default {
       this.onActionNavigateNextClick();
     },
 
+    onHotkeyEscape(): void {
+      // Trigger close button click event
+      this.onButtonCloseClick();
+    },
+
     onActionFullScreenClick(): void {
       if (this.hasActionFullScreen === true) {
         // Request full screen mode on the media element
@@ -320,11 +325,6 @@ export default {
 
     onButtonCloseClick(): void {
       this.$emit("close");
-    },
-
-    onHotkeyEscape(): void {
-      // Trigger close button click event
-      this.onButtonCloseClick();
     },
 
     onMediaDoubleClick(): void {
