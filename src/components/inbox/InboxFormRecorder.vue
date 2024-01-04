@@ -131,7 +131,9 @@ export default {
 
       // --> STATE <--
 
+      stream: null as null | MediaStream,
       recorder: null as null | MediaRecorder,
+
       audioChunks: [] as Array<Blob>,
 
       emitAudioProcessing: false,
@@ -228,10 +230,10 @@ export default {
         }
 
         // Capture media stream
-        const stream = await this.captureMediaStream();
+        this.stream = await this.captureMediaStream();
 
         // Create media recorder
-        this.recorder = this.createMediaRecorder(stream);
+        this.recorder = this.createMediaRecorder(this.stream);
 
         // Start recording
         this.recorder.start();
@@ -313,6 +315,7 @@ export default {
     },
 
     destroyMediaRecorder() {
+      // Stop recorder? (if any)
       if (this.recorder !== null) {
         try {
           // Stop recording (forced)
@@ -322,8 +325,23 @@ export default {
         }
       }
 
-      // Forcibly unset recorder instance
+      // Stop associated stream tracks? (if any)
+      if (this.stream !== null) {
+        try {
+          this.stream.getTracks().forEach(track => {
+            track.stop();
+          });
+        } catch (error) {
+          logger.warn(
+            "Failed stopping stream tracks associated to media recorder",
+            error
+          );
+        }
+      }
+
+      // Forcibly unset recorder instances
       this.recorder = null;
+      this.stream = null;
       this.audioChunks = [];
       this.emitAudioOnStop = false;
     },
