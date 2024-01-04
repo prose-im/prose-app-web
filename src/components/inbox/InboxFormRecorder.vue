@@ -90,7 +90,7 @@ const MINUTE_TO_SECONDS = 60; // 1 minute
 const TIMER_INTERVAL_TIME = 1000; // 1 second
 const TIMER_SECONDS_MAXIMUM = 600; // 10 minutes
 
-const RECORDER_AUDIO_BITRATE = 64000; // 64 Kbps
+const RECORDER_AUDIO_BITRATE = 32000; // 32 Kbps
 const RECORDER_AUDIO_EXTENSION = "weba";
 const RECORDER_AUDIO_MIME = "audio/webm";
 const RECORDER_AUDIO_CODEC = "opus";
