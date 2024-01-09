@@ -122,8 +122,14 @@ import { PropType } from "vue";
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/FormFieldSuggest.vue";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 // PROJECT: COMPOSABLES
 import { useRosterSuggestor } from "@/composables/roster";
+
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
 
 // ENUMERATIONS
 export enum Mode {
@@ -134,7 +140,7 @@ export enum Mode {
 }
 
 // CONSTANTS
-const IDENTITY_ACQUIRE_DELAY = 500; // 1/2 second
+const IDENTITY_ACQUIRE_DELAY = 1000; // 1 second
 
 export default {
   name: "AddContact",
@@ -206,7 +212,7 @@ export default {
     fieldAddressPlacehokder(): string {
       return this.isMember === true
         ? "Enter contact address…"
-        : "Enter channel name…";
+        : "Enter channel name (or address)…";
     },
 
     noticeIcon(): string {
@@ -229,53 +235,77 @@ export default {
       if (jid !== null) {
         this.fetching = true;
 
-        // Load identity
-        // TODO: await profile loading method
+        // Request profile for JID
+        let profile;
+
+        try {
+          profile = await Broker.$profile.loadUserProfile(jid);
+        } catch (error) {
+          logger.error(
+            `Could not load profile when adding contact: ${jid}`,
+            error
+          );
+
+          profile = null;
+        }
 
         // Assign JID and name (after loading profile)
         // Important: only proceed if local identifier matches last current \
         //   identifier, as this load could have been slower than expected, \
         //   thus it could have been replaced by a newer load.
         if (localId === this.identity.id) {
-          // TODO: assign real name there, or none if JID doesnt exist
+          // Assign JID
           this.identity.jid = jid;
-          this.identity.name = jid.node || "";
+
+          // Assign name (priorize first name, if available)
+          this.identity.name = profile?.firstName || profile?.nickname || "";
+
+          this.fetching = false;
         }
       } else {
-        this.fetching = false;
-
         // Reset JID and name (immediately)
         this.identity.jid = null;
         this.identity.name = "";
+
+        this.fetching = false;
       }
     },
 
     // --> EVENT LISTENERS <--
 
     async onAddressChange(address: string): Promise<void> {
+      // Clear any previous acquire
       if (this.identityAcquireTimeout !== null) {
         clearTimeout(this.identityAcquireTimeout);
       }
 
-      if (address) {
-        this.identityAcquireTimeout = setTimeout(async () => {
-          this.identityAcquireTimeout = null;
+      // Acquire identity for mode?
+      if (this.isMember === true) {
+        if (address) {
+          this.identityAcquireTimeout = setTimeout(async () => {
+            this.identityAcquireTimeout = null;
 
-          // Acquire parsed JID
-          // Notice: this might fail if the user-provided JID is invalid or \
-          //   not yet fully complete.
-          let jid: JID | null;
+            // Acquire parsed JID
+            // Notice: this might fail if the user-provided JID is invalid or \
+            //   not yet fully complete.
+            let jid: JID | null;
 
-          try {
-            jid = new JID(address);
-          } catch (_) {
-            jid = null;
-          }
+            try {
+              jid = new JID(address);
 
-          await this.acquireIdentity(jid);
-        }, IDENTITY_ACQUIRE_DELAY);
-      } else {
-        await this.acquireIdentity(null);
+              // JID is incomplete? (void it)
+              if (!jid.node || !jid.domain) {
+                jid = null;
+              }
+            } catch (_) {
+              jid = null;
+            }
+
+            await this.acquireIdentity(jid);
+          }, IDENTITY_ACQUIRE_DELAY);
+        } else {
+          await this.acquireIdentity(null);
+        }
       }
     },
 
@@ -285,24 +315,7 @@ export default {
       if (jidUnsafeString === null) {
         BaseAlert.warning("Address required", "Please enter an address");
       } else {
-        try {
-          // Attempt to parse JID (this might fail, in which case the JID \
-          //   needs to be considered invalid)
-          // TODO: restore this functionality
-          // const jid = new JID(jidUnsafeString);
-
-          // const name =
-          //   this.identity.jid && jid.equals(this.identity.jid) === true
-          //     ? this.identity.name
-          //     : "";
-
-          this.$emit("add", jidUnsafeString);
-        } catch (_) {
-          BaseAlert.warning(
-            "Invalid address",
-            "Make sure this address is valid"
-          );
-        }
+        this.$emit("add", jidUnsafeString);
       }
     }
   }
@@ -337,6 +350,7 @@ $c: ".m-add-contact";
 
       #{$c}__form-identity-avatar {
         margin-inline-end: 6px;
+        flex: 0 0 auto;
       }
     }
 
