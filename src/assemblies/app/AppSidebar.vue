@@ -121,11 +121,19 @@ export default {
     },
 
     async addContactChannel(jidString: string): Promise<void> {
-      // Create target public channel
-      // TODO: also support creating a private channel w/ createPrivateChannel?
-      const roomJID = await Broker.$room.createPublicChannel(jidString);
+      let roomJID;
 
-      BaseAlert.success("Channel added", "Channel has been added");
+      // Join or create room?
+      if (jidString.includes("@") === true) {
+        // Join room identified by JID
+        roomJID = await Broker.$room.join(new JID(jidString));
+      } else {
+        // Create target public channel
+        // TODO: also support creating a private channel w/ createPrivateChannel?
+        roomJID = await Broker.$room.createPublicChannel(jidString);
+
+        BaseAlert.success("Channel added", "Channel has been added");
+      }
 
       // Attempt to navigate to the created room
       this.navigateToCreatedRoom(roomJID);

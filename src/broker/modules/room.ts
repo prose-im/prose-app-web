@@ -27,6 +27,10 @@ class BrokerModuleRoom extends BrokerModule {
     return (await this._client.client?.sidebarItems()) || [];
   }
 
+  async join(jid: JID): Promise<JID | undefined> {
+    return this._client.client?.joinRoom(jid);
+  }
+
   async loadPublicChannels(): Promise<Array<Channel>> {
     return (await this._client.client?.loadPublicChannels()) || [];
   }

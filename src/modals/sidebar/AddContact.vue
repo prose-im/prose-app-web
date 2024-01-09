@@ -21,7 +21,7 @@ base-modal(
     v-if="isMember"
   )
     p.u-medium
-      | Add a new member
+      | Open a direct message
 
     p.u-regular
       | Add an existing chat address, or invite an email to join your team.
@@ -216,7 +216,7 @@ export default {
     },
 
     confirmLabel(): string {
-      return this.isMember === true ? "Send Request" : "Create Channel";
+      return this.isMember === true ? "Open Direct Message" : "Add Channel";
     }
   },
 
