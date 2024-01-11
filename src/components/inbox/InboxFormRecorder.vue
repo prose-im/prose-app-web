@@ -147,7 +147,7 @@ export default {
   computed: {
     timerText(): string {
       // Compute seconds and minutes
-      let timerSeconds = this.timerSeconds % MINUTE_TO_SECONDS,
+      const timerSeconds = this.timerSeconds % MINUTE_TO_SECONDS,
         timerMinutes = Math.floor(this.timerSeconds / MINUTE_TO_SECONDS);
 
       // Convert numbers to text
