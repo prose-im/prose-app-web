@@ -26,6 +26,7 @@ list-disclosure(
       v-slot:icon
     )
       base-avatar(
+        v-if="member.jid"
         :jid="member.jid"
         class="c-inbox-details-multi-members__avatar"
         size="20px"
