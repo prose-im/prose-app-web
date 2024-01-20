@@ -105,36 +105,7 @@ export default {
               aside: {
                 type: FormFieldsetFieldAsideType.Link,
                 label: "Apply",
-
-                click: async () => {
-                  try {
-                    const topic = this.form.topic.inner || null;
-
-                    if (topic === null) {
-                      throw new Error("No topic");
-                    }
-
-                    // Re-assign fieldsets (with new initial value)
-                    this.assignFieldsets();
-
-                    // Set room topic
-                    await (this.room as RoomMUC).setTopic(topic);
-
-                    // Show success alert
-                    BaseAlert.success(
-                      "Topic set",
-                      `The ${this.type} topic has been changed`
-                    );
-                  } catch (error) {
-                    this.$log.error("Failed setting topic", error);
-
-                    // Show error alert
-                    BaseAlert.error(
-                      "Cannot set topic",
-                      `The ${this.type} topic could not be changed`
-                    );
-                  }
-                }
+                click: this.onFieldsetInformationTopicApplyClick
               }
             }
           ],
@@ -151,6 +122,38 @@ export default {
           }
         }
       ];
+    },
+
+    // --> EVENT LISTENERS <--
+
+    async onFieldsetInformationTopicApplyClick(): Promise<void> {
+      try {
+        const topic = this.form.topic.inner || null;
+
+        if (topic === null) {
+          throw new Error("No topic");
+        }
+
+        // Re-assign fieldsets (with new initial value)
+        this.assignFieldsets();
+
+        // Set room topic
+        await (this.room as RoomMUC).setTopic(topic);
+
+        // Show success alert
+        BaseAlert.success(
+          "Topic set",
+          `The ${this.type} topic has been changed`
+        );
+      } catch (error) {
+        this.$log.error("Failed setting topic", error);
+
+        // Show error alert
+        BaseAlert.error(
+          "Cannot set topic",
+          `The ${this.type} topic could not be changed`
+        );
+      }
     }
   }
 };

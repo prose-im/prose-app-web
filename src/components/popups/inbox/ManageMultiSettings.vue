@@ -111,36 +111,7 @@ export default {
               aside: {
                 type: FormFieldsetFieldAsideType.Link,
                 label: "Apply",
-
-                click: async () => {
-                  try {
-                    const name = this.form.name.inner || null;
-
-                    if (name === null) {
-                      throw new Error("No name");
-                    }
-
-                    // Re-assign fieldsets (with new initial value)
-                    this.assignFieldsets();
-
-                    // Set room name
-                    await (this.room as RoomMutableName).setName(name);
-
-                    // Show success alert
-                    BaseAlert.success(
-                      "Name set",
-                      `The ${this.type} name has been changed`
-                    );
-                  } catch (error) {
-                    this.$log.error("Failed setting name", error);
-
-                    // Show error alert
-                    BaseAlert.error(
-                      "Cannot set name",
-                      `The ${this.type} name could not be changed`
-                    );
-                  }
-                }
+                click: this.onFieldsetIdentityNameApplyClick
               }
             }
           ],
@@ -204,8 +175,7 @@ export default {
             data: {
               text: `Remove ${this.type} and all messages`,
               tint: "red",
-              reverse: true,
-              disabled: true
+              reverse: true
             } as FormFieldsetFieldDataButton
           }
         ],
@@ -216,6 +186,35 @@ export default {
       });
 
       return fieldsets;
+    },
+
+    // --> EVENT LISTENERS <--
+
+    async onFieldsetIdentityNameApplyClick(): Promise<void> {
+      try {
+        const name = this.form.name.inner || null;
+
+        if (name === null) {
+          throw new Error("No name");
+        }
+
+        // Re-assign fieldsets (with new initial value)
+        this.assignFieldsets();
+
+        // Set room name
+        await (this.room as RoomMutableName).setName(name);
+
+        // Show success alert
+        BaseAlert.success("Name set", `The ${this.type} name has been changed`);
+      } catch (error) {
+        this.$log.error("Failed setting name", error);
+
+        // Show error alert
+        BaseAlert.error(
+          "Cannot set name",
+          `The ${this.type} name could not be changed`
+        );
+      }
     }
   }
 };
