@@ -31,6 +31,10 @@ class BrokerModuleRoom extends BrokerModule {
     return this._client.client?.joinRoom(jid);
   }
 
+  async destroy(jid: JID): Promise<void> {
+    return this._client.client?.destroyRoom(jid);
+  }
+
   async loadPublicChannels(): Promise<Array<Channel>> {
     return (await this._client.client?.loadPublicChannels()) || [];
   }

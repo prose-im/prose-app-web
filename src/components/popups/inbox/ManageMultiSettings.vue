@@ -23,7 +23,7 @@ form-settings-editor(
 // NPM
 import { PropType } from "vue";
 import upperFirst from "lodash.upperfirst";
-import { Room, RoomMutableName } from "@prose-im/prose-sdk-js";
+import { JID, Room, RoomMutableName } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -39,6 +39,9 @@ import {
 
 // PROJECT: POPUPS
 import { FormSettings as MultiFormSettings } from "@/popups/inbox/ManageMulti.vue";
+
+// PROJECT: BROKER
+import Broker from "@/broker";
 
 export default {
   name: "ManageMultiSettings",
@@ -175,7 +178,8 @@ export default {
             data: {
               text: `Remove ${this.type} and all messages`,
               tint: "red",
-              reverse: true
+              reverse: true,
+              click: this.onFieldsetDangerZoneDeleteClick
             } as FormFieldsetFieldDataButton
           }
         ],
@@ -213,6 +217,29 @@ export default {
         BaseAlert.error(
           "Cannot set name",
           `The ${this.type} name could not be changed`
+        );
+      }
+    },
+
+    async onFieldsetDangerZoneDeleteClick(): Promise<void> {
+      // TODO: show modal before actually deleting
+
+      try {
+        // Destroy room
+        await Broker.$room.join(new JID(this.room.id as string));
+
+        // Show success alert
+        BaseAlert.success(
+          "Deletion complete",
+          `The ${this.type} has been destroyed`
+        );
+      } catch (error) {
+        this.$log.error(`Failed deleting ${this.type}`, error);
+
+        // Show error alert
+        BaseAlert.error(
+          "Cannot delete",
+          `The ${this.type} could not be destroyed`
         );
       }
     }
