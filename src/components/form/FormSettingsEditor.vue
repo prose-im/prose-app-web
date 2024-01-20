@@ -131,6 +131,7 @@
 
           base-button(
             v-else-if="field.type === 'button'",
+            @click="field.data.click"
             :tint="field.data.tint || 'light'"
             :reverse="field.data.reverse"
             :disabled="field.data.disabled"
@@ -370,6 +371,7 @@ export type FieldsetFieldDataButton = {
   tint?: string;
   reverse?: boolean;
   disabled?: boolean;
+  click?: () => void;
 };
 
 export type FieldsetControlActionDataButton = FieldsetFieldDataButton;
