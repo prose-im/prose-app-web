@@ -34,20 +34,9 @@ list-button(
     slot
 
   template(
-    v-if="item.error || item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
+    v-if="isRoomStillInitializing || roomError || item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
     v-slot:details
   )
-    base-tooltip(
-      v-if="item.error"
-      :tooltip="item.error"
-      align="right"
-    )
-      base-icon(
-        name="exclamationmark.triangle.fill"
-        size="15px"
-        class="c-sidebar-main-item-generic__error"
-      )
-
     base-tooltip(
       v-if="item.hasDraft"
       align="right"
@@ -70,6 +59,29 @@ list-button(
       :count="item.unreadCount"
       :color="countColor"
     )
+
+    base-tooltip(
+      v-if="isRoomStillInitializing"
+      align="right"
+      tooltip="Still Connecting…"
+    )
+      base-spinner(
+        :color="active ? '#ffffff' : '#949eb1'"
+        size="7px"
+        border-width="1px"
+        speed="1500ms"
+      )
+
+    base-tooltip(
+      v-else-if="roomError"
+      :tooltip="roomError"
+      align="right"
+    )
+      base-icon(
+        name="exclamationmark.triangle.fill"
+        size="15px"
+        class="c-sidebar-main-item-generic__error"
+      )
 </template>
 
 <!-- **********************************************************************
@@ -78,8 +90,15 @@ list-button(
 
 <script lang="ts">
 // NPM
-import { SidebarItem } from "@prose-im/prose-sdk-js";
+import {
+  SidebarItem,
+  RoomStateType,
+  RoomStateDisconnected
+} from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
+
+// CONSTANTS
+const TOGGLE_ROOM_CONNECTING_DELAY = 3000; // 3 seconds
 
 export default {
   name: "SidebarMainItemGeneric",
@@ -96,13 +115,75 @@ export default {
     }
   },
 
+  data() {
+    return {
+      // --> STATE <--
+
+      isRoomStillInitializing: false,
+
+      toggleRoomConnectingTimeout: null as null | ReturnType<typeof setTimeout>
+    };
+  },
+
   computed: {
     countColor(): string {
       return this.active === true ? "white" : "blue";
+    },
+
+    roomError(): string | null {
+      // Return error? (if disconnected)
+      if (this.item.room.state.type === RoomStateType.Disconnected) {
+        return (this.item.room.state as RoomStateDisconnected).error || null;
+      }
+
+      return null;
+    },
+
+    isRoomConnecting(): boolean {
+      return this.item.room.state.type === RoomStateType.Connecting;
     }
   },
 
+  watch: {
+    isRoomConnecting(newValue, oldValue) {
+      if (newValue !== oldValue) {
+        this.toggleRoomConnecting(newValue);
+      }
+    }
+  },
+
+  mounted() {
+    // Initialize first room connecting state
+    this.toggleRoomConnecting(this.isRoomConnecting);
+  },
+
+  beforeUnmount() {
+    // Un-initialize room connecting state (forcibly, so as to stop any \
+    //   scheduled timer)
+    this.toggleRoomConnecting(false);
+  },
+
   methods: {
+    // --> HELPERS <--
+
+    toggleRoomConnecting(connecting: boolean): void {
+      // Clear any previous toggle
+      if (this.toggleRoomConnectingTimeout !== null) {
+        clearTimeout(this.toggleRoomConnectingTimeout);
+      }
+
+      if (connecting === true) {
+        // Delay state update, since it is normal that rooms start in a \
+        //   connecting state, only slow rooms should show the connecting \
+        //   indicator.
+        this.toggleRoomConnectingTimeout = setTimeout(() => {
+          this.isRoomStillInitializing = true;
+        }, TOGGLE_ROOM_CONNECTING_DELAY);
+      } else {
+        this.isRoomStillInitializing = false;
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onButtonClick(): void {
