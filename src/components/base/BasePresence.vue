@@ -13,7 +13,7 @@ span(
   :class=`[
     "c-base-presence",
     "c-base-presence--" + size,
-    "c-base-presence--" + availability,
+    "c-base-presence--" + availabilityValue,
     {
       "c-base-presence--active": active,
       "c-base-presence--available-only": availableOnly
@@ -48,7 +48,12 @@ export default {
   props: {
     jid: {
       type: Object as PropType<JID>,
-      required: true
+      default: undefined
+    },
+
+    availability: {
+      type: Number as PropType<Availability>,
+      default: undefined
     },
 
     size: {
@@ -72,12 +77,27 @@ export default {
   },
 
   computed: {
-    availability(): string {
-      const availability = Store.$presence.getAvailability(this.jid),
-        availabilityLabel = AVAILABILITY_LABELS[availability] || null;
+    availabilitySource(): Availability {
+      // Acquire forced availability?
+      if (this.availability !== undefined) {
+        return this.availability;
+      }
+
+      // Acquire availability for JID?
+      if (this.jid !== undefined) {
+        return Store.$presence.getAvailability(this.jid);
+      }
+
+      // Default availability (unavailable)
+      return Availability.Unavailable;
+    },
+
+    availabilityValue(): string {
+      const availabilityLabel =
+        AVAILABILITY_LABELS[this.availabilitySource] || null;
 
       if (availabilityLabel === null) {
-        throw new Error(`Unexpected availability: ${availability}`);
+        throw new Error(`Unexpected availability: ${this.availabilitySource}`);
       }
 
       return availabilityLabel;
