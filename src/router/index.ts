@@ -162,11 +162,13 @@ class Router {
 
     if (credentials.jid) {
       try {
-        // Authenticate client
-        await Broker.client.authenticate(
-          new JID(credentials.jid),
-          credentials.password
-        );
+        const jid = new JID(credentials.jid);
+
+        // Authenticate client? (if not already bound to JID, eg. user just \
+        //   logged-in)
+        if (Broker.client.jid?.equals(jid) !== true) {
+          await Broker.client.authenticate(jid, credentials.password);
+        }
 
         // Start observers
         await Broker.client.observe();
