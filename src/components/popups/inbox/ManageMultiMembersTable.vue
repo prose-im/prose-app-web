@@ -31,7 +31,7 @@ base-data-table(
 
 <script lang="ts">
 // NPM
-import { Room } from "@prose-im/prose-sdk-js";
+import { Room, RoomAffiliation } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
 // PROJECT: COMPONENTS
@@ -42,6 +42,15 @@ import {
   Row as DataTableRow,
   Sizes as DataTableSizes
 } from "@/components/base/BaseDataTable.vue";
+
+// CONSTANTS
+const AFFILIATION_ROLES = {
+  [RoomAffiliation.Outcast]: "Banned",
+  [RoomAffiliation.None]: "None",
+  [RoomAffiliation.Member]: "Member",
+  [RoomAffiliation.Admin]: "Admin",
+  [RoomAffiliation.Owner]: "Owner"
+};
 
 export default {
   name: "ManageMultiMembersTable",
@@ -83,6 +92,11 @@ export default {
           {
             id: "jid",
             label: "Address"
+          },
+
+          {
+            id: "role",
+            label: "Role"
           }
         ] as Array<DataTableColumn>,
 
@@ -92,12 +106,16 @@ export default {
 
             columns: {
               name: room.name,
-              jid: room.jid ? room.jid.toString() : "<unknown jid>"
+              jid: room.jid ? room.jid.toString() : "<unknown jid>",
+
+              role:
+                AFFILIATION_ROLES[room.affiliation] ||
+                AFFILIATION_ROLES[RoomAffiliation.None]
             }
           };
         }) as Array<DataTableRow>,
 
-        sizes: { name: "40%", jid: "60%" } as DataTableSizes,
+        sizes: { name: "35%", jid: "50%", role: "15%" } as DataTableSizes,
 
         controls: (this.type === "channel"
           ? [
