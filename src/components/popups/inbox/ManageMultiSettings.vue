@@ -13,6 +13,16 @@ form-settings-editor(
   :fieldsets="fieldsets"
   class="p-manage-multi-settings"
 )
+  template(
+    v-slot:modals
+  )
+    delete-multi(
+      v-if="modals.deleteMulti.visible"
+      @proceed="onModalDeleteMultiProceed"
+      @close="onModalDeleteMultiClose"
+      :type="type"
+      :loading="modals.deleteMulti.loading"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -37,6 +47,9 @@ import {
   FieldsetOptionAside as FormFieldsetOptionAside
 } from "@/components/form/FormSettingsEditor.vue";
 
+// PROJECT: MODALS
+import DeleteMulti from "@/modals/inbox/DeleteMulti.vue";
+
 // PROJECT: POPUPS
 import { FormSettings as MultiFormSettings } from "@/popups/inbox/ManageMulti.vue";
 
@@ -46,7 +59,7 @@ import Broker from "@/broker";
 export default {
   name: "ManageMultiSettings",
 
-  components: { FormSettingsEditor },
+  components: { FormSettingsEditor, DeleteMulti },
 
   props: {
     type: {
@@ -71,6 +84,15 @@ export default {
 
   data() {
     return {
+      // --> STATE <--
+
+      modals: {
+        deleteMulti: {
+          visible: false,
+          loading: false
+        }
+      },
+
       // --> DATA <--
 
       fieldsets: [] as Array<FormFieldset>
@@ -222,9 +244,13 @@ export default {
     },
 
     async onFieldsetDangerZoneDeleteClick(): Promise<void> {
-      // TODO: show modal before actually deleting
+      this.modals.deleteMulti.visible = true;
+    },
 
+    async onModalDeleteMultiProceed(): Promise<void> {
       try {
+        this.modals.deleteMulti.loading = true;
+
         // Destroy room
         await Broker.$room.join(new JID(this.room.id as string));
 
@@ -233,6 +259,8 @@ export default {
           "Deletion complete",
           `The ${this.type} has been destroyed`
         );
+
+        this.modals.deleteMulti.visible = false;
       } catch (error) {
         this.$log.error(`Failed deleting ${this.type}`, error);
 
@@ -241,7 +269,13 @@ export default {
           "Cannot delete",
           `The ${this.type} could not be destroyed`
         );
+      } finally {
+        this.modals.deleteMulti.loading = false;
       }
+    },
+
+    onModalDeleteMultiClose(): void {
+      this.modals.deleteMulti.visible = false;
     }
   }
 };
