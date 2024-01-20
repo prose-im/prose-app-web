@@ -18,7 +18,7 @@ list-disclosure(
 )
   list-button(
     v-for="member in room.participants"
-    @click="onMemberClick(member.jid)"
+    @click="onMemberClick(member)"
     size="small"
     class="c-inbox-details-multi-members__member"
   )
@@ -73,7 +73,7 @@ list-disclosure(
 
 <script lang="ts">
 // NPM
-import { JID, Room } from "@prose-im/prose-sdk-js";
+import { Room, ParticipantInfo } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
 // PROJECT: COMPONENTS
@@ -111,14 +111,6 @@ export default {
   computed: {
     hasAddMember(): boolean {
       return this.type === "channel";
-    },
-
-    selfJID(): JID {
-      return this.account.getLocalJID();
-    },
-
-    account(): typeof Store.$account {
-      return Store.$account;
     }
   },
 
@@ -129,14 +121,16 @@ export default {
       Store.$layout.setInboxDetailsSectionMembers(visible);
     },
 
-    onMemberClick(jid: JID): void {
-      if (jid.equals(this.selfJID) === false) {
+    onMemberClick(member: ParticipantInfo): void {
+      if (member.isSelf === true) {
+        BaseAlert.warning("This is you", "Cannot start a chat with yourself!");
+      } else if (!member.jid) {
+        BaseAlert.warning("Anonymous member", "Member is not open for DMs");
+      } else {
         this.$router.push({
           name: "app.inbox",
-          params: { roomId: jid.toString() }
+          params: { roomId: member.jid.toString() }
         });
-      } else {
-        BaseAlert.info("This is you", "Cannot start a chat with yourself!");
       }
     },
 
