@@ -39,7 +39,7 @@ list-disclosure(
         | {{ member.name }}
 
       base-presence(
-        :jid="member.jid"
+        :availability="member.availability"
         size="tiny"
         class="c-inbox-details-multi-members__presence"
         available-only
