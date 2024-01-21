@@ -252,7 +252,7 @@ export default {
         this.modals.deleteMulti.loading = true;
 
         // Destroy room
-        await Broker.$room.join(new JID(this.room.id as string));
+        await Broker.$room.destroy(new JID(this.room.id as string));
 
         // Show success alert
         BaseAlert.success(
