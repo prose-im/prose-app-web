@@ -14,6 +14,7 @@ import mitt from "mitt";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
 import {
+  JID,
   Message as CoreMessage,
   UserBasicInfo as CoreUser,
   RoomID
@@ -21,6 +22,17 @@ import {
 
 // PROJECT: STORES
 import Store from "@/store";
+
+/**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
+
+enum InboxNameOrigin {
+  // Global origin.
+  Global = "global",
+  // Message origin.
+  Message = "message"
+}
 
 /**************************************************************************
  * TYPES
@@ -31,6 +43,16 @@ type InboxEntryMessages = {
   byId: { [id: string]: InboxEntryMessage };
 };
 
+type InboxEntryNames = {
+  byJID: { [jid: string]: InboxEntryName };
+};
+
+type InboxEntryName = {
+  jid: JID;
+  name: string;
+  origin: InboxNameOrigin;
+};
+
 type InboxEntryStates = {
   composing: Array<CoreUser>;
 };
@@ -39,6 +61,12 @@ type EventMessageGeneric = {
   roomId: RoomID;
   message: InboxEntryMessage;
   original?: InboxEntryMessage;
+};
+
+type EventNameGeneric = {
+  roomId: RoomID;
+  jid: JID;
+  name: string;
 };
 
 /**************************************************************************
@@ -55,6 +83,7 @@ interface InboxEntries {
 
 interface InboxEntry {
   messages: InboxEntryMessages;
+  names: InboxEntryNames;
   states: InboxEntryStates;
 }
 
@@ -122,6 +151,10 @@ const $inbox = defineStore("inbox", {
               byId: {}
             },
 
+            names: {
+              byJID: {}
+            },
+
             states: {
               composing: []
             }
@@ -144,6 +177,12 @@ const $inbox = defineStore("inbox", {
       return this.assert(roomId).messages.byId[id] || undefined;
     },
 
+    getNames(roomId: RoomID): { [jid: string]: InboxEntryName } {
+      // Notice: pseudo-getter, which needs to be defined as an action since \
+      //   it might mutate the state (as we are asserting).
+      return this.assert(roomId).names.byJID;
+    },
+
     getStates(roomId: RoomID): InboxEntryStates {
       // Notice: pseudo-getter, which needs to be defined as an action since \
       //   it might mutate the state (as we are asserting).
@@ -151,6 +190,17 @@ const $inbox = defineStore("inbox", {
     },
 
     insertCoreMessages(roomId: RoomID, messages: CoreMessage[]): boolean {
+      // Update sender names contained into messages
+      messages.forEach(message => {
+        this.setName(
+          roomId,
+          new JID(message.user.jid),
+          message.user.name,
+          InboxNameOrigin.Message
+        );
+      });
+
+      // Insert messages
       return this.insertMessages(
         roomId,
         messages.map(message => {
@@ -291,7 +341,59 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
-    setComposing(roomId: RoomID, composing: Array<CoreUser>) {
+    setName(
+      roomId: RoomID,
+      jid: JID,
+      name: string,
+      origin: InboxNameOrigin
+    ): boolean {
+      const container = this.assert(roomId).names.byJID,
+        jidString = jid.toString();
+
+      // Check if should change name
+      let shouldChange = false;
+
+      const existingName = container[jidString];
+
+      if (!existingName) {
+        shouldChange = true;
+      } else if (existingName.name !== name) {
+        // Only change existing names which old origin is same as origin, or \
+        //   if origin is global (which overrides any existing name)
+        if (
+          origin === InboxNameOrigin.Global ||
+          existingName.origin === origin
+        ) {
+          shouldChange = true;
+        }
+      }
+
+      // Name should be changed?
+      if (shouldChange === true) {
+        // Initialize or update?
+        if (!container[jidString]) {
+          container[jidString] = {
+            jid,
+            name,
+            origin
+          };
+        } else {
+          container[jidString].name = name;
+          container[jidString].origin = origin;
+        }
+
+        // Emit IPC changed event
+        EventBus.emit("name:changed", {
+          roomId: roomId,
+          jid,
+          name
+        } as EventNameGeneric);
+      }
+
+      return shouldChange;
+    },
+
+    setComposing(roomId: RoomID, composing: Array<CoreUser>): void {
       // Filter-out local JID in the list of composing users
       const selfJID = Store.$account.getLocalJID();
 
@@ -306,6 +408,11 @@ const $inbox = defineStore("inbox", {
  * EXPORTS
  * ************************************************************************* */
 
-export { fromCoreMessage };
-export type { EventMessageGeneric, InboxEntryMessage };
+export { InboxNameOrigin, fromCoreMessage };
+export type {
+  EventMessageGeneric,
+  EventNameGeneric,
+  InboxEntryMessage,
+  InboxEntryName
+};
 export default $inbox;

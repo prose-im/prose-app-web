@@ -123,7 +123,12 @@ import { useEvents } from "@/composables/events";
 // PROJECT: STORES
 import Store from "@/store";
 import { EventAvatarGeneric } from "@/store/tables/avatar";
-import { EventMessageGeneric } from "@/store/tables/inbox";
+import {
+  InboxNameOrigin,
+  InboxEntryName,
+  EventMessageGeneric,
+  EventNameGeneric
+} from "@/store/tables/inbox";
 import { SessionAppearance } from "@/store/tables/session";
 
 // ENUMERATIONS
@@ -186,6 +191,7 @@ export default {
         "message:inserted": [Store.$inbox, this.onStoreMessageInserted],
         "message:updated": [Store.$inbox, this.onStoreMessageUpdated],
         "message:retracted": [Store.$inbox, this.onStoreMessageRetracted],
+        "name:changed": [Store.$inbox, this.onStoreNameChanged],
         "avatar:changed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed],
         "avatar:flushed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed]
       },
@@ -266,6 +272,10 @@ export default {
 
     messages(): ReturnType<typeof Store.$inbox.getMessages> {
       return this.room ? Store.$inbox.getMessages(this.room.id) : [];
+    },
+
+    names(): ReturnType<typeof Store.$inbox.getNames> {
+      return this.room ? Store.$inbox.getNames(this.room.id) : {};
     }
   },
 
@@ -395,10 +405,6 @@ export default {
     },
 
     setupStore(runtime: MessagingRuntime): void {
-      // Identify both parties
-      this.identifyPartyLocal(runtime);
-      this.identifyAllPartiesRemote(runtime);
-
       // Mark as initializing?
       if (this.isMessageSyncStale === true) {
         runtime.MessagingStore.loader("forwards", true);
@@ -406,6 +412,12 @@ export default {
 
       // Pre-flush the store
       runtime.MessagingStore.flush();
+
+      // Register global names
+      this.registerGlobalNames();
+
+      // Identify all parties
+      this.identifyAllParties(runtime);
 
       // Insert all messages already in store
       runtime.MessagingStore.insert(...this.messages);
@@ -425,35 +437,49 @@ export default {
       }
     },
 
-    identifyPartyLocal(runtime: MessagingRuntime): void {
-      // Identify local party
-      runtime.MessagingStore.identify(this.selfJID.toString(), {
-        // TODO: migrate to client-provided self name (do not source from \
-        //   roster anymore, returns jid-based nickname)
-        name: Store.$roster.getEntryName(this.selfJID),
-        avatar: Store.$avatar.getAvatarDataUrl(this.selfJID) || undefined
+    identifyAllParties(runtime: MessagingRuntime): void {
+      // Identify all parties
+      Object.values(this.names).forEach((name: InboxEntryName) => {
+        this.identifyParty(runtime, name.jid, name.name);
       });
     },
 
-    identifyPartyRemote(
-      runtime: MessagingRuntime,
-      jid: JID,
-      name: string
-    ): void {
-      // Identify remote party
+    identifyParty(runtime: MessagingRuntime, jid: JID, name: string): void {
+      // Identify party
       runtime.MessagingStore.identify(jid.toString(), {
         name,
         avatar: Store.$avatar.getAvatarDataUrl(jid) || undefined
       });
     },
 
-    identifyAllPartiesRemote(runtime: MessagingRuntime): void {
-      // Identify remote all parties
-      this.room?.participants.forEach(member => {
-        if (member.jid) {
-          this.identifyPartyRemote(runtime, member.jid, member.name);
-        }
-      });
+    registerGlobalNames(): void {
+      const roomId = this.room?.id || null;
+
+      if (roomId !== null) {
+        // Register self name
+        Store.$inbox.setName(
+          roomId,
+          this.selfJID,
+          Store.$roster.getEntryName(this.selfJID),
+          InboxNameOrigin.Global
+        );
+
+        // Register participant names
+        // Notice: those names are preferred over the per-message names, since \
+        //   they are guaranteed to be always up-to-date. Those are defined \
+        //   secondly since they may overwrite per-message names, which is \
+        //   desired.
+        this.room?.participants.forEach(member => {
+          if (member.jid) {
+            Store.$inbox.setName(
+              roomId,
+              member.jid,
+              member.name,
+              InboxNameOrigin.Global
+            );
+          }
+        });
+      }
     },
 
     showPopover({
@@ -978,27 +1004,29 @@ export default {
       }
     },
 
+    onStoreNameChanged(event: EventNameGeneric): void {
+      if (this.room?.id === event.roomId) {
+        // Check if should re-identify (if runtime is available)
+        const frameRuntime = this.frame();
+
+        if (frameRuntime !== null) {
+          // Re-identify party
+          this.identifyParty(frameRuntime, event.jid, event.name);
+        }
+      }
+    },
+
     onStoreAvatarChangedOrFlushed({ jid }: EventAvatarGeneric): void {
       // Check if should re-identify (if runtime is available)
       const frameRuntime = this.frame();
 
       if (frameRuntime !== null) {
-        // Re-identify remote party?
-        const remotePartyMember = this.room?.participants.find(member => {
-          return member.jid && member.jid.equals(jid);
-        });
+        // Re-identify party w/ new avatar? (if JID found in names)
+        const jidString = jid.toString(),
+          name = this.names[jidString] || null;
 
-        if (remotePartyMember && remotePartyMember.jid) {
-          this.identifyPartyRemote(
-            frameRuntime,
-            remotePartyMember.jid,
-            remotePartyMember.name
-          );
-        }
-
-        // Re-identify local party?
-        if (this.selfJID.equals(jid) === true) {
-          this.identifyPartyLocal(frameRuntime);
+        if (name !== null) {
+          this.identifyParty(frameRuntime, name.jid, name.name);
         }
       }
     },
