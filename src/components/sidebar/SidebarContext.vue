@@ -253,8 +253,8 @@ export default {
         {
           type: PopoverItemType.Button,
           label: "Pause notifications",
-          disabled: true,
 
+          // TODO: unpause if paused + color in red/orange/blue
           children: [
             {
               type: PopoverItemType.Button,
@@ -278,7 +278,7 @@ export default {
 
             {
               type: PopoverItemType.Button,
-              label: "Custom…"
+              label: "For 1 week"
             }
           ]
         },
