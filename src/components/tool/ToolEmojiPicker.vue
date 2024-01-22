@@ -12,9 +12,10 @@
 emoji-picker(
   @select="onEmojiSelect"
   :native="true"
+  :static-texts="{ placeholder: 'Search for emojis'}"
   class="c-tool-emoji-picker"
   disable-skin-tones
-  hide-search
+  display-recent
 )
 </template>
 
@@ -24,7 +25,6 @@ emoji-picker(
 
 <script lang="ts">
 // NPM
-// @ts-expect-error EmojiPicker is a Vue component w/o any declaration
 import EmojiPicker from "vue3-emoji-picker";
 import "vue3-emoji-picker/css";
 
@@ -84,6 +84,36 @@ $c: ".c-tool-emoji-picker";
           &:hover,
           &:active {
             opacity: 1;
+          }
+        }
+      }
+
+      .v3-search {
+        /* Style inspired from FormField, since it cannot be injected there */
+
+        input {
+          background-color: rgb(var(--color-white));
+          border: 1px solid rgba(var(--color-black), 0.1);
+          outline: 0 solid rgba(var(--color-base-purple-normal), 0.2);
+          color: rgb(var(--color-text-primary));
+          font-size: 12px;
+          height: 30px;
+          padding: $size-form-field-padding-block
+            $size-form-field-medium-padding-sides;
+          transition: all 150ms linear;
+          transition-property: border-color, outline-width;
+          border-radius: $size-form-field-border-radius;
+          box-sizing: border-box;
+          box-shadow: inset 0 1px 2px 0 rgba(var(--color-black), 0.03);
+
+          &:hover {
+            border-color: rgba(var(--color-base-purple-normal), 0.5);
+          }
+
+          &:focus {
+            border-color: rgb(var(--color-base-purple-normal));
+            outline-width: $size-form-field-outline-width;
+            box-shadow: inset 0 1px 2px 0 rgba(var(--color-black), 0.03);
           }
         }
       }
