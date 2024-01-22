@@ -11,6 +11,7 @@
 <template lang="pug">
 .c-sidebar-main
   list-disclosure(
+    v-if="hasSpotlight"
     @toggle="onSpotlightToggle"
     :expanded="layout.sidebar.sections.spotlight"
     :list-class="disclosureListClass"
@@ -135,6 +136,11 @@ export default {
 
   data() {
     return {
+      // --> DATA <--
+
+      // TODO: implement spotlight views
+      hasSpotlight: false,
+
       // --> STATE <--
 
       selectedJID: null as JID | null,
