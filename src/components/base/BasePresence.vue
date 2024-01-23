@@ -16,7 +16,7 @@ span(
     "c-base-presence--" + availabilityValue,
     {
       "c-base-presence--active": active,
-      "c-base-presence--available-only": availableOnly
+      "c-base-presence--hide-offline": hideOffline
     }
   ]`
 )
@@ -70,7 +70,7 @@ export default {
       default: false
     },
 
-    availableOnly: {
+    hideOffline: {
       type: Boolean,
       default: false
     }
@@ -78,14 +78,14 @@ export default {
 
   computed: {
     availabilitySource(): Availability {
-      // Acquire forced availability?
-      if (this.availability !== undefined) {
-        return this.availability;
-      }
-
       // Acquire availability for JID?
       if (this.jid !== undefined) {
         return Store.$presence.getAvailability(this.jid);
+      }
+
+      // Acquire forced availability? (if no JID, used as a fallback)
+      if (this.availability !== undefined) {
+        return this.availability;
       }
 
       // Default availability (unavailable)
@@ -123,9 +123,9 @@ $sizes: (
 
 $availabilities: (
   "available": var(--color-base-green-normal),
-  "away": var(--color-base-orange-normal),
-  "unavailable": var(--color-base-grey-normal),
-  "dnd": var(--color-base-red-normal)
+  "dnd": var(--color-base-red-normal),
+  "away": var(--color-base-grey-normal),
+  "unavailable": var(--color-base-grey-normal)
 );
 
 .c-base-presence {
@@ -167,8 +167,9 @@ $availabilities: (
     border-color: rgb(var(--color-white));
   }
 
-  &--available-only {
-    &:not(#{$c}--available) {
+  &--hide-offline {
+    &#{$c}--unavailable,
+    &#{$c}--away {
       display: none;
     }
   }
