@@ -15,7 +15,10 @@ import { JID, ProseClient, ProseClientConfig } from "@prose-im/prose-sdk-js";
 import Store from "@/store";
 
 // PROJECT: UTILITIES
-import logger from "@/utilities/logger";
+import {
+  default as logger,
+  enabled as loggerEnabled
+} from "@/utilities/logger";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -34,6 +37,10 @@ import BrokerDelegate from "@/broker/delegate";
 const RECONNECT_INTERVAL = 5000; // 5 seconds
 
 const PING_INTERVAL_SECONDS = 60; // 1 minute
+
+const LOGGING_ENABLED = loggerEnabled;
+const LOGGING_LEVEL = "warn";
+const LOGGING_STANZAS = true;
 
 /**************************************************************************
  * CLASS
@@ -163,10 +170,14 @@ class BrokerClient {
   private __configuration(): ProseClientConfig {
     const config = new ProseClientConfig();
 
+    // Configure logging
+    config.loggingEnabled = LOGGING_ENABLED;
+    config.loggingMinLevel = LOGGING_LEVEL;
+    config.logReceivedStanzas = LOGGING_STANZAS;
+    config.logSentStanzas = LOGGING_STANZAS;
+
     // Configure connection
     config.pingInterval = PING_INTERVAL_SECONDS;
-    config.logReceivedStanzas = true;
-    config.logSentStanzas = true;
 
     // Configure client identity
     config.clientName = VERSION_NAME;
