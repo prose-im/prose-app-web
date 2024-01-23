@@ -73,18 +73,22 @@ layout-toolbar(
     span.a-inbox-topbar__identity.a-inbox-topbar__identity--name(
       v-if="room"
     )
-      base-presence(
-        v-if="isDirectMessage"
-        :jid="jid"
+      base-tooltip(
+        :tooltip="identityNamePresenceTooltip"
+        direction="bottom"
         class="a-inbox-topbar__identity-badge"
-        size="medium"
       )
+        base-presence(
+          v-if="isDirectMessage"
+          :jid="jid"
+          size="medium"
+          class="a-inbox-topbar__identity-badge-icon"
+        )
 
       span.a-inbox-topbar__identity-value.u-bold
         | {{ room.name }}
 
       base-tooltip(
-        align="right"
         direction="bottom"
         tooltip="Toggle favorite"
         class="a-inbox-topbar__identity-action"
@@ -180,7 +184,13 @@ layout-toolbar(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID, Room, RoomID, RoomType } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  Room,
+  RoomID,
+  RoomType,
+  Availability
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -231,6 +241,10 @@ export default {
 
     history(): typeof Store.$history {
       return Store.$history;
+    },
+
+    availability(): ReturnType<typeof Store.$presence.getAvailability> {
+      return Store.$presence.getAvailability(this.jid);
     },
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
@@ -356,6 +370,52 @@ export default {
       }
 
       return items;
+    },
+
+    identityNamePresenceTooltip(): string {
+      let tooltip = "",
+        hasPrefix = false;
+
+      // Append name?
+      if (this.room?.name) {
+        tooltip += `${this.room.name} is `;
+
+        hasPrefix = true;
+      }
+
+      // Acquire availability label
+      let availabilityLabel = "";
+
+      switch (this.availability) {
+        case Availability.Available: {
+          availabilityLabel = "Available (Online)";
+
+          break;
+        }
+
+        case Availability.DoNotDisturb: {
+          availabilityLabel = "Busy (Do not disturb)";
+
+          break;
+        }
+
+        default: {
+          // Important: 'Away' is considered as 'Offline' since the user \
+          //   wants to appear as invisible here (ie. offline).
+          availabilityLabel = "Offline";
+        }
+      }
+
+      // Append availability label
+      // Notice: if a prefix is set (eg. 'Marc is [availability]'), then \
+      //   lowercase availability label (ie. '[availability]').
+      if (hasPrefix === true) {
+        availabilityLabel = availabilityLabel.toLowerCase();
+      }
+
+      tooltip += availabilityLabel;
+
+      return tooltip;
     },
 
     actionDetailsTooltip(): string {
@@ -534,6 +594,10 @@ $c: ".a-inbox-topbar";
     #{$c}__identity-badge {
       + #{$c}__identity-value {
         margin-inline-start: 5px;
+      }
+
+      #{$c}__identity-badge-icon {
+        display: block;
       }
     }
 
