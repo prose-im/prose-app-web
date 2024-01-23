@@ -106,7 +106,7 @@ const fromCoreMessage = function (message: CoreMessage): InboxEntryMessage {
     id: message.id,
     archiveId: message.archiveId,
     type: message.type,
-    date: message.date,
+    date: message.date.toISOString(),
     from: message.from,
     content: message.content,
 
