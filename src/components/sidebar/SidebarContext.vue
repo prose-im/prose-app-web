@@ -355,9 +355,9 @@ export default {
     },
 
     localAvailability(): ReturnType<
-      typeof Store.$presence.getLocalAvailability
+      typeof Store.$account.getInformationAvailability
     > {
-      return Store.$presence.getLocalAvailability();
+      return Store.$account.getInformationAvailability();
     },
 
     statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
@@ -378,7 +378,7 @@ export default {
     ): void {
       if (this.localAvailability !== availability) {
         // Store last selected availability
-        Store.$presence.setLocalAvailability(availability);
+        Store.$account.setInformationAvailability(availability);
 
         // Send Do Not Disturb presence
         Broker.$status.setAvailability(availability);

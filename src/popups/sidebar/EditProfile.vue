@@ -209,7 +209,7 @@ export default {
     },
 
     selfJID(): JID {
-      return this.account.getLocalJID();
+      return this.account.getSelfJID();
     },
 
     account(): typeof Store.$account {

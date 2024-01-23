@@ -255,7 +255,11 @@ export default {
     },
 
     selfJID(): JID {
-      return this.account.getLocalJID();
+      return this.account.getSelfJID();
+    },
+
+    selfName(): string {
+      return this.account.getInformationName();
     },
 
     account(): typeof Store.$account {
@@ -460,7 +464,7 @@ export default {
         Store.$inbox.setName(
           roomId,
           this.selfJID,
-          Store.$roster.getEntryName(this.selfJID),
+          this.selfName,
           InboxNameOrigin.Global
         );
 

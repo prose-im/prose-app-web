@@ -13,26 +13,7 @@ import { defineStore } from "pinia";
 import { Availability, JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
-import Broker from "@/broker";
 import Store from "@/store";
-
-/**************************************************************************
- * INTERFACES
- * ************************************************************************* */
-
-interface Presence {
-  local: PresenceLocal;
-}
-
-interface PresenceLocal {
-  availability: Availability;
-}
-
-/**************************************************************************
- * CONSTANTS
- * ************************************************************************* */
-
-const AVAILABILITY_DEFAULT = Availability.Available;
 
 /**************************************************************************
  * TABLE
@@ -41,35 +22,23 @@ const AVAILABILITY_DEFAULT = Availability.Available;
 const $presence = defineStore("presence", {
   persist: false,
 
-  state: (): Presence => {
-    return {
-      local: { availability: AVAILABILITY_DEFAULT }
-    };
-  },
-
   getters: {
-    getLocalAvailability: function () {
-      return (): Availability => {
-        return this.local.availability;
-      };
-    },
-
     getAvailability: function () {
       return (jid: JID): Availability => {
-        if (Broker.client.jid && Broker.client.jid.equals(jid) === true) {
-          return this.getLocalAvailability();
+        // Notice: this method is a convenience method, which sources the \
+        //   availability for the given JID from the most relevant data \
+        //   source, which is found in another store.
+
+        // Obtain availability for self account
+        if (Store.$account.getSelfJID().equals(jid) === true) {
+          return Store.$account.getInformationAvailability();
         }
 
+        // Obtain availability for roster contact
         return (
-          Store.$roster.getEntry(jid)?.availability || AVAILABILITY_DEFAULT
+          Store.$roster.getEntry(jid)?.availability || Availability.Unavailable
         );
       };
-    }
-  },
-
-  actions: {
-    setLocalAvailability(availability: Availability): void {
-      this.local.availability = availability;
     }
   }
 });

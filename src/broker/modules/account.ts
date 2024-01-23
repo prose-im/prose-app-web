@@ -1,7 +1,7 @@
 /*
  * This file is part of prose-app-web
  *
- * Copyright 2023, Prose Foundation
+ * Copyright 2024, Prose Foundation
  */
 
 /**************************************************************************
@@ -9,28 +9,23 @@
  * ************************************************************************* */
 
 // NPM
-import { Availability } from "@prose-im/prose-sdk-js";
+import { AccountInfo } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
+
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
 
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
 
-class BrokerModuleStatus extends BrokerModule {
-  async setAvailability(availability: Availability): Promise<void> {
-    // XMPP: Instant Messaging and Presence
-    // https://xmpp.org/rfcs/rfc6121.html#presence
+class BrokerModuleAccount extends BrokerModule {
+  async loadAccountInfo(): Promise<AccountInfo | void> {
+    logger.info("Will load account information (or reload)");
 
-    await this._client.client?.setAvailability(availability);
-  }
-
-  async sendActivity(icon?: string, text?: string): Promise<void> {
-    // XEP-0108: User Activity
-    // https://xmpp.org/extensions/xep-0108.html
-
-    await this._client.client?.sendActivity(icon, text);
+    return (await this._client.client?.loadAccountInfo()) || undefined;
   }
 }
 
@@ -38,4 +33,4 @@ class BrokerModuleStatus extends BrokerModule {
  * EXPORTS
  * ************************************************************************* */
 
-export default BrokerModuleStatus;
+export default BrokerModuleAccount;

@@ -10,10 +10,45 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { JID } from "@prose-im/prose-sdk-js";
+import { Availability, JID } from "@prose-im/prose-sdk-js";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
+
+/**************************************************************************
+ * INTERFACES
+ * ************************************************************************* */
+
+interface Account {
+  credentials: {
+    jid: string;
+    password: string;
+  };
+
+  last: {
+    jid: string;
+    timestamp: number;
+  };
+
+  information: {
+    jid: string;
+    name: string;
+    availability: Availability;
+  };
+}
+
+/**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const LOCAL_STATES = {
+  informationLoaded: false
+};
+
+const INFORMATION_AVAILABILITY_DEFAULT = Availability.Available;
 
 /**************************************************************************
  * TABLE
@@ -22,7 +57,7 @@ import Broker from "@/broker";
 const $account = defineStore("account", {
   persist: true,
 
-  state: () => {
+  state: (): Account => {
     return {
       credentials: {
         jid: "",
@@ -32,26 +67,47 @@ const $account = defineStore("account", {
       last: {
         jid: "",
         timestamp: -1
+      },
+
+      information: {
+        jid: "",
+        name: "",
+        availability: INFORMATION_AVAILABILITY_DEFAULT
       }
     };
   },
 
   getters: {
-    getLocalJID: function () {
+    getSelfJID: function () {
       return (): JID => {
         // Notice: use last JID as a fallback, as during logout the UI still \
         //   requires the JID value, although it is in process of being reset. \
         //   The last JID is supposed to of the exact same value as the JID \
-        //   from the credentials object.
-        const localJID = this.credentials.jid || this.last.jid || null;
+        //   from the credentials object, but we always prefer to use the one \
+        //   served from the core client library once account information have \
+        //   been fully obtained, as the source of truth.
+        const selfJID =
+          this.information.jid || this.credentials.jid || this.last.jid || null;
 
-        if (localJID === null) {
+        if (selfJID === null) {
           throw new Error(
-            "No JID defined in credentials (this should never happen)"
+            "No self JID could be acquired (this should never happen)"
           );
         }
 
-        return new JID(localJID);
+        return new JID(selfJID);
+      };
+    },
+
+    getInformationName: function () {
+      return (): string => {
+        return this.information.name;
+      };
+    },
+
+    getInformationAvailability: function () {
+      return (): Availability => {
+        return this.information.availability;
       };
     }
   },
@@ -91,11 +147,55 @@ const $account = defineStore("account", {
       // Disconnect from server
       Broker.client.logout();
 
-      // Clear stored credentials
+      // Clear stored credentials and information
       // Notice: retain last JID for later quick-login
       this.$patch(state => {
+        // Clear credentials
         state.credentials.jid = "";
         state.credentials.password = "";
+
+        // Clear information
+        state.information.jid = "";
+        state.information.name = "";
+        state.information.availability = INFORMATION_AVAILABILITY_DEFAULT;
+      });
+    },
+
+    async loadInformation(reload = false): Promise<void> {
+      // Load information? (or reload)
+      if (LOCAL_STATES.informationLoaded === false || reload === true) {
+        LOCAL_STATES.informationLoaded = true;
+
+        // Load account information
+        const accountInfo = await Broker.$account.loadAccountInfo();
+
+        if (accountInfo) {
+          // Update stored JID, name and availability
+          this.setInformationJID(accountInfo.jid);
+          this.setInformationName(accountInfo.name);
+          this.setInformationAvailability(accountInfo.availability);
+
+          // Update stored activity
+          Store.$activity.setActivity(accountInfo.jid, accountInfo.status);
+        }
+      }
+    },
+
+    setInformationJID(jid: JID): void {
+      this.$patch(() => {
+        this.information.jid = jid.toString();
+      });
+    },
+
+    setInformationName(name: string): void {
+      this.$patch(() => {
+        this.information.name = name;
+      });
+    },
+
+    setInformationAvailability(availability: Availability): void {
+      this.$patch(() => {
+        this.information.availability = availability;
       });
     }
   }

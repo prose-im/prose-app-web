@@ -47,7 +47,7 @@ const LOGGING_STANZAS = true;
  * ************************************************************************* */
 
 class BrokerClient {
-  jid?: JID;
+  authenticationJID?: JID;
   client?: ProseClient;
 
   private __delegate: BrokerDelegate;
@@ -82,8 +82,8 @@ class BrokerClient {
       password
     };
 
-    // Setup context
-    this.jid = this.__credentials?.jid;
+    // Store authentication JID
+    this.authenticationJID = this.__credentials?.jid;
 
     await this.__connect(jid, password);
   }
@@ -120,8 +120,8 @@ class BrokerClient {
   }
 
   async logout(): Promise<void> {
-    // Unassign JID
-    this.jid = undefined;
+    // Unassign authentication JID
+    this.authenticationJID = undefined;
 
     // Void stored credentials
     this.__credentials = undefined;

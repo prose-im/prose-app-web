@@ -16,6 +16,7 @@ import {
   ProseClientDelegate,
   Room
 } from "@prose-im/prose-sdk-js";
+import mitt from "mitt";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -24,9 +25,6 @@ import { fromCoreMessage as inboxMessageFromCore } from "@/store/tables/inbox";
 // PROJECT: UTILITIES
 import { AudioSound, default as UtilitiesAudio } from "@/utilities/audio";
 import logger from "@/utilities/logger";
-
-// PROJECT: BROKER
-import mitt from "mitt";
 
 /**************************************************************************
  * CLASS
@@ -102,6 +100,12 @@ class BrokerDelegate implements ProseClientDelegate {
     Store.$avatar.load(jid);
   }
 
+  async accountInfoChanged(): Promise<void> {
+    logger.info("Account information changed");
+
+    await Store.$account.loadInformation(true);
+  }
+
   async messagesAppended(
     _client: ProseClient,
     room: Room,
@@ -123,7 +127,7 @@ class BrokerDelegate implements ProseClientDelegate {
       hasInserted === true &&
       Store.$settings.notifications.action.notify.sound === true
     ) {
-      const selfJIDRaw = Store.$account.getLocalJID().toString();
+      const selfJIDRaw = Store.$account.getSelfJID().toString();
 
       const firstNonSelfMessage = messages.find(message => {
         return message.from !== selfJIDRaw;

@@ -395,7 +395,7 @@ const $inbox = defineStore("inbox", {
 
     setComposing(roomId: RoomID, composing: Array<CoreUser>): void {
       // Filter-out local JID in the list of composing users
-      const selfJID = Store.$account.getLocalJID();
+      const selfJID = Store.$account.getSelfJID();
 
       this.assert(roomId).states.composing = composing.filter(user => {
         return !user.jid.equals(selfJID);

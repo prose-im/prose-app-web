@@ -166,7 +166,7 @@ class Router {
 
         // Authenticate client? (if not already bound to JID, eg. user just \
         //   logged-in)
-        if (Broker.client.jid?.equals(jid) !== true) {
+        if (Broker.client.authenticationJID?.equals(jid) !== true) {
           await Broker.client.authenticate(jid, credentials.password);
         }
 

@@ -15,13 +15,13 @@ import {
   Group as RosterGroup
 } from "@prose-im/prose-sdk-js";
 import { defineStore } from "pinia";
+import mitt from "mitt";
 
 // PROJECT: STORES
 import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import mitt from "mitt";
 
 /**************************************************************************
  * TYPES
@@ -102,12 +102,6 @@ const $roster = defineStore("roster", {
       return (jid: JID): RosterEntry | void => {
         return this.byJID[jid.toString()] || undefined;
       };
-    },
-
-    getEntryName: function () {
-      return (jid: JID): string => {
-        return this.getEntry(jid)?.name || jid.node || jid.toString();
-      };
     }
   },
 
@@ -126,6 +120,7 @@ const $roster = defineStore("roster", {
         const contacts = await Broker.$roster.loadContacts();
 
         contacts.forEach(contact => {
+          // Assign contact status to activity
           Store.$activity.setActivity(contact.jid, contact.status);
 
           // Append roster entry
