@@ -14,6 +14,7 @@ import { Availability, JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
+import { InboxNameOrigin } from "@/store/tables/inbox";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -176,7 +177,19 @@ const $account = defineStore("account", {
           this.setInformationAvailability(accountInfo.availability);
 
           // Update stored activity
+          // Notice: this is a cross-store operation, for convenience.
           Store.$activity.setActivity(accountInfo.jid, accountInfo.status);
+
+          // Re-register name in all rooms (as needed)
+          // Notice: this is a cross-store operation, for convenience.
+          Store.$inbox.getRooms().forEach(roomId => {
+            Store.$inbox.setName(
+              roomId,
+              accountInfo.jid,
+              accountInfo.name,
+              InboxNameOrigin.Global
+            );
+          });
         }
       }
     },
