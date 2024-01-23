@@ -165,6 +165,12 @@ const $inbox = defineStore("inbox", {
       return entries[roomId];
     },
 
+    getRooms(): Array<RoomID> {
+      // Notice: no need to alias 'string' to 'RoomID' for each entry here, as \
+      //   'RoomID' is already string-like.
+      return Object.keys(this.entries);
+    },
+
     getMessages(roomId: RoomID): Array<InboxEntryMessage> {
       // Notice: pseudo-getter, which needs to be defined as an action since \
       //   it might mutate the state (as we are asserting).
