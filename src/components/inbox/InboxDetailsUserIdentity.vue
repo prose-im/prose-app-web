@@ -19,9 +19,9 @@
   .c-inbox-details-user-identity__details
     p.c-inbox-details-user-identity__name
       base-presence(
-        class="c-inbox-details-user-identity__name-presence"
         :jid="jid"
         size="small"
+        class="c-inbox-details-user-identity__name-presence"
       )
 
       span.c-inbox-details-user-identity__name-full.u-bold
