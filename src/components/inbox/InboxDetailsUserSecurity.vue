@@ -70,6 +70,7 @@ list-disclosure(
           component(
             :is="detailsPopover.component"
             :jid="jid"
+            :room="room"
             spacing-block-class="c-inbox-details-user-security__details-popover-spacing-block"
             spacing-inline-class="c-inbox-details-user-security__details-popover-spacing-inline"
           )
@@ -82,7 +83,7 @@ list-disclosure(
 <script lang="ts">
 // NPM
 import { shallowRef, PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import InboxDetailsUserSecurityDetailsIdentity from "@/components/inbox/InboxDetailsUserSecurityDetailsIdentity.vue";
@@ -107,6 +108,11 @@ export default {
   props: {
     jid: {
       type: Object as PropType<JID>,
+      required: true
+    },
+
+    room: {
+      type: Object as PropType<Room>,
       required: true
     },
 

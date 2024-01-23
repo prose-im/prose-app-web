@@ -207,7 +207,7 @@ export default {
 
           properties: {
             type: "user",
-            name: this.jid.node,
+            name: this.selfName,
             address: this.jid.toString()
           }
         },
@@ -358,6 +358,10 @@ export default {
       typeof Store.$account.getInformationAvailability
     > {
       return Store.$account.getInformationAvailability();
+    },
+
+    selfName(): string {
+      return Store.$account.getInformationName();
     },
 
     statusActivity(): ReturnType<typeof Store.$activity.getActivity> {

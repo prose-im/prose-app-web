@@ -53,7 +53,7 @@
       template(
         v-else
       )
-        | {{ jid.node }}
+        | {{ selfName }}
 
     p.p-edit-profile-navigate__identity-address
       | {{ jid }}
@@ -147,6 +147,10 @@ export default {
   computed: {
     avatarAcceptTypes(): string {
       return AVATAR_MIME_TYPES.join(",");
+    },
+
+    selfName(): string {
+      return Store.$account.getInformationName();
     },
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {

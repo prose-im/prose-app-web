@@ -17,6 +17,7 @@ layout-sidebar-details(
   )
     inbox-details-user-identity(
       :jid="jid"
+      :room="room"
     )
 
   template(
@@ -33,6 +34,7 @@ layout-sidebar-details(
     inbox-details-user-security(
       v-if="profile.security"
       :jid="jid"
+      :room="room"
       :header-class="headerClass"
       :item-class="itemClass"
       :expanded="layout.inbox.details.sections.security"

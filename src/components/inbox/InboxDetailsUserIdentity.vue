@@ -25,15 +25,7 @@
       )
 
       span.c-inbox-details-user-identity__name-full.u-bold
-        template(
-          v-if="profile.name"
-        )
-          | {{ profile.name.first }} {{ profile.name.last }}
-
-        template(
-          v-else
-        )
-          | {{ jid.node }}
+        | {{ userName }}
 
     p.c-inbox-details-user-identity__role(
       v-if="profileRole"
@@ -83,7 +75,7 @@
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -96,10 +88,25 @@ export default {
     jid: {
       type: Object as PropType<JID>,
       required: true
+    },
+
+    room: {
+      type: Object as PropType<Room>,
+      required: true
     }
   },
 
   computed: {
+    userName(): string {
+      // Prefer profile-based name, since we are showing the full profile here \
+      //   (from vCard)
+      if (this.profile.name) {
+        return `${this.profile.name.first} ${this.profile.name.last}`;
+      }
+
+      return this.room.name;
+    },
+
     profileRole(): string | null {
       const employment = this.profile.employment || null;
 

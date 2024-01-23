@@ -51,7 +51,7 @@
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
@@ -72,6 +72,11 @@ export default {
   props: {
     jid: {
       type: Object as PropType<JID>,
+      required: true
+    },
+
+    room: {
+      type: Object as PropType<Room>,
       required: true
     },
 
@@ -116,11 +121,13 @@ export default {
     },
 
     userName(): string {
+      // Prefer profile-based name, since we are showing the full profile here \
+      //   (from vCard)
       if (this.profile.name) {
         return `${this.profile.name.first} ${this.profile.name.last}`;
       }
 
-      return this.jid.node || this.jid.toString();
+      return this.room.name;
     },
 
     identityUrl(): string {
