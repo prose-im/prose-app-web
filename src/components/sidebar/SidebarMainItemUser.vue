@@ -35,7 +35,7 @@ sidebar-main-item-generic(
       :active="active"
       size="small"
       class="c-sidebar-main-item-user__presence"
-      available-only
+      hide-offline
     )
 
     base-tooltip(
