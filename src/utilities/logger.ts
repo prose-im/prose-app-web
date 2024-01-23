@@ -12,13 +12,20 @@
 import { createLogger } from "vue-logger-plugin";
 
 /**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const enabled = process.env.NODE_ENV !== "production";
+const level = "debug";
+
+/**************************************************************************
  * LOGGER
  * ************************************************************************* */
 
 const logger = createLogger({
-  enabled: process.env.NODE_ENV !== "production",
+  enabled,
+  level,
   consoleEnabled: true,
-  level: "debug",
 
   prefixFormat: ({ level, caller }) =>
     caller
@@ -32,4 +39,5 @@ const logger = createLogger({
  * EXPORTS
  * ************************************************************************* */
 
+export { enabled, level };
 export default logger;
