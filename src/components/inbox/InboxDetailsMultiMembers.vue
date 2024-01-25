@@ -17,7 +17,7 @@ list-disclosure(
   separated
 )
   list-button(
-    v-for="member in room.participants"
+    v-for="member in members"
     @click="onMemberClick(member)"
     :class=`[
       "c-inbox-details-multi-members__member",
@@ -85,14 +85,23 @@ list-disclosure(
 
 <script lang="ts">
 // NPM
-import { Room, ParticipantInfo } from "@prose-im/prose-sdk-js";
+import { Room, ParticipantInfo, Availability } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
+import { firstBy } from "thenby";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
+
+// CONSTANTS
+const MEMBER_AVAILABILITY_PRIORITIES = {
+  [Availability.Available]: 0,
+  [Availability.DoNotDisturb]: 1,
+  [Availability.Away]: 2,
+  [Availability.Unavailable]: 2
+};
 
 export default {
   name: "InboxDetailsUserMembers",
@@ -128,6 +137,16 @@ export default {
   computed: {
     hasAddMember(): boolean {
       return this.type === "channel";
+    },
+
+    members(): Array<ParticipantInfo> {
+      // Sort participants by most available first, and then by name \
+      //   (alphabetically)
+      return [...this.room.participants].sort(
+        firstBy((participant: ParticipantInfo) => {
+          return MEMBER_AVAILABILITY_PRIORITIES[participant.availability];
+        }).thenBy("name", { ignoreCase: true })
+      );
     }
   },
 
