@@ -121,6 +121,7 @@ const $roster = defineStore("roster", {
 
         contacts.forEach(contact => {
           // Assign contact status to activity
+          // Notice: this is a cross-store operation, for convenience.
           Store.$activity.setActivity(contact.jid, contact.status);
 
           // Append roster entry
