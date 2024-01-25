@@ -18,6 +18,7 @@ div(
       "c-list-button--active": active,
       "c-list-button--disabled": disabled,
       "c-list-button--actionable": actionable,
+      "c-list-button--rounded": rounded,
       "c-list-button--important": important
     }
   ]`
@@ -96,6 +97,11 @@ export default {
     },
 
     actionable: {
+      type: Boolean,
+      default: true
+    },
+
+    rounded: {
       type: Boolean,
       default: true
     },
@@ -253,6 +259,11 @@ $c: ".c-list-button";
     &:active {
       background-color: darken-var(var(--color-base-grey-light), 2.5%);
     }
+  }
+
+  &--rounded {
+    margin-inline: $size-list-button-rounded-margin-inline;
+    border-radius: 7px;
   }
 
   &--active {

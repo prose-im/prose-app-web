@@ -44,7 +44,7 @@ layout-sidebar-details(
       :room="room"
       :actions="actions"
       :header-class="headerClass"
-      :item-class="itemClass"
+      :button-class="buttonClass"
       :expanded="layout.inbox.details.sections.actions"
     )
 
@@ -149,6 +149,11 @@ export default {
     },
 
     itemClass: {
+      type: String,
+      default: null
+    },
+
+    buttonClass: {
       type: String,
       default: null
     }

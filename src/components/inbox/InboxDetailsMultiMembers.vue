@@ -19,8 +19,13 @@ list-disclosure(
   list-button(
     v-for="member in room.participants"
     @click="onMemberClick(member)"
+    :class=`[
+      "c-inbox-details-multi-members__member",
+      {
+        [buttonClass]: buttonClass
+      }
+    ]`
     size="small"
-    class="c-inbox-details-multi-members__member"
   )
     template(
       v-slot:icon
@@ -50,8 +55,13 @@ list-disclosure(
   list-button(
     v-if="hasAddMember"
     @click="onAddMemberClick"
+    :class=`[
+      "c-inbox-details-multi-members__add",
+      {
+        [buttonClass]: buttonClass
+      }
+    ]`
     size="small"
-    class="c-inbox-details-multi-members__add"
     emphasis
   )
     template(
@@ -103,6 +113,11 @@ export default {
     },
 
     headerClass: {
+      type: String,
+      default: null
+    },
+
+    buttonClass: {
       type: String,
       default: null
     }

@@ -32,7 +32,7 @@ layout-sidebar-details(
     inbox-details-multi-members(
       :room="room"
       :header-class="headerClass"
-      :item-class="itemClass"
+      :button-class="buttonClass"
       :expanded="layout.inbox.details.sections.members"
       type="group"
     )
@@ -41,7 +41,7 @@ layout-sidebar-details(
       :room="room"
       :actions="actions"
       :header-class="headerClass"
-      :item-class="itemClass"
+      :button-class="buttonClass"
       :expanded="layout.inbox.details.sections.actions"
     )
 
@@ -125,6 +125,11 @@ export default {
     },
 
     itemClass: {
+      type: String,
+      default: null
+    },
+
+    buttonClass: {
       type: String,
       default: null
     }

@@ -23,7 +23,7 @@ list-disclosure(
     :class=`[
       "c-inbox-details-generic-actions__action",
       {
-        [itemClass]: itemClass
+        [buttonClass]: buttonClass
       }
     ]`
     :color="action.color"
@@ -94,7 +94,7 @@ export default {
       default: null
     },
 
-    itemClass: {
+    buttonClass: {
       type: String,
       default: null
     }

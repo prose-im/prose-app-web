@@ -302,7 +302,9 @@ $sidebar-context-height: $size-inbox-form-height;
       margin-inline: (-1 * $sidebar-items-padding-sides);
 
       > * {
-        padding-inline: $sidebar-items-padding-sides;
+        padding-inline: (
+          $sidebar-items-padding-sides - $size-list-button-rounded-margin-inline
+        );
       }
     }
   }

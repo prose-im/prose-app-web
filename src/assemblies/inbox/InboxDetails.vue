@@ -20,6 +20,7 @@
       :jid="jid"
       header-class="a-inbox-details__header"
       item-class="a-inbox-details__item"
+      button-class="a-inbox-details__button"
     )
 
     inbox-details-group(
@@ -28,6 +29,7 @@
       :room="room"
       header-class="a-inbox-details__header"
       item-class="a-inbox-details__item"
+      button-class="a-inbox-details__button"
     )
 
     inbox-details-channel(
@@ -36,6 +38,7 @@
       :room="room"
       header-class="a-inbox-details__header"
       item-class="a-inbox-details__item"
+      button-class="a-inbox-details__button"
     )
 </template>
 
@@ -112,6 +115,13 @@ $c: ".a-inbox-details";
   #{$c}__header,
   #{$c}__item {
     padding-inline: $size-inbox-details-item-padding-sides;
+  }
+
+  #{$c}__button {
+    padding-inline: (
+      $size-inbox-details-item-padding-sides -
+        $size-list-button-rounded-margin-inline
+    );
   }
 }
 </style>
