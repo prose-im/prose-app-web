@@ -11,12 +11,14 @@
 // NPM
 import {
   Room as CoreRoom,
+  RoomType,
   RoomID,
   SidebarItem,
   SidebarSection
 } from "@prose-im/prose-sdk-js";
 import mitt from "mitt";
 import { defineStore } from "pinia";
+import { firstBy } from "thenby";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -50,12 +52,37 @@ const LOCAL_STATES = {
   loaded: false
 };
 
+const ROOM_TYPE_PRIORITIES = {
+  [RoomType.DirectMessage]: 0,
+  [RoomType.Group]: 1,
+  [RoomType.PrivateChannel]: 2,
+  [RoomType.PublicChannel]: 3,
+  [RoomType.Generic]: 4
+};
+
 /**************************************************************************
  * METHODS
  * ************************************************************************* */
 
-const compareRooms = function (left: SidebarItem, right: SidebarItem): number {
-  return left.name.localeCompare(right.name);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const makeSidebarItemSorter = function (): IThenBy<any> {
+  // Sorting rules:
+  //  - Rooms w/ the most unread counts are shown first (if any count)
+  //  - Rooms w/ mentions are shown afterwards (if any)
+  //  - Rooms w/ drafts are shown afterwards (if any)
+  //  - Rooms are ordered by their type, most private rooms come first
+  //  - Rooms are ordered by name, alphabetically
+  //  - Finally, order by room identifier for sort stability on 2 same names
+  return firstBy("unreadCount", "desc")
+    .thenBy("mentionsCount", "desc")
+    .thenBy("hasDraft", "desc")
+    .thenBy((item: SidebarItem) => {
+      return ROOM_TYPE_PRIORITIES[item.room.type];
+    })
+    .thenBy("name", { ignoreCase: true })
+    .thenBy((item: SidebarItem) => {
+      return item.room.id as string;
+    });
 };
 
 /**************************************************************************
@@ -161,9 +188,12 @@ const $room = defineStore("room", {
         // Append all rooms
         this.$patch(state => {
           // Store items
-          state.items.favorites = favorites.sort(compareRooms);
-          state.items.directMessages = directMessages.sort(compareRooms);
-          state.items.channels = channels.sort(compareRooms);
+          state.items.favorites = favorites.sort(makeSidebarItemSorter());
+          state.items.directMessages = directMessages.sort(
+            makeSidebarItemSorter()
+          );
+          state.items.channels = channels.sort(makeSidebarItemSorter());
+
           state.items.byRoomId = itemsByRoomId;
 
           // Store rooms map
