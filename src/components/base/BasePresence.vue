@@ -78,17 +78,31 @@ export default {
 
   computed: {
     availabilitySource(): Availability {
-      // Acquire availability for JID?
+      // Acquire availability for JID? (only if JID has any availability)
+      // Important: if JID is not found in roster, then its availability will \
+      //   not be known, therefore it is important that we at least try to use \
+      //   forced availability as a fallback, and only then default to \
+      //   'unavailable' if no source contains the availability for the given \
+      //   JID.
       if (this.jid !== undefined) {
-        return Store.$presence.getAvailability(this.jid);
+        const availabilityOrNone = Store.$presence.getAvailabilityOrNone(
+          this.jid
+        );
+
+        // Availability is definitely set for the given JID, return its value \
+        //   as we can trust this availability source.
+        if (availabilityOrNone !== undefined) {
+          return availabilityOrNone;
+        }
       }
 
-      // Acquire forced availability? (if no JID, used as a fallback)
+      // Acquire forced availability? (if no JID or no availability for JID, \
+      //   used as a fallback)
       if (this.availability !== undefined) {
         return this.availability;
       }
 
-      // Default availability (unavailable)
+      // No availability source found, return default value (unavailable)
       return Availability.Unavailable;
     },
 
