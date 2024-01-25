@@ -140,12 +140,22 @@ export default {
     },
 
     members(): Array<ParticipantInfo> {
-      // Sort participants by most available first, and then by name \
-      //   (alphabetically)
+      // Sort participants:
+      //  - By most available first
+      //  - Then by name (alphabetically)
+      //  - Finally by JID for sort stability on 2 same names
+      // Notice: the sort by JID step is only triggered if comparing two names \
+      //   that are equal or alike, in order to tell them apart. It means \
+      //   that this step is only rarely executed, which is okay \
+      //   performance-wise since it is known to be a little bit more expensive.
       return [...this.room.participants].sort(
         firstBy((participant: ParticipantInfo) => {
           return MEMBER_AVAILABILITY_PRIORITIES[participant.availability];
-        }).thenBy("name", { ignoreCase: true })
+        })
+          .thenBy("name", { ignoreCase: true })
+          .thenBy((participant: ParticipantInfo) => {
+            return participant.jid?.toString() || "";
+          })
       );
     }
   },
