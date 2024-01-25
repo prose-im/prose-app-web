@@ -25,6 +25,17 @@ const $presence = defineStore("presence", {
   getters: {
     getAvailability: function () {
       return (jid: JID): Availability => {
+        const availabilityOrNone = this.getAvailabilityOrNone(jid);
+
+        // Return availability (or default)
+        return availabilityOrNone !== undefined
+          ? availabilityOrNone
+          : Availability.Unavailable;
+      };
+    },
+
+    getAvailabilityOrNone: function () {
+      return (jid: JID): Availability | void => {
         // Notice: this method is a convenience method, which sources the \
         //   availability for the given JID from the most relevant data \
         //   source, which is found in another store.
@@ -35,9 +46,14 @@ const $presence = defineStore("presence", {
         }
 
         // Obtain availability for roster contact
-        return (
-          Store.$roster.getEntry(jid)?.availability || Availability.Unavailable
-        );
+        const rosterEntry = Store.$roster.getEntry(jid);
+
+        if (rosterEntry !== undefined) {
+          return rosterEntry.availability;
+        }
+
+        // Availability is unknown (do not return default here)
+        return undefined;
       };
     }
   }
