@@ -156,15 +156,15 @@ export default {
       return Store.$layout;
     },
 
-    itemFavorites(): SidebarItem[] {
+    itemFavorites(): Array<SidebarItem> {
       return Store.$room.getItemFavorites();
     },
 
-    itemDirectMessages(): SidebarItem[] {
+    itemDirectMessages(): Array<SidebarItem> {
       return Store.$room.getItemDirectMessages();
     },
 
-    itemChannels(): SidebarItem[] {
+    itemChannels(): Array<SidebarItem> {
       return Store.$room.getItemChannels();
     }
   },
