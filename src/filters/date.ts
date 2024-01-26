@@ -57,6 +57,42 @@ class FilterDate {
     return timeAgo;
   }
 
+  timeLeft(timestamp: number, withLeft = false): string {
+    // This converts a timestamp into a 'time left' string representation. \
+    //   This expresses in a short way how much time there is left to the \
+    //   provided timestamp. As an example, this method could output eg. \
+    //   '1h left'.
+
+    // Compute left seconds between future date and now
+    const leftSeconds = Math.round(
+      (new Date(timestamp).getTime() - Date.now()) / SECOND_TO_MILLISECONDS
+    );
+
+    // Acquire 'time left' string representation
+    let timeLeft;
+
+    if (leftSeconds < SECOND_TO_MINUTES) {
+      // A few seconds left
+      timeLeft = `${leftSeconds}s`;
+    } else if (leftSeconds < SECOND_TO_HOURS) {
+      // A few minutes left
+      timeLeft = `${Math.floor(leftSeconds / SECOND_TO_MINUTES)}m`;
+    } else if (leftSeconds < SECOND_TO_DAYS) {
+      // A few hours left
+      timeLeft = `${Math.floor(leftSeconds / SECOND_TO_HOURS)}h`;
+    } else {
+      // A few days left
+      timeLeft = `${Math.floor(leftSeconds / SECOND_TO_DAYS)}d`;
+    }
+
+    // Append 'left' suffix? (only if 'with left' is requested)
+    if (withLeft === true) {
+      timeLeft += " left";
+    }
+
+    return timeLeft;
+  }
+
   localTime(date: Date, offset: number): string {
     // Apply offset to date (in minutes)
     // Notice: create new date object, as not to mutate the provided one.
