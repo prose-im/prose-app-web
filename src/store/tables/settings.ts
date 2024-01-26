@@ -42,6 +42,10 @@ const $settings = defineStore("settings", {
       },
 
       notifications: {
+        pause: {
+          until: null as number | null
+        },
+
         configuration: {
           topics: "all",
           replies: true,
@@ -145,6 +149,10 @@ const $settings = defineStore("settings", {
 
     setAvailabilityAutoAwayAfter(value: string): void {
       this.setGeneric(this.availability.autoAway, "after", value);
+    },
+
+    setNotificationsPauseUntil(value: number | null): void {
+      this.setGeneric(this.notifications.pause, "until", value);
     },
 
     setNotificationsConfigurationTopics(value: string): void {
