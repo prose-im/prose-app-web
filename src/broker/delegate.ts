@@ -123,18 +123,22 @@ class BrokerDelegate implements ProseClientDelegate {
     const hasInserted = Store.$inbox.insertCoreMessages(room.id, messages);
 
     // Play incoming message sound? (only for messages from remote users)
-    if (
-      hasInserted === true &&
-      Store.$settings.notifications.action.notify.sound === true
-    ) {
-      const selfJIDString = Store.$account.getSelfJID().toString();
+    if (hasInserted === true) {
+      // Check if notifications are paused or not
+      const hasNotifications =
+        Store.$settings.notifications.action.notify.sound === true &&
+        (Store.$settings.notifications.pause.until || 0) <= Date.now();
 
-      const firstNonSelfMessage = messages.find(message => {
-        return message.from !== selfJIDString;
-      });
+      if (hasNotifications === true) {
+        const selfJIDString = Store.$account.getSelfJID().toString();
 
-      if (firstNonSelfMessage) {
-        UtilitiesAudio.play(AudioSound.AlertMessageReceive);
+        const firstNonSelfMessage = messages.find(message => {
+          return message.from !== selfJIDString;
+        });
+
+        if (firstNonSelfMessage) {
+          UtilitiesAudio.play(AudioSound.AlertMessageReceive);
+        }
       }
     }
   }
