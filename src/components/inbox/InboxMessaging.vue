@@ -448,11 +448,34 @@ export default {
       });
     },
 
-    identifyParty(runtime: MessagingRuntime, jid: JID, name: string): void {
+    identifyParty(
+      runtime: MessagingRuntime,
+      jidStringUnsafe: string,
+      name: string
+    ): void {
+      // Attempt to parse JID, since the JID string might contain a resource \
+      //   part for MUC rooms here, which is not allowed in bare JIDs. In the \
+      //   case JID parsing fails, then we will not attempt to acquire the \
+      //   avatar attached to that JID.
+      let jidMaybe: JID | null;
+
+      try {
+        jidMaybe = new JID(jidStringUnsafe);
+      } catch (_) {
+        jidMaybe = null;
+      }
+
       // Identify party
-      runtime.MessagingStore.identify(jid.toString(), {
+      // Important: do not try to acquire avatars for full JIDs, as those \
+      //   come from MUC full JIDs and thus we do not have any avatar for them \
+      //   anyway, plus they are not parsable as bare JIDs.
+      runtime.MessagingStore.identify(jidStringUnsafe, {
         name,
-        avatar: Store.$avatar.getAvatarDataUrl(jid) || undefined
+
+        avatar:
+          jidMaybe !== null
+            ? Store.$avatar.getAvatarDataUrl(jidMaybe) || undefined
+            : undefined
       });
     },
 
@@ -463,7 +486,7 @@ export default {
         // Register self name
         Store.$inbox.setName(
           roomId,
-          this.selfJID,
+          this.selfJID.toString(),
           this.selfName,
           InboxNameOrigin.Global
         );
@@ -477,7 +500,7 @@ export default {
           if (member.jid) {
             Store.$inbox.setName(
               roomId,
-              member.jid,
+              member.jid.toString(),
               member.name,
               InboxNameOrigin.Global
             );
@@ -675,11 +698,11 @@ export default {
         existingMessage.reactions !== undefined &&
         existingMessage.reactions.length > 0
       ) {
-        const selfJIDRaw = this.selfJID.toString();
+        const selfJIDString = this.selfJID.toString();
 
         existingMessage.reactions.forEach(
           (reaction: { reaction: string; authors: string[] }) => {
-            if (reaction.authors.includes(selfJIDRaw) === true) {
+            if (reaction.authors.includes(selfJIDString) === true) {
               reactions.add(reaction.reaction as string);
             }
           }
@@ -1087,10 +1110,7 @@ export default {
           });
 
           // Message from self? Append private actions.
-          if (
-            messageData.from &&
-            this.selfJID.equals(new JID(messageData.from)) === true
-          ) {
+          if (this.selfJID.toString() === messageData.from) {
             items.push(
               {
                 type: PopoverItemType.Divider

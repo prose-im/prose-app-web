@@ -185,7 +185,7 @@ const $account = defineStore("account", {
           Store.$inbox.getRooms().forEach(roomId => {
             Store.$inbox.setName(
               roomId,
-              accountInfo.jid,
+              accountInfo.jid.toString(),
               accountInfo.name,
               InboxNameOrigin.Global
             );

@@ -127,10 +127,10 @@ class BrokerDelegate implements ProseClientDelegate {
       hasInserted === true &&
       Store.$settings.notifications.action.notify.sound === true
     ) {
-      const selfJIDRaw = Store.$account.getSelfJID().toString();
+      const selfJIDString = Store.$account.getSelfJID().toString();
 
       const firstNonSelfMessage = messages.find(message => {
-        return message.from !== selfJIDRaw;
+        return message.from !== selfJIDString;
       });
 
       if (firstNonSelfMessage) {

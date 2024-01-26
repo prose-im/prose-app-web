@@ -14,7 +14,6 @@ import mitt from "mitt";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
 import {
-  JID,
   Message as CoreMessage,
   UserBasicInfo as CoreUser,
   RoomID
@@ -48,7 +47,7 @@ type InboxEntryNames = {
 };
 
 type InboxEntryName = {
-  jid: JID;
+  jid: string;
   name: string;
   origin: InboxNameOrigin;
 };
@@ -65,7 +64,7 @@ type EventMessageGeneric = {
 
 type EventNameGeneric = {
   roomId: RoomID;
-  jid: JID;
+  jid: string;
   name: string;
 };
 
@@ -107,7 +106,7 @@ const fromCoreMessage = function (message: CoreMessage): InboxEntryMessage {
     archiveId: message.archiveId,
     type: message.type,
     date: message.date.toISOString(),
-    from: message.from,
+    from: message.user.jid,
     content: message.content,
 
     reactions: message.reactions.map(reaction => {
@@ -196,69 +195,60 @@ const $inbox = defineStore("inbox", {
     },
 
     insertCoreMessages(roomId: RoomID, messages: CoreMessage[]): boolean {
-      // Update sender names contained into messages
-      messages.forEach(message => {
-        this.setName(
-          roomId,
-          new JID(message.user.jid),
-          message.user.name,
-          InboxNameOrigin.Message
-        );
-      });
-
-      // Insert messages
-      return this.insertMessages(
-        roomId,
-        messages.map(message => {
-          return fromCoreMessage(message);
-        })
-      );
-    },
-
-    insertMessage(roomId: RoomID, message: InboxEntryMessage): boolean {
-      return this.insertMessages(roomId, [message]);
-    },
-
-    insertMessages(
-      roomId: RoomID,
-      messages: Array<InboxEntryMessage>
-    ): boolean {
-      const container = this.assert(roomId).messages;
-
-      // Initialize inserted marker
       let hasInserted = false;
 
       messages.forEach(message => {
-        // Acquire message identifier
-        const messageId = message.id;
+        // Update sender names contained into message
+        this.setName(
+          roomId,
+          message.user.jid,
+          message.user.name,
+          InboxNameOrigin.Message
+        );
 
-        if (!messageId) {
-          throw new Error("Cannot insert a message with no identifier");
-        }
-
-        // Attempt to update first?
-        const wasUpdated = this.updateMessage(roomId, messageId, message);
-
-        // Should insert message? (does not exist)
-        if (wasUpdated !== true) {
-          // Mark as inserted
+        // Insert messages
+        // Notice: update inserted marker if this message was inserted.
+        if (this.insertMessage(roomId, fromCoreMessage(message)) === true) {
           hasInserted = true;
-
-          // Insert message in its container
-          this.$patch(() => {
-            container.byId[messageId] = message;
-            container.list.push(message);
-          });
-
-          // Emit IPC inserted event
-          EventBus.emit("message:inserted", {
-            roomId: roomId,
-            message
-          } as EventMessageGeneric);
         }
       });
 
       return hasInserted;
+    },
+
+    insertMessage(roomId: RoomID, message: InboxEntryMessage): boolean {
+      const container = this.assert(roomId).messages;
+
+      // Acquire message identifier
+      const messageId = message.id;
+
+      if (!messageId) {
+        throw new Error("Cannot insert a message with no identifier");
+      }
+
+      // Attempt to update first?
+      const wasUpdated = this.updateMessage(roomId, messageId, message);
+
+      // Should insert message? (does not exist)
+      if (wasUpdated !== true) {
+        // Insert message in its container
+        this.$patch(() => {
+          container.byId[messageId] = message;
+          container.list.push(message);
+        });
+
+        // Emit IPC inserted event
+        EventBus.emit("message:inserted", {
+          roomId: roomId,
+          message
+        } as EventMessageGeneric);
+
+        // Mark as inserted
+        return true;
+      }
+
+      // Mark as not inserted
+      return false;
     },
 
     updateMessage(
@@ -349,17 +339,16 @@ const $inbox = defineStore("inbox", {
 
     setName(
       roomId: RoomID,
-      jid: JID,
+      jidLike: string,
       name: string,
       origin: InboxNameOrigin
     ): boolean {
-      const container = this.assert(roomId).names.byJID,
-        jidString = jid.toString();
+      const container = this.assert(roomId).names.byJID;
 
       // Check if should change name
       let shouldChange = false;
 
-      const existingName = container[jidString];
+      const existingName = container[jidLike];
 
       if (!existingName) {
         shouldChange = true;
@@ -377,21 +366,21 @@ const $inbox = defineStore("inbox", {
       // Name should be changed?
       if (shouldChange === true) {
         // Initialize or update?
-        if (!container[jidString]) {
-          container[jidString] = {
-            jid,
+        if (!container[jidLike]) {
+          container[jidLike] = {
+            jid: jidLike,
             name,
             origin
           };
         } else {
-          container[jidString].name = name;
-          container[jidString].origin = origin;
+          container[jidLike].name = name;
+          container[jidLike].origin = origin;
         }
 
         // Emit IPC changed event
         EventBus.emit("name:changed", {
           roomId: roomId,
-          jid,
+          jid: jidLike,
           name
         } as EventNameGeneric);
       }
