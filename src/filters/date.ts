@@ -12,6 +12,11 @@ const SECOND_TO_MILLISECONDS = 1000; // 1 second
 const SECOND_TO_MINUTES = 60; // 1 minute
 const SECOND_TO_HOURS = 3600; // 1 hour
 const SECOND_TO_DAYS = 86400; // 1 day
+const SECOND_TO_WEEKS = 604800; // 1 week
+
+const HOUR_TO_MINUTES = 60; // 1 hour
+const DAY_TO_HOURS = 24; // 1 day
+const WEEK_TO_DAYS = 7; // 1 week
 
 const MINUTE_TO_MILLISECONDS = 60000; // 1 minute
 
@@ -44,9 +49,12 @@ class FilterDate {
     } else if (elapsedSeconds < SECOND_TO_DAYS) {
       // A few hours ago
       timeAgo = `${Math.floor(elapsedSeconds / SECOND_TO_HOURS)}h`;
-    } else {
+    } else if (elapsedSeconds < SECOND_TO_WEEKS) {
       // A few days ago
       timeAgo = `${Math.floor(elapsedSeconds / SECOND_TO_DAYS)}d`;
+    } else {
+      // A few weeks ago
+      timeAgo = `${Math.floor(elapsedSeconds / SECOND_TO_WEEKS)}w`;
     }
 
     // Append 'ago' suffix? (only if 'with ago' is requested)
@@ -76,13 +84,22 @@ class FilterDate {
       timeLeft = `${leftSeconds}s`;
     } else if (leftSeconds < SECOND_TO_HOURS) {
       // A few minutes left
-      timeLeft = `${Math.floor(leftSeconds / SECOND_TO_MINUTES)}m`;
+      const leftMinutes = Math.ceil(leftSeconds / SECOND_TO_MINUTES);
+
+      timeLeft = leftMinutes === HOUR_TO_MINUTES ? "1h" : `${leftMinutes}m`;
     } else if (leftSeconds < SECOND_TO_DAYS) {
       // A few hours left
-      timeLeft = `${Math.floor(leftSeconds / SECOND_TO_HOURS)}h`;
-    } else {
+      const leftHours = Math.ceil(leftSeconds / SECOND_TO_HOURS);
+
+      timeLeft = leftHours === DAY_TO_HOURS ? "1d" : `${leftHours}h`;
+    } else if (leftSeconds < SECOND_TO_WEEKS) {
       // A few days left
-      timeLeft = `${Math.floor(leftSeconds / SECOND_TO_DAYS)}d`;
+      const leftDays = Math.ceil(leftSeconds / SECOND_TO_DAYS);
+
+      timeLeft = leftDays === WEEK_TO_DAYS ? "1w" : `${leftDays}d`;
+    } else {
+      // A few weeks left
+      timeLeft = `${Math.ceil(leftSeconds / SECOND_TO_WEEKS)}w`;
     }
 
     // Append 'left' suffix? (only if 'with left' is requested)
