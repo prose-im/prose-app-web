@@ -151,6 +151,13 @@ import Broker from "@/broker";
 // PROJECT: STORES
 import Store from "@/store";
 
+// CONSTANTS
+const TEN_MINUTES_TO_MILLISECONDS = 600000; // 10 minutes
+const ONE_HOUR_TO_MILLISECONDS = 3600000; // 1 hour
+const THREE_HOURS_TO_MILLISECONDS = 10800000; // 3 hours
+const ONE_DAY_TO_MILLISECONDS = 86400000; // 1 day
+const ONE_WEEK_TO_MILLISECONDS = 604800000; // 1 week
+
 export default {
   name: "SidebarContext",
 
@@ -200,7 +207,9 @@ export default {
 
   computed: {
     avatarPopoverItems(): Array<PopoverItem> {
-      return [
+      const items = [];
+
+      items.push(
         {
           type: PopoverItemType.Component,
           target: SidebarContextAccount,
@@ -248,41 +257,64 @@ export default {
               emphasis: this.localAvailability === Availability.Away
             }
           ]
-        },
+        }
+      );
 
-        {
+      // Append resume or pause notifications action
+      if (this.notificationsPausedUntil !== null) {
+        items.push({
+          type: PopoverItemType.Button,
+
+          label: `Alerts paused (${this.$filters.date.timeLeft(
+            this.notificationsPausedUntil,
+            true
+          )})`,
+
+          click: this.onAvatarPopoverResumeNotificationsClick,
+          emphasis: true,
+          color: "lighter",
+          icon: "bell.slash"
+        });
+      } else {
+        items.push({
           type: PopoverItemType.Button,
           label: "Pause notifications",
 
-          // TODO: unpause if paused + color in red/orange/blue
           children: [
             {
               type: PopoverItemType.Button,
-              label: "For 10 minutes"
+              label: "For 10 minutes",
+              click: this.onAvatarPopoverPauseNotificationsTenMinutesClick
             },
 
             {
               type: PopoverItemType.Button,
-              label: "For 1 hour"
+              label: "For 1 hour",
+              click: this.onAvatarPopoverPauseNotificationsOneHourClick
             },
 
             {
               type: PopoverItemType.Button,
-              label: "For 3 hours"
+              label: "For 3 hours",
+              click: this.onAvatarPopoverPauseNotificationsThreeHoursClick
             },
 
             {
               type: PopoverItemType.Button,
-              label: "For 1 day"
+              label: "For 1 day",
+              click: this.onAvatarPopoverPauseNotificationsOneDayClick
             },
 
             {
               type: PopoverItemType.Button,
-              label: "For 1 week"
+              label: "For 1 week",
+              click: this.onAvatarPopoverPauseNotificationsOneWeekClick
             }
           ]
-        },
+        });
+      }
 
+      items.push(
         {
           type: PopoverItemType.Divider
         },
@@ -310,7 +342,9 @@ export default {
           emphasis: true,
           click: this.onAvatarPopoverSignOutClick
         }
-      ];
+      );
+
+      return items;
     },
 
     actionsPopoverItems(): Array<PopoverItem> {
@@ -368,6 +402,16 @@ export default {
       return Store.$activity.getActivity(this.jid);
     },
 
+    notificationsPausedUntil(): number | null {
+      const untilTimestamp = Store.$settings.notifications.pause.until || 0;
+
+      if (untilTimestamp > 0 && untilTimestamp > Date.now()) {
+        return untilTimestamp;
+      }
+
+      return null;
+    },
+
     session(): typeof Store.$session {
       return Store.$session;
     }
@@ -380,6 +424,9 @@ export default {
       availability: Availability,
       alertText?: string
     ): void {
+      // Hide avatar popover
+      this.isAvatarPopoverVisible = false;
+
       if (this.localAvailability !== availability) {
         // Store last selected availability
         Store.$account.setInformationAvailability(availability);
@@ -391,6 +438,33 @@ export default {
         if (alertText !== undefined) {
           BaseAlert.info("Availability changed", alertText);
         }
+      }
+    },
+
+    toggleAvatarPopoverPauseNotifications(
+      duration = -1,
+      alertTextTime?: string
+    ): void {
+      // Hide avatar popover
+      this.isAvatarPopoverVisible = false;
+
+      if (duration >= 0) {
+        const nowTime = Date.now();
+
+        // Store paused notifications date (in future)
+        Store.$settings.setNotificationsPauseUntil(nowTime + duration);
+
+        // Show confirm alert
+        BaseAlert.info(
+          "Notifications paused",
+          `Alerts will be muted for ${alertTextTime || "some time"}`
+        );
+      } else {
+        // Store cleared paused notifications date
+        Store.$settings.setNotificationsPauseUntil(null);
+
+        // Show confirm alert
+        BaseAlert.info("Notifications unpaused", "Alerts have been resumed");
       }
     },
 
@@ -415,9 +489,6 @@ export default {
     },
 
     onAvatarPopoverAvailabilityAvailableClick(): void {
-      // Hide avatar popover
-      this.isAvatarPopoverVisible = false;
-
       // Toggle availability
       this.toggleAvatarPopoverAvailability(
         Availability.Available,
@@ -426,9 +497,6 @@ export default {
     },
 
     onAvatarPopoverAvailabilityBusyClick(): void {
-      // Hide avatar popover
-      this.isAvatarPopoverVisible = false;
-
       // Toggle availability ('Do Not Disturb' goes for 'Busy')
       this.toggleAvatarPopoverAvailability(
         Availability.DoNotDisturb,
@@ -437,14 +505,56 @@ export default {
     },
 
     onAvatarPopoverAvailabilityAwayClick(): void {
-      // Hide avatar popover
-      this.isAvatarPopoverVisible = false;
-
       // Toggle availability ('Extended Away' goes for 'Invisible')
       this.toggleAvatarPopoverAvailability(
         Availability.Away,
         "You are now invisible"
       );
+    },
+
+    onAvatarPopoverPauseNotificationsTenMinutesClick(): void {
+      // Toggle pause notifications timer date (to 10 minutes)
+      this.toggleAvatarPopoverPauseNotifications(
+        TEN_MINUTES_TO_MILLISECONDS,
+        "10 minutes"
+      );
+    },
+
+    onAvatarPopoverPauseNotificationsOneHourClick(): void {
+      // Toggle pause notifications timer date (to 1 hour)
+      this.toggleAvatarPopoverPauseNotifications(
+        ONE_HOUR_TO_MILLISECONDS,
+        "1 hour"
+      );
+    },
+
+    onAvatarPopoverPauseNotificationsThreeHoursClick(): void {
+      // Toggle pause notifications timer date (to 3 hours)
+      this.toggleAvatarPopoverPauseNotifications(
+        THREE_HOURS_TO_MILLISECONDS,
+        "3 hours"
+      );
+    },
+
+    onAvatarPopoverPauseNotificationsOneDayClick(): void {
+      // Toggle pause notifications timer date (to 1 day)
+      this.toggleAvatarPopoverPauseNotifications(
+        ONE_DAY_TO_MILLISECONDS,
+        "1 day"
+      );
+    },
+
+    onAvatarPopoverPauseNotificationsOneWeekClick(): void {
+      // Toggle pause notifications timer date (to 1 week)
+      this.toggleAvatarPopoverPauseNotifications(
+        ONE_WEEK_TO_MILLISECONDS,
+        "1 week"
+      );
+    },
+
+    onAvatarPopoverResumeNotificationsClick(): void {
+      // Toggle pause notifications timer date (resume)
+      this.toggleAvatarPopoverPauseNotifications();
     },
 
     onAvatarPopoverEditProfileClick(): void {
