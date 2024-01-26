@@ -43,11 +43,11 @@ type InboxEntryMessages = {
 };
 
 type InboxEntryNames = {
-  byJID: { [jid: string]: InboxEntryName };
+  byFrom: { [from: string]: InboxEntryName };
 };
 
 type InboxEntryName = {
-  jid: string;
+  from: string;
   name: string;
   origin: InboxNameOrigin;
 };
@@ -64,7 +64,7 @@ type EventMessageGeneric = {
 
 type EventNameGeneric = {
   roomId: RoomID;
-  jid: string;
+  from: string;
   name: string;
 };
 
@@ -151,7 +151,7 @@ const $inbox = defineStore("inbox", {
             },
 
             names: {
-              byJID: {}
+              byFrom: {}
             },
 
             states: {
@@ -182,10 +182,10 @@ const $inbox = defineStore("inbox", {
       return this.assert(roomId).messages.byId[id] || undefined;
     },
 
-    getNames(roomId: RoomID): { [jid: string]: InboxEntryName } {
+    getNames(roomId: RoomID): { [from: string]: InboxEntryName } {
       // Notice: pseudo-getter, which needs to be defined as an action since \
       //   it might mutate the state (as we are asserting).
-      return this.assert(roomId).names.byJID;
+      return this.assert(roomId).names.byFrom;
     },
 
     getStates(roomId: RoomID): InboxEntryStates {
@@ -339,16 +339,16 @@ const $inbox = defineStore("inbox", {
 
     setName(
       roomId: RoomID,
-      jidLike: string,
+      from: string,
       name: string,
       origin: InboxNameOrigin
     ): boolean {
-      const container = this.assert(roomId).names.byJID;
+      const container = this.assert(roomId).names.byFrom;
 
       // Check if should change name
       let shouldChange = false;
 
-      const existingName = container[jidLike];
+      const existingName = container[from];
 
       if (!existingName) {
         shouldChange = true;
@@ -366,21 +366,21 @@ const $inbox = defineStore("inbox", {
       // Name should be changed?
       if (shouldChange === true) {
         // Initialize or update?
-        if (!container[jidLike]) {
-          container[jidLike] = {
-            jid: jidLike,
+        if (!container[from]) {
+          container[from] = {
+            from,
             name,
             origin
           };
         } else {
-          container[jidLike].name = name;
-          container[jidLike].origin = origin;
+          container[from].name = name;
+          container[from].origin = origin;
         }
 
         // Emit IPC changed event
         EventBus.emit("name:changed", {
           roomId: roomId,
-          jid: jidLike,
+          from,
           name
         } as EventNameGeneric);
       }

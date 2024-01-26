@@ -444,13 +444,13 @@ export default {
     identifyAllParties(runtime: MessagingRuntime): void {
       // Identify all parties
       Object.values(this.names).forEach((name: InboxEntryName) => {
-        this.identifyParty(runtime, name.jid, name.name);
+        this.identifyParty(runtime, name.from, name.name);
       });
     },
 
     identifyParty(
       runtime: MessagingRuntime,
-      jidStringUnsafe: string,
+      jidStringMaybe: string,
       name: string
     ): void {
       // Attempt to parse JID, since the JID string might contain a resource \
@@ -460,7 +460,7 @@ export default {
       let jidMaybe: JID | null;
 
       try {
-        jidMaybe = new JID(jidStringUnsafe);
+        jidMaybe = new JID(jidStringMaybe);
       } catch (_) {
         jidMaybe = null;
       }
@@ -469,7 +469,7 @@ export default {
       // Important: do not try to acquire avatars for full JIDs, as those \
       //   come from MUC full JIDs and thus we do not have any avatar for them \
       //   anyway, plus they are not parsable as bare JIDs.
-      runtime.MessagingStore.identify(jidStringUnsafe, {
+      runtime.MessagingStore.identify(jidStringMaybe, {
         name,
 
         avatar:
@@ -1038,7 +1038,7 @@ export default {
 
         if (frameRuntime !== null) {
           // Re-identify party
-          this.identifyParty(frameRuntime, event.jid, event.name);
+          this.identifyParty(frameRuntime, event.from, event.name);
         }
       }
     },
@@ -1053,7 +1053,7 @@ export default {
           name = this.names[jidString] || null;
 
         if (name !== null) {
-          this.identifyParty(frameRuntime, name.jid, name.name);
+          this.identifyParty(frameRuntime, name.from, name.name);
         }
       }
     },

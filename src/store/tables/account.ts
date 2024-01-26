@@ -182,10 +182,12 @@ const $account = defineStore("account", {
 
           // Re-register name in all rooms (as needed)
           // Notice: this is a cross-store operation, for convenience.
+          const jidString = accountInfo.jid.toString();
+
           Store.$inbox.getRooms().forEach(roomId => {
             Store.$inbox.setName(
               roomId,
-              accountInfo.jid.toString(),
+              jidString,
               accountInfo.name,
               InboxNameOrigin.Global
             );
