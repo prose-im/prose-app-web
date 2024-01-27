@@ -126,6 +126,11 @@ export default {
 
               {
                 type: DataTableControlType.Remove
+              },
+
+              {
+                type: DataTableControlType.Refresh,
+                tooltip: "Resend all invites"
               }
             ]
           : []) as Array<DataTableControl>
@@ -152,6 +157,12 @@ export default {
 
         case DataTableControlType.Remove: {
           // TODO: handle remove
+
+          break;
+        }
+
+        case DataTableControlType.Refresh: {
+          // TODO: handle refresh
 
           break;
         }
