@@ -28,7 +28,7 @@
      SCRIPT
      ********************************************************************** -->
 
-<script>
+<script lang="ts">
 export default {
   name: "FormFieldsetControl",
 

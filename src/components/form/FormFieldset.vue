@@ -17,7 +17,7 @@ fieldset.c-form-fieldset
      SCRIPT
      ********************************************************************** -->
 
-<script>
+<script lang="ts">
 export default {
   name: "FormFieldset"
 };
