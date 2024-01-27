@@ -113,7 +113,7 @@ export default {
 
       // More than one JID involved? A group was created.
       if (jids.length > 1) {
-        BaseAlert.success("Group added", "Group has been added");
+        BaseAlert.success("Group added", "Group has been created");
       }
 
       // Attempt to navigate to the created room
@@ -125,14 +125,26 @@ export default {
 
       // Join or create room?
       if (jidString.includes("@") === true) {
-        // Join room identified by JID
+        // Join room identified by parsed JID
         roomJID = await Broker.$room.join(new JID(jidString));
-      } else {
-        // Create target public channel
-        // TODO: also support creating a private channel w/ createPrivateChannel?
-        roomJID = await Broker.$room.createPublicChannel(jidString);
 
-        BaseAlert.success("Channel added", "Channel has been added");
+        BaseAlert.success("Channel joined", "Channel has been joined");
+      } else {
+        // Attempt to join existing channel, or create channel
+        roomJID = await Broker.$room.findPublicChannelByName(jidString);
+
+        if (roomJID !== undefined) {
+          await Broker.$room.join(roomJID);
+
+          BaseAlert.success("Channel joined", "Channel has been joined");
+        } else {
+          // Attempt to create target public channel
+          // TODO: also support creating a private channel w/ \
+          //   createPrivateChannel?
+          roomJID = await Broker.$room.createPublicChannel(jidString);
+
+          BaseAlert.success("Channel added", "Channel has been created");
+        }
       }
 
       // Attempt to navigate to the created room
@@ -173,11 +185,13 @@ export default {
     },
 
     async onModalAddContactAdd(jidString: string): Promise<void> {
+      const mode = this.modals.addContact.mode;
+
       if (this.modals.addContact.loading !== true) {
         this.modals.addContact.loading = true;
 
         try {
-          switch (this.modals.addContact.mode) {
+          switch (mode) {
             case AddContactMode.Member:
               await this.addContactGroup(jidString);
 
@@ -192,7 +206,10 @@ export default {
           this.modals.addContact.visible = false;
         } catch (error) {
           BaseAlert.error(
-            "Contact not added",
+            mode === AddContactMode.Channel
+              ? "Channel not added"
+              : "Direct Message not opened",
+
             `${jidString} could not be added`
           );
 
