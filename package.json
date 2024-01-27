@@ -33,7 +33,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-sdk-js": "0.1.43",
+    "@prose-im/prose-sdk-js": "0.1.44",
     "@prose-im/prose-core-views": "0.27.0",
     "lodash.camelcase": "4.3.x",
     "lodash.upperfirst": "4.3.x",
