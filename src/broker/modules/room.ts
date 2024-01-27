@@ -39,6 +39,10 @@ class BrokerModuleRoom extends BrokerModule {
     return (await this._client.client?.loadPublicChannels()) || [];
   }
 
+  async findPublicChannelByName(name: string): Promise<JID | undefined> {
+    return this._client.client?.findPublicChannelByName(name);
+  }
+
   async startConversation(participants: Array<JID>): Promise<JID | undefined> {
     return this._client.client?.startConversation(
       participants.map(jid => jid.toString())
