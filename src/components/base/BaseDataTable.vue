@@ -96,7 +96,10 @@ div(
       :tooltip="control.tooltip"
       :class=`[
         "c-base-data-table__control",
-        "c-base-data-table__control--" + control.tint
+        "c-base-data-table__control--" + control.tint,
+        {
+          "c-base-data-table__control--spaced": control.spaced
+        }
       ]`
       align="left"
     )
@@ -127,7 +130,9 @@ export enum ControlType {
   // Add control.
   Add = "add",
   // Remove control.
-  Remove = "remove"
+  Remove = "remove",
+  // Refresh control.
+  Refresh = "refresh"
 }
 
 // TYPES
@@ -160,6 +165,7 @@ interface ControlWithIcon {
   tooltip: string;
   tint: string;
   disabled: boolean;
+  spaced?: boolean;
   icon?: string;
 }
 
@@ -237,6 +243,7 @@ export default {
         let icon: string,
           tooltip: string,
           tint = "dark",
+          spaced = false,
           disabled = false;
 
         switch (control.type) {
@@ -258,6 +265,15 @@ export default {
 
             break;
           }
+
+          case ControlType.Refresh: {
+            icon = "arrow.clockwise";
+            tooltip = "Refresh";
+            tint = "light";
+            spaced = true;
+
+            break;
+          }
         }
 
         return {
@@ -265,6 +281,7 @@ export default {
           tooltip: control.tooltip || tooltip,
           icon,
           tint,
+          spaced,
           disabled
         };
       });
@@ -472,6 +489,14 @@ $controls-button-height: 22px;
       &--light {
         #{$c}__control-icon {
           fill: rgb(var(--color-black));
+        }
+      }
+
+      &--spaced {
+        margin-inline-start: 8px;
+
+        &:first-child {
+          margin-inline-start: 0;
         }
       }
     }
