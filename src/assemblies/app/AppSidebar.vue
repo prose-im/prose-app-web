@@ -65,7 +65,8 @@ import Store from "@/store";
 // PROJECT: MODALS
 import {
   default as AddContact,
-  Mode as AddContactMode
+  Mode as AddContactMode,
+  EventAddOptions as AddContactEventAddOptions
 } from "@/modals/sidebar/AddContact.vue";
 
 // CONSTANTS
@@ -120,7 +121,10 @@ export default {
       this.navigateToCreatedRoom(roomJID);
     },
 
-    async addContactChannel(jidString: string): Promise<void> {
+    async addContactChannel(
+      jidString: string,
+      requestPrivate = false
+    ): Promise<void> {
       let roomJID;
 
       // Join or create room?
@@ -130,20 +134,35 @@ export default {
 
         BaseAlert.success("Channel joined", "Channel has been joined");
       } else {
-        // Attempt to join existing channel, or create channel
-        roomJID = await Broker.$room.findPublicChannelByName(jidString);
+        // Attempt to create private channel
+        if (requestPrivate === true) {
+          roomJID = await Broker.$room.createPrivateChannel(jidString);
 
-        if (roomJID !== undefined) {
-          await Broker.$room.join(roomJID);
-
-          BaseAlert.success("Channel joined", "Channel has been joined");
+          BaseAlert.success(
+            "Channel added",
+            "Private channel has been created"
+          );
         } else {
-          // Attempt to create target public channel
-          // TODO: also support creating a private channel w/ \
-          //   createPrivateChannel?
-          roomJID = await Broker.$room.createPublicChannel(jidString);
+          // Attempt to join existing public channel, otherwise create public \
+          //   channel
+          roomJID = await Broker.$room.findPublicChannelByName(jidString);
 
-          BaseAlert.success("Channel added", "Channel has been created");
+          if (roomJID !== undefined) {
+            await Broker.$room.join(roomJID);
+
+            BaseAlert.success(
+              "Channel joined",
+              "Public channel has been joined"
+            );
+          } else {
+            // Attempt to create public channel
+            roomJID = await Broker.$room.createPublicChannel(jidString);
+
+            BaseAlert.success(
+              "Channel added",
+              "Public channel has been created"
+            );
+          }
         }
       }
 
@@ -184,7 +203,10 @@ export default {
       }
     },
 
-    async onModalAddContactAdd(jidString: string): Promise<void> {
+    async onModalAddContactAdd(
+      jidString: string,
+      options: AddContactEventAddOptions
+    ): Promise<void> {
       const mode = this.modals.addContact.mode;
 
       if (this.modals.addContact.loading !== true) {
@@ -198,7 +220,7 @@ export default {
               break;
 
             case AddContactMode.Channel:
-              await this.addContactChannel(jidString);
+              await this.addContactChannel(jidString, options.private);
 
               break;
           }

@@ -9,7 +9,15 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-form-fieldset-field
+div(
+  :class=`[
+    "c-form-fieldset-field",
+    "c-form-fieldset-field--" + align,
+    {
+      "c-form-fieldset-field--auto-size": autoSize
+    }
+  ]`
+)
   label.c-form-fieldset-field__label.u-medium
     | {{ label }}
 
@@ -28,7 +36,7 @@
      SCRIPT
      ********************************************************************** -->
 
-<script>
+<script lang="ts">
 export default {
   name: "FormFieldsetField",
 
@@ -36,6 +44,20 @@ export default {
     label: {
       type: String,
       required: true
+    },
+
+    align: {
+      type: String,
+      default: "left",
+
+      validator(x: string) {
+        return ["left", "right"].includes(x);
+      }
+    },
+
+    autoSize: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -80,6 +102,30 @@ $c: ".c-form-fieldset-field";
 
   #{$c}__aside {
     flex: 0 0 auto;
+  }
+
+  // --> ALIGNS <--
+
+  &--left {
+    justify-content: flex-start;
+  }
+
+  &--right {
+    justify-content: flex-end;
+  }
+
+  // --> BOOLEANS <--
+
+  &--auto-size {
+    #{$c}__label,
+    #{$c}__input {
+      width: auto;
+      flex: 0 0 auto;
+    }
+
+    #{$c}__label {
+      max-width: initial;
+    }
   }
 }
 </style>

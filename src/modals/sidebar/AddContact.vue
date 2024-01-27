@@ -18,7 +18,7 @@ base-modal(
   size="large"
 )
   template(
-    v-if="isMember"
+    v-if="mode === modeType.Member"
   )
     p.u-medium
       | Open a direct message
@@ -27,13 +27,13 @@ base-modal(
       | Add an existing chat address, or invite an email to join your team.
 
   template(
-    v-else
+    v-else-if="mode === modeType.Channel"
   )
     p.u-medium
       | Add a channel
 
     p.u-regular
-      | Create or join a public channel, where multiple people can talk.
+      | Create or join a channel, where multiple people can talk.
 
   .m-add-contact__form
     base-spinner(
@@ -72,6 +72,18 @@ base-modal(
       submittable
       autofocus
     )
+
+  .m-add-contact__options(
+    v-if="mode === modeType.Channel"
+  )
+    form-fieldset-field(
+      label="Create a private channel"
+      auto-size
+    )
+      form-toggle(
+        v-model="private"
+        name="private"
+      )
 
   div(
     v-if="hasIdentity"
@@ -139,6 +151,11 @@ export enum Mode {
   Channel = "channel"
 }
 
+// INTERFACES
+export interface EventAddOptions {
+  private: boolean;
+}
+
 // CONSTANTS
 const IDENTITY_ACQUIRE_DELAY = 1000; // 1 second
 
@@ -170,6 +187,10 @@ export default {
 
   data() {
     return {
+      // --> DATA <--
+
+      modeType: Mode,
+
       // --> STATE <--
 
       identity: {
@@ -180,15 +201,13 @@ export default {
 
       fetching: false,
 
+      private: false,
+
       identityAcquireTimeout: null as null | ReturnType<typeof setTimeout>
     };
   },
 
   computed: {
-    isMember(): boolean {
-      return this.mode === Mode.Member;
-    },
-
     hasIdentity(): boolean {
       return this.identity.jid !== null ? true : false;
     },
@@ -210,9 +229,19 @@ export default {
     },
 
     fieldAddressPlacehokder(): string {
-      return this.isMember === true
-        ? "Enter contact address…"
-        : "Enter channel name (or address)…";
+      switch (this.mode) {
+        case Mode.Member: {
+          return "Enter contact address…";
+        }
+
+        case Mode.Channel: {
+          return "Enter channel name (or address)…";
+        }
+
+        default: {
+          return "Enter address…";
+        }
+      }
     },
 
     noticeIcon(): string {
@@ -222,7 +251,21 @@ export default {
     },
 
     confirmLabel(): string {
-      return this.isMember === true ? "Open Direct Message" : "Add Channel";
+      switch (this.mode) {
+        case Mode.Member: {
+          return "Open Direct Message";
+        }
+
+        case Mode.Channel: {
+          return this.private === true
+            ? "Create Private Channel"
+            : "Add Channel";
+        }
+
+        default: {
+          return "Add Address";
+        }
+      }
     }
   },
 
@@ -280,7 +323,7 @@ export default {
       }
 
       // Acquire identity for mode?
-      if (this.isMember === true) {
+      if (this.mode === Mode.Member) {
         if (address) {
           this.identityAcquireTimeout = setTimeout(async () => {
             this.identityAcquireTimeout = null;
@@ -315,7 +358,9 @@ export default {
       if (jidUnsafeString === null) {
         BaseAlert.warning("Address required", "Please enter an address");
       } else {
-        this.$emit("add", jidUnsafeString);
+        this.$emit("add", jidUnsafeString, {
+          private: this.private
+        } as EventAddOptions);
       }
     }
   }
@@ -357,6 +402,10 @@ $c: ".m-add-contact";
     #{$c}__form-field {
       flex: 1;
     }
+  }
+
+  #{$c}__options {
+    margin-block-start: 14px;
   }
 
   #{$c}__notice {
