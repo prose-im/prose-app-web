@@ -180,7 +180,7 @@ class BrokerConnectionStrophe implements ProseConnection {
   private __onInput(data: string): void {
     // Trace raw input?
     if (this.__config.logReceivedStanzas === true) {
-      logger.debug("(in)", data);
+      logger.debug("🔵 XMPP IN", data);
     }
 
     // Pass to event handler?
@@ -192,7 +192,7 @@ class BrokerConnectionStrophe implements ProseConnection {
   private __onOutput(data: string): void {
     // Trace raw output?
     if (this.__config.logSentStanzas === true) {
-      logger.debug("(out)", data);
+      logger.debug("🔴 XMPP OUT", data);
     }
   }
 
