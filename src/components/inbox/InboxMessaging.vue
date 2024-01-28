@@ -1087,9 +1087,12 @@ export default {
         const items: Array<PopoverItem> = [
           {
             type: PopoverItemType.Button,
-            icon: "doc.on.clipboard",
             label: "Copy text",
-            click: this.onPopoverActionsCopyClick
+            click: this.onPopoverActionsCopyClick,
+
+            icon: {
+              name: "doc.on.clipboard"
+            }
           }
         ];
 
@@ -1097,8 +1100,11 @@ export default {
           // Message exists for sure? Append more actions.
           items.push({
             type: PopoverItemType.Button,
-            icon: "face.smiling",
             label: "Add reaction…",
+
+            icon: {
+              name: "face.smiling"
+            },
 
             click: () => {
               this.onPopoverActionsReactionClick({
@@ -1118,21 +1124,27 @@ export default {
 
               {
                 type: PopoverItemType.Button,
-                icon: "pencil",
                 label: "Edit message…",
                 emphasis: true,
                 disabled: !this.session.connected,
-                click: this.onPopoverActionsEditClick
+                click: this.onPopoverActionsEditClick,
+
+                icon: {
+                  name: "pencil"
+                }
               },
 
               {
                 type: PopoverItemType.Button,
-                icon: "trash",
                 label: "Remove message",
                 color: "red",
                 emphasis: true,
                 disabled: !this.session.connected,
-                click: this.onPopoverActionsRemoveClick
+                click: this.onPopoverActionsRemoveClick,
+
+                icon: {
+                  name: "trash"
+                }
               }
             );
           }

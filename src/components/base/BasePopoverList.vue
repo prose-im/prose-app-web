@@ -22,6 +22,7 @@ base-popover(
       @mouseleave="onButtonMouseLeave(index)"
       :disabled="item.disabled"
       :emphasis="item.emphasis"
+      :active="item.active"
       :actionable="!childrenPopoverVisible[index]"
       :color="item.color"
       :class=`[
@@ -39,14 +40,22 @@ base-popover(
         | {{ item.label }}
 
       template(
-        v-if="item.icon"
+        v-if="item.icon?.name"
         v-slot:icon
       )
         base-icon(
-          v-if="item.icon"
-          :name="item.icon"
+          :name="item.icon.name"
           size="14px"
           class="c-base-popover-list__button-icon-inner"
+        )
+
+      template(
+        v-else-if="item.icon?.component"
+        v-slot:icon
+      )
+        component(
+          v-bind="item.icon.properties"
+          :is="item.icon.component"
         )
 
       template(
@@ -104,12 +113,19 @@ export interface Item {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   click?: (_: any) => void;
   emphasis?: boolean;
+  active?: boolean;
   disabled?: boolean;
   color?: string;
   label?: string;
-  icon?: string;
+  icon?: ItemIcon;
   properties?: object;
   target?: object;
+}
+
+export interface ItemIcon {
+  name?: string;
+  component?: object;
+  properties?: object;
 }
 
 export default {

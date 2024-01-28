@@ -349,8 +349,11 @@ export default {
         if (historyRoom !== undefined) {
           items.push({
             type: PopoverItemType.Button,
-            icon: "clock",
             label: historyRoom.name,
+
+            icon: {
+              name: "clock"
+            },
 
             click: () => {
               this.onActionHistoryPopoverEntryClick(historyRoomID);

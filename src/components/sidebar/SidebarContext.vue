@@ -131,6 +131,7 @@ import { JID, Availability } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
+import BasePresence from "@/components/base/BasePresence.vue";
 import SidebarContextAccount from "@/components/sidebar/SidebarContextAccount.vue";
 import {
   Item as PopoverItem,
@@ -157,6 +158,8 @@ const ONE_HOUR_TO_MILLISECONDS = 3600000; // 1 hour
 const THREE_HOURS_TO_MILLISECONDS = 10800000; // 3 hours
 const ONE_DAY_TO_MILLISECONDS = 86400000; // 1 day
 const ONE_WEEK_TO_MILLISECONDS = 604800000; // 1 week
+
+const AVATAR_POPOVER_AVAILABILITY_ICON_SIZE = "small";
 
 export default {
   name: "SidebarContext",
@@ -240,21 +243,54 @@ export default {
               type: PopoverItemType.Button,
               label: "Available",
               click: this.onAvatarPopoverAvailabilityAvailableClick,
-              emphasis: this.localAvailability === Availability.Available
+              emphasis: this.localAvailabilityStates.available,
+              active: this.localAvailabilityStates.available,
+
+              icon: {
+                component: BasePresence,
+
+                properties: {
+                  availability: Availability.Available,
+                  size: AVATAR_POPOVER_AVAILABILITY_ICON_SIZE,
+                  active: this.localAvailabilityStates.available
+                }
+              }
             },
 
             {
               type: PopoverItemType.Button,
               label: "Busy (Do not disturb)",
               click: this.onAvatarPopoverAvailabilityBusyClick,
-              emphasis: this.localAvailability === Availability.DoNotDisturb
+              emphasis: this.localAvailabilityStates.busy,
+              active: this.localAvailabilityStates.busy,
+
+              icon: {
+                component: BasePresence,
+
+                properties: {
+                  availability: Availability.DoNotDisturb,
+                  size: AVATAR_POPOVER_AVAILABILITY_ICON_SIZE,
+                  active: this.localAvailabilityStates.busy
+                }
+              }
             },
 
             {
               type: PopoverItemType.Button,
               label: "Away (Invisible)",
               click: this.onAvatarPopoverAvailabilityAwayClick,
-              emphasis: this.localAvailability === Availability.Away
+              emphasis: this.localAvailabilityStates.away,
+              active: this.localAvailabilityStates.away,
+
+              icon: {
+                component: BasePresence,
+
+                properties: {
+                  availability: Availability.Away,
+                  size: AVATAR_POPOVER_AVAILABILITY_ICON_SIZE,
+                  active: this.localAvailabilityStates.away
+                }
+              }
             }
           ]
         }
@@ -273,7 +309,10 @@ export default {
           click: this.onAvatarPopoverResumeNotificationsClick,
           emphasis: true,
           color: "lighter",
-          icon: "bell.slash"
+
+          icon: {
+            name: "bell.slash"
+          }
         });
       } else {
         items.push({
@@ -392,6 +431,14 @@ export default {
       typeof Store.$account.getInformationAvailability
     > {
       return Store.$account.getInformationAvailability();
+    },
+
+    localAvailabilityStates(): { [state: string]: boolean } {
+      return {
+        available: this.localAvailability === Availability.Available,
+        busy: this.localAvailability === Availability.DoNotDisturb,
+        away: this.localAvailability === Availability.Away
+      };
     },
 
     selfName(): string {
