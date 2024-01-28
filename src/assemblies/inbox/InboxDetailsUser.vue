@@ -69,6 +69,13 @@ layout-sidebar-details(
       :loading="modals.closeUser.loading"
     )
 
+    add-contact(
+      v-if="modals.addContact.visible"
+      @proceed="onModalAddContactProceed"
+      @close="onModalAddContactClose"
+      :loading="modals.addContact.loading"
+    )
+
     remove-contact(
       v-if="modals.removeContact.visible"
       @proceed="onModalRemoveContactProceed"
@@ -97,6 +104,9 @@ import { useEvents } from "@/composables/events";
 // PROJECT: STORES
 import Store from "@/store";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import { Collection as FilePreviewCollection } from "@/components/inbox/InboxFilePreview.vue";
@@ -110,6 +120,7 @@ import {
 
 // PROJECT: MODALS
 import CloseUser from "@/modals/inbox/CloseUser.vue";
+import AddContact from "@/modals/inbox/AddContact.vue";
 import RemoveContact from "@/modals/inbox/RemoveContact.vue";
 import BlockUser from "@/modals/inbox/BlockUser.vue";
 
@@ -128,6 +139,7 @@ export default {
     SharedFiles,
     EncryptionSettings,
     CloseUser,
+    AddContact,
     RemoveContact,
     BlockUser
   },
@@ -169,6 +181,11 @@ export default {
 
       modals: {
         closeUser: {
+          visible: false,
+          loading: false
+        },
+
+        addContact: {
           visible: false,
           loading: false
         },
@@ -217,21 +234,29 @@ export default {
 
       // Non-local user? Add ability to remove contact or block
       if (this.jid.domain !== this.selfJID.domain) {
-        actions.push(
-          {
+        if (!this.rosterEntry) {
+          actions.push({
+            id: "add",
+            title: "Add to contacts",
+            click: this.onActionAddContactClick,
+            color: "blue"
+          });
+        } else {
+          actions.push({
             id: "remove",
             title: "Remove from contacts",
             click: this.onActionRemoveContactClick,
             color: "red"
-          },
+          });
+        }
 
-          {
-            id: "block",
-            title: "Block user",
-            click: this.onActionBlockUserClick,
-            color: "red"
-          }
-        );
+        // TODO: add action to unblock
+        actions.push({
+          id: "block",
+          title: "Block user",
+          click: this.onActionBlockUserClick,
+          color: "red"
+        });
       }
 
       // Non-favorited? Add ability to close chat
@@ -261,6 +286,10 @@ export default {
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
+    },
+
+    rosterEntry(): ReturnType<typeof Store.$roster.getEntry> {
+      return Store.$roster.getEntry(this.jid);
     },
 
     roomItem(): ReturnType<typeof Store.$room.getRoomItem> {
@@ -327,6 +356,10 @@ export default {
       this.popups.encryptionSettings.visible = true;
     },
 
+    onActionAddContactClick(): void {
+      this.modals.addContact.visible = true;
+    },
+
     onActionRemoveContactClick(): void {
       this.modals.removeContact.visible = true;
     },
@@ -381,6 +414,37 @@ export default {
 
     onModalCloseUserClose(): void {
       this.modals.closeUser.visible = false;
+    },
+
+    async onModalAddContactProceed(): Promise<void> {
+      try {
+        this.modals.addContact.loading = true;
+
+        // Add contact
+        await Broker.$roster.addContact(this.jid);
+
+        // Show success alert
+        BaseAlert.success(
+          "Contact added",
+          "Your contact has received an invitation"
+        );
+
+        this.modals.addContact.visible = false;
+      } catch (error) {
+        this.$log.error("Failed adding contact", error);
+
+        // Show error alert
+        BaseAlert.error(
+          "Cannot add contact",
+          "Your contact could not be added. Try again?"
+        );
+      } finally {
+        this.modals.addContact.loading = false;
+      }
+    },
+
+    onModalAddContactClose(): void {
+      this.modals.addContact.visible = false;
     },
 
     onModalRemoveContactProceed(): void {
