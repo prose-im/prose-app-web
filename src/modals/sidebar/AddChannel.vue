@@ -29,7 +29,7 @@ base-modal(
       v-model="jid"
       @change="onAddressChange"
       @submit="onConfirm"
-      :suggestions="suggestions"
+      :suggestions="channelSuggestions"
       placeholder="Enter channel name (or address)…"
       class="m-add-channel__form-field"
       type="email"
@@ -102,6 +102,7 @@ import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
+import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/FormFieldSuggest.vue";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -166,6 +167,15 @@ export default {
 
     doesExist(): boolean {
       return this.hasExistence === true && this.existence.exists;
+    },
+
+    channelSuggestions(): Array<FormFieldSuggestSuggestion> {
+      // Do not return any suggestion if private mode
+      if (this.private === true) {
+        return [];
+      }
+
+      return this.suggestions;
     },
 
     confirmLabel(): string {
