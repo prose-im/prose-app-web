@@ -48,6 +48,7 @@ export default {
 
           fields: [
             {
+              // TODO: implement functionality using this option
               id: "topics",
               type: FormFieldsetFieldType.Select,
               label: "Notify me about:",
@@ -77,12 +78,12 @@ export default {
                   }
                 ],
 
-                position: "bottom",
-                disabled: true
+                position: "bottom"
               } as FormFieldsetFieldDataSelect
             },
 
             {
+              // TODO: implement functionality using this option
               id: "replies",
               type: FormFieldsetFieldType.Checkbox,
 
@@ -92,8 +93,7 @@ export default {
                   change: Store.$settings.setNotificationsConfigurationReplies
                 },
 
-                label: "Let me know when I receive a message reply",
-                disabled: true
+                label: "Let me know when I receive a message reply"
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -103,6 +103,7 @@ export default {
             },
 
             {
+              // TODO: implement functionality using this option
               id: "when-days",
               type: FormFieldsetFieldType.Select,
               label: "Get notified:",
@@ -127,12 +128,12 @@ export default {
                   }
                 ],
 
-                position: "bottom",
-                disabled: true
+                position: "bottom"
               } as FormFieldsetFieldDataSelect
             },
 
             {
+              // TODO: implement functionality using this option
               id: "when-time-from",
               type: FormFieldsetFieldType.Select,
               label: "From time:",
@@ -149,17 +150,18 @@ export default {
 
                 options: [
                   {
+                    // TODO: generate list of suggested times
                     value: "10:00",
                     label: "10:00"
                   }
                 ],
 
-                position: "bottom",
-                disabled: true
+                position: "bottom"
               } as FormFieldsetFieldDataSelect
             },
 
             {
+              // TODO: implement functionality using this option
               id: "when-time-to",
               type: FormFieldsetFieldType.Select,
               label: "To time:",
@@ -176,13 +178,13 @@ export default {
 
                 options: [
                   {
+                    // TODO: generate list of suggested times
                     value: "18:00",
                     label: "18:00"
                   }
                 ],
 
-                position: "bottom",
-                disabled: true
+                position: "bottom"
               } as FormFieldsetFieldDataSelect
             }
           ]
@@ -194,6 +196,7 @@ export default {
 
           fields: [
             {
+              // TODO: implement functionality using this option
               id: "notify-badge",
               type: FormFieldsetFieldType.Checkbox,
               label: "When notified:",
@@ -204,8 +207,7 @@ export default {
                   change: Store.$settings.setNotificationsActionNotifyBadge
                 },
 
-                label: "Show a badge in the tab bar",
-                disabled: true
+                label: "Show a badge in the tab bar"
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -224,6 +226,7 @@ export default {
             },
 
             {
+              // TODO: implement functionality using this option
               id: "notify-banner",
               type: FormFieldsetFieldType.Checkbox,
 
@@ -233,8 +236,7 @@ export default {
                   change: Store.$settings.setNotificationsActionNotifyBanner
                 },
 
-                label: "Pop a banner",
-                disabled: true
+                label: "Pop a banner"
               } as FormFieldsetFieldDataCheckbox
             }
           ]
@@ -246,6 +248,7 @@ export default {
 
           fields: [
             {
+              // TODO: implement functionality using this option
               id: "mobile-alerts-enabled",
               type: FormFieldsetFieldType.Checkbox,
               label: "Mobile alerts:",
@@ -258,12 +261,12 @@ export default {
                     Store.$settings.setNotificationsDevicesMobileAlertsEnabled
                 },
 
-                label: "Forward to mobile if inactive after:",
-                disabled: true
+                label: "Forward to mobile if inactive after:"
               } as FormFieldsetFieldDataCheckbox
             },
 
             {
+              // TODO: implement functionality using this option
               id: "mobile-alerts-after",
               type: FormFieldsetFieldType.Select,
 
@@ -302,9 +305,7 @@ export default {
                     value: "10m",
                     label: "10 minutes"
                   }
-                ],
-
-                disabled: true
+                ]
               } as FormFieldsetFieldDataSelect
             }
           ]

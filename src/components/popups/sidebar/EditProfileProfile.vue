@@ -108,6 +108,7 @@ export default {
 
           fields: [
             {
+              // TODO: implement functionality using this option
               id: "automatic",
               type: FormFieldsetFieldType.Toggle,
               label: "Auto-detect:",
@@ -115,9 +116,7 @@ export default {
               data: {
                 value: {
                   inner: false
-                },
-
-                disabled: true
+                }
               } as FormFieldsetFieldDataToggle
             },
 

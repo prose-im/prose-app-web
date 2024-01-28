@@ -62,6 +62,7 @@ export default {
             },
 
             {
+              // TODO: implement source list acquire + functionality
               id: "video-input-source",
               type: FormFieldsetFieldType.Select,
               label: "Video input:",
@@ -81,8 +82,7 @@ export default {
                   }
                 ],
 
-                position: "bottom",
-                disabled: true
+                position: "bottom"
               } as FormFieldsetFieldDataSelect
             }
           ]
@@ -106,6 +106,7 @@ export default {
             },
 
             {
+              // TODO: implement source list acquire + functionality
               id: "audio-input-source",
               type: FormFieldsetFieldType.Select,
               label: "Audio input:",
@@ -123,9 +124,7 @@ export default {
                     value: "system",
                     label: "Same as System"
                   }
-                ],
-
-                disabled: true
+                ]
               } as FormFieldsetFieldDataSelect
             }
           ]
@@ -148,6 +147,7 @@ export default {
             },
 
             {
+              // TODO: implement source list acquire + functionality
               id: "audio-output-source",
               type: FormFieldsetFieldType.Select,
               label: "Audio output:",
@@ -165,9 +165,7 @@ export default {
                     value: "system",
                     label: "Same as System"
                   }
-                ],
-
-                disabled: true
+                ]
               } as FormFieldsetFieldDataSelect
             }
           ]

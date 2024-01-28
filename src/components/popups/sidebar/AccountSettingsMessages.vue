@@ -48,6 +48,7 @@ export default {
 
           fields: [
             {
+              // TODO: implement functionality using this option
               id: "chatstates",
               type: FormFieldsetFieldType.Checkbox,
               label: "Composing:",
@@ -58,12 +59,12 @@ export default {
                   change: Store.$settings.setMessagesChatsChatstates
                 },
 
-                label: "Let users know when I am typing",
-                disabled: true
+                label: "Let users know when I am typing"
               } as FormFieldsetFieldDataCheckbox
             },
 
             {
+              // TODO: implement functionality using this option
               id: "spellcheck",
               type: FormFieldsetFieldType.Checkbox,
 
@@ -73,8 +74,7 @@ export default {
                   change: Store.$settings.setMessagesChatsSpellcheck
                 },
 
-                label: "Enable spell checker",
-                disabled: true
+                label: "Enable spell checker"
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -84,6 +84,7 @@ export default {
             },
 
             {
+              // TODO: implement functionality using this option
               id: "clock-24h",
               type: FormFieldsetFieldType.Checkbox,
               label: "Messages:",
@@ -94,8 +95,7 @@ export default {
                   change: Store.$settings.setMessagesChatsClock24h
                 },
 
-                label: "Use a 24-hour clock",
-                disabled: true
+                label: "Use a 24-hour clock"
               } as FormFieldsetFieldDataCheckbox
             }
           ]
@@ -107,6 +107,7 @@ export default {
 
           fields: [
             {
+              // TODO: implement functionality using this option
               id: "image-previews-enabled",
               type: FormFieldsetFieldType.Checkbox,
               label: "Thumbnails:",
@@ -117,12 +118,12 @@ export default {
                   change: Store.$settings.setMessagesFilesImagePreviews
                 },
 
-                label: "Show a preview of image files",
-                disabled: true
+                label: "Show a preview of image files"
               } as FormFieldsetFieldDataCheckbox
             },
 
             {
+              // TODO: implement functionality using this option
               id: "image-previews-size",
               type: FormFieldsetFieldType.Select,
 
@@ -144,9 +145,7 @@ export default {
                     value: "small",
                     label: "Small size"
                   }
-                ],
-
-                disabled: true
+                ]
               } as FormFieldsetFieldDataSelect
             }
           ]

@@ -89,6 +89,7 @@ export default {
 
           fields: [
             {
+              // TODO: implement functionality using this option
               id: "auto-away-enabled",
               type: FormFieldsetFieldType.Checkbox,
               label: "When idle:",
@@ -99,12 +100,12 @@ export default {
                   change: Store.$settings.setAvailabilityAutoAwayEnabled
                 },
 
-                label: "Automatically mark me as away after:",
-                disabled: true
+                label: "Automatically mark me as away after:"
               } as FormFieldsetFieldDataCheckbox
             },
 
             {
+              // TODO: implement functionality using this option
               id: "auto-away-after",
               type: FormFieldsetFieldType.Select,
 
@@ -141,9 +142,7 @@ export default {
                     value: "1h",
                     label: "1 hour"
                   }
-                ],
-
-                disabled: true
+                ]
               } as FormFieldsetFieldDataSelect
             }
           ]

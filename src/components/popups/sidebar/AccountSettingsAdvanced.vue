@@ -48,6 +48,7 @@ export default {
 
           fields: [
             {
+              // TODO: implement functionality using this option
               id: "channel",
               type: FormFieldsetFieldType.Select,
               label: "Channel:",
@@ -72,8 +73,7 @@ export default {
                   }
                 ],
 
-                position: "bottom",
-                disabled: true
+                position: "bottom"
               } as FormFieldsetFieldDataSelect
             }
           ]
@@ -85,6 +85,7 @@ export default {
 
           fields: [
             {
+              // TODO: implement functionality using this option
               id: "report-analytics",
               type: FormFieldsetFieldType.Checkbox,
               label: "Reports:",
@@ -95,12 +96,12 @@ export default {
                   change: Store.$settings.setPrivacyReportAnalytics
                 },
 
-                label: "Send anonymous usage analytics",
-                disabled: true
+                label: "Send anonymous usage analytics"
               } as FormFieldsetFieldDataCheckbox
             },
 
             {
+              // TODO: implement functionality using this option
               id: "report-crashes",
               type: FormFieldsetFieldType.Checkbox,
 
@@ -110,8 +111,7 @@ export default {
                   change: Store.$settings.setPrivacyReportCrashes
                 },
 
-                label: "Automatically send crash reports",
-                disabled: true
+                label: "Automatically send crash reports"
               } as FormFieldsetFieldDataCheckbox
             }
           ]
