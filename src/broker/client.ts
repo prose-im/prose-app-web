@@ -40,7 +40,7 @@ const PING_INTERVAL_SECONDS = 60; // 1 minute
 
 const LOGGING_ENABLED = loggerEnabled;
 const LOGGING_LEVEL = "warn";
-const LOGGING_STANZAS = true;
+const LOGGING_STANZAS = loggerEnabled;
 
 /**************************************************************************
  * CLASS
@@ -126,8 +126,12 @@ class BrokerClient {
     // Void stored credentials
     this.__credentials = undefined;
 
+    // Disconnect client and flush its cache
     await this.client?.disconnect();
     await this.client?.deleteCachedData();
+
+    // Reset all stores
+    Store.reset();
   }
 
   private __onClientConnected(): void {
