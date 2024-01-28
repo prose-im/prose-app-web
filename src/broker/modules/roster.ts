@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { Contact } from "@prose-im/prose-sdk-js";
+import { JID, Contact } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -29,6 +29,15 @@ class BrokerModuleRoster extends BrokerModule {
     logger.info("Will load roster (or reload)");
 
     return (await this._client.client?.loadContacts()) || [];
+  }
+
+  async addContact(jid: JID): Promise<void> {
+    // XMPP: Instant Messaging and Presence
+    // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-set
+
+    logger.info(`Will add contact to roster: '${jid}'`);
+
+    await this._client.client?.addContact(jid);
   }
 }
 
