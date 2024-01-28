@@ -86,7 +86,7 @@
 
     sidebar-main-action-add(
       @click="onChannelsAddClick"
-      title="Add channels"
+      title="Add a channel"
     )
 </template>
 
