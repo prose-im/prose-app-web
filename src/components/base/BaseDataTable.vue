@@ -106,7 +106,7 @@ div(
       base-button(
         @click="onControlClick(control.type)"
         :tint="control.tint"
-        :disabled="readOnly || control.disabled"
+        :disabled="(control.modifier && readOnly) || control.disabled"
         size="small"
         button-class="c-base-data-table__control-button"
       )
@@ -165,6 +165,7 @@ interface ControlWithIcon {
   tooltip: string;
   tint: string;
   disabled: boolean;
+  modifier?: boolean;
   spaced?: boolean;
   icon?: string;
 }
@@ -243,6 +244,7 @@ export default {
         let icon: string,
           tooltip: string,
           tint = "dark",
+          modifier = false,
           spaced = false,
           disabled = false;
 
@@ -250,6 +252,7 @@ export default {
           case ControlType.Add: {
             icon = "plus";
             tooltip = "Add";
+            modifier = true;
 
             break;
           }
@@ -258,6 +261,7 @@ export default {
             icon = "minus";
             tooltip = "Remove";
             tint = "light";
+            modifier = true;
 
             disabled = this.rows.find((row: Row) => row.selected === true)
               ? false
@@ -281,6 +285,7 @@ export default {
           tooltip: control.tooltip || tooltip,
           icon,
           tint,
+          modifier,
           spaced,
           disabled
         };
