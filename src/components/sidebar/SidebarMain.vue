@@ -291,8 +291,12 @@ export default {
       } else {
         // Mark synchronization as stale (will re-synchronize when connection \
         //   is restored, since we just became disconnected)
+        // Notice: do not mark channels as stale, since we do not want to \
+        //   reload them everytime we reconnect since it could be quite heavy, \
+        //   and not so useful. Browsing channels in the dedicated section \
+        //   would forcibly reload them all everytime, which is good enough \
+        //   to catch up with newly-created channels on apps with large uptimes.
         this.isRosterSyncStale = true;
-        this.isChannelsSyncStale = true;
       }
     },
 
