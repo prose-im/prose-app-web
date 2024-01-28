@@ -53,6 +53,9 @@ import DeleteMulti from "@/modals/inbox/DeleteMulti.vue";
 // PROJECT: POPUPS
 import { FormSettings as MultiFormSettings } from "@/popups/inbox/ManageMulti.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 
@@ -230,6 +233,11 @@ export default {
         // Set room name
         await (this.room as RoomMutableName).setName(name);
 
+        // Force reload all channels
+        if (this.type === "channel") {
+          Store.$channel.markChannelsChanged();
+        }
+
         // Show success alert
         BaseAlert.success("Name set", `The ${this.type} name has been changed`);
       } catch (error) {
@@ -253,6 +261,11 @@ export default {
 
         // Destroy room
         await Broker.$room.destroy(new JID(this.room.id as string));
+
+        // Force reload all channels
+        if (this.type === "channel") {
+          Store.$channel.markChannelsChanged();
+        }
 
         // Show success alert
         BaseAlert.success(

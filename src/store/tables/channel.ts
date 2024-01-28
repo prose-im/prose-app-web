@@ -10,6 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
+import mitt from "mitt";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -44,6 +45,12 @@ interface ChannelEntry {
 }
 
 /**************************************************************************
+ * INSTANCES
+ * ************************************************************************* */
+
+const EventBus = mitt();
+
+/**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
@@ -73,6 +80,11 @@ const $channel = defineStore("channel", {
   },
 
   actions: {
+    events(): ReturnType<typeof mitt> {
+      // Return event bus
+      return EventBus;
+    },
+
     async load(reload = false): Promise<ChannelList> {
       // Load channels? (or reload)
       if (LOCAL_STATES.loaded === false || reload === true) {
@@ -98,6 +110,10 @@ const $channel = defineStore("channel", {
       }
 
       return Promise.resolve(this.list);
+    },
+
+    markChannelsChanged(): void {
+      EventBus.emit("channels:changed");
     }
   }
 });

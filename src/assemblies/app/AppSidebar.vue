@@ -158,6 +158,9 @@ export default {
             // Attempt to create public channel
             roomJID = await Broker.$channel.createPublicChannel(jidString);
 
+            // Force reload all channels
+            Store.$channel.markChannelsChanged();
+
             BaseAlert.success(
               "Channel added",
               "Public channel has been created"

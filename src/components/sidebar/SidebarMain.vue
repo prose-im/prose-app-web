@@ -141,7 +141,7 @@ export default {
       selectedRoomID: null as string | null,
 
       isRosterSyncStale: true,
-      isRosterLoading: false
+      isChannelsSyncStale: true
     };
   },
 
@@ -201,17 +201,29 @@ export default {
       "rooms:changed": this.onRoomsChanged
     });
 
+    // Bind channel event handlers
+    useEvents(Store.$channel, {
+      "channels:changed": this.onChannelsChanged
+    });
+
     // Bind roster event handlers
     useEvents(Store.$roster, {
       "contact:changed": this.onContactChanged
     });
 
-    // Synchronize roster eagerly
-    this.syncRosterEager();
+    // Synchronize eagerly
+    this.syncAllEager();
   },
 
   methods: {
     // --> HELPERS <--
+
+    async syncAllEager(forceReload = false): Promise<void> {
+      await Promise.all([
+        this.syncRosterEager(forceReload),
+        this.syncChannelsEager(forceReload)
+      ]);
+    },
 
     async syncRosterEager(forceReload = false): Promise<void> {
       // Can synchronize now? (connected)
@@ -223,11 +235,21 @@ export default {
         this.isRosterSyncStale = false;
 
         // Load roster
-        this.isRosterLoading = true;
-
         await Store.$roster.load(forceReload);
+      }
+    },
 
-        this.isRosterLoading = false;
+    async syncChannelsEager(forceReload = false): Promise<void> {
+      // Can synchronize now? (connected)
+      if (
+        this.isChannelsSyncStale === true &&
+        Store.$session.connected === true
+      ) {
+        // Mark synchronization as non-stale
+        this.isChannelsSyncStale = false;
+
+        // Load channels
+        await Store.$channel.load(forceReload);
       }
     },
 
@@ -261,12 +283,16 @@ export default {
 
     async onStoreConnected(connected: boolean): Promise<void> {
       if (connected === true) {
-        // Synchronize roster eagerly
+        // Start observing rooms
         await Broker.$room.startObservingRooms();
+
+        // Forcibly reload everything (since we just became connected)
+        await this.syncAllEager(true);
       } else {
         // Mark synchronization as stale (will re-synchronize when connection \
-        //   is restored)
+        //   is restored, since we just became disconnected)
         this.isRosterSyncStale = true;
+        this.isChannelsSyncStale = true;
       }
     },
 
@@ -276,6 +302,14 @@ export default {
 
       // Forcibly reload roster
       this.syncRosterEager(true);
+    },
+
+    onChannelsChanged(): void {
+      // Mark channels as state (should reload)
+      this.isChannelsSyncStale = true;
+
+      // Forcibly reload channels
+      this.syncChannelsEager(true);
     },
 
     onContactChanged(): void {
