@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { Channel, JID, SidebarItem } from "@prose-im/prose-sdk-js";
+import { JID, SidebarItem } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -35,26 +35,10 @@ class BrokerModuleRoom extends BrokerModule {
     return this._client.client?.destroyRoom(jid);
   }
 
-  async loadPublicChannels(): Promise<Array<Channel>> {
-    return (await this._client.client?.loadPublicChannels()) || [];
-  }
-
-  async findPublicChannelByName(name: string): Promise<JID | undefined> {
-    return this._client.client?.findPublicChannelByName(name);
-  }
-
   async startConversation(participants: Array<JID>): Promise<JID | undefined> {
     return this._client.client?.startConversation(
       participants.map(jid => jid.toString())
     );
-  }
-
-  async createPublicChannel(name: string): Promise<JID | undefined> {
-    return this._client.client?.createPublicChannel(name);
-  }
-
-  async createPrivateChannel(name: string): Promise<JID | undefined> {
-    return this._client.client?.createPrivateChannel(name);
   }
 }
 

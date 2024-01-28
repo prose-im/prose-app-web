@@ -136,7 +136,7 @@ export default {
       } else {
         // Attempt to create private channel
         if (requestPrivate === true) {
-          roomJID = await Broker.$room.createPrivateChannel(jidString);
+          roomJID = await Broker.$channel.createPrivateChannel(jidString);
 
           BaseAlert.success(
             "Channel added",
@@ -145,7 +145,7 @@ export default {
         } else {
           // Attempt to join existing public channel, otherwise create public \
           //   channel
-          roomJID = await Broker.$room.findPublicChannelByName(jidString);
+          roomJID = await Broker.$channel.findPublicChannelByName(jidString);
 
           if (roomJID !== undefined) {
             await Broker.$room.join(roomJID);
@@ -156,7 +156,7 @@ export default {
             );
           } else {
             // Attempt to create public channel
-            roomJID = await Broker.$room.createPublicChannel(jidString);
+            roomJID = await Broker.$channel.createPublicChannel(jidString);
 
             BaseAlert.success(
               "Channel added",

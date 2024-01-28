@@ -13,6 +13,7 @@ import BrokerClient from "@/broker/client";
 
 import BrokerModuleAccount from "@/broker/modules/account";
 import BrokerModuleRoom from "@/broker/modules/room";
+import BrokerModuleChannel from "@/broker/modules/channel";
 import BrokerModuleProfile from "@/broker/modules/profile";
 import BrokerModuleRoster from "@/broker/modules/roster";
 import BrokerModuleStatus from "@/broker/modules/status";
@@ -29,6 +30,7 @@ class Broker {
   readonly $roster: BrokerModuleRoster;
   readonly $status: BrokerModuleStatus;
   readonly $room: BrokerModuleRoom;
+  readonly $channel: BrokerModuleChannel;
 
   constructor() {
     // Initialize client
@@ -40,6 +42,7 @@ class Broker {
     this.$roster = new BrokerModuleRoster(this.client);
     this.$status = new BrokerModuleStatus(this.client);
     this.$room = new BrokerModuleRoom(this.client);
+    this.$channel = new BrokerModuleChannel(this.client);
   }
 }
 
