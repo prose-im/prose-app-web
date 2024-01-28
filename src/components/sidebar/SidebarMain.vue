@@ -35,7 +35,7 @@
     )
 
     sidebar-main-section(
-      title="People & groups"
+      title="People & channels"
       icon="text.book.closed"
       disabled
     )
