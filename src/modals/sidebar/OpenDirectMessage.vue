@@ -107,7 +107,6 @@ import { JID, UserProfile } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
-import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/FormFieldSuggest.vue";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
