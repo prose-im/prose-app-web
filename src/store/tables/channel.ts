@@ -122,4 +122,5 @@ const $channel = defineStore("channel", {
  * EXPORTS
  * ************************************************************************* */
 
+export type { ChannelEntry };
 export default $channel;
