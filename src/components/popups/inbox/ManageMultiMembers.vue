@@ -16,6 +16,16 @@ form-settings-editor(
   title-class="p-manage-multi-members__title"
   part-class="p-manage-multi-members__part"
 )
+  template(
+    v-slot:modals
+  )
+    reinvite-multi-members(
+      v-if="modals.reinviteMultiMembers.visible"
+      @proceed="onModalReinviteMultiMembersProceed"
+      @close="onModalReinviteMultiMembersClose"
+      :type="type"
+      :loading="modals.reinviteMultiMembers.loading"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -26,19 +36,27 @@ form-settings-editor(
 // NPM
 import { shallowRef, PropType } from "vue";
 import upperFirst from "lodash.upperfirst";
-import { Room } from "@prose-im/prose-sdk-js";
+import { Room, RoomType, RoomGroup } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import {
   default as FormSettingsEditor,
   Fieldset as FormFieldset
 } from "@/components/form/FormSettingsEditor.vue";
 import ManageMultiMembersTable from "@/components/popups/inbox/ManageMultiMembersTable.vue";
 
+// PROJECT: MODALS
+import ReinviteMultiMembers from "@/modals/inbox/ReinviteMultiMembers.vue";
+
 export default {
   name: "ManageMultiMembers",
 
-  components: { FormSettingsEditor, ManageMultiMembersTable },
+  components: {
+    FormSettingsEditor,
+    ManageMultiMembersTable,
+    ReinviteMultiMembers
+  },
 
   props: {
     type: {
@@ -65,6 +83,15 @@ export default {
 
   data() {
     return {
+      // --> STATE <--
+
+      modals: {
+        reinviteMultiMembers: {
+          visible: false,
+          loading: false
+        }
+      },
+
       // --> DATA <--
 
       fieldsets: [
@@ -84,7 +111,8 @@ export default {
               },
 
               listeners: {
-                add: this.onMembersTableAdd
+                add: this.onMembersTableAdd,
+                reinvite: this.onMembersTableReinvite
               }
             }
           ]
@@ -98,6 +126,46 @@ export default {
 
     onMembersTableAdd(): void {
       this.$emit("add");
+    },
+
+    onMembersTableReinvite(): void {
+      this.modals.reinviteMultiMembers.visible = true;
+    },
+
+    async onModalReinviteMultiMembersProceed(): Promise<void> {
+      try {
+        this.modals.reinviteMultiMembers.loading = true;
+
+        // Assert that room is group
+        if (this.room.type !== RoomType.Group) {
+          throw new Error("Room is not group");
+        }
+
+        // Re-invite everyone
+        await (this.room as RoomGroup).resendInvitesToMembers();
+
+        // Show success alert
+        BaseAlert.success(
+          "Re-invited everyone",
+          `All ${this.type} members have been re-invited`
+        );
+
+        this.modals.reinviteMultiMembers.visible = false;
+      } catch (error) {
+        this.$log.error(`Failed re-inviting ${this.type} members`, error);
+
+        // Show error alert
+        BaseAlert.error(
+          "Cannot re-invite",
+          `Error re-inviting ${this.type} members`
+        );
+      } finally {
+        this.modals.reinviteMultiMembers.loading = false;
+      }
+    },
+
+    onModalReinviteMultiMembersClose(): void {
+      this.modals.reinviteMultiMembers.visible = false;
     }
   }
 };

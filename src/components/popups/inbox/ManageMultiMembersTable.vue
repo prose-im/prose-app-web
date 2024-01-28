@@ -76,7 +76,7 @@ export default {
     }
   },
 
-  emits: ["add"],
+  emits: ["add", "reinvite"],
 
   data() {
     return {
@@ -116,24 +116,7 @@ export default {
         }) as Array<DataTableRow>,
 
         sizes: { name: "35%", jid: "50%", role: "15%" } as DataTableSizes,
-
-        controls: (this.type === "channel"
-          ? [
-              {
-                type: DataTableControlType.Add,
-                tooltip: "Add members"
-              },
-
-              {
-                type: DataTableControlType.Remove
-              },
-
-              {
-                type: DataTableControlType.Refresh,
-                tooltip: "Resend all invites"
-              }
-            ]
-          : []) as Array<DataTableControl>
+        controls: this.generateTableControls()
       }
     };
   },
@@ -145,6 +128,38 @@ export default {
   },
 
   methods: {
+    // --> HELPERS <--
+
+    generateTableControls(): Array<DataTableControl> {
+      switch (this.type) {
+        case "channel": {
+          return [
+            {
+              type: DataTableControlType.Add,
+              tooltip: "Add members"
+            },
+
+            {
+              type: DataTableControlType.Remove
+            }
+          ];
+        }
+
+        case "group": {
+          return [
+            {
+              type: DataTableControlType.Refresh,
+              tooltip: "Resend all invites"
+            }
+          ];
+        }
+
+        default: {
+          return [];
+        }
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onDataTableControlClick(control: DataTableControlType): void {
@@ -162,7 +177,7 @@ export default {
         }
 
         case DataTableControlType.Refresh: {
-          // TODO: handle refresh
+          this.$emit("reinvite");
 
           break;
         }
