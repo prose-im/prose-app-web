@@ -97,7 +97,7 @@ $icon-size: 28px;
   padding: 5px 10px;
   display: flex;
   align-items: center;
-  border-radius: 4px;
+  border-radius: 6px;
 
   #{$c}__icon {
     width: $icon-size;
