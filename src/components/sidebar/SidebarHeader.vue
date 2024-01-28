@@ -71,7 +71,7 @@ import {
 } from "@/components/base/BasePopoverList.vue";
 
 // PROJECT: MODALS
-import { Mode as AddContactMode } from "@/modals/sidebar/AddContact.vue";
+import { AddContactMode as SidebarAddContactMode } from "@/assemblies/app/AppSidebar.vue";
 
 export default {
   name: "SidebarHeader",
@@ -130,12 +130,12 @@ export default {
 
     onIdentityPopoverInvitePeopleClick(): void {
       // Request to show add contact modal (in member mode)
-      this.$emit("addContact", AddContactMode.Member);
+      this.$emit("addContact", SidebarAddContactMode.Member);
     },
 
     onIdentityPopoverCreateChannelClick(): void {
       // Request to show add contact modal (in channel mode)
-      this.$emit("addContact", AddContactMode.Channel);
+      this.$emit("addContact", SidebarAddContactMode.Channel);
     }
   }
 };

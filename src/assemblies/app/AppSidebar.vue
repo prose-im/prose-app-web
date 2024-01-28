@@ -33,12 +33,18 @@
     avatar-presence-class="a-app-sidebar__context-presence"
   )
 
-  add-contact(
-    v-if="modals.addContact.visible"
-    @add="onModalAddContactAdd"
-    @close="onModalAddContactClose"
-    :mode="modals.addContact.mode"
-    :loading="modals.addContact.loading"
+  open-direct-message(
+    v-if="modals.openDirectMessage.visible"
+    @open="onModalOpenDirectMessageOpen"
+    @close="onModalOpenDirectMessageClose"
+    :loading="modals.openDirectMessage.loading"
+  )
+
+  add-channel(
+    v-if="modals.addChannel.visible"
+    @add="onModalAddChannelAdd"
+    @close="onModalAddChannelClose"
+    :loading="modals.addChannel.loading"
   )
 </template>
 
@@ -63,11 +69,19 @@ import Broker from "@/broker";
 import Store from "@/store";
 
 // PROJECT: MODALS
+import OpenDirectMessage from "@/modals/sidebar/OpenDirectMessage.vue";
 import {
-  default as AddContact,
-  Mode as AddContactMode,
-  EventAddOptions as AddContactEventAddOptions
-} from "@/modals/sidebar/AddContact.vue";
+  default as AddChannel,
+  EventAddOptions as AddChannelEventAddOptions
+} from "@/modals/sidebar/AddChannel.vue";
+
+// ENUMERATIONS
+export enum AddContactMode {
+  // Member mode.
+  Member = "member",
+  // Channel mode.
+  Channel = "channel"
+}
 
 // CONSTANTS
 const MAIN_SCROLLED_THRESHOLD_VERTICAL = 16;
@@ -75,7 +89,13 @@ const MAIN_SCROLLED_THRESHOLD_VERTICAL = 16;
 export default {
   name: "AppSidebar",
 
-  components: { SidebarHeader, SidebarMain, SidebarContext, AddContact },
+  components: {
+    SidebarHeader,
+    SidebarMain,
+    SidebarContext,
+    OpenDirectMessage,
+    AddChannel
+  },
 
   data() {
     return {
@@ -84,10 +104,14 @@ export default {
       isHeaderFloating: false,
 
       modals: {
-        addContact: {
+        openDirectMessage: {
           visible: false,
-          loading: false,
-          mode: null as AddContactMode | null
+          loading: false
+        },
+
+        addChannel: {
+          visible: false,
+          loading: false
         }
       }
     };
@@ -106,7 +130,7 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    async addContactGroup(jidString: string): Promise<void> {
+    async openDirectMessage(jidString: string): Promise<void> {
       const jids = jidString.split(",").map(value => new JID(value.trim()));
 
       // Start conversation
@@ -121,10 +145,7 @@ export default {
       this.navigateToCreatedRoom(roomJID);
     },
 
-    async addContactChannel(
-      jidString: string,
-      requestPrivate = false
-    ): Promise<void> {
+    async addChannel(jidString: string, requestPrivate = false): Promise<void> {
       let roomJID;
 
       // Join or create room?
@@ -189,8 +210,20 @@ export default {
     // --> EVENT LISTENERS <--
 
     onAddContact(mode: AddContactMode): void {
-      this.modals.addContact.mode = mode;
-      this.modals.addContact.visible = true;
+      // Open target modal
+      switch (mode) {
+        case AddContactMode.Member: {
+          this.modals.openDirectMessage.visible = true;
+
+          break;
+        }
+
+        case AddContactMode.Channel: {
+          this.modals.addChannel.visible = true;
+
+          break;
+        }
+      }
     },
 
     onMainScroll(event: Event): void {
@@ -206,48 +239,59 @@ export default {
       }
     },
 
-    async onModalAddContactAdd(
-      jidString: string,
-      options: AddContactEventAddOptions
-    ): Promise<void> {
-      const mode = this.modals.addContact.mode;
-
-      if (this.modals.addContact.loading !== true) {
-        this.modals.addContact.loading = true;
+    async onModalOpenDirectMessageOpen(jidString: string): Promise<void> {
+      if (this.modals.openDirectMessage.loading !== true) {
+        this.modals.openDirectMessage.loading = true;
 
         try {
-          switch (mode) {
-            case AddContactMode.Member:
-              await this.addContactGroup(jidString);
+          // Open direct message (one or many persons)
+          await this.openDirectMessage(jidString);
 
-              break;
-
-            case AddContactMode.Channel:
-              await this.addContactChannel(jidString, options.private);
-
-              break;
-          }
-
-          this.modals.addContact.visible = false;
+          this.modals.openDirectMessage.visible = false;
         } catch (error) {
-          BaseAlert.error(
-            mode === AddContactMode.Channel
-              ? "Channel not added"
-              : "Direct Message not opened",
+          this.$log.error("Failed opening direct message", error);
 
+          BaseAlert.error(
+            "Direct Message not opened",
             `${jidString} could not be added`
           );
-
-          this.$log.error("Failed adding contact", error);
         } finally {
-          this.modals.addContact.loading = false;
+          this.modals.openDirectMessage.loading = false;
         }
       }
     },
 
-    onModalAddContactClose(): void {
-      this.modals.addContact.visible = false;
-      this.modals.addContact.mode = null;
+    onModalOpenDirectMessageClose(): void {
+      this.modals.openDirectMessage.visible = false;
+    },
+
+    async onModalAddChannelAdd(
+      jidString: string,
+      options: AddChannelEventAddOptions
+    ): Promise<void> {
+      if (this.modals.addChannel.loading !== true) {
+        this.modals.addChannel.loading = true;
+
+        try {
+          // Create or join channel (public or private)
+          await this.addChannel(jidString, options.private);
+
+          this.modals.addChannel.visible = false;
+        } catch (error) {
+          this.$log.error("Failed adding channel", error);
+
+          BaseAlert.error(
+            "Channel not added",
+            `${jidString} could not be added`
+          );
+        } finally {
+          this.modals.addChannel.loading = false;
+        }
+      }
+    },
+
+    onModalAddChannelClose(): void {
+      this.modals.addChannel.visible = false;
     }
   }
 };

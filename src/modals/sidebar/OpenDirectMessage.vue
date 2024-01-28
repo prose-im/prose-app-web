@@ -1,7 +1,7 @@
 <!--
  * This file is part of prose-app-web
  *
- * Copyright 2023, Prose Foundation
+ * Copyright 2024, Prose Foundation
  -->
 
 <!-- **********************************************************************
@@ -13,46 +13,34 @@ base-modal(
   @close="$emit('close')"
   @confirm="onConfirm"
   :confirm-loading="loading"
-  :confirm-label="confirmLabel"
-  class="m-add-contact"
+  confirm-label="Open Direct Message"
+  class="m-open-direct-message"
   size="large"
 )
-  template(
-    v-if="mode === modeType.Member"
-  )
-    p.u-medium
-      | Open a direct message
+  p.u-medium
+    | Open a direct message
 
-    p.u-regular
-      | Add an existing chat address, or invite an email to join your team.
+  p.u-regular
+    | Add an existing chat address, or invite an email to join your team.
 
-  template(
-    v-else-if="mode === modeType.Channel"
-  )
-    p.u-medium
-      | Add a channel
-
-    p.u-regular
-      | Create or join a channel, where multiple people can talk.
-
-  .m-add-contact__form
+  .m-open-direct-message__form
     base-spinner(
       v-if="fetching"
       color="#949eb1"
       size="9px"
       border-width="1.5px"
-      class="m-add-contact__form-spinner"
+      class="m-open-direct-message__form-spinner"
     )
 
     span(
       v-else-if="isVerified"
-      class="m-add-contact__form-identity u-ellipsis"
+      class="m-open-direct-message__form-identity u-ellipsis"
     )
       base-avatar(
         :jid="identity.jid"
         size="26px"
         shadow="none"
-        class="m-add-contact__form-identity-avatar"
+        class="m-open-direct-message__form-identity-avatar"
       )
 
       | {{ identity.name }}
@@ -62,8 +50,8 @@ base-modal(
       @change="onAddressChange"
       @submit="onConfirm"
       :suggestions="suggestions"
-      :placeholder="fieldAddressPlacehokder"
-      class="m-add-contact__form-field"
+      placeholder="Enter contact address…"
+      class="m-open-direct-message__form-field"
       type="email"
       name="address"
       size="large"
@@ -73,37 +61,25 @@ base-modal(
       autofocus
     )
 
-  .m-add-contact__options(
-    v-if="mode === modeType.Channel"
-  )
-    form-fieldset-field(
-      label="Create a private channel"
-      auto-size
-    )
-      form-toggle(
-        v-model="private"
-        name="private"
-      )
-
   div(
     v-if="hasIdentity"
     :class=`[
-      "m-add-contact__notice",
+      "m-open-direct-message__notice",
       {
-        "m-add-contact__notice--verified": isVerified,
-        "m-add-contact__notice--unknown": !isVerified
+        "m-open-direct-message__notice--verified": isVerified,
+        "m-open-direct-message__notice--unknown": !isVerified
       }
     ]`
   )
-    p.m-add-contact__notice-line
-      span.m-add-contact__notice-aside
+    p.m-open-direct-message__notice-line
+      span.m-open-direct-message__notice-aside
         base-icon(
           :name="noticeIcon"
           size="14px"
-          class="m-add-contact__notice-icon"
+          class="m-open-direct-message__notice-icon"
         )
 
-      span.m-add-contact__notice-label
+      span.m-open-direct-message__notice-label
         template(
           v-if="isVerified"
         )
@@ -114,10 +90,10 @@ base-modal(
         )
           | This chat address might not exist, an email invite will be sent.
 
-    p.m-add-contact__notice-line
-      span.m-add-contact__notice-aside
+    p.m-open-direct-message__notice-line
+      span.m-open-direct-message__notice-aside
 
-      span.m-add-contact__notice-label
+      span.m-open-direct-message__notice-label
         | Once the user accepts your request, you will be able to chat and call.
 </template>
 
@@ -127,8 +103,7 @@ base-modal(
 
 <script lang="ts">
 // NPM
-import { JID } from "@prose-im/prose-sdk-js";
-import { PropType } from "vue";
+import { JID, UserProfile } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -143,54 +118,32 @@ import { useRosterSuggestor } from "@/composables/roster";
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 
-// ENUMERATIONS
-export enum Mode {
-  // Member mode.
-  Member = "member",
-  // Channel mode.
-  Channel = "channel"
-}
-
-// INTERFACES
-export interface EventAddOptions {
-  private: boolean;
-}
-
 // CONSTANTS
 const IDENTITY_ACQUIRE_DELAY = 1000; // 1 second
 
 export default {
-  name: "AddContact",
+  name: "OpenDirectMessage",
 
   props: {
-    mode: {
-      type: String as PropType<Mode>,
-      required: true
-    },
-
     loading: {
       type: Boolean,
       default: false
     }
   },
 
-  emits: ["close", "add"],
+  emits: ["close", "open"],
 
   setup() {
     const { query, suggestions } = useRosterSuggestor();
 
     return {
       jid: query,
-      memberSuggestions: suggestions
+      suggestions
     };
   },
 
   data() {
     return {
-      // --> DATA <--
-
-      modeType: Mode,
-
       // --> STATE <--
 
       identity: {
@@ -200,8 +153,6 @@ export default {
       },
 
       fetching: false,
-
-      private: false,
 
       identityAcquireTimeout: null as null | ReturnType<typeof setTimeout>
     };
@@ -216,56 +167,10 @@ export default {
       return this.hasIdentity === true && this.identity.name ? true : false;
     },
 
-    suggestions(): Array<FormFieldSuggestSuggestion> {
-      switch (this.mode) {
-        case Mode.Member: {
-          return this.memberSuggestions;
-        }
-
-        default: {
-          return [];
-        }
-      }
-    },
-
-    fieldAddressPlacehokder(): string {
-      switch (this.mode) {
-        case Mode.Member: {
-          return "Enter contact address…";
-        }
-
-        case Mode.Channel: {
-          return "Enter channel name (or address)…";
-        }
-
-        default: {
-          return "Enter address…";
-        }
-      }
-    },
-
     noticeIcon(): string {
       return this.isVerified === true
         ? "checkmark.circle.fill"
         : "questionmark.circle.fill";
-    },
-
-    confirmLabel(): string {
-      switch (this.mode) {
-        case Mode.Member: {
-          return "Open Direct Message";
-        }
-
-        case Mode.Channel: {
-          return this.private === true
-            ? "Create Private Channel"
-            : "Add Channel";
-        }
-
-        default: {
-          return "Add Address";
-        }
-      }
     }
   },
 
@@ -279,10 +184,10 @@ export default {
         this.fetching = true;
 
         // Request profile for JID
-        let profile;
+        let profile: UserProfile | null;
 
         try {
-          profile = await Broker.$profile.loadUserProfile(jid);
+          profile = (await Broker.$profile.loadUserProfile(jid)) || null;
         } catch (error) {
           logger.error(
             `Could not load profile when adding contact: ${jid}`,
@@ -322,33 +227,29 @@ export default {
         clearTimeout(this.identityAcquireTimeout);
       }
 
-      // Acquire identity for mode?
-      if (this.mode === Mode.Member) {
-        if (address) {
-          this.identityAcquireTimeout = setTimeout(async () => {
-            this.identityAcquireTimeout = null;
+      // Acquire identity?
+      if (address) {
+        this.identityAcquireTimeout = setTimeout(async () => {
+          this.identityAcquireTimeout = null;
 
-            // Acquire parsed JID
-            // Notice: this might fail if the user-provided JID is invalid or \
-            //   not yet fully complete.
-            let jid: JID | null;
+          // Acquire parsed JID
+          // Notice: this might fail if the user-provided JID is invalid or \
+          //   not yet fully complete.
+          let jid: JID | null;
 
-            try {
-              jid = new JID(address);
+          try {
+            jid = new JID(address);
 
-              // JID is incomplete? (void it)
-              if (!jid.node || !jid.domain) {
-                jid = null;
-              }
-            } catch (_) {
+            // JID is incomplete? (void it)
+            if (!jid.node || !jid.domain) {
               jid = null;
             }
+          } catch (_) {
+            jid = null;
+          }
 
-            await this.acquireIdentity(jid);
-          }, IDENTITY_ACQUIRE_DELAY);
-        } else {
-          await this.acquireIdentity(null);
-        }
+          await this.acquireIdentity(jid);
+        }, IDENTITY_ACQUIRE_DELAY);
       }
     },
 
@@ -358,9 +259,7 @@ export default {
       if (jidUnsafeString === null) {
         BaseAlert.warning("Address required", "Please enter an address");
       } else {
-        this.$emit("add", jidUnsafeString, {
-          private: this.private
-        } as EventAddOptions);
+        this.$emit("open", jidUnsafeString);
       }
     }
   }
@@ -372,9 +271,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".m-add-contact";
+$c: ".m-open-direct-message";
 
-.m-add-contact {
+.m-open-direct-message {
   #{$c}__form {
     margin-block-start: 20px;
     display: flex;
@@ -402,10 +301,6 @@ $c: ".m-add-contact";
     #{$c}__form-field {
       flex: 1;
     }
-  }
-
-  #{$c}__options {
-    margin-block-start: 14px;
   }
 
   #{$c}__notice {

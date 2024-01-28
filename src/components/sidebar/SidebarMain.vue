@@ -113,7 +113,7 @@ import SidebarMainItem from "@/components/sidebar/SidebarMainItem.vue";
 import SidebarMainActionAdd from "@/components/sidebar/SidebarMainActionAdd.vue";
 
 // PROJECT: MODALS
-import { Mode as AddContactMode } from "@/modals/sidebar/AddContact.vue";
+import { AddContactMode as SidebarAddContactMode } from "@/assemblies/app/AppSidebar.vue";
 
 export default {
   name: "SidebarMain",
@@ -265,12 +265,12 @@ export default {
 
     onDirectMessageAddClick(): void {
       // Request to show add contact modal (in member mode)
-      this.$emit("addContact", AddContactMode.Member);
+      this.$emit("addContact", SidebarAddContactMode.Member);
     },
 
     onChannelsAddClick(): void {
       // Request to show add contact modal (in channel mode)
-      this.$emit("addContact", AddContactMode.Channel);
+      this.$emit("addContact", SidebarAddContactMode.Channel);
     },
 
     onGroupsToggle(visible: boolean): void {
