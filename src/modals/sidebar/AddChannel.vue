@@ -27,6 +27,7 @@ base-modal(
     form-field(
       v-model="jid"
       @submit="onConfirm"
+      :suggestions="suggestions"
       placeholder="Enter channel name (or address)…"
       type="email"
       name="address"
@@ -56,6 +57,9 @@ base-modal(
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 
+// PROJECT: COMPOSABLES
+import { useChannelSuggestor } from "@/composables/channel";
+
 // INTERFACES
 export interface EventAddOptions {
   private: boolean;
@@ -73,11 +77,19 @@ export default {
 
   emits: ["close", "add"],
 
+  setup() {
+    const { query, suggestions } = useChannelSuggestor();
+
+    return {
+      jid: query,
+      suggestions
+    };
+  },
+
   data() {
     return {
       // --> STATE <--
 
-      jid: "",
       private: false
     };
   },
