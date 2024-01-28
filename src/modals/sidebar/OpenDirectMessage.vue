@@ -189,7 +189,7 @@ export default {
           profile = (await Broker.$profile.loadUserProfile(jid)) || null;
         } catch (error) {
           logger.error(
-            `Could not load profile when adding contact: ${jid}`,
+            `Could not load profile when opening direct message: '${jid}'`,
             error
           );
 
@@ -258,7 +258,7 @@ export default {
       if (jidUnsafeString === null) {
         BaseAlert.warning("Address required", "Please enter an address");
       } else {
-        this.$emit("open", jidUnsafeString);
+        this.$emit("open", jidUnsafeString.toLowerCase());
       }
     }
   }
