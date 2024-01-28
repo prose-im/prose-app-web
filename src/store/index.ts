@@ -17,6 +17,7 @@ import { createPersistedState } from "pinia-plugin-persistedstate";
 import $account from "@/store/tables/account";
 import $activity from "@/store/tables/activity";
 import $avatar from "@/store/tables/avatar";
+import $channel from "@/store/tables/channel";
 import $history from "@/store/tables/history";
 import $inbox from "@/store/tables/inbox";
 import $layout from "@/store/tables/layout";
@@ -53,6 +54,7 @@ class Store {
   $layout!: ReturnType<typeof $layout>;
   $account!: ReturnType<typeof $account>;
   $avatar!: ReturnType<typeof $avatar>;
+  $channel!: ReturnType<typeof $channel>;
   $profile!: ReturnType<typeof $profile>;
   $inbox!: ReturnType<typeof $inbox>;
   $roster!: ReturnType<typeof $roster>;
@@ -112,6 +114,7 @@ class Store {
     this.$layout = $layout(this.__store);
     this.$account = $account(this.__store);
     this.$avatar = $avatar(this.__store);
+    this.$channel = $channel(this.__store);
     this.$profile = $profile(this.__store);
     this.$inbox = $inbox(this.__store);
     this.$roster = $roster(this.__store);
