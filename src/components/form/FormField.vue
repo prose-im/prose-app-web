@@ -459,6 +459,7 @@ $c: ".c-form-field";
     position: absolute;
     inset-block-start: calc(100% + 5px);
     inset-inline: 0;
+    z-index: 1;
   }
 
   // --> TYPES <--

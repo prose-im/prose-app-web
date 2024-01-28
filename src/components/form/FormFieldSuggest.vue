@@ -40,7 +40,9 @@ ul(
       span.c-form-field-suggest__link-label.u-ellipsis.u-medium
         | {{ suggestion.label }}
 
-      span.c-form-field-suggest__link-value.u-ellipsis
+      span.c-form-field-suggest__link-value.u-ellipsis(
+        v-if="suggestion.value !== suggestion.label"
+      )
         | {{ suggestion.value }}
 </template>
 
@@ -275,6 +277,10 @@ $suggest-sizes: (
 
       #{$c}__link-icon {
         margin-inline-end: 8px;
+
+        &:is(svg) {
+          fill: rgb(var(--color-base-blue-dark));
+        }
       }
 
       #{$c}__link-label {
@@ -299,6 +305,12 @@ $suggest-sizes: (
         #{$c}__link-label,
         #{$c}__link-value {
           color: rgb(var(--color-text-reverse));
+        }
+
+        #{$c}__link-icon {
+          &:is(svg) {
+            fill: rgb(var(--color-white));
+          }
         }
       }
     }
