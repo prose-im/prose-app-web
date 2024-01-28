@@ -29,7 +29,6 @@ list-disclosure(
     :color="action.color"
     :disabled="action.disabled"
     size="small"
-    color="lighter"
     emphasis
   )
     template(
