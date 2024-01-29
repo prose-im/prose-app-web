@@ -73,7 +73,7 @@ class BrokerClient {
       Store.$session.connected === true ||
       Store.$session.connecting === true
     ) {
-      throw new Error("Another connection already exist");
+      throw new Error("Another connection already exists");
     }
 
     // Store credentials
