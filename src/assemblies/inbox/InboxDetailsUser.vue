@@ -80,6 +80,7 @@ layout-sidebar-details(
       v-if="modals.removeContact.visible"
       @proceed="onModalRemoveContactProceed"
       @close="onModalRemoveContactClose"
+      :loading="modals.removeContact.loading"
     )
 
     block-user(
@@ -191,7 +192,8 @@ export default {
         },
 
         removeContact: {
-          visible: false
+          visible: false,
+          loading: false
         },
 
         blockUser: {
@@ -447,10 +449,28 @@ export default {
       this.modals.addContact.visible = false;
     },
 
-    onModalRemoveContactProceed(): void {
-      // TODO: proceed
+    async onModalRemoveContactProceed(): Promise<void> {
+      try {
+        this.modals.removeContact.loading = true;
 
-      this.modals.removeContact.visible = false;
+        // Remove contact
+        await Broker.$roster.removeContact(this.jid);
+
+        // Show success alert
+        BaseAlert.info("Contact removed", "This contact has been removed");
+
+        this.modals.removeContact.visible = false;
+      } catch (error) {
+        this.$log.error("Failed removing contact", error);
+
+        // Show error alert
+        BaseAlert.error(
+          "Cannot remove contact",
+          "This contact could not be removed. Try again?"
+        );
+      } finally {
+        this.modals.removeContact.loading = false;
+      }
     },
 
     onModalRemoveContactClose(): void {

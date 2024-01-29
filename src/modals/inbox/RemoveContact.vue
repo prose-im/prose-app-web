@@ -12,9 +12,9 @@
 base-modal(
   @close="$emit('close')"
   @confirm="$emit('proceed')"
+  :confirm-loading="loading"
   confirm-label="Remove Contact"
   class="m-remove-contact"
-  confirm-disabled
   destructive
 )
   p.u-regular
@@ -31,6 +31,13 @@ base-modal(
 <script lang="ts">
 export default {
   name: "RemoveContact",
+
+  props: {
+    loading: {
+      type: Boolean,
+      default: false
+    }
+  },
 
   emits: ["close", "proceed"]
 };
