@@ -9,7 +9,13 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, ProseClient, ProseClientConfig } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  ProseClient,
+  ProseClientConfig,
+  ProseConnectionError,
+  ProseConnectionErrorType
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -167,7 +173,26 @@ class BrokerClient {
     try {
       await client.connect(jid, password);
     } catch (error) {
-      logger.error("Something went wrong", error);
+      Store.$session.setConnected(false);
+      Store.$session.setConnecting(false);
+
+      if (error instanceof ProseConnectionError) {
+        switch (error.type) {
+          case ProseConnectionErrorType.TimedOut:
+            logger.error("Time Out!");
+            break;
+          case ProseConnectionErrorType.InvalidCredentials:
+            logger.error("Invalid Credentials!");
+            break;
+          case ProseConnectionErrorType.Generic:
+            logger.error("Something else!");
+            break;
+        }
+
+        throw error.message;
+      } else {
+        throw error;
+      }
     }
   }
 

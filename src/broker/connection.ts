@@ -9,13 +9,14 @@
  * ************************************************************************* */
 
 // NPM
-import { Strophe } from "strophe.js";
 import {
-  ProseConnection,
-  ProseConnectionProvider,
   ProseClientConfig,
-  ProseConnectionEventHandler
+  ProseConnection,
+  ProseConnectionErrorType,
+  ProseConnectionEventHandler,
+  ProseConnectionProvider
 } from "@prose-im/prose-sdk-js";
+import { Strophe } from "strophe.js";
 
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
@@ -96,7 +97,7 @@ class BrokerConnectionStrophe implements ProseConnection {
           // [AUTHFAIL] The authentication attempt failed
           case Strophe.Status.AUTHFAIL: {
             logger.error("Authentication failure");
-
+            reject(ProseConnectionErrorType.InvalidCredentials);
             break;
           }
 
@@ -104,7 +105,7 @@ class BrokerConnectionStrophe implements ProseConnection {
           case Strophe.Status.CONNFAIL: {
             logger.error("Connection failure");
 
-            reject(new Error("Something went wrong"));
+            reject(ProseConnectionErrorType.Generic);
 
             break;
           }
@@ -112,14 +113,14 @@ class BrokerConnectionStrophe implements ProseConnection {
           // [CONNTIMEOUT] The connection has timed out
           case Strophe.Status.CONNTIMEOUT: {
             logger.error("Connection timed out");
-
+            reject(ProseConnectionErrorType.TimedOut);
             break;
           }
 
           // [ERROR] An error has occurred
           case Strophe.Status.ERROR: {
             logger.error("Connection error");
-
+            reject(ProseConnectionErrorType.Generic);
             break;
           }
 
