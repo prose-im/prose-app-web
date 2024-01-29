@@ -33,11 +33,20 @@ class BrokerModuleRoster extends BrokerModule {
 
   async addContact(jid: JID): Promise<void> {
     // XMPP: Instant Messaging and Presence
-    // https://xmpp.org/rfcs/rfc6121.html#roster-syntax-actions-set
+    // https://xmpp.org/rfcs/rfc6121.html#roster-add
 
     logger.info(`Will add contact to roster: '${jid}'`);
 
     await this._client.client?.addContact(jid);
+  }
+
+  async removeContact(jid: JID): Promise<void> {
+    // XMPP: Instant Messaging and Presence
+    // https://xmpp.org/rfcs/rfc6121.html#roster-delete
+
+    logger.info(`Will remove contact from roster: '${jid}'`);
+
+    await this._client.client?.removeContact(jid);
   }
 }
 
