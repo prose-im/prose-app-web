@@ -390,7 +390,7 @@ export default {
     },
 
     onSuggestSelect(suggestion: FormFieldSuggestSuggestion): void {
-      this.areSuggestionsHidden = true;
+      this.clearAllSuggestions();
 
       // Update model value
       this.updateModelValue(suggestion.value);
