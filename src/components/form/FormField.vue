@@ -15,6 +15,7 @@ div(
     "c-form-field--" + type,
     "c-form-field--" + size,
     "c-form-field--" + align,
+    "c-form-field--" + direction,
     {
       "c-form-field--focused": isFocused,
       "c-form-field--disabled": disabled,
@@ -141,6 +142,15 @@ export default {
 
       validator(x: string) {
         return ["left", "center", "right"].includes(x);
+      }
+    },
+
+    direction: {
+      type: String,
+      default: "bottom",
+
+      validator(x: string): boolean {
+        return ["top", "bottom"].includes(x);
       }
     },
 
@@ -457,7 +467,6 @@ $c: ".c-form-field";
   #{$c}__suggest {
     max-height: 160px;
     position: absolute;
-    inset-block-start: calc(100% + 5px);
     inset-inline: 0;
     z-index: 1;
   }
@@ -576,6 +585,24 @@ $c: ".c-form-field";
   &--right {
     #{$c}__inner {
       text-align: right;
+    }
+  }
+
+  // --> DIRECTIONS <--
+
+  &--top {
+    #{$c}__suggest {
+      inset-block-end: calc(
+        100% + #{$size-form-field-suggest-block-origin-offset}
+      );
+    }
+  }
+
+  &--bottom {
+    #{$c}__suggest {
+      inset-block-start: calc(
+        100% + #{$size-form-field-suggest-block-origin-offset}
+      );
     }
   }
 
