@@ -201,7 +201,7 @@ import logger from "@/utilities/logger";
 const MESSAGE_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
 
 // CONSTANTS
-const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
+const CHATSTATE_COMPOSE_INACTIVE_DELAY = 10000; // 10 seconds
 const DRAFT_AUTOSAVE_DEBOUNCE = 4000; // 4 seconds
 
 export default {
