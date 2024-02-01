@@ -61,8 +61,11 @@ function useChannelSuggestor(): {
         return {
           label: part.entry.name,
           value: part.entry.name,
-          match: value,
-          replacement: part.entry.name,
+
+          action: {
+            match: value,
+            replacement: part.entry.name
+          },
 
           icon: {
             component: BaseIcon,

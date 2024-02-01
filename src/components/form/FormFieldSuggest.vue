@@ -55,8 +55,11 @@ ul(
 export interface Suggestion {
   label: string;
   value: string;
-  match: string;
-  replacement: string;
+
+  action: {
+    match: string;
+    replacement: string;
+  };
 
   icon?: {
     component: object;

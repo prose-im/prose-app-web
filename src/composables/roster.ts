@@ -78,8 +78,11 @@ function useRosterSuggestor(): {
         return {
           label: part.entry.name,
           value: part.entry.jid,
-          match: value,
-          replacement: part.entry.jid,
+
+          action: {
+            match: value,
+            replacement: part.entry.jid
+          },
 
           icon: {
             component: BaseAvatar,

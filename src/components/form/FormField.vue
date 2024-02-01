@@ -314,18 +314,18 @@ export default {
       // Append suggestion value
       const modelValueString = this.modelValue as string,
         modelValueLower = modelValueString.toLowerCase(),
-        matchLower = suggestion.match.toLowerCase();
+        matchLower = suggestion.action.match.toLowerCase();
 
       // Acquire intersection size
       const intersectSize =
         modelValueLower.endsWith(matchLower) === true
-          ? suggestion.match.length
+          ? suggestion.action.match.length
           : 0;
 
       // Merge suggestion value with existing model value (intersect them)
       return (
         modelValueString.substring(0, modelValueString.length - intersectSize) +
-        suggestion.replacement
+        suggestion.action.replacement
       );
     },
 

@@ -421,8 +421,11 @@ export default {
           suggestions.push({
             label: participant.name,
             value: participant.jid.toString(),
-            match: query,
-            replacement: `${participant.name} `,
+
+            action: {
+              match: query,
+              replacement: `${participant.name} `
+            },
 
             icon: {
               component: BaseAvatar,
