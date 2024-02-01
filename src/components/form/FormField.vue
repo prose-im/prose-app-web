@@ -92,8 +92,7 @@ import { codes as keyCodes } from "keycode";
 // PROJECT: COMPONENTS
 import {
   default as FormFieldSuggest,
-  Suggestion as FormFieldSuggestSuggestion,
-  SuggestionAction as FormFieldSuggestSuggestionAction
+  Suggestion as FormFieldSuggestSuggestion
 } from "@/components/form/FormFieldSuggest.vue";
 
 export default {
@@ -312,46 +311,22 @@ export default {
     generateSuggestionModelValue(
       suggestion: FormFieldSuggestSuggestion
     ): string {
-      // Acquire selected value (prefer inner value, if set)
-      // Notice: some suggestions might prefer to insert a hidden inner value \
-      //   on select, rather than using the value that is shown to the user.
-      const selectedValue = suggestion.innerValue || suggestion.value;
+      // Append suggestion value
+      const modelValueString = this.modelValue as string,
+        modelValueLower = modelValueString.toLowerCase(),
+        matchLower = suggestion.match.toLowerCase();
 
-      // Generate new model value (based on selected suggestion action)
-      let updatedModelValue;
+      // Acquire intersection size
+      const intersectSize =
+        modelValueLower.endsWith(matchLower) === true
+          ? suggestion.match.length
+          : 0;
 
-      switch (suggestion.action) {
-        case FormFieldSuggestSuggestionAction.Replace: {
-          // Replace with suggestion value
-          updatedModelValue = selectedValue;
-
-          break;
-        }
-
-        case FormFieldSuggestSuggestionAction.Append: {
-          // Append suggestion value
-          const modelValueString = this.modelValue as string,
-            modelValueLower = modelValueString.toLowerCase(),
-            matchLower = suggestion.match.toLowerCase();
-
-          // Acquire intersection size
-          const intersectSize =
-            modelValueLower.endsWith(matchLower) === true
-              ? suggestion.match.length
-              : 0;
-
-          // Merge suggestion value with existing model value (intersect them)
-          updatedModelValue =
-            modelValueString.substring(
-              0,
-              modelValueString.length - intersectSize
-            ) + selectedValue;
-
-          break;
-        }
-      }
-
-      return updatedModelValue;
+      // Merge suggestion value with existing model value (intersect them)
+      return (
+        modelValueString.substring(0, modelValueString.length - intersectSize) +
+        suggestion.replacement
+      );
     },
 
     // --> EVENT LISTENERS <--

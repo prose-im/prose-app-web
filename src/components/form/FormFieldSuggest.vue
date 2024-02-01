@@ -51,21 +51,12 @@ ul(
      ********************************************************************** -->
 
 <script lang="ts">
-// ENUMERATIONS
-export enum SuggestionAction {
-  // Replace action.
-  Replace = "replace",
-  // Append action.
-  Append = "append"
-}
-
 // INTERFACES
 export interface Suggestion {
-  action: SuggestionAction;
-  match: string;
   label: string;
   value: string;
-  innerValue?: string;
+  match: string;
+  replacement: string;
 
   icon?: {
     component: object;

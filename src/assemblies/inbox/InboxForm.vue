@@ -175,10 +175,7 @@ import { JID, Room, RoomType, ParticipantInfo } from "@prose-im/prose-sdk-js";
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import BaseAvatar from "@/components/base/BaseAvatar.vue";
 import FormField from "@/components/form/FormField.vue";
-import {
-  Suggestion as FormFieldSuggestSuggestion,
-  SuggestionAction as FormFieldSuggestSuggestionAction
-} from "@/components/form/FormFieldSuggest.vue";
+import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/FormFieldSuggest.vue";
 import {
   default as InboxFormFormatting,
   FormattingAction
@@ -422,11 +419,10 @@ export default {
           //   value, so that the suggestion list does not pop in again \
           //   after this suggestion is picked by the user.
           suggestions.push({
-            match: query,
             label: participant.name,
             value: participant.jid.toString(),
-            innerValue: `${participant.name} `,
-            action: FormFieldSuggestSuggestionAction.Append,
+            match: query,
+            replacement: `${participant.name} `,
 
             icon: {
               component: BaseAvatar,
