@@ -17,6 +17,9 @@ base-modal(
   class="m-close-user"
   destructive
 )
+  p.u-regular
+    | This chat will be closed, but you can still open it again later. Your message history will be preserved.
+
   p.u-medium
     | Are you sure you want to close the chat with user?
 </template>
