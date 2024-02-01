@@ -390,7 +390,7 @@ export default {
 
     async attemptDraftRestore(room?: Room): Promise<void> {
       // Clear message field value
-      this.message = "";
+      this.clearMessageField();
 
       // Load draft
       const draft = await (room || this.room)?.loadDraft();
@@ -399,6 +399,12 @@ export default {
       if (draft) {
         this.message = draft;
       }
+    },
+
+    clearMessageField(): void {
+      // Clear message field (and its mention query)
+      this.message = "";
+      this.mentionQuery = null;
     },
 
     appendSuggestionParticipant(
@@ -595,9 +601,8 @@ export default {
           await this.room?.sendMessage(message);
         }
 
-        // Clear message field (and its mention query)
-        this.message = "";
-        this.mentionQuery = null;
+        // Clear message field value
+        this.clearMessageField();
 
         // Fire draft auto-save (to new empty message)
         this.fireDraftAutoSave(true);
