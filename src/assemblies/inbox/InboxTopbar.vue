@@ -282,7 +282,7 @@ export default {
         };
       }
 
-      // Identity unknown
+      // Identity unverified
       return {
         status: "unknown",
         icon: "xmark.seal.fill"

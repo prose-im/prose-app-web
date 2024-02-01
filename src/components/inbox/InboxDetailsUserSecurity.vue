@@ -154,7 +154,7 @@ export default {
           entries.push({
             id: "identity",
             kind: "unknown",
-            title: "Identity unknown",
+            title: "Identity unverified",
             icon: "xmark.seal.fill"
           });
         }
