@@ -1,3 +1,4 @@
+'
 <!--
  * This file is part of prose-app-web
  *
@@ -76,6 +77,7 @@ layout-toolbar(
           v-model="message"
           @keystroke="onKeystroke"
           @submit="onSubmit"
+          :suggestions="fieldSuggestions"
           :disabled="isFormDisabled"
           :rows="1"
           :placeholder="fieldComposePlaceholder"
@@ -84,6 +86,7 @@ layout-toolbar(
           name="message"
           size="large"
           align="left"
+          direction="top"
           ref="message"
           submittable
           autogrow
@@ -166,11 +169,16 @@ layout-toolbar(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID, Room, RoomType } from "@prose-im/prose-sdk-js";
+import { JID, Room, RoomType, ParticipantInfo } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
+import BaseAvatar from "@/components/base/BaseAvatar.vue";
 import FormField from "@/components/form/FormField.vue";
+import {
+  Suggestion as FormFieldSuggestSuggestion,
+  SuggestionAction as FormFieldSuggestSuggestionAction
+} from "@/components/form/FormFieldSuggest.vue";
 import {
   default as InboxFormFormatting,
   FormattingAction
@@ -188,6 +196,9 @@ import Store from "@/store";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+
+// INSTANCES
+const MESSAGE_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 5000; // 5 seconds
@@ -220,6 +231,8 @@ export default {
       // --> STATE <--
 
       message: "",
+
+      mentionQuery: null as string | null,
 
       isActionFormattingPopoverVisible: false,
       isActionRecordRecorderVisible: false,
@@ -257,6 +270,25 @@ export default {
       }
 
       return "Send a message";
+    },
+
+    fieldSuggestions(): Array<FormFieldSuggestSuggestion> {
+      const suggestions: Array<FormFieldSuggestSuggestion> = [];
+
+      if (this.mentionQuery !== null) {
+        const mentionQuery = this.mentionQuery;
+
+        // Append matches from room participants
+        this.room?.participants.forEach(participant => {
+          this.appendSuggestionParticipant(
+            suggestions,
+            participant,
+            mentionQuery
+          );
+        });
+      }
+
+      return suggestions;
     },
 
     isFormDisabled(): boolean {
@@ -369,6 +401,41 @@ export default {
       }
     },
 
+    appendSuggestionParticipant(
+      suggestions: Array<FormFieldSuggestSuggestion>,
+      participant: ParticipantInfo,
+      query: string
+    ): void {
+      if (participant.jid) {
+        const participantName = participant.name.toLowerCase();
+
+        // Participant name matches mention query?
+        if (!query || participantName.startsWith(query) === true) {
+          // Insert suggestion
+          // Important: insert a space after participant name in inner \
+          //   value, so that the suggestion list does not pop in again \
+          //   after this suggestion is picked by the user.
+          suggestions.push({
+            match: query,
+            label: participant.name,
+            value: participant.jid.toString(),
+            innerValue: `${participant.name} `,
+            action: FormFieldSuggestSuggestionAction.Append,
+
+            icon: {
+              component: BaseAvatar,
+
+              properties: {
+                jid: participant.jid,
+                size: "18px",
+                shadow: "none"
+              }
+            }
+          });
+        }
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onActionFormattingClick(): void {
@@ -474,6 +541,23 @@ export default {
       } else {
         this.fireDraftAutoSave();
       }
+
+      // Look for mentions to suggest?
+      // Notice: only check using the heavier regex if there is at least one \
+      //   '@' character found, using a more efficient 'includes()' lookup. \
+      //   Also, if the regex returns an empty match, we still consider it as \
+      //   an active mention query, since the user might just have entered a \
+      //   single '@' to list all users that can be mentioned.
+      let matchedMentionQuery = undefined;
+
+      if (value && value.includes("@") === true) {
+        matchedMentionQuery = value.match(MESSAGE_MENTION_REGEX)?.[1];
+      }
+
+      this.mentionQuery =
+        matchedMentionQuery !== undefined
+          ? matchedMentionQuery.toLowerCase()
+          : null;
     },
 
     async onSubmit(): Promise<void> {
@@ -511,8 +595,9 @@ export default {
           await this.room?.sendMessage(message);
         }
 
-        // Clear message field
+        // Clear message field (and its mention query)
         this.message = "";
+        this.mentionQuery = null;
 
         // Fire draft auto-save (to new empty message)
         this.fireDraftAutoSave(true);
