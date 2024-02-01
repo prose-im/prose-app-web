@@ -13,7 +13,10 @@ import { Ref, ComputedRef, ref, computed } from "vue";
 import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
-import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/FormFieldSuggest.vue";
+import {
+  Suggestion as FormFieldSuggestSuggestion,
+  SuggestionAction as FormFieldSuggestSuggestionAction
+} from "@/components/form/FormFieldSuggest.vue";
 import BaseAvatar from "@/components/base/BaseAvatar.vue";
 
 // PROJECT: STORES
@@ -76,6 +79,8 @@ function useRosterSuggestor(): {
       })
       .map((part: RosterSuggestorPart) => {
         return {
+          action: FormFieldSuggestSuggestionAction.Replace,
+          match: value,
           label: part.entry.name,
           value: part.entry.jid,
 
