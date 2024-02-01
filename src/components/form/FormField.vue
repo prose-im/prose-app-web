@@ -92,7 +92,8 @@ import { codes as keyCodes } from "keycode";
 // PROJECT: COMPONENTS
 import {
   default as FormFieldSuggest,
-  Suggestion as FormFieldSuggestSuggestion
+  Suggestion as FormFieldSuggestSuggestion,
+  SuggestionAction as FormFieldSuggestSuggestionAction
 } from "@/components/form/FormFieldSuggest.vue";
 
 export default {
@@ -308,6 +309,51 @@ export default {
       this.areSuggestionsHidden = true;
     },
 
+    generateSuggestionModelValue(
+      suggestion: FormFieldSuggestSuggestion
+    ): string {
+      // Acquire selected value (prefer inner value, if set)
+      // Notice: some suggestions might prefer to insert a hidden inner value \
+      //   on select, rather than using the value that is shown to the user.
+      const selectedValue = suggestion.innerValue || suggestion.value;
+
+      // Generate new model value (based on selected suggestion action)
+      let updatedModelValue;
+
+      switch (suggestion.action) {
+        case FormFieldSuggestSuggestionAction.Replace: {
+          // Replace with suggestion value
+          updatedModelValue = selectedValue;
+
+          break;
+        }
+
+        case FormFieldSuggestSuggestionAction.Append: {
+          // Append suggestion value
+          const modelValueString = this.modelValue as string,
+            modelValueLower = modelValueString.toLowerCase(),
+            matchLower = suggestion.match.toLowerCase();
+
+          // Acquire intersection size
+          const intersectSize =
+            modelValueLower.endsWith(matchLower) === true
+              ? suggestion.match.length
+              : 0;
+
+          // Merge suggestion value with existing model value (intersect them)
+          updatedModelValue =
+            modelValueString.substring(
+              0,
+              modelValueString.length - intersectSize
+            ) + selectedValue;
+
+          break;
+        }
+      }
+
+      return updatedModelValue;
+    },
+
     // --> EVENT LISTENERS <--
 
     onFieldKeyDown(event: KeyboardEvent): void {
@@ -392,8 +438,11 @@ export default {
     onSuggestSelect(suggestion: FormFieldSuggestSuggestion): void {
       this.clearAllSuggestions();
 
+      // Generate model value for selected suggestion
+      let updatedModelValue = this.generateSuggestionModelValue(suggestion);
+
       // Update model value
-      this.updateModelValue(suggestion.value);
+      this.updateModelValue(updatedModelValue);
     }
   }
 };
