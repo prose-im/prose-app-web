@@ -70,10 +70,7 @@ class BrokerDelegate implements ProseClientDelegate {
   async sidebarChanged(): Promise<void> {
     logger.info("Sidebar changed");
 
-    // Force reload all rooms
     Store.$room.markRoomsChanged();
-
-    await Store.$room.load(true);
   }
 
   roomAttributesChanged(_client: ProseClient, room: Room): void {
@@ -90,8 +87,20 @@ class BrokerDelegate implements ProseClientDelegate {
 
   contactChanged(_client: ProseClient, jid: JID): void {
     logger.info(`Contact changed: ${jid}`);
+  }
 
-    Store.$roster.markContactChanged(jid);
+  contactListChanged(): void {
+    logger.info("Contact list changed");
+
+    Store.$roster.markContactsChanged();
+  }
+
+  blockListChanged(): void {
+    logger.info("Block list changed");
+  }
+
+  presenceSubscriptionRequestsChanged(): void {
+    logger.info("Presence subscription requests changed");
   }
 
   avatarChanged(_client: ProseClient, jid: JID): void {

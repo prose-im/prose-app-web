@@ -140,8 +140,11 @@ export default {
       selectedJID: null as JID | null,
       selectedRoomID: null as string | null,
 
-      isRosterSyncStale: true,
-      isChannelsSyncStale: true
+      syncStaleness: {
+        rooms: true,
+        roster: true,
+        channels: true
+      } as { [entry: string]: boolean }
     };
   },
 
@@ -208,7 +211,7 @@ export default {
 
     // Bind roster event handlers
     useEvents(Store.$roster, {
-      "contact:changed": this.onContactChanged
+      "contacts:changed": this.onContactsChanged
     });
 
     // Synchronize eagerly
@@ -220,37 +223,61 @@ export default {
 
     async syncAllEager(forceReload = false): Promise<void> {
       await Promise.all([
+        this.syncRoomsEager(forceReload),
         this.syncRosterEager(forceReload),
         this.syncChannelsEager(forceReload)
       ]);
     },
 
-    async syncRosterEager(forceReload = false): Promise<void> {
+    async syncGenericEager(
+      entry: string,
+      forceReload: boolean,
+      fnLoad: (forceReload: boolean) => Promise<void>
+    ): Promise<void> {
       // Can synchronize now? (connected)
       if (
-        this.isRosterSyncStale === true &&
+        this.syncStaleness[entry] === true &&
         Store.$session.connected === true
       ) {
         // Mark synchronization as non-stale
-        this.isRosterSyncStale = false;
+        this.syncStaleness[entry] = false;
 
-        // Load roster
-        await Store.$roster.load(forceReload);
+        // Load entries
+        await fnLoad(forceReload);
       }
     },
 
-    async syncChannelsEager(forceReload = false): Promise<void> {
-      // Can synchronize now? (connected)
-      if (
-        this.isChannelsSyncStale === true &&
-        Store.$session.connected === true
-      ) {
-        // Mark synchronization as non-stale
-        this.isChannelsSyncStale = false;
+    async syncRoomsEager(forceReload = false): Promise<void> {
+      await this.syncGenericEager(
+        "rooms",
+        forceReload,
 
-        // Load channels
-        await Store.$channel.load(forceReload);
-      }
+        async () => {
+          await Store.$room.load(forceReload);
+        }
+      );
+    },
+
+    async syncRosterEager(forceReload = false): Promise<void> {
+      await this.syncGenericEager(
+        "roster",
+        forceReload,
+
+        async () => {
+          await Store.$roster.load(forceReload);
+        }
+      );
+    },
+
+    async syncChannelsEager(forceReload = false): Promise<void> {
+      await this.syncGenericEager(
+        "channels",
+        forceReload,
+
+        async () => {
+          await Store.$channel.load(forceReload);
+        }
+      );
     },
 
     // --> EVENT LISTENERS <--
@@ -296,29 +323,29 @@ export default {
         //   and not so useful. Browsing channels in the dedicated section \
         //   would forcibly reload them all everytime, which is good enough \
         //   to catch up with newly-created channels on apps with large uptimes.
-        this.isRosterSyncStale = true;
+        this.syncStaleness.roster = true;
       }
     },
 
     onRoomsChanged(): void {
-      // Mark roster as state (should reload)
-      this.isRosterSyncStale = true;
+      // Mark rooms as state (should reload)
+      this.syncStaleness.rooms = true;
 
-      // Forcibly reload roster
-      this.syncRosterEager(true);
+      // Forcibly reload rooms
+      this.syncRoomsEager(true);
     },
 
     onChannelsChanged(): void {
       // Mark channels as state (should reload)
-      this.isChannelsSyncStale = true;
+      this.syncStaleness.channels = true;
 
       // Forcibly reload channels
       this.syncChannelsEager(true);
     },
 
-    onContactChanged(): void {
+    onContactsChanged(): void {
       // Mark roster as state (should reload)
-      this.isRosterSyncStale = true;
+      this.syncStaleness.roster = true;
 
       // Forcibly reload roster
       this.syncRosterEager(true);

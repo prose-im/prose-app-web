@@ -160,8 +160,8 @@ const $roster = defineStore("roster", {
       return EventBus;
     },
 
-    markContactChanged(jid: JID) {
-      EventBus.emit("contact:changed", jid);
+    markContactsChanged() {
+      EventBus.emit("contacts:changed");
     }
   }
 });
