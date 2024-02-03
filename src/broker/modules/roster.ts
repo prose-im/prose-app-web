@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, Contact } from "@prose-im/prose-sdk-js";
+import { JID, Contact, UserBasicInfo } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -47,6 +47,33 @@ class BrokerModuleRoster extends BrokerModule {
     logger.info(`Will remove contact from roster: '${jid}'`);
 
     await this._client.client?.removeContact(jid);
+  }
+
+  async loadBlockList(): Promise<UserBasicInfo[]> {
+    // XEP-0191: Blocking Command
+    // https://xmpp.org/extensions/xep-0191.html
+
+    logger.info("Will load block list (or reload)");
+
+    return (await this._client.client?.loadBlockList()) || [];
+  }
+
+  async blockUser(jid: JID): Promise<void> {
+    // XEP-0191: Blocking Command
+    // https://xmpp.org/extensions/xep-0191.html
+
+    logger.info(`Will block user: '${jid}'`);
+
+    await this._client.client?.blockUser(jid);
+  }
+
+  async unblockUser(jid: JID): Promise<void> {
+    // XEP-0191: Blocking Command
+    // https://xmpp.org/extensions/xep-0191.html
+
+    logger.info(`Will unblock user: '${jid}'`);
+
+    await this._client.client?.unblockUser(jid);
   }
 }
 
