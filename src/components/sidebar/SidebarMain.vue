@@ -142,8 +142,9 @@ export default {
 
       syncStaleness: {
         rooms: true,
-        roster: true,
-        channels: true
+        channels: true,
+        contacts: true,
+        blockList: true
       } as { [entry: string]: boolean }
     };
   },
@@ -211,7 +212,8 @@ export default {
 
     // Bind roster event handlers
     useEvents(Store.$roster, {
-      "contacts:changed": this.onContactsChanged
+      "contacts:changed": this.onContactsChanged,
+      "blocklist:changed": this.onBlockListChanged
     });
 
     // Synchronize eagerly
@@ -221,18 +223,63 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    async syncAllEager(forceReload = false): Promise<void> {
+    async syncAllEager(expunge = false): Promise<void> {
       await Promise.all([
-        this.syncRoomsEager(forceReload),
-        this.syncRosterEager(forceReload),
-        this.syncChannelsEager(forceReload)
+        this.syncRoomsEager(expunge),
+        this.syncContactsEager(expunge),
+        this.syncBlockListEager(expunge),
+        this.syncChannelsEager(expunge)
       ]);
+    },
+
+    async syncRoomsEager(expunge = false): Promise<void> {
+      await this.syncGenericEager(
+        "rooms",
+        expunge,
+
+        async () => {
+          await Store.$room.load(expunge);
+        }
+      );
+    },
+
+    async syncContactsEager(expunge = false): Promise<void> {
+      await this.syncGenericEager(
+        "contacts",
+        expunge,
+
+        async () => {
+          await Store.$roster.loadContacts(expunge);
+        }
+      );
+    },
+
+    async syncBlockListEager(expunge = false): Promise<void> {
+      await this.syncGenericEager(
+        "blockList",
+        expunge,
+
+        async () => {
+          await Store.$roster.loadBlockList(expunge);
+        }
+      );
+    },
+
+    async syncChannelsEager(expunge = false): Promise<void> {
+      await this.syncGenericEager(
+        "channels",
+        expunge,
+
+        async () => {
+          await Store.$channel.load(expunge);
+        }
+      );
     },
 
     async syncGenericEager(
       entry: string,
-      forceReload: boolean,
-      fnLoad: (forceReload: boolean) => Promise<void>
+      expunge: boolean,
+      fnLoad: (expunge: boolean) => Promise<void>
     ): Promise<void> {
       // Can synchronize now? (connected)
       if (
@@ -243,41 +290,8 @@ export default {
         this.syncStaleness[entry] = false;
 
         // Load entries
-        await fnLoad(forceReload);
+        await fnLoad(expunge);
       }
-    },
-
-    async syncRoomsEager(forceReload = false): Promise<void> {
-      await this.syncGenericEager(
-        "rooms",
-        forceReload,
-
-        async () => {
-          await Store.$room.load(forceReload);
-        }
-      );
-    },
-
-    async syncRosterEager(forceReload = false): Promise<void> {
-      await this.syncGenericEager(
-        "roster",
-        forceReload,
-
-        async () => {
-          await Store.$roster.load(forceReload);
-        }
-      );
-    },
-
-    async syncChannelsEager(forceReload = false): Promise<void> {
-      await this.syncGenericEager(
-        "channels",
-        forceReload,
-
-        async () => {
-          await Store.$channel.load(forceReload);
-        }
-      );
     },
 
     // --> EVENT LISTENERS <--
@@ -323,12 +337,14 @@ export default {
         //   and not so useful. Browsing channels in the dedicated section \
         //   would forcibly reload them all everytime, which is good enough \
         //   to catch up with newly-created channels on apps with large uptimes.
-        this.syncStaleness.roster = true;
+        this.syncStaleness.rooms = true;
+        this.syncStaleness.contacts = true;
+        this.syncStaleness.blockList = true;
       }
     },
 
     onRoomsChanged(): void {
-      // Mark rooms as state (should reload)
+      // Mark rooms as stale (should reload)
       this.syncStaleness.rooms = true;
 
       // Forcibly reload rooms
@@ -336,7 +352,7 @@ export default {
     },
 
     onChannelsChanged(): void {
-      // Mark channels as state (should reload)
+      // Mark channels as stale (should reload)
       this.syncStaleness.channels = true;
 
       // Forcibly reload channels
@@ -344,11 +360,19 @@ export default {
     },
 
     onContactsChanged(): void {
-      // Mark roster as state (should reload)
-      this.syncStaleness.roster = true;
+      // Mark contacts as stale (should reload)
+      this.syncStaleness.contacts = true;
 
-      // Forcibly reload roster
-      this.syncRosterEager(true);
+      // Forcibly reload contacts
+      this.syncContactsEager(true);
+    },
+
+    onBlockListChanged(): void {
+      // Mark block list as stale (should reload)
+      this.syncStaleness.blockList = true;
+
+      // Forcibly reload block list
+      this.syncBlockListEager(true);
     }
   }
 };

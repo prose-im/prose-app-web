@@ -112,6 +112,7 @@ import { useEvents } from "@/composables/events";
 
 // PROJECT: STORES
 import Store from "@/store";
+import { RosterBlockListStatus } from "@/store/tables/roster";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -252,7 +253,7 @@ export default {
 
       // Non-local user? Add ability to remove contact or block
       if (this.jid.domain !== this.selfJID.domain) {
-        if (!this.rosterEntry) {
+        if (!this.rosterContactsEntry) {
           actions.push({
             id: "add",
             title: "Add to contacts",
@@ -268,22 +269,24 @@ export default {
           });
         }
 
-        // TODO: check if blocked or not (from store)
-        if (true) {
+        if (this.rosterBlockListStatus === RosterBlockListStatus.Unblocked) {
           actions.push({
             id: "block",
             title: "Block user",
             click: this.onActionBlockUserClick,
             color: "red"
           });
-        } else {
-          actions.push({
-            id: "unblock",
-            title: "Unblock user",
-            click: this.onActionUnblockUserClick,
-            color: "green"
-          });
         }
+      }
+
+      // Blocked? Add ability to unblock (no matter if local or remote user)
+      if (this.rosterBlockListStatus === RosterBlockListStatus.Blocked) {
+        actions.push({
+          id: "unblock",
+          title: "Unblock user",
+          click: this.onActionUnblockUserClick,
+          color: "green"
+        });
       }
 
       // Non-favorited? Add ability to close chat
@@ -311,12 +314,22 @@ export default {
       return Store.$layout;
     },
 
+    roster(): typeof Store.$roster {
+      return Store.$roster;
+    },
+
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
     },
 
-    rosterEntry(): ReturnType<typeof Store.$roster.getEntry> {
-      return Store.$roster.getEntry(this.jid);
+    rosterContactsEntry(): ReturnType<typeof Store.$roster.getContactsEntry> {
+      return this.roster.getContactsEntry(this.jid);
+    },
+
+    rosterBlockListStatus(): ReturnType<
+      typeof Store.$roster.getBlockListStatus
+    > {
+      return this.roster.getBlockListStatus(this.jid);
     },
 
     roomItem(): ReturnType<typeof Store.$room.getRoomItem> {

@@ -18,14 +18,14 @@ import BaseAvatar from "@/components/base/BaseAvatar.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
-import { RosterEntry } from "@/store/tables/roster";
+import { RosterContactsEntry } from "@/store/tables/roster";
 
 /**************************************************************************
  * INTERFACES
  * ************************************************************************* */
 
 interface RosterSuggestorPart {
-  entry: RosterEntry;
+  entry: RosterContactsEntry;
 
   values: {
     name: {
@@ -100,7 +100,7 @@ function useRosterSuggestor(): {
   // --> COMPUTED <--
 
   const parts = computed(() => {
-    return Store.$roster.getList().map((entry: RosterEntry) => {
+    return Store.$roster.getContactsList().map((entry: RosterContactsEntry) => {
       const nameParts = entry.name.toLowerCase().split(" "),
         jidParts = entry.jid.toLowerCase().split("@");
 

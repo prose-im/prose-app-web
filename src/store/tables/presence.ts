@@ -46,10 +46,10 @@ const $presence = defineStore("presence", {
         }
 
         // Obtain availability for roster contact
-        const rosterEntry = Store.$roster.getEntry(jid);
+        const rosterContactsEntry = Store.$roster.getContactsEntry(jid);
 
-        if (rosterEntry !== undefined) {
-          return rosterEntry.availability;
+        if (rosterContactsEntry !== undefined) {
+          return rosterContactsEntry.availability;
         }
 
         // Availability is unknown (do not return default here)

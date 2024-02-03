@@ -97,6 +97,8 @@ class BrokerDelegate implements ProseClientDelegate {
 
   blockListChanged(): void {
     logger.info("Block list changed");
+
+    Store.$roster.markBlockListChanged();
   }
 
   presenceSubscriptionRequestsChanged(): void {

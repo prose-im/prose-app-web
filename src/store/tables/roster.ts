@@ -24,17 +24,32 @@ import Store from "@/store";
 import Broker from "@/broker";
 
 /**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
+
+enum RosterBlockListStatus {
+  // Blocked status.
+  Blocked = "blocked",
+  // Unblocked status.
+  Unblocked = "unblocked"
+}
+
+/**************************************************************************
  * TYPES
  * ************************************************************************* */
 
-type RosterList = Array<RosterEntry>;
+type RosterContactsList = Array<RosterContactsEntry>;
 
-type RosterByGroup = {
-  [group in RosterGroup]?: RosterList;
+type RosterContactsByGroup = {
+  [group in RosterGroup]?: RosterContactsList;
 };
 
-type RosterByJID = {
-  [jid: string]: RosterEntry;
+type RosterContactsByJID = {
+  [jid: string]: RosterContactsEntry;
+};
+
+type RosterBlockListByJID = {
+  [jid: string]: RosterBlockListStatus;
 };
 
 /**************************************************************************
@@ -42,16 +57,25 @@ type RosterByJID = {
  * ************************************************************************* */
 
 interface Roster {
-  list: RosterList;
-  byGroup: RosterByGroup;
-  byJID: RosterByJID;
+  contacts: RosterContacts;
+  blockList: RosterBlockList;
 }
 
-interface RosterEntry {
+interface RosterContacts {
+  list: RosterContactsList;
+  byGroup: RosterContactsByGroup;
+  byJID: RosterContactsByJID;
+}
+
+interface RosterContactsEntry {
   jid: string;
   availability: Availability;
   group: RosterGroup;
   name: string;
+}
+
+interface RosterBlockList {
+  byJID: RosterBlockListByJID;
 }
 
 /**************************************************************************
@@ -59,7 +83,8 @@ interface RosterEntry {
  * ************************************************************************* */
 
 const LOCAL_STATES = {
-  loaded: false
+  contactsLoaded: false,
+  blockListLoaded: false
 };
 
 const EventBus = mitt();
@@ -73,50 +98,64 @@ const $roster = defineStore("roster", {
 
   state: (): Roster => {
     return {
-      list: [],
-      byGroup: {},
-      byJID: {}
+      contacts: {
+        list: [],
+        byGroup: {},
+        byJID: {}
+      },
+
+      blockList: {
+        byJID: {}
+      }
     };
   },
 
   getters: {
-    getList: function () {
-      return (group?: RosterGroup): RosterList => {
+    getContactsList: function () {
+      return (group?: RosterGroup): RosterContactsList => {
         // Acquire list in group
         if (group !== undefined) {
-          return this.byGroup[group] || [];
+          return this.contacts.byGroup[group] || [];
         }
 
         // Acquire global list (all groups)
-        return this.list;
+        return this.contacts.list;
       };
     },
 
-    getGroups: function () {
-      return (): RosterByGroup => {
-        return this.byGroup;
+    getContactsGroups: function () {
+      return (): RosterContactsByGroup => {
+        return this.contacts.byGroup;
       };
     },
 
-    getEntry: function () {
-      return (jid: JID): RosterEntry | void => {
-        return this.byJID[jid.toString()] || undefined;
+    getContactsEntry: function () {
+      return (jid: JID): RosterContactsEntry | void => {
+        return this.contacts.byJID[jid.toString()] || undefined;
+      };
+    },
+
+    getBlockListStatus: function () {
+      return (jid: JID): RosterBlockListStatus => {
+        const status = this.blockList.byJID[jid.toString()];
+
+        return status === undefined ? RosterBlockListStatus.Unblocked : status;
       };
     }
   },
 
   actions: {
-    async load(reload = false): Promise<RosterList> {
-      // Load roster? (or reload)
-      if (LOCAL_STATES.loaded === false || reload === true) {
-        LOCAL_STATES.loaded = true;
+    async loadContacts(reload = false): Promise<RosterContactsList> {
+      // Load contacts? (or reload)
+      if (LOCAL_STATES.contactsLoaded === false || reload === true) {
+        LOCAL_STATES.contactsLoaded = true;
 
         // Initialize entries
-        const entries: RosterList = [],
-          byGroup: RosterByGroup = {},
-          byJID: RosterByJID = {};
+        const entries: RosterContactsList = [],
+          byGroup: RosterContactsByGroup = {},
+          byJID: RosterContactsByJID = {};
 
-        // Load roster
+        // Load contacts
         const contacts = await Broker.$roster.loadContacts();
 
         contacts.forEach(contact => {
@@ -147,13 +186,35 @@ const $roster = defineStore("roster", {
         });
 
         this.$patch(state => {
-          state.list = entries;
-          state.byGroup = byGroup;
-          state.byJID = byJID;
+          state.contacts.list = entries;
+          state.contacts.byGroup = byGroup;
+          state.contacts.byJID = byJID;
         });
       }
 
-      return Promise.resolve(this.list);
+      return Promise.resolve(this.contacts.list);
+    },
+
+    async loadBlockList(reload = false): Promise<void> {
+      // Load block list? (or reload)
+      if (LOCAL_STATES.blockListLoaded === false || reload === true) {
+        LOCAL_STATES.blockListLoaded = true;
+
+        // Initialize entries
+        const byJID: RosterBlockListByJID = {};
+
+        // Load block list
+        const blockList = await Broker.$roster.loadBlockList();
+
+        blockList.forEach(blockListItem => {
+          // Mark JID as blocked
+          byJID[blockListItem.jid.toString()] = RosterBlockListStatus.Blocked;
+        });
+
+        this.$patch(state => {
+          state.blockList.byJID = byJID;
+        });
+      }
     },
 
     events(): ReturnType<typeof mitt> {
@@ -162,6 +223,10 @@ const $roster = defineStore("roster", {
 
     markContactsChanged() {
       EventBus.emit("contacts:changed");
+    },
+
+    markBlockListChanged() {
+      EventBus.emit("blocklist:changed");
     }
   }
 });
@@ -170,5 +235,6 @@ const $roster = defineStore("roster", {
  * EXPORTS
  * ************************************************************************* */
 
-export type { RosterEntry, RosterList };
+export { RosterBlockListStatus };
+export type { RosterContactsEntry, RosterContactsList };
 export default $roster;
