@@ -13,15 +13,11 @@ base-modal(
   @close="$emit('close')"
   @confirm="$emit('proceed')"
   :confirm-loading="loading"
-  confirm-label="Block This User"
-  class="m-block-user"
-  destructive
+  confirm-label="Unblock This User"
+  class="m-unblock-user"
 )
   p.u-regular
-    | This user will be blocked. You will not be able to reach or be reached by this user anymore.
-
-  p.u-medium
-    | Are you sure you want to block this user?
+    | This user will be unblocked. You will be able to exchange messages again with this user.
 </template>
 
 <!-- **********************************************************************
@@ -30,7 +26,7 @@ base-modal(
 
 <script lang="ts">
 export default {
-  name: "BlockUser",
+  name: "UnblockUser",
 
   props: {
     loading: {

@@ -87,6 +87,14 @@ layout-sidebar-details(
       v-if="modals.blockUser.visible"
       @proceed="onModalBlockUserProceed"
       @close="onModalBlockUserClose"
+      :loading="modals.blockUser.loading"
+    )
+
+    unblock-user(
+      v-if="modals.unblockUser.visible"
+      @proceed="onModalUnblockUserProceed"
+      @close="onModalUnblockUserClose"
+      :loading="modals.unblockUser.loading"
     )
 </template>
 
@@ -124,6 +132,7 @@ import CloseUser from "@/modals/inbox/CloseUser.vue";
 import AddContact from "@/modals/inbox/AddContact.vue";
 import RemoveContact from "@/modals/inbox/RemoveContact.vue";
 import BlockUser from "@/modals/inbox/BlockUser.vue";
+import UnblockUser from "@/modals/inbox/UnblockUser.vue";
 
 // PROJECT: POPUPS
 import SharedFiles from "@/popups/inbox/SharedFiles.vue";
@@ -142,7 +151,8 @@ export default {
     CloseUser,
     AddContact,
     RemoveContact,
-    BlockUser
+    BlockUser,
+    UnblockUser
   },
 
   props: {
@@ -197,7 +207,13 @@ export default {
         },
 
         blockUser: {
-          visible: false
+          visible: false,
+          loading: false
+        },
+
+        unblockUser: {
+          visible: false,
+          loading: false
         }
       },
 
@@ -252,13 +268,22 @@ export default {
           });
         }
 
-        // TODO: add action to unblock
-        actions.push({
-          id: "block",
-          title: "Block user",
-          click: this.onActionBlockUserClick,
-          color: "red"
-        });
+        // TODO: check if blocked or not (from store)
+        if (true) {
+          actions.push({
+            id: "block",
+            title: "Block user",
+            click: this.onActionBlockUserClick,
+            color: "red"
+          });
+        } else {
+          actions.push({
+            id: "unblock",
+            title: "Unblock user",
+            click: this.onActionUnblockUserClick,
+            color: "green"
+          });
+        }
       }
 
       // Non-favorited? Add ability to close chat
@@ -370,6 +395,10 @@ export default {
       this.modals.blockUser.visible = true;
     },
 
+    onActionUnblockUserClick(): void {
+      this.modals.unblockUser.visible = true;
+    },
+
     onActionCloseUserClick(): void {
       this.modals.closeUser.visible = true;
     },
@@ -477,14 +506,66 @@ export default {
       this.modals.removeContact.visible = false;
     },
 
-    onModalBlockUserProceed(): void {
-      // TODO: proceed
+    async onModalBlockUserProceed(): Promise<void> {
+      try {
+        this.modals.blockUser.loading = true;
 
-      this.modals.blockUser.visible = false;
+        // Block user
+        await Broker.$roster.blockUser(this.jid);
+
+        // Show information alert
+        BaseAlert.info(
+          "User blocked",
+          "This user will not be able to message you anymore"
+        );
+
+        this.modals.blockUser.visible = false;
+      } catch (error) {
+        this.$log.error("Failed blocking user", error);
+
+        // Show error alert
+        BaseAlert.error(
+          "Cannot block user",
+          "Could not block this user. Try again?"
+        );
+      } finally {
+        this.modals.blockUser.loading = false;
+      }
     },
 
     onModalBlockUserClose(): void {
       this.modals.blockUser.visible = false;
+    },
+
+    async onModalUnblockUserProceed(): Promise<void> {
+      try {
+        this.modals.unblockUser.loading = true;
+
+        // Unblock user
+        await Broker.$roster.unblockUser(this.jid);
+
+        // Show information alert
+        BaseAlert.info(
+          "User unblocked",
+          "This user will be able to message you again"
+        );
+
+        this.modals.unblockUser.visible = false;
+      } catch (error) {
+        this.$log.error("Failed unblocking user", error);
+
+        // Show error alert
+        BaseAlert.error(
+          "Cannot unblock user",
+          "Could not unblock this user. Try again?"
+        );
+      } finally {
+        this.modals.unblockUser.loading = false;
+      }
+    },
+
+    onModalUnblockUserClose(): void {
+      this.modals.unblockUser.visible = false;
     }
   }
 };
