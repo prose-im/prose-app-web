@@ -82,7 +82,7 @@ export default {
       default: "normal",
 
       validator(x: string) {
-        return ["normal", "lighter", "blue", "red"].includes(x);
+        return ["normal", "lighter", "blue", "red", "green"].includes(x);
       }
     },
 
@@ -209,7 +209,8 @@ $c: ".c-list-button";
   }
 
   &--color-blue,
-  &--color-red {
+  &--color-red,
+  &--color-green {
     &:hover,
     &#{$c}--actionable:active {
       #{$c}__label {
@@ -243,6 +244,20 @@ $c: ".c-list-button";
 
     &#{$c}--actionable:active {
       background-color: darken-var(var(--color-base-red-normal), 4%);
+    }
+  }
+
+  &--color-green {
+    #{$c}__label {
+      color: rgb(var(--color-base-green-normal));
+    }
+
+    &:hover {
+      background-color: rgb(var(--color-base-green-normal));
+    }
+
+    &#{$c}--actionable:active {
+      background-color: darken-var(var(--color-base-green-normal), 3%);
     }
   }
 
