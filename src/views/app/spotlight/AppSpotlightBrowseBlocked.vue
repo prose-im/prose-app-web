@@ -108,7 +108,6 @@ export default {
                       properties: {
                         tint: "red",
                         size: "medium",
-                        reverse: true,
                         disabled: entryLoading,
                         loading: entryLoading
                       },
@@ -144,8 +143,8 @@ export default {
 
       try {
         // Ensure that block list is loaded
-        // Notice: this will not reload if already loaded.
-        await Store.$roster.loadBlockList();
+        // Notice: forcibly refresh from server.
+        await Store.$roster.loadBlockList(true);
       } catch (error) {
         this.$log.error("Could not load block list", error);
 
