@@ -18,28 +18,28 @@
   )
     sidebar-main-section(
       @click="onSectionUnreadClick"
-      :active="routeName === 'app.spotlight.unread'"
+      :active="sectionActive.unread"
       title="Unread stack"
       icon="tray.2"
     )
 
     sidebar-main-section(
       @click="onSectionRepliesClick"
-      :active="routeName === 'app.spotlight.replies'"
+      :active="sectionActive.replies"
       title="Replies"
       icon="arrowshape.turn.up.left.2"
     )
 
     sidebar-main-section(
       @click="onSectionConversationsClick"
-      :active="routeName === 'app.spotlight.conversations'"
+      :active="sectionActive.conversations"
       title="Direct messages"
       icon="message"
     )
 
     sidebar-main-section(
       @click="onSectionBrowseClick"
-      :active="routeName === 'app.spotlight.browse'"
+      :active="sectionActive.browse"
       title="People & channels"
       icon="text.book.closed"
     )
@@ -101,7 +101,6 @@
 <script lang="ts">
 // NPM
 import { JID, SidebarItem } from "@prose-im/prose-sdk-js";
-import { RouteRecordName } from "vue-router";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
@@ -155,8 +154,17 @@ export default {
   },
 
   computed: {
-    routeName(): RouteRecordName | null | undefined {
-      return this.$route.name;
+    routeName(): string {
+      return typeof this.$route.name === "string" ? this.$route.name : "";
+    },
+
+    sectionActive(): { [section: string]: boolean } {
+      return {
+        unread: this.routeName === "app.spotlight.unread",
+        replies: this.routeName === "app.spotlight.replies",
+        conversations: this.routeName === "app.spotlight.conversations",
+        browse: this.routeName.startsWith("app.spotlight.browse")
+      };
     },
 
     layout(): typeof Store.$layout {
