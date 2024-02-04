@@ -22,7 +22,7 @@ const $layout = defineStore("layout", {
     return {
       sidebar: {
         sections: {
-          spotlight: false,
+          spotlight: true,
           favorites: true,
           groups: true,
           channels: true
