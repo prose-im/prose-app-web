@@ -15,57 +15,7 @@ layout-toolbar(
   template(
     v-slot:left
   )
-    layout-actions
-      base-tooltip(
-        align="left"
-        direction="bottom"
-        tooltip="Go to Previous"
-      )
-        base-action(
-          @click="onActionHistoryPreviousClick"
-          :disabled="!hasActionHistoryPrevious"
-          class="a-inbox-topbar__action"
-          icon="chevron.left"
-          context="grey"
-          size="14px"
-        )
-
-      base-tooltip(
-        align="left"
-        direction="bottom"
-        tooltip="Go to Next"
-      )
-        base-action(
-          @click="onActionHistoryNextClick"
-          :disabled="!hasActionHistoryNext"
-          class="a-inbox-topbar__action"
-          icon="chevron.right"
-          context="grey"
-          size="14px"
-        )
-
-      base-tooltip(
-        :bypassed="isActionHistoryPopoverVisible"
-        align="left"
-        direction="bottom"
-        tooltip="Show History"
-      )
-        base-action(
-          @click="onActionHistoryDropdownClick"
-          :disabled="!hasActionHistoryDropdown"
-          :active="isActionHistoryPopoverVisible"
-          class="a-inbox-topbar__action"
-          icon="clock"
-          context="grey"
-          size="18px"
-          dropdown
-        )
-          base-popover-list(
-            v-if="isActionHistoryPopoverVisible"
-            v-click-away="onActionHistoryPopoverClickAway"
-            :items="actionHistoryPopoverItems"
-            class="a-inbox-topbar__action-popover"
-          )
+    topbar-actions-history
 
   template(
     v-slot:middle
@@ -137,7 +87,6 @@ layout-toolbar(
         tooltip="Start Video Call"
       )
         base-action(
-          class="a-inbox-topbar__action"
           icon="video"
           context="grey"
           size="20px"
@@ -152,7 +101,6 @@ layout-toolbar(
         base-action(
           @click="onActionDetailsClick"
           :active="layout.inbox.details.visible"
-          class="a-inbox-topbar__action"
           icon="info.circle"
           context="grey"
           size="18px"
@@ -162,19 +110,7 @@ layout-toolbar(
       class="a-inbox-topbar__separator"
     )
 
-    layout-actions
-      base-tooltip(
-        align="right"
-        direction="bottom"
-        tooltip="Search"
-      )
-        base-action(
-          class="a-inbox-topbar__action"
-          icon="magnifyingglass"
-          context="grey"
-          size="17px"
-          disabled
-        )
+    topbar-actions-search
 </template>
 
 <!-- **********************************************************************
@@ -184,23 +120,15 @@ layout-toolbar(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import {
-  JID,
-  Room,
-  RoomID,
-  RoomType,
-  Availability
-} from "@prose-im/prose-sdk-js";
+import { JID, Room, RoomType, Availability } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
-import {
-  Item as PopoverItem,
-  ItemType as PopoverItemType
-} from "@/components/base/BasePopoverList.vue";
+import TopbarActionsHistory from "@/components/topbar/TopbarActionsHistory.vue";
+import TopbarActionsSearch from "@/components/topbar/TopbarActionsSearch.vue";
 
 // INTERFACES
 interface IdentityBadge {
@@ -214,6 +142,8 @@ const JID_TRUNCATE_LENGTH = 15;
 export default {
   name: "InboxTopbar",
 
+  components: { TopbarActionsHistory, TopbarActionsSearch },
+
   props: {
     jid: {
       type: Object as PropType<JID>,
@@ -226,21 +156,9 @@ export default {
     }
   },
 
-  data() {
-    return {
-      // --> STATE <--
-
-      isActionHistoryPopoverVisible: false
-    };
-  },
-
   computed: {
     layout(): typeof Store.$layout {
       return Store.$layout;
-    },
-
-    history(): typeof Store.$history {
-      return Store.$history;
     },
 
     availability(): ReturnType<typeof Store.$presence.getAvailability> {
@@ -299,80 +217,6 @@ export default {
 
     isDirectMessage(): boolean {
       return this.room?.type === RoomType.DirectMessage;
-    },
-
-    hasActionHistoryPrevious(): boolean {
-      return this.history.adjacent.previous.length > 0;
-    },
-
-    hasActionHistoryNext(): boolean {
-      return this.history.adjacent.next.length > 0;
-    },
-
-    hasActionHistoryDropdown(): boolean {
-      return this.hasActionHistoryPrevious || this.hasActionHistoryNext;
-    },
-
-    actionHistoryPopoverItems(): Array<PopoverItem> {
-      // Acquire inbox JIDs
-      const historyRawRoomIDs: Set<string> = new Set([]),
-        currentRoute = this.history.current,
-        currentRouteRoomId = currentRoute.params.roomId as string;
-
-      [this.history.adjacent.previous, this.history.adjacent.next].forEach(
-        adjacentRoutes => {
-          adjacentRoutes.forEach(adjacentRoute => {
-            const adjacentRouteRoomId = adjacentRoute.params.roomId as string;
-
-            if (
-              adjacentRoute.name.startsWith("app.inbox") &&
-              adjacentRouteRoomId
-            ) {
-              // Make sure not to push current route JID
-              if (
-                !currentRoute.name.startsWith("app.inbox") ||
-                currentRouteRoomId !== adjacentRouteRoomId
-              ) {
-                historyRawRoomIDs.add(adjacentRouteRoomId);
-              }
-            }
-          });
-        }
-      );
-
-      // Build popover items
-      const items: Array<PopoverItem> = [];
-
-      Array.from(historyRawRoomIDs).forEach((historyRoomID: RoomID) => {
-        const historyRoom = Store.$room.getRoom(historyRoomID) || undefined;
-
-        if (historyRoom !== undefined) {
-          items.push({
-            type: PopoverItemType.Button,
-            label: historyRoom.name,
-
-            icon: {
-              name: "clock"
-            },
-
-            click: () => {
-              this.onActionHistoryPopoverEntryClick(historyRoomID);
-            }
-          });
-        }
-      });
-
-      if (items.length === 0) {
-        // Append empty indicator?
-        items.push({
-          type: PopoverItemType.Button,
-          label: "No history",
-          color: "lighter",
-          disabled: true
-        });
-      }
-
-      return items;
     },
 
     identityNamePresenceTooltip(): string {
@@ -456,40 +300,8 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onActionHistoryPopoverClickAway(): void {
-      // Close popover
-      this.isActionHistoryPopoverVisible = false;
-    },
-
-    onActionHistoryPopoverEntryClick(roomId: RoomID): void {
-      // Go to conversation
-      this.$router.push({
-        name: "app.inbox",
-
-        params: {
-          roomId: roomId
-        }
-      });
-
-      // Close popover
-      this.isActionHistoryPopoverVisible = false;
-    },
-
     onActionDetailsClick(): void {
       Store.$layout.toggleInboxDetailsVisible();
-    },
-
-    onActionHistoryPreviousClick(): void {
-      this.$router.go(-1);
-    },
-
-    onActionHistoryNextClick(): void {
-      this.$router.go(1);
-    },
-
-    onActionHistoryDropdownClick(): void {
-      // Toggle popover
-      this.isActionHistoryPopoverVisible = !this.isActionHistoryPopoverVisible;
     },
 
     async onIdentityActionFavoriteClick(): Promise<void> {
@@ -533,17 +345,6 @@ $c: ".a-inbox-topbar";
 .a-inbox-topbar {
   #{$c}__separator {
     margin-inline: 14px;
-  }
-
-  #{$c}__action {
-    #{$c}__action-popover {
-      position: absolute;
-      inset-inline-start: 0;
-      inset-block-start: calc(
-        100% + #{$size-base-popover-list-inset-block-edge-offset}
-      );
-      z-index: 1;
-    }
   }
 
   #{$c}__identity {

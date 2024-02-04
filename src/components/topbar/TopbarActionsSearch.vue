@@ -9,18 +9,20 @@
      ********************************************************************** -->
 
 <template lang="pug">
-layout-toolbar(
-  class="a-spotlight-topbar"
+layout-actions(
+  class="c-topbar-actions-search"
 )
-  template(
-    v-slot:left
+  base-tooltip(
+    align="right"
+    direction="bottom"
+    tooltip="Search"
   )
-    topbar-actions-history
-
-  template(
-    v-slot:right
-  )
-    topbar-actions-search
+    base-action(
+      icon="magnifyingglass"
+      context="grey"
+      size="17px"
+      disabled
+    )
 </template>
 
 <!-- **********************************************************************
@@ -28,14 +30,8 @@ layout-toolbar(
      ********************************************************************** -->
 
 <script lang="ts">
-// PROJECT: COMPONENTS
-import TopbarActionsHistory from "@/components/topbar/TopbarActionsHistory.vue";
-import TopbarActionsSearch from "@/components/topbar/TopbarActionsSearch.vue";
-
 export default {
-  name: "SpotlightTopbar",
-
-  components: { TopbarActionsHistory, TopbarActionsSearch }
+  name: "TopbarActionsSearch"
 };
 </script>
 
@@ -44,9 +40,5 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".a-spotlight-topbar";
-
-.a-spotlight-topbar {
-  /* TODO */
-}
+$c: ".c-topbar-actions-search";
 </style>
