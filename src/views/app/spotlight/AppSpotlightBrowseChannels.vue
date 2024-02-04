@@ -9,7 +9,19 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.v-app-spotlight-browse-channels
+list-browse(
+  :class=`[
+    "v-app-spotlight-browse-channels",
+    {
+      "v-app-spotlight-browse-channels--empty": (groups.length === 0)
+    }
+  ]`
+  :groups="groups"
+  :loading="loading"
+  empty-illustration="conversation-empty"
+  empty-title="No public channels found."
+  empty-description="Channels created by you or your team will appear here. You can join any of them!"
+)
 </template>
 
 <!-- **********************************************************************
@@ -17,8 +29,26 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import { Groups as ListBrowseGroups } from "@/components/list/ListBrowse.vue";
+
 export default {
-  name: "AppSpotlightBrowseChannels"
+  name: "AppSpotlightBrowseChannels",
+
+  data() {
+    return {
+      // --> STATE <--
+
+      loading: false
+    };
+  },
+
+  computed: {
+    groups(): ListBrowseGroups {
+      // TODO
+      return [];
+    }
+  }
 };
 </script>
 
@@ -30,6 +60,14 @@ export default {
 $c: ".v-app-spotlight-browse-channels";
 
 .v-app-spotlight-browse-channels {
-  /* TODO */
+  padding-block: $size-spotlight-browse-padding-block-start
+    $size-spotlight-browse-padding-block-end;
+
+  // --> BOOLEANS <--
+
+  &--empty {
+    height: 100%;
+    padding-block: 0;
+  }
 }
 </style>

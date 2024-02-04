@@ -114,13 +114,11 @@ $c: ".v-app-spotlight-browse";
 
   #{$c}__content {
     padding-inline: $size-layout-view-content-padding-sides;
-    padding-block: 20px;
     overflow-x: hidden;
     overflow-y: auto;
     flex: 1;
 
     #{$c}__content-inner {
-      height: 100%;
       max-width: 720px;
       margin: 0 auto;
     }
