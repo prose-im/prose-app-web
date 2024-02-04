@@ -9,7 +9,10 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.v-app-spotlight-browse
+layout-view(
+  :topbar-component="topbarComponent"
+  class="v-app-spotlight-browse"
+)
 </template>
 
 <!-- **********************************************************************
@@ -17,8 +20,22 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { shallowRef } from "vue";
+
+// PROJECT: ASSEMBLIES
+import SpotlightBrowseTopbar from "@/assemblies/spotlight/SpotlightBrowseTopbar.vue";
+
 export default {
-  name: "AppSpotlightBrowse"
+  name: "AppSpotlightBrowse",
+
+  data() {
+    return {
+      // --> DATA <--
+
+      topbarComponent: shallowRef(SpotlightBrowseTopbar)
+    };
+  }
 };
 </script>
 
@@ -30,9 +47,6 @@ export default {
 $c: ".v-app-spotlight-browse";
 
 .v-app-spotlight-browse {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
+  /* TODO */
 }
 </style>

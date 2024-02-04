@@ -9,54 +9,51 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.v-app-inbox-base
-  inbox-topbar(
+layout-view(
+  :topbar-component="topbarComponent"
+  :topbar-properties="{ jid, room }"
+  class="v-app-inbox-base"
+)
+  .v-app-inbox-base__messages(
+    @dragover.prevent.stop="onMessagesDragOver"
+    @dragleave.prevent.stop="onMessagesDragLeave"
+  )
+    inbox-file-preview(
+      v-if="filePreview.collection.length > 0"
+      @close="onMessagesFilePreviewClose"
+      :collection="filePreview.collection"
+      :initial-index="filePreview.index"
+    )
+
+    inbox-dropzone(
+      v-if="isMessagesDragged"
+      @drop.prevent.stop="onMessagesDrop"
+      :room="room"
+      class="v-app-inbox-base__dropzone"
+    )
+
+    inbox-banner
+
+    inbox-messaging(
+      @file-preview="onMessagesFilePreview"
+      @dragover="onMessagesDragOver"
+      :room="room"
+      class="v-app-inbox-base__timeline"
+    )
+
+    inbox-form(
+      :room="room"
+      ref="form"
+      class="v-app-inbox-base__form"
+    )
+
+  inbox-details(
+    v-if="layout.inbox.details.visible"
+    @file-preview="onDetailsFilePreview"
     :jid="jid"
     :room="room"
-    class="v-app-inbox-base__topbar"
+    class="v-app-inbox-base__details"
   )
-
-  .v-app-inbox-base__content
-    .v-app-inbox-base__messages(
-      @dragover.prevent.stop="onMessagesDragOver"
-      @dragleave.prevent.stop="onMessagesDragLeave"
-    )
-      inbox-file-preview(
-        v-if="filePreview.collection.length > 0"
-        @close="onMessagesFilePreviewClose"
-        :collection="filePreview.collection"
-        :initial-index="filePreview.index"
-      )
-
-      inbox-dropzone(
-        v-if="isMessagesDragged"
-        @drop.prevent.stop="onMessagesDrop"
-        :room="room"
-        class="v-app-inbox-base__dropzone"
-      )
-
-      inbox-banner
-
-      inbox-messaging(
-        @file-preview="onMessagesFilePreview"
-        @dragover="onMessagesDragOver"
-        :room="room"
-        class="v-app-inbox-base__timeline"
-      )
-
-      inbox-form(
-        :room="room"
-        ref="form"
-        class="v-app-inbox-base__form"
-      )
-
-    inbox-details(
-      v-if="layout.inbox.details.visible"
-      @file-preview="onDetailsFilePreview"
-      :jid="jid"
-      :room="room"
-      class="v-app-inbox-base__details"
-    )
 </template>
 
 <!-- **********************************************************************
@@ -65,6 +62,7 @@
 
 <script lang="ts">
 // NPM
+import { shallowRef } from "vue";
 import { JID, Room, RoomID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
@@ -92,7 +90,6 @@ export default {
     InboxDropzone,
     InboxMessaging,
     InboxBanner,
-    InboxTopbar,
     InboxDetails,
     InboxForm
   },
@@ -106,7 +103,11 @@ export default {
         index: 0
       },
 
-      isMessagesDragged: false
+      isMessagesDragged: false,
+
+      // --> DATA <--
+
+      topbarComponent: shallowRef(InboxTopbar)
     };
   },
 
@@ -173,94 +174,72 @@ export default {
 <style lang="scss">
 $c: ".v-app-inbox-base";
 
-// VARIABLES
-$content-padding-sides: 14px;
-
 .v-app-inbox-base {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-
-  #{$c}__topbar {
-    background-color: rgb(var(--color-base-grey-light));
-    border-block-end: 1px solid rgb(var(--color-border-secondary));
-    height: $size-inbox-topbar-height;
-    padding: 0 $content-padding-sides;
-    flex: 0 0 auto;
-  }
-
-  #{$c}__content {
-    flex: 1;
+  #{$c}__messages {
     display: flex;
-    overflow: hidden;
+    flex: 1;
+    flex-direction: column;
+    position: relative;
 
-    #{$c}__messages {
-      display: flex;
-      flex: 1;
-      flex-direction: column;
-      position: relative;
-
-      #{$c}__banner {
-        padding-inline: ($content-padding-sides + 11px);
-        flex: 0 0 auto;
-      }
-
-      #{$c}__dropzone {
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-      }
-
-      #{$c}__timeline {
-        width: 100%;
-        height: 100%;
-        flex: 1;
-        position: relative;
-
-        &:before,
-        &:after {
-          content: "";
-          height: $size-layout-gradient-height;
-          position: absolute;
-          inset-inline: 0;
-          pointer-events: none;
-        }
-
-        &:before {
-          background-image: linear-gradient(
-            0deg,
-            rgba(var(--color-black), 0) 0%,
-            rgba(var(--color-black), 0.015) 100%
-          );
-          inset-block-start: 0;
-        }
-
-        &:after {
-          background-image: linear-gradient(
-            180deg,
-            rgba(var(--color-black), 0) 0%,
-            rgba(var(--color-black), 0.01) 100%
-          );
-          inset-block-end: 0;
-        }
-      }
-
-      #{$c}__form {
-        border-block-start: 1px solid rgb(var(--color-border-secondary));
-        min-height: $size-inbox-form-height;
-        padding: 0 $content-padding-sides;
-        flex: 0 0 auto;
-      }
-    }
-
-    #{$c}__details {
-      border-inline-start: 1px solid rgb(var(--color-border-secondary));
-      width: $size-inbox-details-width;
-      overflow-x: hidden;
-      overflow-y: auto;
+    #{$c}__banner {
+      padding-inline: ($size-layout-view-content-padding-sides + 11px);
       flex: 0 0 auto;
     }
+
+    #{$c}__dropzone {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    #{$c}__timeline {
+      width: 100%;
+      height: 100%;
+      flex: 1;
+      position: relative;
+
+      &:before,
+      &:after {
+        content: "";
+        height: $size-common-gradient-height;
+        position: absolute;
+        inset-inline: 0;
+        pointer-events: none;
+      }
+
+      &:before {
+        background-image: linear-gradient(
+          0deg,
+          rgba(var(--color-black), 0) 0%,
+          rgba(var(--color-black), 0.015) 100%
+        );
+        inset-block-start: 0;
+      }
+
+      &:after {
+        background-image: linear-gradient(
+          180deg,
+          rgba(var(--color-black), 0) 0%,
+          rgba(var(--color-black), 0.01) 100%
+        );
+        inset-block-end: 0;
+      }
+    }
+
+    #{$c}__form {
+      border-block-start: 1px solid rgb(var(--color-border-secondary));
+      min-height: $size-inbox-form-height;
+      padding: 0 $size-layout-view-content-padding-sides;
+      flex: 0 0 auto;
+    }
+  }
+
+  #{$c}__details {
+    border-inline-start: 1px solid rgb(var(--color-border-secondary));
+    width: $size-inbox-details-width;
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex: 0 0 auto;
   }
 }
 </style>

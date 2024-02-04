@@ -8,9 +8,9 @@
  * VARIABLES > SIZES
  * **************************************************************************/
 
-// --> LAYOUT <--
+// --> COMMON <--
 
-$size-layout-gradient-height: 6px;
+$size-common-gradient-height: 6px;
 
 // --> SIDEBAR <--
 
@@ -18,7 +18,6 @@ $size-sidebar-popover-inset-inline-side: -3px;
 
 // --> INBOX <--
 
-$size-inbox-topbar-height: 60px;
 $size-inbox-form-height: 65px;
 $size-inbox-details-width: 240px;
 $size-inbox-details-item-padding-sides: 15px;
@@ -34,6 +33,11 @@ $size-base-popover-border-width: 1px;
 // --> BASE POPOVER LIST <--
 
 $size-base-popover-list-inset-block-edge-offset: 7px;
+
+// --> LAYOUT VIEW <--
+
+$size-layout-view-topbar-height: 60px;
+$size-layout-view-content-padding-sides: 14px;
 
 // --> LAYOUT POPUP NAVIGATE <--
 

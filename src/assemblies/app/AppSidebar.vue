@@ -308,7 +308,7 @@ $c: ".a-app-sidebar";
 $sidebar-items-padding-sides: 20px;
 $sidebar-main-padding-block: 16px;
 $sidebar-header-border-width: 1px;
-$sidebar-header-height: $size-inbox-topbar-height;
+$sidebar-header-height: $size-layout-view-topbar-height;
 $sidebar-context-border-width: 1px;
 $sidebar-context-height: $size-inbox-form-height;
 
@@ -337,7 +337,7 @@ $sidebar-context-height: $size-inbox-form-height;
   #{$c}__context:before,
   #{$c}__header:after {
     content: "";
-    height: $size-layout-gradient-height;
+    height: $size-common-gradient-height;
     position: absolute;
     inset-inline: 0;
     pointer-events: none;
