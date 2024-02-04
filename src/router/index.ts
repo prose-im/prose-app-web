@@ -20,6 +20,9 @@ import { JID } from "@prose-im/prose-sdk-js";
 // PROJECT: VIEWS
 import AppBase from "@/views/app/AppBase.vue";
 import AppIndex from "@/views/app/AppIndex.vue";
+import AppSpotlightUnread from "@/views/app/spotlight/AppSpotlightUnread.vue";
+import AppSpotlightReplies from "@/views/app/spotlight/AppSpotlightReplies.vue";
+import AppSpotlightConversations from "@/views/app/spotlight/AppSpotlightConversations.vue";
 import AppSpotlightBrowse from "@/views/app/spotlight/AppSpotlightBrowse.vue";
 import AppInboxBase from "@/views/app/inbox/AppInboxBase.vue";
 import StartLogin from "@/views/start/StartLogin.vue";
@@ -110,6 +113,24 @@ class Router {
               path: "",
               name: "app.index",
               component: AppIndex as object
+            },
+
+            {
+              path: "spotlight/unread/",
+              name: "app.spotlight.unread",
+              component: AppSpotlightUnread as object
+            },
+
+            {
+              path: "spotlight/replies/",
+              name: "app.spotlight.replies",
+              component: AppSpotlightReplies as object
+            },
+
+            {
+              path: "spotlight/conversations/",
+              name: "app.spotlight.conversations",
+              component: AppSpotlightConversations as object
             },
 
             {

@@ -17,21 +17,24 @@
     title="Spotlight"
   )
     sidebar-main-section(
+      @click="onSectionUnreadClick"
+      :active="routeName === 'app.spotlight.unread'"
       title="Unread stack"
       icon="tray.2"
-      disabled
     )
 
     sidebar-main-section(
+      @click="onSectionRepliesClick"
+      :active="routeName === 'app.spotlight.replies'"
       title="Replies"
       icon="arrowshape.turn.up.left.2"
-      disabled
     )
 
     sidebar-main-section(
+      @click="onSectionConversationsClick"
+      :active="routeName === 'app.spotlight.conversations'"
       title="Direct messages"
       icon="message"
-      disabled
     )
 
     sidebar-main-section(
@@ -308,6 +311,24 @@ export default {
 
     onFavoritesToggle(visible: boolean): void {
       Store.$layout.setSidebarSectionFavorites(visible);
+    },
+
+    onSectionUnreadClick(): void {
+      this.$router.push({
+        name: "app.spotlight.unread"
+      });
+    },
+
+    onSectionRepliesClick(): void {
+      this.$router.push({
+        name: "app.spotlight.replies"
+      });
+    },
+
+    onSectionConversationsClick(): void {
+      this.$router.push({
+        name: "app.spotlight.conversations"
+      });
     },
 
     onSectionBrowseClick(): void {

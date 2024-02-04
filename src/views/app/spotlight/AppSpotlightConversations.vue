@@ -11,7 +11,7 @@
 <template lang="pug">
 layout-view(
   :topbar-component="topbarComponent"
-  class="v-app-spotlight-browse"
+  class="v-app-spotlight-conversations"
 )
 </template>
 
@@ -27,7 +27,7 @@ import { shallowRef } from "vue";
 import SpotlightTopbar from "@/assemblies/spotlight/SpotlightTopbar.vue";
 
 export default {
-  name: "AppSpotlightBrowse",
+  name: "AppSpotlightConversations",
 
   data() {
     return {
@@ -44,9 +44,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".v-app-spotlight-browse";
+$c: ".v-app-spotlight-conversations";
 
-.v-app-spotlight-browse {
+.v-app-spotlight-conversations {
   /* TODO */
 }
 </style>

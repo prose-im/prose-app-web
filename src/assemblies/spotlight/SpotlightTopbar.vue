@@ -10,7 +10,7 @@
 
 <template lang="pug">
 layout-toolbar(
-  class="a-spotlight-browse-topbar"
+  class="a-spotlight-topbar"
 )
 </template>
 
@@ -20,7 +20,7 @@ layout-toolbar(
 
 <script lang="ts">
 export default {
-  name: "SpotlightBrowseTopbar"
+  name: "SpotlightTopbar"
 };
 </script>
 
@@ -29,9 +29,9 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".a-spotlight-browse-topbar";
+$c: ".a-spotlight-topbar";
 
-.a-spotlight-browse-topbar {
+.a-spotlight-topbar {
   /* TODO */
 }
 </style>
