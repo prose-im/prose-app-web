@@ -12,7 +12,6 @@
 layout-view(
   :topbar-component="topbarComponent"
   :topbar-properties="topbarProperties"
-  direction="column"
   class="v-app-spotlight-browse"
 )
   spotlight-browse-navigate(
@@ -107,11 +106,14 @@ $c: ".v-app-spotlight-browse";
 
   #{$c}__navigate {
     border-inline-end: 1px solid rgb(var(--color-border-secondary));
-    max-width: 260px;
+    width: 220px;
     flex: 0 0 auto;
   }
 
   #{$c}__content {
+    padding-inline-start: (8px + $size-layout-view-content-padding-sides);
+    padding-inline-end: $size-layout-view-content-padding-sides;
+    padding-block: 20px;
     flex: 1;
   }
 }
