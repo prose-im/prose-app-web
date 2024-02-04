@@ -76,9 +76,7 @@ layout-toolbar(
         )
           | {{ truncatedJID }}
 
-    base-separator(
-      class="a-inbox-topbar__separator"
-    )
+    base-separator
 
     layout-actions
       base-tooltip(
@@ -106,9 +104,7 @@ layout-toolbar(
           size="18px"
         )
 
-    base-separator(
-      class="a-inbox-topbar__separator"
-    )
+    base-separator
 
     topbar-actions-search
 </template>
@@ -343,10 +339,6 @@ export default {
 $c: ".a-inbox-topbar";
 
 .a-inbox-topbar {
-  #{$c}__separator {
-    margin-inline: 14px;
-  }
-
   #{$c}__identity {
     display: flex;
     align-items: center;
