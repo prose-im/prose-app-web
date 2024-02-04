@@ -45,6 +45,9 @@ import {
   RosterBlockListEntry
 } from "@/store/tables/roster";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 export default {
   name: "AppSpotlightBrowseBlocked",
 
@@ -52,7 +55,9 @@ export default {
     return {
       // --> STATE <--
 
-      loading: false
+      loading: false,
+
+      pendingUnblocks: {} as { [jid: string]: boolean }
     };
   },
 
@@ -76,12 +81,15 @@ export default {
 
             results: this.blockListBlocked.map(
               (entry: RosterBlockListEntry) => {
+                const entryJID = new JID(entry.jid),
+                  entryLoading = this.pendingUnblocks[entry.jid] || false;
+
                 return {
                   icon: {
                     component: BaseAvatar,
 
                     properties: {
-                      jid: new JID(entry.jid),
+                      jid: entryJID,
                       size: "32px",
                       shadow: "none"
                     }
@@ -100,7 +108,15 @@ export default {
                       properties: {
                         tint: "red",
                         size: "medium",
-                        reverse: true
+                        reverse: true,
+                        disabled: entryLoading,
+                        loading: entryLoading
+                      },
+
+                      listeners: {
+                        click: async () => {
+                          await this.onBrowseActionUnblock(entryJID);
+                        }
                       }
                     }
                   ]
@@ -140,6 +156,37 @@ export default {
         );
       } finally {
         this.loading = false;
+      }
+    },
+
+    // --> EVENT LISTENERS <--
+
+    async onBrowseActionUnblock(jid: JID): Promise<void> {
+      const jidString = jid.toString();
+
+      if (this.pendingUnblocks[jidString] !== true) {
+        this.pendingUnblocks[jidString] = true;
+
+        try {
+          // Unblock user
+          await Broker.$roster.unblockUser(jid);
+
+          // Show information alert
+          BaseAlert.info(
+            "User unblocked",
+            "This user will be able to message you again"
+          );
+        } catch (error) {
+          this.$log.error("Could not unblock user", error);
+
+          // Show error alert
+          BaseAlert.error(
+            "Cannot unblock user",
+            "Could not unblock this user. Try this again?"
+          );
+        } finally {
+          delete this.pendingUnblocks[jidString];
+        }
       }
     }
   }
