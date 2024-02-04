@@ -144,7 +144,7 @@ export default {
     context: {
       type: Object,
 
-      default() {
+      default(): object {
         return {};
       }
     }

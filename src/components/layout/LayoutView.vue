@@ -42,7 +42,7 @@ export default {
     topbarProperties: {
       type: Object,
 
-      default() {
+      default(): object {
         return {};
       }
     },
