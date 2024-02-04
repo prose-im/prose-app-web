@@ -36,10 +36,10 @@
       .c-list-browse__title(
         v-if="group.title"
       )
-        span.c-list-browse__title-name.u-bold
+        span.c-list-browse__title-name.u-bold.u-ellipsis
           | {{ group.title.name }}
 
-        span.c-list-browse__title-aside(
+        span.c-list-browse__title-aside.u-ellipsis(
           v-if="group.title.aside"
         )
           | {{ group.title.aside }}
@@ -132,13 +132,14 @@ $c: ".c-list-browse";
   }
 
   #{$c}__group {
-    margin-block-end: 34px;
+    margin-block-end: 38px;
 
     &:last-child {
       margin-block-end: 0;
     }
 
     #{$c}__title {
+      line-height: 18px;
       margin-block-end: 14px;
       padding-inline: 6px;
       display: flex;
@@ -161,7 +162,7 @@ $c: ".c-list-browse";
 
     #{$c}__results {
       #{$c}__result {
-        margin-block-end: 6px;
+        margin-block-end: 10px;
 
         &:last-child {
           margin-block-end: 0;
