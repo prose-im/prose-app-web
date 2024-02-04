@@ -9,7 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-layout-view
+div(
+  :class=`[
+    "c-layout-view",
+    "c-layout-view--" + direction
+  ]`
+)
   component(
     v-bind="topbarProperties"
     :is="topbarComponent"
@@ -39,6 +44,15 @@ export default {
 
       default() {
         return {};
+      }
+    },
+
+    direction: {
+      type: String,
+      default: "row",
+
+      validator(x: string) {
+        return ["row", "column"].includes(x);
       }
     }
   }
@@ -70,6 +84,20 @@ $c: ".c-layout-view";
     flex: 1;
     display: flex;
     overflow: hidden;
+  }
+
+  // --> DIRECTIONS <--
+
+  &--column {
+    #{$c}__content {
+      flex-direction: column;
+    }
+  }
+
+  &--row {
+    #{$c}__content {
+      flex-direction: row;
+    }
   }
 }
 </style>
