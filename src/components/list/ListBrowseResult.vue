@@ -39,6 +39,7 @@ li.c-list-browse-result
     component(
       v-for="action in result.actions"
       v-bind="action.properties"
+      v-on="action.listeners || {}"
       :is="action.component"
     )
       | {{ action.label }}
@@ -71,6 +72,7 @@ export interface Result {
       component: object;
       label: string;
       properties?: object;
+      listeners?: object;
     }
   ];
 }
