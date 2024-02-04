@@ -23,7 +23,11 @@ import AppIndex from "@/views/app/AppIndex.vue";
 import AppSpotlightUnread from "@/views/app/spotlight/AppSpotlightUnread.vue";
 import AppSpotlightReplies from "@/views/app/spotlight/AppSpotlightReplies.vue";
 import AppSpotlightConversations from "@/views/app/spotlight/AppSpotlightConversations.vue";
-import AppSpotlightBrowse from "@/views/app/spotlight/AppSpotlightBrowse.vue";
+import AppSpotlightBrowseBase from "@/views/app/spotlight/AppSpotlightBrowseBase.vue";
+import AppSpotlightBrowsePeople from "@/views/app/spotlight/AppSpotlightBrowsePeople.vue";
+import AppSpotlightBrowseChannels from "@/views/app/spotlight/AppSpotlightBrowseChannels.vue";
+import AppSpotlightBrowseInvites from "@/views/app/spotlight/AppSpotlightBrowseInvites.vue";
+import AppSpotlightBrowseBlocked from "@/views/app/spotlight/AppSpotlightBrowseBlocked.vue";
 import AppInboxBase from "@/views/app/inbox/AppInboxBase.vue";
 import StartLogin from "@/views/start/StartLogin.vue";
 
@@ -136,7 +140,33 @@ class Router {
             {
               path: "spotlight/browse/",
               name: "app.spotlight.browse",
-              component: AppSpotlightBrowse as object
+              component: AppSpotlightBrowseBase as object,
+
+              children: [
+                {
+                  path: "people/",
+                  name: "app.spotlight.browse.people",
+                  component: AppSpotlightBrowsePeople as object
+                },
+
+                {
+                  path: "channels/",
+                  name: "app.spotlight.browse.channels",
+                  component: AppSpotlightBrowseChannels as object
+                },
+
+                {
+                  path: "invites/",
+                  name: "app.spotlight.browse.invites",
+                  component: AppSpotlightBrowseInvites as object
+                },
+
+                {
+                  path: "blocked/",
+                  name: "app.spotlight.browse.blocked",
+                  component: AppSpotlightBrowseBlocked as object
+                }
+              ]
             },
 
             {

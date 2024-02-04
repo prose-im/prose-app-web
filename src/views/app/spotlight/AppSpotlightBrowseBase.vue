@@ -12,8 +12,13 @@
 layout-view(
   :topbar-component="topbarComponent"
   :topbar-properties="topbarProperties"
+  direction="column"
   class="v-app-spotlight-browse"
 )
+  .v-app-spotlight-browse__navigate
+
+  .v-app-spotlight-browse__content
+    router-view
 </template>
 
 <!-- **********************************************************************
@@ -90,6 +95,19 @@ export default {
 $c: ".v-app-spotlight-browse";
 
 .v-app-spotlight-browse {
-  /* TODO */
+  #{$c}__navigate,
+  #{$c}__content {
+    height: 100%;
+  }
+
+  #{$c}__navigate {
+    background: red;
+    max-width: 240px;
+    flex: 0 0 auto;
+  }
+
+  #{$c}__content {
+    flex: 1;
+  }
 }
 </style>
