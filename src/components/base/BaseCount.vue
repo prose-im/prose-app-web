@@ -53,7 +53,7 @@ export default {
       default: "blue",
 
       validator(x: string) {
-        return ["blue", "white"].includes(x);
+        return ["blue", "red", "white"].includes(x);
       }
     }
   }
@@ -85,13 +85,21 @@ $count-padding-sides: 5px;
 
   // --> COLORS <--
 
-  &--blue {
-    background-color: rgb(var(--color-base-blue-normal));
+  &--blue,
+  &--red {
     color: rgb(var(--color-white));
 
     #{$c}__icon {
       fill: rgb(var(--color-white));
     }
+  }
+
+  &--blue {
+    background-color: rgb(var(--color-base-blue-normal));
+  }
+
+  &--red {
+    background-color: rgb(var(--color-base-red-normal));
   }
 
   &--white {
