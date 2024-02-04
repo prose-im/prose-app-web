@@ -20,6 +20,25 @@ layout-toolbar(
   template(
     v-slot:right
   )
+    template(
+      v-for="actionGroup in actions"
+    )
+      base-tooltip(
+        v-for="action in actionGroup"
+        :tooltip="action.tooltip"
+        align="right"
+        direction="bottom"
+      )
+        base-action(
+          :icon="action.icon.name"
+          :size="action.icon.size"
+          :dropdown="action.dropdown ? true : false"
+          :disabled="action.disabled"
+          context="grey"
+        )
+
+      base-separator
+
     topbar-actions-search
 </template>
 
@@ -28,14 +47,39 @@ layout-toolbar(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+
 // PROJECT: COMPONENTS
 import TopbarActionsHistory from "@/components/topbar/TopbarActionsHistory.vue";
 import TopbarActionsSearch from "@/components/topbar/TopbarActionsSearch.vue";
 
+// TYPES
+export type Actions = Array<Array<Action>>;
+
+// INTERFACES
+export interface Action {
+  icon: {
+    name: string;
+    size: string;
+  };
+
+  tooltip: string;
+  dropdown: Array<void>;
+  disabled?: boolean;
+}
+
 export default {
   name: "SpotlightTopbar",
 
-  components: { TopbarActionsHistory, TopbarActionsSearch }
+  components: { TopbarActionsHistory, TopbarActionsSearch },
+
+  props: {
+    actions: {
+      type: Object as PropType<Actions>,
+      required: true
+    }
+  }
 };
 </script>
 
@@ -45,8 +89,4 @@ export default {
 
 <style lang="scss">
 $c: ".a-spotlight-topbar";
-
-.a-spotlight-topbar {
-  /* TODO */
-}
 </style>

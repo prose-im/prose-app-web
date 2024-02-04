@@ -11,6 +11,7 @@
 <template lang="pug">
 layout-view(
   :topbar-component="topbarComponent"
+  :topbar-properties="topbarProperties"
   class="v-app-spotlight-browse"
 )
 </template>
@@ -24,7 +25,10 @@ layout-view(
 import { shallowRef } from "vue";
 
 // PROJECT: ASSEMBLIES
-import SpotlightTopbar from "@/assemblies/spotlight/SpotlightTopbar.vue";
+import {
+  default as SpotlightTopbar,
+  Actions as SpotlightTopbarActions
+} from "@/assemblies/spotlight/SpotlightTopbar.vue";
 
 export default {
   name: "AppSpotlightBrowse",
@@ -33,7 +37,46 @@ export default {
     return {
       // --> DATA <--
 
-      topbarComponent: shallowRef(SpotlightTopbar)
+      topbarComponent: shallowRef(SpotlightTopbar),
+
+      topbarProperties: {
+        actions: [
+          [
+            {
+              icon: {
+                name: "person.crop.circle.badge.plus",
+                size: "26px"
+              },
+
+              tooltip: "Invite People",
+              disabled: true
+            },
+
+            {
+              icon: {
+                name: "rectangle.stack.badge.plus",
+                size: "26px"
+              },
+
+              tooltip: "New Channel",
+              disabled: true
+            }
+          ],
+
+          [
+            {
+              icon: {
+                name: "line.3.horizontal.decrease.circle",
+                size: "18px"
+              },
+
+              tooltip: "More Actions",
+              dropdown: [],
+              disabled: true
+            }
+          ]
+        ] as SpotlightTopbarActions
+      }
     };
   }
 };
