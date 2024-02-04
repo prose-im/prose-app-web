@@ -10,9 +10,7 @@
 
 <template lang="pug">
 svg(
-  :style=`{
-    height: size
-  }`
+  :style="iconStyle"
   class="c-base-icon"
 )
   use(
@@ -47,12 +45,28 @@ export default {
     size: {
       type: String,
       default: "18px"
+    },
+
+    fill: {
+      type: String,
+      default: null,
+
+      validator(x: string) {
+        return x.startsWith("rgb(") && x.endsWith(")");
+      }
     }
   },
 
   computed: {
     href(): string {
       return `#${ICON_PREFIX}-${this.name}`;
+    },
+
+    iconStyle(): { [property: string]: string | null } {
+      return {
+        fill: this.fill,
+        height: this.size
+      };
     }
   }
 };
