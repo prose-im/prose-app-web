@@ -15,7 +15,9 @@ layout-view(
   direction="column"
   class="v-app-spotlight-browse"
 )
-  .v-app-spotlight-browse__navigate
+  spotlight-browse-navigate(
+    class="v-app-spotlight-browse__navigate"
+  )
 
   .v-app-spotlight-browse__content
     router-view
@@ -34,9 +36,12 @@ import {
   default as SpotlightTopbar,
   Actions as SpotlightTopbarActions
 } from "@/assemblies/spotlight/SpotlightTopbar.vue";
+import SpotlightBrowseNavigate from "@/components/spotlight/browse/SpotlightBrowseNavigate.vue";
 
 export default {
   name: "AppSpotlightBrowse",
+
+  components: { SpotlightBrowseNavigate },
 
   data() {
     return {
@@ -101,8 +106,8 @@ $c: ".v-app-spotlight-browse";
   }
 
   #{$c}__navigate {
-    background: red;
-    max-width: 240px;
+    border-inline-end: 1px solid rgb(var(--color-border-secondary));
+    max-width: 260px;
     flex: 0 0 auto;
   }
 
