@@ -19,7 +19,9 @@ layout-view(
   )
 
   .v-app-spotlight-browse__content
-    router-view
+    router-view(
+      class="v-app-spotlight-browse__content-inner"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -111,10 +113,17 @@ $c: ".v-app-spotlight-browse";
   }
 
   #{$c}__content {
-    padding-inline-start: (8px + $size-layout-view-content-padding-sides);
-    padding-inline-end: $size-layout-view-content-padding-sides;
+    padding-inline: $size-layout-view-content-padding-sides;
     padding-block: 20px;
+    overflow-x: hidden;
+    overflow-y: auto;
     flex: 1;
+
+    #{$c}__content-inner {
+      height: 100%;
+      max-width: 720px;
+      margin: 0 auto;
+    }
   }
 }
 </style>
