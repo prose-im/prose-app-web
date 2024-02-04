@@ -17,9 +17,7 @@
       name="left"
     )
 
-  .c-layout-toolbar__middle(
-    v-if="$slots.middle"
-  )
+  .c-layout-toolbar__middle
     slot(
       name="middle"
     )
