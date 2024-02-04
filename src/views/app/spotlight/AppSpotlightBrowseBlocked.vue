@@ -10,7 +10,6 @@
 
 <template lang="pug">
 .v-app-spotlight-browse-blocked
-  | (blocked)
 </template>
 
 <!-- **********************************************************************
