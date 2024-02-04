@@ -67,9 +67,6 @@
      ********************************************************************** -->
 
 <script lang="ts">
-// PROJECT: UTILITIES
-import logger from "@/utilities/logger";
-
 // ENUMERATIONS
 enum TimerMode {
   // Register mode.
@@ -238,7 +235,7 @@ export default {
         // Start recording
         this.recorder.start();
       } catch (error) {
-        logger.error("Could not start audio acquire", error);
+        this.$log.error("Could not start audio acquire", error);
 
         // Raise an error
         this.$emit("error", error);
@@ -263,14 +260,14 @@ export default {
 
       // Bind event listeners
       recorder.addEventListener("start", () => {
-        logger.info("Audio recorder started");
+        this.$log.info("Audio recorder started");
 
         // Start timer (reset timer)
         this.setupTimer(TimerMode.Register, true);
       });
 
       recorder.addEventListener("stop", () => {
-        logger.info("Audio recorder stopped");
+        this.$log.info("Audio recorder stopped");
 
         // Stop timer
         this.setupTimer(TimerMode.Unregister);
@@ -282,28 +279,28 @@ export default {
       });
 
       recorder.addEventListener("resume", () => {
-        logger.info("Audio recorder resumed");
+        this.$log.info("Audio recorder resumed");
 
         // Resume timer
         this.setupTimer(TimerMode.Register);
       });
 
       recorder.addEventListener("pause", () => {
-        logger.info("Audio recorder paused");
+        this.$log.info("Audio recorder paused");
 
         // Pause timer
         this.setupTimer(TimerMode.Unregister);
       });
 
       recorder.addEventListener("error", () => {
-        logger.error("Audio recorder error");
+        this.$log.error("Audio recorder error");
 
         // Raise a generic error
         this.$emit("error", new Error("Recorder error"));
       });
 
       recorder.addEventListener("dataavailable", (event: BlobEvent) => {
-        logger.info(
+        this.$log.info(
           `Audio recorder data received (chunk #${this.audioChunks.length})`
         );
 
@@ -321,7 +318,7 @@ export default {
           // Stop recording (forced)
           this.recorder.stop();
         } catch (error) {
-          logger.warn("Failed destroying existing media recorder", error);
+          this.$log.warn("Failed destroying existing media recorder", error);
         }
       }
 
@@ -332,7 +329,7 @@ export default {
             track.stop();
           });
         } catch (error) {
-          logger.warn(
+          this.$log.warn(
             "Failed stopping stream tracks associated to media recorder",
             error
           );

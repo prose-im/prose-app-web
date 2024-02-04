@@ -191,9 +191,6 @@ import InboxFormLoader from "@/components/inbox/InboxFormLoader.vue";
 // PROJECT: STORES
 import Store from "@/store";
 
-// PROJECT: UTILITIES
-import logger from "@/utilities/logger";
-
 // INSTANCES
 const MESSAGE_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
 
@@ -583,13 +580,13 @@ export default {
             case RoomType.DirectMessage:
             case RoomType.Group:
             case RoomType.Generic:
-              logger.warn("This room type does not allow inviting users");
+              this.$log.warn("This room type does not allow inviting users");
 
               break;
 
             case RoomType.PrivateChannel:
             case RoomType.PublicChannel:
-              logger.info(`Inviting user ${jid} to room ${this.room.id}`);
+              this.$log.info(`Inviting user ${jid} to room ${this.room.id}`);
 
               await this.room.inviteUsers([jid.toString()]);
 

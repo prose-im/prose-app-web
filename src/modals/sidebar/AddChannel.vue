@@ -110,9 +110,6 @@ import Broker from "@/broker";
 // PROJECT: COMPOSABLES
 import { useChannelSuggestor } from "@/composables/channel";
 
-// PROJECT: UTILITIES
-import logger from "@/utilities/logger";
-
 // INTERFACES
 export interface EventAddOptions {
   private: boolean;
@@ -210,7 +207,7 @@ export default {
           roomJID =
             (await Broker.$channel.findPublicChannelByName(name)) || null;
         } catch (error) {
-          logger.error(
+          this.$log.error(
             `Could not find public channel when adding channel: '${name}'`,
             error
           );

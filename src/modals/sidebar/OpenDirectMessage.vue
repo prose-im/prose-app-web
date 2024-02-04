@@ -114,9 +114,6 @@ import Broker from "@/broker";
 // PROJECT: COMPOSABLES
 import { useRosterSuggestor } from "@/composables/roster";
 
-// PROJECT: UTILITIES
-import logger from "@/utilities/logger";
-
 // CONSTANTS
 const IDENTITY_ACQUIRE_DELAY = 1000; // 1 second
 
@@ -188,7 +185,7 @@ export default {
         try {
           profile = (await Broker.$profile.loadUserProfile(jid)) || null;
         } catch (error) {
-          logger.error(
+          this.$log.error(
             `Could not load profile when opening direct message: '${jid}'`,
             error
           );
