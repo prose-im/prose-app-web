@@ -263,5 +263,5 @@ const $roster = defineStore("roster", {
  * ************************************************************************* */
 
 export { RosterBlockListStatus };
-export type { RosterContactsEntry, RosterContactsList };
+export type { RosterContactsEntry, RosterContactsList, RosterBlockListEntry };
 export default $roster;
