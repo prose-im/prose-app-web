@@ -66,7 +66,7 @@ list-button(
       tooltip="Still Connecting…"
     )
       base-spinner(
-        :color="active ? '#ffffff' : '#949eb1'"
+        :color="active ? 'rgb(var(--color-white))' : 'rgb(var(--color-base-grey-normal))'"
         size="7px"
         border-width="1px"
         speed="1500ms"

@@ -43,7 +43,7 @@ base-modal(
 
     base-spinner(
       v-if="fetching"
-      color="#949eb1"
+      color="rgb(var(--color-base-grey-normal))"
       size="9px"
       border-width="1.5px"
       class="m-add-channel__form-spinner"
