@@ -27,7 +27,11 @@ export default {
   props: {
     color: {
       type: String,
-      default: "#000000"
+      default: "rgb(var(--color-black))",
+
+      validator(x: string) {
+        return x.startsWith("rgb(") && x.endsWith(")");
+      }
     },
 
     size: {
