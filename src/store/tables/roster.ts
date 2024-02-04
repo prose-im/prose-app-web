@@ -48,8 +48,10 @@ type RosterContactsByJID = {
   [jid: string]: RosterContactsEntry;
 };
 
+type RosterBlockListList = Array<RosterBlockListEntry>;
+
 type RosterBlockListByJID = {
-  [jid: string]: RosterBlockListStatus;
+  [jid: string]: RosterBlockListEntry;
 };
 
 /**************************************************************************
@@ -75,7 +77,14 @@ interface RosterContactsEntry {
 }
 
 interface RosterBlockList {
+  list: RosterBlockListList;
   byJID: RosterBlockListByJID;
+}
+
+interface RosterBlockListEntry {
+  jid: string;
+  name: string;
+  status: RosterBlockListStatus;
 }
 
 /**************************************************************************
@@ -105,6 +114,7 @@ const $roster = defineStore("roster", {
       },
 
       blockList: {
+        list: [],
         byJID: {}
       }
     };
@@ -135,9 +145,15 @@ const $roster = defineStore("roster", {
       };
     },
 
+    getBlockListList: function () {
+      return (): RosterBlockListList => {
+        return this.blockList.list;
+      };
+    },
+
     getBlockListStatus: function () {
       return (jid: JID): RosterBlockListStatus => {
-        const status = this.blockList.byJID[jid.toString()];
+        const status = this.blockList.byJID[jid.toString()]?.status;
 
         return status === undefined ? RosterBlockListStatus.Unblocked : status;
       };
@@ -201,17 +217,28 @@ const $roster = defineStore("roster", {
         LOCAL_STATES.blockListLoaded = true;
 
         // Initialize entries
-        const byJID: RosterBlockListByJID = {};
+        const entries: RosterBlockListList = [],
+          byJID: RosterBlockListByJID = {};
 
         // Load block list
         const blockList = await Broker.$roster.loadBlockList();
 
         blockList.forEach(blockListItem => {
-          // Mark JID as blocked
-          byJID[blockListItem.jid.toString()] = RosterBlockListStatus.Blocked;
+          // Append block list entry
+          const entry = {
+            jid: blockListItem.jid.toString(),
+            name: blockListItem.name,
+            status: RosterBlockListStatus.Blocked
+          };
+
+          entries.push(entry);
+
+          // Append entry to per-JID storage
+          byJID[entry.jid] = entry;
         });
 
         this.$patch(state => {
+          state.blockList.list = entries;
           state.blockList.byJID = byJID;
         });
       }
