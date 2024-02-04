@@ -76,8 +76,11 @@ export default {
 
   props: {
     actions: {
-      type: Object as PropType<Actions>,
-      required: true
+      type: Array as PropType<Actions>,
+
+      default(): Actions {
+        return [];
+      }
     }
   }
 };
