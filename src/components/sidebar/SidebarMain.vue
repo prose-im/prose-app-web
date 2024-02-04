@@ -35,9 +35,10 @@
     )
 
     sidebar-main-section(
+      @click="onSectionBrowseClick"
+      :active="routeName === 'app.spotlight.browse'"
       title="People & channels"
       icon="text.book.closed"
-      disabled
     )
 
   list-disclosure(
@@ -97,6 +98,7 @@
 <script lang="ts">
 // NPM
 import { JID, SidebarItem } from "@prose-im/prose-sdk-js";
+import { RouteRecordName } from "vue-router";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
@@ -150,6 +152,10 @@ export default {
   },
 
   computed: {
+    routeName(): RouteRecordName | null | undefined {
+      return this.$route.name;
+    },
+
     layout(): typeof Store.$layout {
       return Store.$layout;
     },
@@ -302,6 +308,12 @@ export default {
 
     onFavoritesToggle(visible: boolean): void {
       Store.$layout.setSidebarSectionFavorites(visible);
+    },
+
+    onSectionBrowseClick(): void {
+      this.$router.push({
+        name: "app.spotlight.browse"
+      });
     },
 
     onDirectMessageAddClick(): void {
