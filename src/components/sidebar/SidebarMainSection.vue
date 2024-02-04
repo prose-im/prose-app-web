@@ -12,7 +12,12 @@
 list-button(
   :active="active"
   :disabled="disabled"
-  class="c-sidebar-main-section"
+  :class=`[
+    "c-sidebar-main-section",
+    {
+      "c-sidebar-main-section--active": active
+    }
+  ]`
 )
   template(
     v-slot:icon
@@ -71,6 +76,14 @@ $c: ".c-sidebar-main-section";
 .c-sidebar-main-section {
   #{$c}__icon {
     fill: rgb(var(--color-base-blue-dark));
+  }
+
+  // --> BOOLEANS <--
+
+  &--active {
+    #{$c}__icon {
+      fill: rgb(var(--color-white));
+    }
   }
 }
 </style>
