@@ -150,7 +150,7 @@ const $profile = defineStore("profile", {
         ]);
       }
 
-      return Promise.resolve(profile);
+      return profile;
     },
 
     async loadUserProfile(jid: JID): Promise<ProfileEntry> {

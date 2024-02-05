@@ -161,6 +161,10 @@ const $roster = defineStore("roster", {
   },
 
   actions: {
+    events(): ReturnType<typeof mitt> {
+      return EventBus;
+    },
+
     async loadContacts(reload = false): Promise<RosterContactsList> {
       // Load contacts? (or reload)
       if (LOCAL_STATES.contactsLoaded === false || reload === true) {
@@ -208,7 +212,7 @@ const $roster = defineStore("roster", {
         });
       }
 
-      return Promise.resolve(this.contacts.list);
+      return this.contacts.list;
     },
 
     async loadBlockList(reload = false): Promise<void> {
@@ -242,10 +246,6 @@ const $roster = defineStore("roster", {
           state.blockList.byJID = byJID;
         });
       }
-    },
-
-    events(): ReturnType<typeof mitt> {
-      return EventBus;
     },
 
     markContactsChanged() {

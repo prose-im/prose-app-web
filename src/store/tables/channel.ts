@@ -102,14 +102,14 @@ const $channel = defineStore("channel", {
             jid: publicChannel.jid.toString(),
             name: publicChannel.name
           });
+        });
 
-          this.$patch(state => {
-            state.list = entries;
-          });
+        this.$patch(state => {
+          state.list = entries;
         });
       }
 
-      return Promise.resolve(this.list);
+      return this.list;
     },
 
     markChannelsChanged(): void {
