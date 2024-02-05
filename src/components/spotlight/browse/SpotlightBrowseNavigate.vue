@@ -54,6 +54,9 @@
 // PROJECT: COMPONENTS
 import SidebarMainSection from "@/components/sidebar/SidebarMainSection.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 // INTERFACES
 interface Section {
   route: string;
@@ -74,6 +77,10 @@ export default {
       return typeof this.$route.name === "string" ? this.$route.name : "";
     },
 
+    presenceRequests(): ReturnType<typeof Store.$presence.getRequests> {
+      return Store.$presence.getRequests();
+    },
+
     sections(): Array<Section> {
       return [
         {
@@ -92,7 +99,7 @@ export default {
           route: "app.spotlight.browse.invites",
           title: "Invites",
           icon: "bell.fill",
-          count: 1
+          count: this.presenceRequests.length
         },
 
         {
