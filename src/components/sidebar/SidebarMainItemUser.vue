@@ -10,9 +10,14 @@
 
 <template lang="pug">
 sidebar-main-item-generic(
+  :class=`[
+    "c-sidebar-main-item-user",
+    {
+      "c-sidebar-main-item-user--blocked": rosterBlockListBlocked
+    }
+  ]`
   :item="item"
   :active="active"
-  class="c-sidebar-main-item-user"
 )
   template(
     v-slot:icon
@@ -72,6 +77,7 @@ import SidebarMainItemGeneric from "@/components/sidebar/SidebarMainItemGeneric.
 
 // PROJECT: STORES
 import Store from "@/store";
+import { RosterBlockListStatus } from "@/store/tables/roster";
 
 export default {
   name: "SidebarMainItemUser",
@@ -98,6 +104,13 @@ export default {
   computed: {
     statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
       return Store.$activity.getActivity(this.jid);
+    },
+
+    rosterBlockListBlocked(): boolean {
+      return (
+        Store.$roster.getBlockListStatus(this.jid) ===
+        RosterBlockListStatus.Blocked
+      );
     }
   }
 };
@@ -127,6 +140,15 @@ $c: ".c-sidebar-main-item-user";
 
     #{$c}__activity-icon {
       font-size: 16px;
+    }
+  }
+
+  // --> BOOLEANS <--
+
+  &--blocked {
+    #{$c}__name {
+      text-decoration: line-through;
+      text-decoration-thickness: 1px;
     }
   }
 }
