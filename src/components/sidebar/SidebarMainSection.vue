@@ -32,6 +32,16 @@ list-button(
     v-slot:default
   )
     | {{ title }}
+
+  template(
+    v-if="count > 0"
+    v-slot:details
+  )
+    base-count(
+      v-if="count > 0"
+      :count="count"
+      :color="countColor"
+    )
 </template>
 
 <!-- **********************************************************************
@@ -53,6 +63,11 @@ export default {
       required: true
     },
 
+    count: {
+      type: Number,
+      default: 0
+    },
+
     active: {
       type: Boolean,
       default: false
@@ -61,6 +76,12 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    }
+  },
+
+  computed: {
+    countColor(): string {
+      return this.active === true ? "white" : "red";
     }
   }
 };
