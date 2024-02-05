@@ -29,8 +29,12 @@ list-browse(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { JID } from "@prose-im/prose-sdk-js";
+
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
+import BaseAvatar from "@/components/base/BaseAvatar.vue";
 import BaseButton from "@/components/base/BaseButton.vue";
 import { Groups as ListBrowseGroups } from "@/components/list/ListBrowse.vue";
 
@@ -82,9 +86,23 @@ export default {
                   this.pendingResponds[requestRequestId] || false;
 
               return {
-                identity: {
-                  primary: request.name
+                icon: {
+                  component: BaseAvatar,
+
+                  properties: {
+                    jid: new JID(request.jid),
+                    size: "32px",
+                    shadow: "none"
+                  }
                 },
+
+                identity: {
+                  primary: request.name,
+                  secondary: request.jid
+                },
+
+                preview:
+                  "Would like to connect with you, and add each other to their contacts.",
 
                 actions: [
                   {
