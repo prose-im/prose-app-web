@@ -10,10 +10,47 @@
 
 // NPM
 import { defineStore } from "pinia";
-import { Availability, JID } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  Availability,
+  PresenceSubRequestId
+} from "@prose-im/prose-sdk-js";
+import mitt from "mitt";
 
 // PROJECT: STORES
 import Store from "@/store";
+
+// PROJECT: BROKER
+import Broker from "@/broker";
+
+/**************************************************************************
+ * TYPES
+ * ************************************************************************* */
+
+type PresenceRequests = Array<PresenceRequest>;
+
+/**************************************************************************
+ * INTERFACES
+ * ************************************************************************* */
+
+interface Presence {
+  requests: PresenceRequests;
+}
+
+interface PresenceRequest {
+  id: PresenceSubRequestId;
+  name: string;
+}
+
+/**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const LOCAL_STATES = {
+  requestsLoaded: false
+};
+
+const EventBus = mitt();
 
 /**************************************************************************
  * TABLE
@@ -21,6 +58,12 @@ import Store from "@/store";
 
 const $presence = defineStore("presence", {
   persist: false,
+
+  state: (): Presence => {
+    return {
+      requests: []
+    };
+  },
 
   getters: {
     getAvailability: function () {
@@ -55,6 +98,49 @@ const $presence = defineStore("presence", {
         // Availability is unknown (do not return default here)
         return undefined;
       };
+    },
+
+    getRequests: function () {
+      return (): PresenceRequests => {
+        return this.requests;
+      };
+    }
+  },
+
+  actions: {
+    events(): ReturnType<typeof mitt> {
+      return EventBus;
+    },
+
+    async loadRequests(reload = false): Promise<PresenceRequests> {
+      // Load requests? (or reload)
+      if (LOCAL_STATES.requestsLoaded === false || reload === true) {
+        LOCAL_STATES.requestsLoaded = true;
+
+        // Load all presence requests
+        const subscriptionRequests =
+          await Broker.$presence.loadSubscriptionRequests();
+
+        // Generate requests
+        const requests: PresenceRequests = subscriptionRequests.map(
+          subscriptionRequest => {
+            return {
+              id: subscriptionRequest.id,
+              name: subscriptionRequest.name
+            };
+          }
+        );
+
+        this.$patch(state => {
+          state.requests = requests;
+        });
+      }
+
+      return this.requests;
+    },
+
+    marRequestsChanged() {
+      EventBus.emit("requests:changed");
     }
   }
 });
