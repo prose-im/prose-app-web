@@ -66,15 +66,14 @@ export interface Result {
   };
 
   preview?: string;
+  actions?: Array<ResultAction>;
+}
 
-  actions?: [
-    {
-      component: object;
-      label: string;
-      properties?: object;
-      listeners?: object;
-    }
-  ];
+interface ResultAction {
+  component: object;
+  label: string;
+  properties?: object;
+  listeners?: object;
 }
 
 export default {
