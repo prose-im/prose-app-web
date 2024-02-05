@@ -149,4 +149,5 @@ const $presence = defineStore("presence", {
  * EXPORTS
  * ************************************************************************* */
 
+export type { PresenceRequest };
 export default $presence;
