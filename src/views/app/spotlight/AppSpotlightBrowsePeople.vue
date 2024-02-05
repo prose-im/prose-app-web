@@ -13,7 +13,7 @@ list-browse(
   :class=`[
     "v-app-spotlight-browse-people",
     {
-      "v-app-spotlight-browse-people--empty": (groups.length === 0)
+      "v-app-spotlight-browse-people--empty": (groups.length === 0 && !loading)
     }
   ]`
   :groups="groups"
