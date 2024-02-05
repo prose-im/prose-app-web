@@ -40,6 +40,7 @@
     sidebar-main-section(
       @click="onSectionBrowseClick"
       :active="sectionActive.browse"
+      :count="sectionCount.browse"
       title="People & channels"
       icon="text.book.closed"
     )
@@ -148,7 +149,8 @@ export default {
         rooms: true,
         channels: true,
         contacts: true,
-        blockList: true
+        blockList: true,
+        requests: true
       } as { [entry: string]: boolean }
     };
   },
@@ -167,6 +169,12 @@ export default {
       };
     },
 
+    sectionCount(): { [section: string]: number } {
+      return {
+        browse: this.presenceRequests.length
+      };
+    },
+
     layout(): typeof Store.$layout {
       return Store.$layout;
     },
@@ -181,6 +189,10 @@ export default {
 
     itemChannels(): Array<SidebarItem> {
       return Store.$room.getItemChannels();
+    },
+
+    presenceRequests(): ReturnType<typeof Store.$presence.getRequests> {
+      return Store.$presence.getRequests();
     }
   },
 
@@ -233,6 +245,11 @@ export default {
       "blocklist:changed": this.onBlockListChanged
     });
 
+    // Bind presence event handlers
+    useEvents(Store.$presence, {
+      "requests:changed": this.onRequestsChanged
+    });
+
     // Synchronize eagerly
     this.syncAllEager();
   },
@@ -245,7 +262,8 @@ export default {
         this.syncRoomsEager(expunge),
         this.syncContactsEager(expunge),
         this.syncBlockListEager(expunge),
-        this.syncChannelsEager(expunge)
+        this.syncChannelsEager(expunge),
+        this.syncRequestsEager(expunge)
       ]);
     },
 
@@ -289,6 +307,17 @@ export default {
 
         async () => {
           await Store.$channel.load(expunge);
+        }
+      );
+    },
+
+    async syncRequestsEager(expunge = false): Promise<void> {
+      await this.syncGenericEager(
+        "requests",
+        expunge,
+
+        async () => {
+          await Store.$presence.loadRequests(expunge);
         }
       );
     },
@@ -414,6 +443,14 @@ export default {
 
       // Forcibly reload block list
       this.syncBlockListEager(true);
+    },
+
+    onRequestsChanged(): void {
+      // Mark requests as stale (should reload)
+      this.syncStaleness.requests = true;
+
+      // Forcibly reload requests
+      this.syncRequestsEager(true);
     }
   }
 };

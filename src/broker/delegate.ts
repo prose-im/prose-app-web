@@ -103,6 +103,8 @@ class BrokerDelegate implements ProseClientDelegate {
 
   presenceSubscriptionRequestsChanged(): void {
     logger.info("Presence subscription requests changed");
+
+    Store.$presence.marRequestsChanged();
   }
 
   avatarChanged(_client: ProseClient, jid: JID): void {
