@@ -171,7 +171,7 @@ export default {
           // Join channel
           await Broker.$room.join(roomJID);
 
-          // Show information alert
+          // Show success alert
           BaseAlert.success("Channel joined", "Public channel has been joined");
         } catch (error) {
           this.$log.error("Could not join public channel", error);
