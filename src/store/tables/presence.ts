@@ -40,6 +40,7 @@ interface Presence {
 interface PresenceRequest {
   id: PresenceSubRequestId;
   name: string;
+  jid: string;
 }
 
 /**************************************************************************
@@ -126,7 +127,8 @@ const $presence = defineStore("presence", {
           subscriptionRequest => {
             return {
               id: subscriptionRequest.id,
-              name: subscriptionRequest.name
+              name: subscriptionRequest.name,
+              jid: subscriptionRequest.jid.toString()
             };
           }
         );
