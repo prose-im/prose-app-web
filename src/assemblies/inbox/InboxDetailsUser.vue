@@ -498,7 +498,7 @@ export default {
         // Remove contact
         await Broker.$roster.removeContact(this.jid);
 
-        // Show success alert
+        // Show information alert
         BaseAlert.info("Contact removed", "This contact has been removed");
 
         this.modals.removeContact.visible = false;
