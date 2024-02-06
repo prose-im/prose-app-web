@@ -14,13 +14,26 @@ layout-view(
   :topbar-properties="topbarProperties"
   class="v-app-spotlight-browse"
 )
-  spotlight-browse-navigate(
-    class="v-app-spotlight-browse__navigate"
+  template(
+    v-slot:default
   )
+    spotlight-browse-navigate(
+      class="v-app-spotlight-browse__navigate"
+    )
 
-  .v-app-spotlight-browse__content
-    router-view(
-      class="v-app-spotlight-browse__content-inner"
+    .v-app-spotlight-browse__content
+      router-view(
+        class="v-app-spotlight-browse__content-inner"
+      )
+
+  template(
+    v-slot:modals
+  )
+    add-external-contact(
+      v-if="modals.addExternalContact.visible"
+      @add="onModalAddExternalContactAdd"
+      @close="onModalAddExternalContactClose"
+      :loading="modals.addExternalContact.loading"
     )
 </template>
 
@@ -31,6 +44,10 @@ layout-view(
 <script lang="ts">
 // NPM
 import { shallowRef } from "vue";
+import { JID } from "@prose-im/prose-sdk-js";
+
+// PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 
 // PROJECT: ASSEMBLIES
 import {
@@ -39,13 +56,28 @@ import {
 } from "@/assemblies/spotlight/SpotlightTopbar.vue";
 import SpotlightBrowseNavigate from "@/components/spotlight/browse/SpotlightBrowseNavigate.vue";
 
+// PROJECT: MODALS
+import AddExternalContact from "@/modals/spotlight/AddExternalContact.vue";
+
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 export default {
   name: "AppSpotlightBrowse",
 
-  components: { SpotlightBrowseNavigate },
+  components: { SpotlightBrowseNavigate, AddExternalContact },
 
   data() {
     return {
+      // --> STATE <--
+
+      modals: {
+        addExternalContact: {
+          visible: false,
+          loading: false
+        }
+      },
+
       // --> DATA <--
 
       topbarComponent: shallowRef(SpotlightTopbar),
@@ -59,36 +91,52 @@ export default {
                 size: "26px"
               },
 
-              tooltip: "Invite People",
-              disabled: true
-            },
-
-            {
-              icon: {
-                name: "rectangle.stack.badge.plus",
-                size: "26px"
-              },
-
-              tooltip: "New Channel",
-              disabled: true
-            }
-          ],
-
-          [
-            {
-              icon: {
-                name: "line.3.horizontal.decrease.circle",
-                size: "18px"
-              },
-
-              tooltip: "More Actions",
-              dropdown: [],
-              disabled: true
+              tooltip: "Add External Contact",
+              click: this.onTopbarActionAddExternalContactClick
             }
           ]
         ] as SpotlightTopbarActions
       }
     };
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    onTopbarActionAddExternalContactClick(): void {
+      this.modals.addExternalContact.visible = true;
+    },
+
+    async onModalAddExternalContactAdd(jid: JID): Promise<void> {
+      try {
+        this.modals.addExternalContact.loading = true;
+
+        // Add external contact
+        await Broker.$roster.addContact(jid);
+
+        // Show success alert
+        BaseAlert.success(
+          "External contact added",
+          "Your contact has received an invitation"
+        );
+
+        this.modals.addExternalContact.visible = false;
+      } catch (error) {
+        this.$log.error("Failed adding external contact", error);
+
+        // Show error alert
+        BaseAlert.error(
+          "Cannot add external contact",
+          "Your contact could not be added. Try again?"
+        );
+      } finally {
+        this.modals.addExternalContact.loading = false;
+      }
+    },
+
+    onModalAddExternalContactClose(): void {
+      this.modals.addExternalContact.visible = false;
+    }
   }
 };
 </script>
