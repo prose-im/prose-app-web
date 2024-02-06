@@ -19,7 +19,7 @@
     )
 
   .c-list-browse__empty(
-    v-else-if="groups.length === 0"
+    v-if="!loading && groups.length === 0"
   )
     base-placeholder-image(
       :illustration="emptyIllustration"
@@ -28,7 +28,7 @@
     )
 
   template(
-    v-else
+    v-if="groups.length > 0"
   )
     .c-list-browse__group(
       v-for="group in groups"
@@ -125,6 +125,7 @@ $c: ".c-list-browse";
 
   #{$c}__loading {
     padding-block-start: 5px;
+    padding-block-end: 20px;
   }
 
   #{$c}__empty {
