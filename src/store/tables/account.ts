@@ -165,8 +165,6 @@ const $account = defineStore("account", {
     async loadInformation(reload = false): Promise<void> {
       // Load information? (or reload)
       if (LOCAL_STATES.informationLoaded === false || reload === true) {
-        LOCAL_STATES.informationLoaded = true;
-
         // Load account information
         const accountInfo = await Broker.$account.loadAccountInfo();
 
@@ -193,6 +191,9 @@ const $account = defineStore("account", {
             );
           });
         }
+
+        // Mark as loaded
+        LOCAL_STATES.informationLoaded = true;
       }
     },
 

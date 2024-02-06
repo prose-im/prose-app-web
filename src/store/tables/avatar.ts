@@ -82,7 +82,7 @@ const $avatar = defineStore("avatar", {
     async load(jid: JID): Promise<void> {
       const jidString = jid.toString();
 
-      // Not already loading? Load now.
+      // Already loading? Skip this one.
       if (LOCAL_STATES.loading[jidString]) {
         return;
       }

@@ -88,8 +88,6 @@ const $channel = defineStore("channel", {
     async load(reload = false): Promise<ChannelList> {
       // Load channels? (or reload)
       if (LOCAL_STATES.loaded === false || reload === true) {
-        LOCAL_STATES.loaded = true;
-
         // Initialize entries
         const entries: ChannelList = [];
 
@@ -107,6 +105,9 @@ const $channel = defineStore("channel", {
         this.$patch(state => {
           state.list = entries;
         });
+
+        // Mark as loaded
+        LOCAL_STATES.loaded = true;
       }
 
       return this.list;

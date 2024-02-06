@@ -168,8 +168,6 @@ const $roster = defineStore("roster", {
     async loadContacts(reload = false): Promise<RosterContactsList> {
       // Load contacts? (or reload)
       if (LOCAL_STATES.contactsLoaded === false || reload === true) {
-        LOCAL_STATES.contactsLoaded = true;
-
         // Initialize entries
         const entries: RosterContactsList = [],
           byGroup: RosterContactsByGroup = {},
@@ -210,16 +208,17 @@ const $roster = defineStore("roster", {
           state.contacts.byGroup = byGroup;
           state.contacts.byJID = byJID;
         });
+
+        // Mark as loaded
+        LOCAL_STATES.contactsLoaded = true;
       }
 
       return this.contacts.list;
     },
 
-    async loadBlockList(reload = false): Promise<void> {
+    async loadBlockList(reload = false): Promise<RosterBlockListList> {
       // Load block list? (or reload)
       if (LOCAL_STATES.blockListLoaded === false || reload === true) {
-        LOCAL_STATES.blockListLoaded = true;
-
         // Initialize entries
         const entries: RosterBlockListList = [],
           byJID: RosterBlockListByJID = {};
@@ -245,7 +244,12 @@ const $roster = defineStore("roster", {
           state.blockList.list = entries;
           state.blockList.byJID = byJID;
         });
+
+        // Mark as loaded
+        LOCAL_STATES.blockListLoaded = true;
       }
+
+      return this.blockList.list;
     },
 
     markContactsChanged() {

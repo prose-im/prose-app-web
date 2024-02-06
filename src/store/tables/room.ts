@@ -146,8 +146,6 @@ const $room = defineStore("room", {
     async load(reload = false): Promise<void> {
       // Load room list? (or reload)
       if (LOCAL_STATES.loaded !== true || reload === true) {
-        LOCAL_STATES.loaded = true;
-
         // Initialize entries
         const favorites: Array<SidebarItem> = [],
           directMessages: Array<SidebarItem> = [],
@@ -199,6 +197,9 @@ const $room = defineStore("room", {
           // Store rooms map
           state.byId = roomsById;
         });
+
+        // Mark as loaded
+        LOCAL_STATES.loaded = true;
       }
     },
 

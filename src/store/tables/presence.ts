@@ -116,8 +116,6 @@ const $presence = defineStore("presence", {
     async loadRequests(reload = false): Promise<PresenceRequests> {
       // Load requests? (or reload)
       if (LOCAL_STATES.requestsLoaded === false || reload === true) {
-        LOCAL_STATES.requestsLoaded = true;
-
         // Load all presence requests
         const subscriptionRequests =
           await Broker.$presence.loadSubscriptionRequests();
@@ -136,6 +134,9 @@ const $presence = defineStore("presence", {
         this.$patch(state => {
           state.requests = requests;
         });
+
+        // Mark as loaded
+        LOCAL_STATES.requestsLoaded = true;
       }
 
       return this.requests;

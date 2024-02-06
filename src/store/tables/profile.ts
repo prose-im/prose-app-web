@@ -141,13 +141,14 @@ const $profile = defineStore("profile", {
 
       // Load profile? (or reload)
       if (LOCAL_STATES.loaded[jidString] !== true || reload === true) {
-        LOCAL_STATES.loaded[jidString] = true;
-
         // Load all profile parts at once
         await Promise.all([
           this.loadUserProfile(jid),
           this.loadUserMetadata(jid)
         ]);
+
+        // Mark as loaded
+        LOCAL_STATES.loaded[jidString] = true;
       }
 
       return profile;
