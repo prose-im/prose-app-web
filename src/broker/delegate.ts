@@ -85,8 +85,8 @@ class BrokerDelegate implements ProseClientDelegate {
     Store.$room.updateRoom(room.id, room);
   }
 
-  contactChanged(_client: ProseClient, jid: JID): void {
-    logger.info(`Contact changed: ${jid}`);
+  contactChanged(_client: ProseClient, jids: Array<JID>): void {
+    logger.info(`Contacts changed: ${jids.join(", ")}`);
   }
 
   contactListChanged(): void {
@@ -107,10 +107,12 @@ class BrokerDelegate implements ProseClientDelegate {
     Store.$presence.marRequestsChanged();
   }
 
-  avatarChanged(_client: ProseClient, jid: JID): void {
-    logger.info(`Avatar changed: ${jid}`);
+  avatarChanged(_client: ProseClient, jids: Array<JID>): void {
+    logger.info(`Avatars changed: ${jids.join(", ")}`);
 
-    Store.$avatar.load(jid);
+    jids.forEach(jid => {
+      Store.$avatar.load(jid);
+    });
   }
 
   async accountInfoChanged(): Promise<void> {
