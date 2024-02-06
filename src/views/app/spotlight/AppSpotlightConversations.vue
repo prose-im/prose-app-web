@@ -38,15 +38,3 @@ export default {
   }
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".v-app-spotlight-conversations";
-
-.v-app-spotlight-conversations {
-  /* TODO */
-}
-</style>

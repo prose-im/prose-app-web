@@ -34,11 +34,3 @@ export default {
   name: "TopbarActionsSearch"
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".c-topbar-actions-search";
-</style>
