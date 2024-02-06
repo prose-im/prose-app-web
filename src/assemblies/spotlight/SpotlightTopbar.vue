@@ -30,6 +30,7 @@ layout-toolbar(
         direction="bottom"
       )
         base-action(
+          @click="action.click ? action.click() : null"
           :icon="action.icon.name"
           :size="action.icon.size"
           :dropdown="action.dropdown ? true : false"
@@ -66,6 +67,7 @@ export interface Action {
 
   tooltip: string;
   dropdown: Array<void>;
+  click?: () => void;
   disabled?: boolean;
 }
 
