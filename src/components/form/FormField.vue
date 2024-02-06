@@ -10,6 +10,7 @@
 
 <template lang="pug">
 div(
+  v-click-away="onClickAway"
   :class=`[
     "c-form-field",
     "c-form-field--" + type,
@@ -330,6 +331,13 @@ export default {
     },
 
     // --> EVENT LISTENERS <--
+
+    onClickAway(): void {
+      // Clear suggestions?
+      if (this.hasSuggestions === true) {
+        this.clearAllSuggestions();
+      }
+    },
 
     onFieldKeyDown(event: KeyboardEvent): void {
       const keyCode = event.keyCode;
