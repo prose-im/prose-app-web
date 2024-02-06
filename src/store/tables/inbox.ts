@@ -16,7 +16,9 @@ import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/mess
 import {
   Message as CoreMessage,
   UserBasicInfo as CoreUser,
-  RoomID
+  Room,
+  RoomID,
+  RoomType
 } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
@@ -100,7 +102,13 @@ const EventBus = mitt();
  * METHODS
  * ************************************************************************* */
 
-const fromCoreMessage = function (message: CoreMessage): InboxEntryMessage {
+const fromCoreMessage = function (
+  room: Room,
+  message: CoreMessage
+): InboxEntryMessage {
+  // Generate inbox message from core message
+  // Notice: public channel messages are considered as secure even if not \
+  //   encrypted.
   return {
     id: message.id,
     archiveId: message.archiveId,
@@ -108,6 +116,12 @@ const fromCoreMessage = function (message: CoreMessage): InboxEntryMessage {
     date: message.date.toISOString(),
     from: message.user.jid,
     content: message.content,
+
+    metas: {
+      secure: room.type === RoomType.PublicChannel,
+      encrypted: false,
+      edited: false
+    },
 
     reactions: message.reactions.map(reaction => {
       return {
@@ -194,13 +208,13 @@ const $inbox = defineStore("inbox", {
       return this.assert(roomId).states;
     },
 
-    insertCoreMessages(roomId: RoomID, messages: CoreMessage[]): boolean {
+    insertCoreMessages(room: Room, messages: CoreMessage[]): boolean {
       let hasInserted = false;
 
       messages.forEach(message => {
         // Update sender names contained into message
         this.setName(
-          roomId,
+          room.id,
           message.user.jid,
           message.user.name,
           InboxNameOrigin.Message
@@ -208,7 +222,9 @@ const $inbox = defineStore("inbox", {
 
         // Insert messages
         // Notice: update inserted marker if this message was inserted.
-        if (this.insertMessage(roomId, fromCoreMessage(message)) === true) {
+        if (
+          this.insertMessage(room.id, fromCoreMessage(room, message)) === true
+        ) {
           hasInserted = true;
         }
       });

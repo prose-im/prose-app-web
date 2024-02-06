@@ -135,7 +135,7 @@ class BrokerDelegate implements ProseClientDelegate {
     const messages = await room.loadMessagesWithIDs(messageIDs);
 
     // Insert all appended messages
-    const hasInserted = Store.$inbox.insertCoreMessages(room.id, messages);
+    const hasInserted = Store.$inbox.insertCoreMessages(room, messages);
 
     // Play incoming message sound? (only for messages from remote users)
     if (hasInserted === true) {
@@ -195,7 +195,7 @@ class BrokerDelegate implements ProseClientDelegate {
       Store.$inbox.updateMessage(
         room.id,
         message.id,
-        inboxMessageFromCore(message)
+        inboxMessageFromCore(room, message)
       );
     }
   }
