@@ -130,7 +130,7 @@ export default {
 <style lang="scss">
 $c: ".c-spotlight-browse-navigate";
 
-.c-spotlight-browse-navigate {
+#{$c} {
   padding-inline: 4px;
   padding-block: 14px;
   box-sizing: border-box;

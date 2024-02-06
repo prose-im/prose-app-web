@@ -134,7 +134,7 @@ export default {
 <style lang="scss">
 $c: ".c-list-disclosure";
 
-.c-list-disclosure {
+#{$c} {
   #{$c}__header {
     color: rgb(var(--color-base-grey-normal));
     font-size: 12.5px;

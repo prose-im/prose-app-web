@@ -29,7 +29,7 @@ export default {
 <style lang="scss">
 $c: ".c-list-divider";
 
-.c-list-divider {
+#{$c} {
   background-color: rgb(var(--color-base-grey-light));
   height: 1px;
   margin-block: 7px;

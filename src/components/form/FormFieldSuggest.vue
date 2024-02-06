@@ -253,7 +253,7 @@ $suggest-sizes: (
   )
 );
 
-.c-form-field-suggest {
+#{$c} {
   background-color: rgb(var(--color-background-secondary));
   border: 1px solid rgb(var(--color-border-primary));
   padding: 4px;

@@ -279,7 +279,7 @@ export default {
 <style lang="scss">
 $c: ".v-app-spotlight-browse-people";
 
-.v-app-spotlight-browse-people {
+#{$c} {
   padding-block: $size-spotlight-browse-padding-block-start
     $size-spotlight-browse-padding-block-end;
 

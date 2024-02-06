@@ -29,7 +29,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-separator";
 
-.c-base-separator {
+#{$c} {
   background-color: rgb(var(--color-border-secondary));
   width: 1px;
   height: 20px;

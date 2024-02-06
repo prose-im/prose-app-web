@@ -79,7 +79,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-popup";
 
-.c-base-popup {
+#{$c} {
   background-color: rgba(var(--color-base-grey-dark), 0.35);
   user-select: none;
   position: fixed;

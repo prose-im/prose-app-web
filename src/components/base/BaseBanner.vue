@@ -78,7 +78,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-banner";
 
-.c-base-banner {
+#{$c} {
   color: rgb(var(--color-text-reverse));
   min-height: 26px;
   padding-inline: 20px;

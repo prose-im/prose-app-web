@@ -52,7 +52,7 @@ export default {
 <style lang="scss">
 $c: ".c-layout-avatar-presence";
 
-.c-layout-avatar-presence {
+#{$c} {
   line-height: 0;
   display: inline-block;
   position: relative;

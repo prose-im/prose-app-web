@@ -629,7 +629,7 @@ $form-compose-send-button-size: (
   $form-compose-field-height-minimum - (2 * $form-compose-send-position-edges)
 );
 
-.a-inbox-form {
+#{$c} {
   position: relative;
 
   #{$c}__action {

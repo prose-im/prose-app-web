@@ -107,7 +107,7 @@ export default {
 <style lang="scss">
 $c: ".a-inbox-details";
 
-.a-inbox-details {
+#{$c} {
   padding: 20px 0;
   overflow-x: hidden;
   overflow-y: auto;

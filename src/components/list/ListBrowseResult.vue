@@ -95,7 +95,7 @@ export default {
 <style lang="scss">
 $c: ".c-list-browse-result";
 
-.c-list-browse-result {
+#{$c} {
   background-color: rgb(var(--color-white));
   border: 1px solid rgb(var(--color-border-primary));
   padding-inline: 18px;

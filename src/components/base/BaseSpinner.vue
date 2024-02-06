@@ -71,7 +71,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-spinner";
 
-.c-base-spinner {
+#{$c} {
   text-align: center;
   line-height: 0;
 

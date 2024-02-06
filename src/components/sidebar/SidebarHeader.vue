@@ -148,7 +148,7 @@ export default {
 <style lang="scss">
 $c: ".c-sidebar-header";
 
-.c-sidebar-header {
+#{$c} {
   display: flex;
   align-items: center;
 

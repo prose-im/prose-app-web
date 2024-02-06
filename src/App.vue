@@ -152,7 +152,7 @@ export default {
 <style lang="scss">
 $c: ".s-app";
 
-.s-app {
+#{$c} {
   background-color: rgb(var(--color-background-primary));
   color: rgb(var(--color-black));
   user-select: none;

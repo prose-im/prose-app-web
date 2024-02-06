@@ -130,7 +130,7 @@ export default {
 <style lang="scss">
 $c: ".a-start-login-form";
 
-.a-start-login-form {
+#{$c} {
   width: 100%;
   max-width: 420px;
 

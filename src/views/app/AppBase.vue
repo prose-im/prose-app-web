@@ -40,7 +40,7 @@ export default {
 <style lang="scss">
 $c: ".v-app-base";
 
-.v-app-base {
+#{$c} {
   height: 100%;
   width: 100%;
   display: flex;

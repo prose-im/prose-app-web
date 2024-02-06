@@ -157,7 +157,7 @@ $c: ".c-inbox-details-user-security-details-identity";
 // VARIABLES
 $quickie-icon-size: 26px;
 
-.c-inbox-details-user-security-details-identity {
+#{$c} {
   #{$c}__quickie {
     background-color: rgb(var(--color-background-secondary));
   }

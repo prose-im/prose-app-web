@@ -753,7 +753,7 @@ $c: ".c-sidebar-context";
 $current-status-define-padding-inline: 5px;
 $current-status-define-padding-block: 2px;
 
-.c-sidebar-context {
+#{$c} {
   display: flex;
   align-items: center;
 

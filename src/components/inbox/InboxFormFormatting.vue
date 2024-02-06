@@ -169,7 +169,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-form-formatting";
 
-.c-inbox-form-formatting {
+#{$c} {
   #{$c}__group {
     border-block-end: 1px solid rgb(var(--color-border-tertiary));
     font-size: 13px;

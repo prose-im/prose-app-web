@@ -403,7 +403,7 @@ export default {
 <style lang="scss">
 $c: ".p-edit-profile";
 
-.p-edit-profile {
+#{$c} {
   #{$c}__form {
     #{$c}__form-offset-sides {
       margin-inline: (-1 * $size-layout-popup-navigate-padding-inline);

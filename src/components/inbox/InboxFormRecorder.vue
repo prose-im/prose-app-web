@@ -437,7 +437,7 @@ $c: ".c-inbox-form-recorder";
 $recorder-cancel-button-size: 20px;
 $recorder-send-button-size: 24px;
 
-.c-inbox-form-recorder {
+#{$c} {
   background-color: rgb(var(--color-base-green-normal));
   border: 1px solid rgba(var(--color-black), 0.09);
   color: rgb(var(--color-text-reverse));

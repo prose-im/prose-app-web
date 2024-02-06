@@ -102,7 +102,7 @@ export default {
 <style lang="scss">
 $c: ".c-sidebar-main-item-multi";
 
-.c-sidebar-main-item-multi {
+#{$c} {
   #{$c}__icon {
     fill: rgb(var(--color-base-blue-dark));
     margin-block-start: 2px;

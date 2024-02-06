@@ -30,7 +30,7 @@ export default {
 <style lang="scss">
 $c: ".c-layout-actions";
 
-.c-layout-actions {
+#{$c} {
   display: flex;
 
   > * {

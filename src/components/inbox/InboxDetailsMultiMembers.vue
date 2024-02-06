@@ -194,7 +194,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-details-multi-members";
 
-.c-inbox-details-multi-members {
+#{$c} {
   #{$c}__member {
     #{$c}__presence {
       margin-inline-start: 4px;

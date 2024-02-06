@@ -199,7 +199,7 @@ export default {
 <style lang="scss">
 $c: ".v-app-spotlight-browse-blocked";
 
-.v-app-spotlight-browse-blocked {
+#{$c} {
   padding-block: $size-spotlight-browse-padding-block-start
     $size-spotlight-browse-padding-block-end;
 

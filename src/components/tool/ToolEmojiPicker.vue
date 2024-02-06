@@ -59,7 +59,7 @@ export default {
 <style lang="scss">
 $c: ".c-tool-emoji-picker";
 
-.c-tool-emoji-picker {
+#{$c} {
   &.v3-emoji-picker {
     background: transparent;
     color: inherit;

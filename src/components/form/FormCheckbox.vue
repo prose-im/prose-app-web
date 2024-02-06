@@ -119,7 +119,7 @@ export default {
 <style lang="scss">
 $c: ".c-form-checkbox";
 
-.c-form-checkbox {
+#{$c} {
   text-align: left;
   display: flex;
   align-items: center;

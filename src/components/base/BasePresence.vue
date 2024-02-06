@@ -142,7 +142,7 @@ $availabilities: (
   "unavailable": var(--color-base-grey-normal)
 );
 
-.c-base-presence {
+#{$c} {
   background-color: transparent;
   border: 1px solid rgb(var(--color-base-grey-normal));
   display: inline-block;

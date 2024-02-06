@@ -193,7 +193,7 @@ $popup-max-height-medium: 660px;
 $popup-max-width-small: 640px;
 $popup-max-height-small: 540px;
 
-.c-layout-popup-navigate {
+#{$c} {
   #{$c}__popup {
     width: calc(100% - #{$popup-width-full-margin-inline});
     height: calc(100% - #{$popup-height-full-margin-block});

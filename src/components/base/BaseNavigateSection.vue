@@ -92,7 +92,7 @@ $c: ".c-base-navigate-section";
 // VARIABLES
 $icon-size: 28px;
 
-.c-base-navigate-section {
+#{$c} {
   background-color: transparent;
   padding: 5px 10px;
   display: flex;

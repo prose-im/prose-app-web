@@ -364,7 +364,7 @@ $c: ".c-inbox-file-preview";
 // VARIABLES
 $file-preview-border-radius: 9px;
 
-.c-inbox-file-preview {
+#{$c} {
   background-color: transparent;
   padding: 40px 60px;
   display: flex;

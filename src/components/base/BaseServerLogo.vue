@@ -77,7 +77,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-server-logo";
 
-.c-base-server-logo {
+#{$c} {
   background-color: rgb(var(--color-base-grey-light));
   background-position: center;
   background-size: cover;

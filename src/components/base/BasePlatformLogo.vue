@@ -93,7 +93,7 @@ $c: ".c-base-platform-logo";
 // VARIABLES
 $name-logos: ("web", "macos", "ios", "windows", "android", "linux");
 
-.c-base-platform-logo {
+#{$c} {
   background-color: rgb(var(--color-white));
   border: 0.5px solid rgb(var(--color-black));
   width: 46px;

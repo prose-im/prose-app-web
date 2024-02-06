@@ -155,7 +155,7 @@ export default {
 <style lang="scss">
 $c: ".p-account-settings";
 
-.p-account-settings {
+#{$c} {
   #{$c}__actions {
     display: flex;
     align-items: center;

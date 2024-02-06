@@ -203,7 +203,7 @@ export default {
 <style lang="scss">
 $c: ".c-sidebar-main-item-generic";
 
-.c-sidebar-main-item-generic {
+#{$c} {
   #{$c}__draft {
     fill: rgb(var(--color-base-grey-dark));
   }

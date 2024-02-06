@@ -68,7 +68,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-badge-details";
 
-.c-base-badge-details {
+#{$c} {
   #{$c}__detail {
     margin-block-end: 12px;
     display: flex;

@@ -254,7 +254,7 @@ export default {
 <style lang="scss">
 $c: ".v-app-spotlight-browse-invites";
 
-.v-app-spotlight-browse-invites {
+#{$c} {
   padding-block: $size-spotlight-browse-padding-block-start
     $size-spotlight-browse-padding-block-end;
 

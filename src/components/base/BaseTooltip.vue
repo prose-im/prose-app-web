@@ -157,7 +157,7 @@ $tooltip-area-width: 1000px;
 $tooltip-spacing-block: 6px;
 $tooltip-spacing-inline: -3px;
 
-.c-base-tooltip {
+#{$c} {
   display: inline-block;
   position: relative;
 

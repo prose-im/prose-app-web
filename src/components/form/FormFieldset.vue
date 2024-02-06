@@ -30,7 +30,7 @@ export default {
 <style lang="scss">
 $c: ".c-form-fieldset";
 
-.c-form-fieldset {
+#{$c} {
   & + #{$c} {
     &:before {
       content: "";

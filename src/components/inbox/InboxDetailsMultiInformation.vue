@@ -120,7 +120,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-details-multi-information";
 
-.c-inbox-details-multi-information {
+#{$c} {
   #{$c}__icon {
     fill: lighten-var(var(--color-base-grey-dark), 10%);
   }

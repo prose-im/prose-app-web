@@ -269,7 +269,7 @@ export default {
 <style lang="scss">
 $c: ".m-open-direct-message";
 
-.m-open-direct-message {
+#{$c} {
   #{$c}__form {
     margin-block-start: 20px;
     display: flex;

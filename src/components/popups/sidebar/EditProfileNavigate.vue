@@ -263,7 +263,7 @@ export default {
 <style lang="scss">
 $c: ".p-edit-profile-navigate";
 
-.p-edit-profile-navigate {
+#{$c} {
   #{$c}__identity {
     text-align: center;
 

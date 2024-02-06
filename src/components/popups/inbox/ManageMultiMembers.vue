@@ -178,7 +178,7 @@ export default {
 <style lang="scss">
 $c: ".p-manage-multi-members";
 
-.p-manage-multi-members {
+#{$c} {
   &,
   #{$c}__fieldset {
     display: flex;

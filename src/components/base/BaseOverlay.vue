@@ -44,7 +44,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-overlay";
 
-.c-base-overlay {
+#{$c} {
   background-color: rgba(var(--color-white), 0.65);
   backdrop-filter: blur(6px);
   display: flex;

@@ -296,7 +296,7 @@ export default {
 <style lang="scss">
 $c: ".m-add-channel";
 
-.m-add-channel {
+#{$c} {
   #{$c}__form {
     margin-block-start: 20px;
     display: flex;

@@ -100,7 +100,7 @@ $illustration-images: (
   "welcome": 477px
 );
 
-.c-base-placeholder-image {
+#{$c} {
   max-width: calc(
     ($illustration-image-width / $illustration-image-scale-factor) +
       (2 * $illustration-margin-sides)

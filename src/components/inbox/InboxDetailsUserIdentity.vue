@@ -159,7 +159,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-details-user-identity";
 
-.c-inbox-details-user-identity {
+#{$c} {
   text-align: center;
 
   #{$c}__avatar {

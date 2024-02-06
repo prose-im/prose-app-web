@@ -98,7 +98,7 @@ export default {
 <style lang="scss">
 $c: ".v-start-login";
 
-.v-start-login {
+#{$c} {
   height: 100%;
   width: 100%;
   overflow: hidden;
@@ -146,7 +146,7 @@ $c: ".v-start-login";
 // --> MEDIA-QUERIES <--
 
 @media (max-width: 640px) {
-  .v-start-login {
+  #{$c} {
     #{$c}__identity {
       left: 50%;
       transform: translateX(-50%);
@@ -155,7 +155,7 @@ $c: ".v-start-login";
 }
 
 @media (max-height: 640px) {
-  .v-start-login {
+  #{$c} {
     #{$c}__identity {
       display: none;
     }

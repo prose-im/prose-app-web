@@ -73,7 +73,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-navigate";
 
-.c-base-navigate {
+#{$c} {
   #{$c}__section {
     margin-block-end: 2px;
 

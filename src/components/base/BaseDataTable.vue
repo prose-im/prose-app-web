@@ -354,7 +354,7 @@ $c: ".c-base-data-table";
 $controls-button-width: 26px;
 $controls-button-height: 22px;
 
-.c-base-data-table {
+#{$c} {
   background-color: rgb(var(--color-background-primary));
   border-block: 1px solid rgb(var(--color-border-primary));
   min-height: 200px;

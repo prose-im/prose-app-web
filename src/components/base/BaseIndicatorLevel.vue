@@ -99,7 +99,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-indicator-level";
 
-.c-base-indicator-level {
+#{$c} {
   display: flex;
   align-items: center;
 

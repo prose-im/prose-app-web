@@ -131,7 +131,7 @@ export default {
 <style lang="scss">
 $c: ".c-list-button";
 
-.c-list-button {
+#{$c} {
   background-color: transparent;
   display: flex;
   align-items: center;

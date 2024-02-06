@@ -71,7 +71,7 @@ $c: ".c-base-count";
 $count-size-base: 20px;
 $count-padding-sides: 5px;
 
-.c-base-count {
+#{$c} {
   font-size: 12px;
   text-align: center;
   line-height: $count-size-base;

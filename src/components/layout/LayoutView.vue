@@ -70,7 +70,7 @@ export default {
 <style lang="scss">
 $c: ".c-layout-view";
 
-.c-layout-view {
+#{$c} {
   height: 100%;
   width: 100%;
   display: flex;

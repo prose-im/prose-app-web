@@ -229,7 +229,7 @@ $size-large-padding-sides: 24px;
 $size-mid-large-padding-sides: 34px;
 $size-ultra-large-padding-sides: 44px;
 
-.c-base-button {
+#{$c} {
   display: inline-block;
 
   #{$c}__inner {

@@ -155,7 +155,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-action";
 
-.c-base-action {
+#{$c} {
   display: inline-block;
   position: relative;
 

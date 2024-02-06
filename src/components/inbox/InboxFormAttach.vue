@@ -53,7 +53,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-form-attach";
 
-.c-inbox-form-attach {
+#{$c} {
   position: absolute;
   inset: 0;
   z-index: 1;

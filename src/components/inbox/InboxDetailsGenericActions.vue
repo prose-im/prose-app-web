@@ -116,7 +116,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-details-generic-actions";
 
-.c-inbox-details-generic-actions {
+#{$c} {
   #{$c}__action {
     #{$c}__action-navigate {
       fill: rgb(var(--color-base-grey-dark));

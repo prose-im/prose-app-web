@@ -64,7 +64,7 @@ $size-widths: (
   "large": 140px
 );
 
-.c-base-prose-logo {
+#{$c} {
   @include mask-image("/images/components/base/BaseProseLogo/logo-path.svg");
   @include mask-repeat(no-repeat);
   @include mask-size(contain);

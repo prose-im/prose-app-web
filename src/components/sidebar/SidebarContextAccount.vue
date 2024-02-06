@@ -87,7 +87,7 @@ export default {
 <style lang="scss">
 $c: ".c-sidebar-context-account";
 
-.c-sidebar-context-account {
+#{$c} {
   padding-inline-end: 26px;
   display: flex;
   align-items: center;

@@ -266,7 +266,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-avatar";
 
-.c-base-avatar {
+#{$c} {
   color: rgb(var(--color-text-reverse));
   background-color: rgb(var(--color-base-grey-light));
   background-position: center;

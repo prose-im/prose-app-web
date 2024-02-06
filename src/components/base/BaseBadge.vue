@@ -81,7 +81,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-badge";
 
-.c-base-badge {
+#{$c} {
   background-color: rgb(var(--color-black));
   display: flex;
   align-items: center;

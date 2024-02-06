@@ -44,7 +44,7 @@ export default {
 <style lang="scss">
 $c: ".m-sign-out";
 
-.m-sign-out {
+#{$c} {
   #{$c}__placeholder {
     margin-inline: auto;
     margin-block: 16px 36px;

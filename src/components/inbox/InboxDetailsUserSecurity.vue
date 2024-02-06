@@ -258,7 +258,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-details-user-security";
 
-.c-inbox-details-user-security {
+#{$c} {
   #{$c}__icon {
     &--identity-verified {
       fill: rgb(var(--color-base-green-normal));

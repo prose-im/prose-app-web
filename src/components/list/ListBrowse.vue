@@ -115,7 +115,7 @@ export default {
 <style lang="scss">
 $c: ".c-list-browse";
 
-.c-list-browse {
+#{$c} {
   #{$c}__loading,
   #{$c}__empty {
     height: 100%;

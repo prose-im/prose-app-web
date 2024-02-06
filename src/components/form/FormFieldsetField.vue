@@ -70,7 +70,7 @@ export default {
 <style lang="scss">
 $c: ".c-form-fieldset-field";
 
-.c-form-fieldset-field {
+#{$c} {
   margin-block-end: 6px;
   display: flex;
   align-items: center;

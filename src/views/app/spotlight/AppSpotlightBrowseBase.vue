@@ -148,7 +148,7 @@ export default {
 <style lang="scss">
 $c: ".v-app-spotlight-browse";
 
-.v-app-spotlight-browse {
+#{$c} {
   #{$c}__navigate,
   #{$c}__content {
     height: 100%;

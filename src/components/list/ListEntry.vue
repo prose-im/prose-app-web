@@ -61,7 +61,7 @@ export default {
 <style lang="scss">
 $c: ".c-list-entry";
 
-.c-list-entry {
+#{$c} {
   height: 30px;
   padding-inline: 12px;
   display: flex;

@@ -81,7 +81,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-form-chatstate";
 
-.c-inbox-form-chatstate {
+#{$c} {
   background: rgba(var(--color-white), 0.875);
   color: lighten-var(var(--color-base-grey-dark), 15%);
   border: 1px solid rgba(var(--color-border-primary), 0.8);

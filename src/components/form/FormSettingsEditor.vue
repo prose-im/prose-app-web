@@ -526,7 +526,7 @@ export default {
 <style lang="scss">
 $c: ".c-form-settings-editor";
 
-.c-form-settings-editor {
+#{$c} {
   #{$c}__title {
     color: rgb(var(--color-text-secondary));
     font-size: 14.5px;

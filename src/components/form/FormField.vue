@@ -438,7 +438,7 @@ export default {
 <style lang="scss">
 $c: ".c-form-field";
 
-.c-form-field {
+#{$c} {
   position: relative;
 
   &:before,

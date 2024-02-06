@@ -557,7 +557,7 @@ $sizes: (
   )
 );
 
-.c-form-select {
+#{$c} {
   position: relative;
 
   #{$c}__field,

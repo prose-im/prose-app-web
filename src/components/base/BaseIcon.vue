@@ -82,7 +82,7 @@ $c: ".c-base-icon";
 // VARIABLES
 $icon-fill-default: rgb(var(--color-black));
 
-.c-base-icon {
+#{$c} {
   fill: $icon-fill-default;
   aspect-ratio: 1;
   display: inline-block;

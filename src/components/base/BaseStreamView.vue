@@ -59,7 +59,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-stream-view";
 
-.c-base-stream-view {
+#{$c} {
   border: 1px solid rgb(var(--color-border-primary));
   aspect-ratio: 4/3;
   border-radius: 3px;

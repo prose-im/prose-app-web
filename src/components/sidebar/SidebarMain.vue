@@ -463,7 +463,7 @@ export default {
 <style lang="scss">
 $c: ".c-sidebar-main";
 
-.c-sidebar-main {
+#{$c} {
   > * {
     margin-block-end: 15px;
 

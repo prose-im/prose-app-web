@@ -44,7 +44,7 @@ export default {
 <style lang="scss">
 $c: ".c-layout-sidebar-details";
 
-.c-layout-sidebar-details {
+#{$c} {
   #{$c}__header {
     margin-block-end: 26px;
   }

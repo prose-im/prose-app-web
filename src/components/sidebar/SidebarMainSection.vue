@@ -94,7 +94,7 @@ export default {
 <style lang="scss">
 $c: ".c-sidebar-main-section";
 
-.c-sidebar-main-section {
+#{$c} {
   #{$c}__icon {
     fill: rgb(var(--color-base-blue-dark));
   }

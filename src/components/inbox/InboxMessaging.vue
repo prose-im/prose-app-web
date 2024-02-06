@@ -1291,7 +1291,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-messaging";
 
-.c-inbox-messaging {
+#{$c} {
   position: relative;
 
   #{$c}__frame {

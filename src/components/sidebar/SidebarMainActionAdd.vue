@@ -58,7 +58,7 @@ export default {
 <style lang="scss">
 $c: ".c-sidebar-main-action-add";
 
-.c-sidebar-main-action-add {
+#{$c} {
   #{$c}__icon {
     fill: rgb(var(--color-base-blue-dark));
   }

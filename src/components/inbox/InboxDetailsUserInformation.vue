@@ -237,7 +237,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-details-user-information";
 
-.c-inbox-details-user-information {
+#{$c} {
   #{$c}__icon {
     fill: lighten-var(var(--color-base-grey-dark), 10%);
   }

@@ -93,7 +93,7 @@ export default {
 <style lang="scss">
 $c: ".m-edit-message";
 
-.m-edit-message {
+#{$c} {
   #{$c}__field {
     #{$c}__field-textarea {
       max-height: 320px;

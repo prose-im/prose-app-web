@@ -40,7 +40,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-form-loader";
 
-.c-inbox-form-loader {
+#{$c} {
   background-color: rgba(var(--color-base-green-normal), 0.2);
   height: 3px;
   position: relative;

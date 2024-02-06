@@ -191,7 +191,7 @@ $entry-button-popover-edges-offset: (
     $size-base-popover-list-inset-block-edge-offset
 );
 
-.c-base-popover-list {
+#{$c} {
   #{$c}__button {
     padding-inline: (
       $entry-spacing-sides - $size-list-button-rounded-margin-inline

@@ -174,7 +174,7 @@ export default {
 <style lang="scss">
 $c: ".v-app-inbox-base";
 
-.v-app-inbox-base {
+#{$c} {
   #{$c}__messages {
     display: flex;
     flex: 1;

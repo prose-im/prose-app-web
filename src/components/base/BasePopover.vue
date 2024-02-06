@@ -120,7 +120,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-popover";
 
-.c-base-popover {
+#{$c} {
   background-color: rgb(var(--color-white));
   border: $size-base-popover-border-width solid
     rgb(var(--color-border-secondary));

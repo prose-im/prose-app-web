@@ -198,7 +198,7 @@ export default {
 <style lang="scss">
 $c: ".p-shared-files";
 
-.p-shared-files {
+#{$c} {
   #{$c}__content {
     display: flex;
     flex-direction: column;

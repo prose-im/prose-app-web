@@ -49,7 +49,7 @@ export default {
 <style lang="scss">
 $c: ".c-layout-toolbar";
 
-.c-layout-toolbar {
+#{$c} {
   &,
   #{$c}__left,
   #{$c}__right,

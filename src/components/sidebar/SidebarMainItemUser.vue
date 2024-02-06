@@ -123,7 +123,7 @@ export default {
 <style lang="scss">
 $c: ".c-sidebar-main-item-user";
 
-.c-sidebar-main-item-user {
+#{$c} {
   #{$c}__avatar {
     display: block;
   }

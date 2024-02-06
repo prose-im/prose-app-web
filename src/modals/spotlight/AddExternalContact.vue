@@ -103,7 +103,7 @@ export default {
 <style lang="scss">
 $c: ".m-add-external-contact";
 
-.m-add-external-contact {
+#{$c} {
   #{$c}__field {
     margin-block-start: 20px;
   }

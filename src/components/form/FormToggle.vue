@@ -122,7 +122,7 @@ $toggle-handle-size: ($toggle-height - (2 * $toggle-handle-offset));
 $toggle-field-width: ($toggle-width - (2 * $toggle-handle-offset));
 $toggle-field-height: ($toggle-height - (2 * $toggle-handle-offset));
 
-.c-form-toggle {
+#{$c} {
   display: inline-block;
 
   #{$c}__input {

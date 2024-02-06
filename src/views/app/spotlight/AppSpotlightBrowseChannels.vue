@@ -208,7 +208,7 @@ export default {
 <style lang="scss">
 $c: ".v-app-spotlight-browse-channels";
 
-.v-app-spotlight-browse-channels {
+#{$c} {
   padding-block: $size-spotlight-browse-padding-block-start
     $size-spotlight-browse-padding-block-end;
 

@@ -71,7 +71,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-details-multi-identity";
 
-.c-inbox-details-multi-identity {
+#{$c} {
   #{$c}__name {
     font-size: 14px;
     padding-inline: 8px;

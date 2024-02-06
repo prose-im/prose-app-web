@@ -48,7 +48,7 @@ export default {
 <style lang="scss">
 $c: ".c-form-fieldset-control";
 
-.c-form-fieldset-control {
+#{$c} {
   display: flex;
   align-items: center;
 

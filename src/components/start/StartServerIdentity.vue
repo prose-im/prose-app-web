@@ -65,7 +65,7 @@ $c: ".c-start-server-identity";
 // VARIABLES
 $logo-size: 44px;
 
-.c-start-server-identity {
+#{$c} {
   background: rgb(var(--color-white));
   border: 1px solid rgba(var(--color-black), 0.06);
   padding: 5px;

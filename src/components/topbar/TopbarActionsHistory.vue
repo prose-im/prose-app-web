@@ -215,7 +215,7 @@ export default {
 <style lang="scss">
 $c: ".c-topbar-actions-history";
 
-.c-topbar-actions-history {
+#{$c} {
   #{$c}__popover {
     position: absolute;
     inset-inline-start: 0;

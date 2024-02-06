@@ -285,7 +285,7 @@ $c: ".c-base-alert";
 // VARIABLES
 $badge-size: 54px;
 
-.c-base-alert {
+#{$c} {
   background: rgba(var(--color-white), 0.95);
   border: 1px solid rgba(var(--color-border-secondary), 0.9);
   padding: 10px;

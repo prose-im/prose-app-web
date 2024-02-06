@@ -130,7 +130,7 @@ $c: ".p-edit-profile-encryption-device-current";
 // VARIABLES
 $inner-spacing-sides: 18px;
 
-.p-edit-profile-encryption-device-current {
+#{$c} {
   display: flex;
   align-items: center;
 

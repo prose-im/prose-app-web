@@ -101,7 +101,7 @@ export default {
 <style lang="scss">
 $c: ".c-base-popup-actions";
 
-.c-base-popup-actions {
+#{$c} {
   display: flex;
   justify-content: flex-end;
 

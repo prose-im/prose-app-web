@@ -312,7 +312,7 @@ $sidebar-header-height: $size-layout-view-topbar-height;
 $sidebar-context-border-width: 1px;
 $sidebar-context-height: $size-inbox-form-height;
 
-.a-app-sidebar {
+#{$c} {
   position: relative;
 
   &,

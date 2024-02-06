@@ -245,7 +245,7 @@ export default {
 <style lang="scss">
 $c: ".m-update-status";
 
-.m-update-status {
+#{$c} {
   #{$c}__fields {
     display: flex;
     align-items: center;

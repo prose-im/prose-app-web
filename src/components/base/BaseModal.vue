@@ -120,7 +120,7 @@ $popup-width-full-breakpoint: (
   $popup-max-width + (2 * $popup-padding-sides) + $popup-width-full-margin-sides
 );
 
-.c-base-modal {
+#{$c} {
   #{$c}__popup {
     max-width: $popup-max-width;
     padding-inline: $popup-padding-sides;
@@ -174,7 +174,7 @@ $popup-width-full-breakpoint: (
 // --> MEDIA-QUERIES <--
 
 @media (max-width: $popup-width-full-breakpoint) {
-  .c-base-modal {
+  #{$c} {
     #{$c}__popup {
       width: calc(
         100% - #{2 * $popup-padding-sides} - #{$popup-width-full-margin-sides}

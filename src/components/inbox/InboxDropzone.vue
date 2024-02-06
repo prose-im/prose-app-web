@@ -61,7 +61,7 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-dropzone";
 
-.c-inbox-dropzone {
+#{$c} {
   #{$c}__placeholder {
     margin-inline: 20px;
   }

@@ -338,7 +338,7 @@ export default {
 <style lang="scss">
 $c: ".a-inbox-topbar";
 
-.a-inbox-topbar {
+#{$c} {
   #{$c}__identity {
     display: flex;
     align-items: center;
