@@ -29,7 +29,6 @@ base-modal(
     type="text"
     size="large"
     align="left"
-    class="m-add-multi-member__field"
     submittable
     autofocus
   )
@@ -82,7 +81,7 @@ export default {
         try {
           // Attempt to parse JID (this might fail, in which case the JID \
           //   needs to be considered invalid)
-          const jid = new JID(jidUnsafeString);
+          const jid = new JID(jidUnsafeString.trim());
 
           // Add member address
           this.$emit("add", jid);
@@ -97,17 +96,3 @@ export default {
   }
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".m-add-multi-member";
-
-.m-add-multi-member {
-  #{$c}__field {
-    margin-block-start: 20px;
-  }
-}
-</style>
