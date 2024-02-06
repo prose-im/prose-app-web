@@ -23,6 +23,10 @@ div(
 
   .c-layout-view__content
     slot
+
+  slot(
+    name="modals"
+  )
 </template>
 
 <!-- **********************************************************************
