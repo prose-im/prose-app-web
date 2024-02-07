@@ -166,6 +166,8 @@ export default {
   },
 
   define: {
+    __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
+
     __CONFIG__: (function () {
       const config = {};
 
