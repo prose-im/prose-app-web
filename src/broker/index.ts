@@ -18,6 +18,7 @@ import BrokerModuleChannel from "@/broker/modules/channel";
 import BrokerModuleProfile from "@/broker/modules/profile";
 import BrokerModuleRoster from "@/broker/modules/roster";
 import BrokerModuleStatus from "@/broker/modules/status";
+import BrokerModuleData from "@/broker/modules/data";
 
 /**************************************************************************
  * CLASS
@@ -33,6 +34,7 @@ class Broker {
   readonly $presence: BrokerModulePresence;
   readonly $room: BrokerModuleRoom;
   readonly $channel: BrokerModuleChannel;
+  readonly $data: BrokerModuleData;
 
   constructor() {
     // Initialize client
@@ -46,6 +48,7 @@ class Broker {
     this.$presence = new BrokerModulePresence(this.client);
     this.$room = new BrokerModuleRoom(this.client);
     this.$channel = new BrokerModuleChannel(this.client);
+    this.$data = new BrokerModuleData(this.client);
   }
 }
 
