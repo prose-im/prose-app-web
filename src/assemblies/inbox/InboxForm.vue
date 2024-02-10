@@ -603,7 +603,6 @@ export default {
       this.isActionRecordRecorderVisible = false;
 
       // Attach file
-      // TODO: send duration as well
       this.onAttachFile(audio.file);
     },
 
@@ -621,6 +620,11 @@ export default {
     },
 
     async onAttachFile(file: File): Promise<void> {
+      // TODO: send optional image size for images (need a XEP for that)
+      // TODO: send optional audio duration for audios (need a XEP for that)
+      // TODO: find a way to pass MIME type for all uploads (not possible w/ \
+      //   OOB?)
+
       // Retain target room identifier
       // Notice: if the target room changes while the upload is pending, \
       //   this will ensure that we do not send the message to the wrong \
@@ -648,6 +652,11 @@ export default {
 
             // Send message (with file attachments)
             let messageRequest = new SendMessageRequest();
+
+            messageRequest.body =
+              result.attachments.length === 1
+                ? "Shared 1 file"
+                : `Shared ${result.attachments.length} files`;
 
             messageRequest.attachments = result.attachments;
 

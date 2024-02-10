@@ -24,6 +24,9 @@ import {
 // PROJECT: STORES
 import Store from "@/store";
 
+// PROJECT: UTILITIES
+import UtilitiesFile from "@/utilities/file";
+
 /**************************************************************************
  * ENUMERATIONS
  * ************************************************************************* */
@@ -116,6 +119,18 @@ const fromCoreMessage = function (
     date: message.date.toISOString(),
     from: message.user.jid,
     content: message.content,
+
+    files: message.attachments.map(attachment => {
+      const fileAttributes = UtilitiesFile.detectAttributesFromUrl(
+        attachment.url
+      );
+
+      return {
+        name: attachment.description || fileAttributes.name,
+        type: fileAttributes.mimeGuess,
+        url: attachment.url
+      };
+    }),
 
     metas: {
       secure: room.type === RoomType.PublicChannel,

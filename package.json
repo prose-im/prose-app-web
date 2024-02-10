@@ -34,7 +34,7 @@
   },
   "dependencies": {
     "@prose-im/prose-sdk-js": "0.1.51",
-    "@prose-im/prose-core-views": "0.28.1",
+    "@prose-im/prose-core-views": "0.29.0",
     "lodash.camelcase": "4.3.0",
     "lodash.upperfirst": "4.3.1",
     "lodash.clonedeep": "4.5.0",
