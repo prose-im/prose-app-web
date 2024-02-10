@@ -91,7 +91,7 @@ import {
   SeekDirection as MessagingSeekDirection,
   Theme as MessagingTheme
 } from "@prose-im/prose-core-views/types/messaging";
-import { JID, Room } from "@prose-im/prose-sdk-js";
+import { JID, Room, SendMessageRequest } from "@prose-im/prose-sdk-js";
 import { PropType, shallowRef } from "vue";
 // @ts-expect-error download is a dependency w/o any declaration
 import download from "browser-downloads";
@@ -793,7 +793,11 @@ export default {
 
       try {
         // Send update to network
-        await this.room?.updateMessage(messageId, text);
+        let messageRequest = new SendMessageRequest();
+
+        messageRequest.body = text;
+
+        await this.room?.updateMessage(messageId, messageRequest);
 
         // Acknowledge update
         BaseAlert.info("Message edited", "The message has been updated");

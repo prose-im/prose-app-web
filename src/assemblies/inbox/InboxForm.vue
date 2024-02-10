@@ -169,7 +169,13 @@ layout-toolbar(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID, Room, RoomType, ParticipantInfo } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  Room,
+  RoomType,
+  ParticipantInfo,
+  SendMessageRequest
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -594,7 +600,11 @@ export default {
           }
         } else {
           // Send message
-          await this.room?.sendMessage(message);
+          let messageRequest = new SendMessageRequest();
+
+          messageRequest.body = message;
+
+          await this.room?.sendMessage(messageRequest);
         }
 
         // Clear message field value
