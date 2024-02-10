@@ -336,9 +336,13 @@ export default {
           this.fireDraftAutoSave(false, oldValue);
         }
 
-        // Load draft for new room?
+        // Process new states
         if (newValue && (!oldValue || newValue.id !== oldValue.id)) {
+          // Load draft for new room
           this.attemptDraftRestore(newValue);
+
+          // Check if (still) uploading a file in this room
+          this.isAttachFilePending = newValue.id in this.fileUploadQueue;
         }
       }
     }
