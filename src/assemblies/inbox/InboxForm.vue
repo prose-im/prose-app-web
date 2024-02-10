@@ -668,7 +668,7 @@ export default {
                   : `All files sent`,
                 result.attachments.length === 1
                   ? "Your file was successfully uploaded"
-                  : `A total of ${result.attachments.length} files was uploaded`
+                  : `${result.attachments.length} files were uploaded`
               );
             }
           } catch (error) {
