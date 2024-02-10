@@ -5,6 +5,23 @@
  */
 
 /**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
+
+enum FileUploadMethod {
+  // POST method
+  POST = "post",
+  // PUT method
+  PUT = "put"
+}
+
+/**************************************************************************
+ * TYPES
+ * ************************************************************************* */
+
+type FileUploadHeaders = { [name: string]: string };
+
+/**************************************************************************
  * INTERFACES
  * ************************************************************************* */
 
@@ -50,6 +67,32 @@ const KNOWN_MIMES: { [extension: string]: string } = {
  * ************************************************************************* */
 
 class UtilitiesFile {
+  async upload(
+    method: FileUploadMethod,
+    url: string,
+    file: File,
+    headers?: FileUploadHeaders
+  ): Promise<void> {
+    // Generate file upload request headers
+    const requestHeaders: FileUploadHeaders = {
+      "Content-Length": `${file.size}`,
+      "Content-Type": file.type
+    };
+
+    // Merge additional headers? (if any)
+    if (headers) {
+      Object.assign(requestHeaders, headers);
+    }
+
+    // Upload file
+    await fetch(url, {
+      body: file,
+      mode: "cors",
+      method: method.toString().toUpperCase(),
+      headers: requestHeaders
+    });
+  }
+
   detectAttributesFromUrl(fileUrl: string): FileAttributes {
     // Parse URL
     const url = new URL(fileUrl);
@@ -102,4 +145,6 @@ class UtilitiesFile {
  * EXPORTS
  * ************************************************************************* */
 
+export { FileUploadMethod };
+export type { FileUploadHeaders };
 export default new UtilitiesFile();

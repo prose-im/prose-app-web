@@ -203,6 +203,13 @@ import Store from "@/store";
 // PROJECT: BROKER
 import Broker from "@/broker";
 
+// PROJECT: UTILITIES
+import {
+  default as UtilitiesFile,
+  FileUploadMethod,
+  FileUploadHeaders
+} from "@/utilities/file";
+
 // INTERFACES
 interface BatchFileUploadResult {
   attachments: Array<Attachment>;
@@ -533,23 +540,20 @@ export default {
         throw new Error("Could not obtain an upload slot");
       }
 
-      // Generate file upload request headers
-      const requestHeaders: { [name: string]: string } = {
-        "Content-Length": `${file.size}`,
-        "Content-Type": file.type
-      };
+      // Extract headers from slot headers
+      const slotHeaders: FileUploadHeaders = {};
 
       slot.uploadHeaders.forEach((header: UploadHeader) => {
-        requestHeaders[header.name] = header.value;
+        slotHeaders[header.name] = header.value;
       });
 
       // Upload file
-      await fetch(slot.uploadURL, {
-        body: file,
-        mode: "cors",
-        method: "PUT",
-        headers: requestHeaders
-      });
+      await UtilitiesFile.upload(
+        FileUploadMethod.PUT,
+        slot.uploadURL,
+        file,
+        slotHeaders
+      );
 
       // Generate attachment
       const attachment = new Attachment(slot.downloadURL);
