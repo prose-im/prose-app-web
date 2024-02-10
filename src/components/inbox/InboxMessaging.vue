@@ -792,10 +792,22 @@ export default {
       const frameRuntime = this.frame();
 
       try {
+        // Load message original data
+        const originalMessage = (
+          await this.room?.loadMessagesWithIDs([messageId])
+        )?.[0];
+
         // Send update to network
         let messageRequest = new SendMessageRequest();
 
         messageRequest.body = text;
+
+        if (
+          originalMessage?.attachments &&
+          originalMessage?.attachments?.length > 0
+        ) {
+          messageRequest.attachments = originalMessage.attachments;
+        }
 
         await this.room?.updateMessage(messageId, messageRequest);
 
