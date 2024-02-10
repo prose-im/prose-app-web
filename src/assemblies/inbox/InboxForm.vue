@@ -172,9 +172,12 @@ import { PropType } from "vue";
 import {
   JID,
   Room,
+  RoomID,
   RoomType,
   ParticipantInfo,
-  SendMessageRequest
+  SendMessageRequest,
+  Attachment,
+  UploadHeader
 } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
@@ -196,6 +199,15 @@ import InboxFormLoader from "@/components/inbox/InboxFormLoader.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
+
+// PROJECT: BROKER
+import Broker from "@/broker";
+
+// INTERFACES
+interface BatchFileUploadResult {
+  attachments: Array<Attachment>;
+  failedFiles: Array<File>;
+}
 
 // INSTANCES
 const MESSAGE_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
@@ -240,6 +252,8 @@ export default {
 
       isUserComposing: false,
       isAttachFilePending: false,
+
+      fileUploadQueue: {} as { [roomId: RoomID]: Array<File> },
 
       chatStateComposeTimeout: null as null | ReturnType<typeof setTimeout>,
       draftAutoSaveTimeout: null as null | ReturnType<typeof setTimeout>
@@ -444,6 +458,107 @@ export default {
       }
     },
 
+    queueFileForUpload(roomId: RoomID, file: File): void {
+      // Assign queue register for room?
+      if (!(roomId in this.fileUploadQueue)) {
+        this.fileUploadQueue[roomId] = [];
+      }
+
+      // Append file to upload queue for room
+      this.fileUploadQueue[roomId].push(file);
+    },
+
+    async processQueuedFileUploads(
+      roomId: RoomID
+    ): Promise<BatchFileUploadResult> {
+      const result: BatchFileUploadResult = {
+        attachments: [],
+        failedFiles: []
+      };
+
+      // Upload next queued file
+      // Notice: this recurses until there are no files pending in the queue, \
+      //   this also does not error out in any case, so that upload errors do \
+      //   not block next upload.
+      await this.processNextQueuedFileUpload(roomId, result);
+
+      return result;
+    },
+
+    async processNextQueuedFileUpload(
+      roomId: RoomID,
+      result: BatchFileUploadResult
+    ): Promise<void> {
+      const currentFile = (this.fileUploadQueue[roomId] || []).shift() || null;
+
+      // Current file found in queue?
+      if (currentFile !== null) {
+        this.$log.debug(
+          `Uploading next file in queue: '${currentFile.name}'...`
+        );
+
+        try {
+          // Upload current file
+          const attachment = await this.processQueuedFileUpload(currentFile);
+
+          this.$log.info(`Uploaded next file in queue: '${currentFile.name}'`);
+
+          // Append uploaded file to success stack
+          result.attachments.push(attachment);
+        } catch (error) {
+          this.$log.error(
+            `Could not upload next file in queue: '${currentFile.name}'`,
+            error
+          );
+
+          // Append non-uploaded file to success stack
+          result.failedFiles.push(currentFile);
+        } finally {
+          // Process next file in queue (if any)
+          await this.processNextQueuedFileUpload(roomId, result);
+        }
+      } else {
+        this.$log.debug("Reached end of files queued for upload");
+
+        // Unassign queue register for room
+        delete this.fileUploadQueue[roomId];
+      }
+    },
+
+    async processQueuedFileUpload(file: File): Promise<Attachment> {
+      // Request file upload slot
+      const slot = await Broker.$data.requestUploadSlot(file.name, file.size);
+
+      if (!slot) {
+        throw new Error("Could not obtain an upload slot");
+      }
+
+      // Generate file upload request headers
+      const requestHeaders: { [name: string]: string } = {
+        "Content-Length": `${file.size}`,
+        "Content-Type": file.type
+      };
+
+      slot.uploadHeaders.forEach((header: UploadHeader) => {
+        requestHeaders[header.name] = header.value;
+      });
+
+      // Upload file
+      await fetch(slot.uploadURL, {
+        body: file,
+        mode: "cors",
+        method: "PUT",
+        headers: requestHeaders
+      });
+
+      // Generate attachment
+      const attachment = new Attachment(slot.downloadURL);
+
+      attachment.description = file.name;
+
+      return attachment;
+    },
+
     // --> EVENT LISTENERS <--
 
     onActionFormattingClick(): void {
@@ -505,18 +620,72 @@ export default {
       BaseAlert.error("Failed recording audio", "Did you refuse recording?");
     },
 
-    onAttachFile(file: File): void {
-      // Mark file attach as pending
-      this.isAttachFilePending = true;
+    async onAttachFile(file: File): Promise<void> {
+      // Retain target room identifier
+      // Notice: if the target room changes while the upload is pending, \
+      //   this will ensure that we do not send the message to the wrong \
+      //   room.
+      const roomId = this.room?.id || null;
 
-      // TODO: add file to upload queue
+      if (roomId !== null) {
+        // Queue file for upload
+        this.queueFileForUpload(roomId, file);
 
-      // TODO: simulated placeholder behavior
-      setTimeout(() => {
-        BaseAlert.error("Failed sending file", "Try this again?");
+        // Start processing queue?
+        if (this.isAttachFilePending !== true) {
+          try {
+            // Mark file attach as pending
+            this.isAttachFilePending = true;
 
-        this.isAttachFilePending = false;
-      }, 2000);
+            // Process queue (start uploading now, until last item in queue is \
+            //   processed)
+            const result = await this.processQueuedFileUploads(roomId);
+
+            // No files sent?
+            if (result.attachments.length === 0) {
+              throw new Error("No files were uploaded");
+            }
+
+            // Send message (with file attachments)
+            let messageRequest = new SendMessageRequest();
+
+            messageRequest.attachments = result.attachments;
+
+            await this.room?.sendMessage(messageRequest);
+
+            // Acknowledge that files were sent (partial, or complete)
+            if (result.failedFiles.length > 0) {
+              BaseAlert.warning(
+                "Some files were sent",
+                result.failedFiles.length === 1
+                  ? "One file could not be sent"
+                  : `${result.failedFiles.length} files could not be sent`
+              );
+            } else {
+              BaseAlert.success(
+                result.attachments.length === 1
+                  ? "File sent"
+                  : `All files sent`,
+                result.attachments.length === 1
+                  ? "Your file was successfully uploaded"
+                  : `A total of ${result.attachments.length} files was uploaded`
+              );
+            }
+          } catch (error) {
+            // Alert of upload error
+            this.$log.error(`Could not upload file queue`, error);
+
+            BaseAlert.error("Failed sending a file", "Try this again?");
+          } finally {
+            this.isAttachFilePending = false;
+          }
+        }
+      } else {
+        BaseAlert.warning(
+          "Cannot upload yet",
+          "Please wait a bit for things to load"
+        );
+      }
     },
 
     onEmojiPick(glyph: string): void {
