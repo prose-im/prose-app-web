@@ -26,7 +26,8 @@ layout-popup-navigate(
       form-fieldset-field(
         v-if="entry.type === entryType.Value"
         :label="entry.data.label"
-        auto-input-size
+        class="p-message-details__field"
+        input-class="p-message-details__field-input u-ellipsis"
       )
         span(
           :class=`[
@@ -38,6 +39,7 @@ layout-popup-navigate(
               "u-bold": entry.data.bolder
             }
           ]`
+          :title="entry.data.selectable ? entry.data.value : null"
         )
           | {{ entry.data.value || "?" }}
 
@@ -163,6 +165,16 @@ export default {
           },
 
           {
+            type: EntryType.Value,
+
+            data: {
+              label: "Sent to room:",
+              value: this.room.id as string,
+              selectable: true
+            }
+          },
+
+          {
             type: EntryType.Divider
           },
 
@@ -249,6 +261,12 @@ $c: ".p-message-details";
 #{$c} {
   #{$c}__title {
     margin-block-end: 24px;
+  }
+
+  #{$c}__field {
+    #{$c}__field-input {
+      line-height: 18px;
+    }
   }
 
   #{$c}__value {
