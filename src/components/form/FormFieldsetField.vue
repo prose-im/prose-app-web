@@ -22,7 +22,14 @@ div(
   label.c-form-fieldset-field__label.u-medium
     | {{ label }}
 
-  .c-form-fieldset-field__input
+  div(
+    :class=`[
+      "c-form-fieldset-field__input",
+      {
+        [inputClass]: inputClass
+      }
+    ]`
+  )
     slot
 
   .c-form-fieldset-field__aside(
@@ -64,6 +71,11 @@ export default {
     autoInputSize: {
       type: Boolean,
       default: false
+    },
+
+    inputClass: {
+      type: String,
+      default: null
     }
   }
 };
