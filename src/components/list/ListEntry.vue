@@ -12,7 +12,10 @@
 div(
   :class=`[
     "c-list-entry",
-    "c-list-entry--color-" + color
+    "c-list-entry--color-" + color,
+    {
+      "c-list-entry--multi-line": multiLine
+    }
   ]`
 )
   .c-list-entry__icon(
@@ -22,7 +25,14 @@ div(
       name="icon"
     )
 
-  .c-list-entry__label.u-ellipsis
+  div(
+    :class=`[
+      "c-list-entry__label",
+      {
+        "u-ellipsis": !multiLine
+      }
+    ]`
+  )
     slot
 
   .c-list-entry__details(
@@ -49,6 +59,11 @@ export default {
       validator(x: string) {
         return ["normal", "lighter"].includes(x);
       }
+    },
+
+    multiLine: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -62,7 +77,7 @@ export default {
 $c: ".c-list-entry";
 
 #{$c} {
-  height: 30px;
+  min-height: 30px;
   padding-inline: 12px;
   display: flex;
   align-items: center;
@@ -99,6 +114,16 @@ $c: ".c-list-entry";
   &--color-lighter {
     #{$c}__label {
       color: rgb(var(--color-text-secondary));
+    }
+  }
+
+  // --> BOOLEANS <--
+
+  &--multi-line {
+    #{$c}__label {
+      font-size: 13.5px;
+      line-height: 16px;
+      padding-block: 3px;
     }
   }
 }
