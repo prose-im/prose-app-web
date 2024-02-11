@@ -84,7 +84,7 @@ export default {
       default: "medium",
 
       validator(x: string) {
-        return ["small", "medium"].includes(x);
+        return ["tiny", "small", "medium"].includes(x);
       }
     },
 
@@ -192,6 +192,8 @@ $popup-max-width-medium: 760px;
 $popup-max-height-medium: 660px;
 $popup-max-width-small: 640px;
 $popup-max-height-small: 540px;
+$popup-max-width-tiny: 460px;
+$popup-max-height-tiny: 360px;
 
 #{$c} {
   #{$c}__popup {
@@ -285,6 +287,17 @@ $popup-max-height-small: 540px;
 
     #{$c}__navigate {
       width: 168px;
+    }
+  }
+
+  &--tiny {
+    #{$c}__popup {
+      max-width: $popup-max-width-tiny;
+      max-height: $popup-max-height-tiny;
+    }
+
+    #{$c}__navigate {
+      width: 110px;
     }
   }
 
