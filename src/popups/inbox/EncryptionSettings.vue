@@ -10,6 +10,7 @@
 
 <template lang="pug">
 layout-popup-navigate(
+  @close="onClose"
   size="small"
   class="p-encryption-settings"
 )

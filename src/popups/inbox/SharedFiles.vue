@@ -10,6 +10,7 @@
 
 <template lang="pug">
 layout-popup-navigate(
+  @close="onClose"
   :content-section="section"
   content-class="p-shared-files__content"
   class="p-shared-files"

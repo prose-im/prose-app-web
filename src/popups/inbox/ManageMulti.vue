@@ -10,6 +10,7 @@
 
 <template lang="pug">
 layout-popup-navigate(
+  @close="onClose"
   :content-section="section"
   :class=`[
     "p-manage-multi",
