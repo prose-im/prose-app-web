@@ -5,6 +5,16 @@
  */
 
 /**************************************************************************
+ * IMPORTS
+ * ************************************************************************* */
+
+// NPM
+import { readAndCompressImage } from "browser-image-resizer";
+
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
+/**************************************************************************
  * ENUMERATIONS
  * ************************************************************************* */
 
@@ -13,6 +23,13 @@ enum FileUploadMethod {
   POST = "post",
   // PUT method
   PUT = "put"
+}
+
+enum FileShrinkTarget {
+  // Image target
+  Image = "image",
+  // None target
+  None = "none"
 }
 
 /**************************************************************************
@@ -35,6 +52,8 @@ interface FileAttributes {
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
+
+const PERCENT_BASE = 100;
 
 const MIME_DEFAULT = "application/octet-stream";
 
@@ -60,6 +79,17 @@ const KNOWN_MIMES: { [extension: string]: string } = {
   ogv: "video/ogg",
   m4v: "video/mp4",
   mp4: "video/mp4"
+};
+
+const SHRINK_MIME_TARGETS: { [mime: string]: FileShrinkTarget } = {
+  "image/jpeg": FileShrinkTarget.Image,
+  "image/png": FileShrinkTarget.Image,
+  "image/webp": FileShrinkTarget.Image
+};
+
+const SHRINK_IMAGE_OPTIONS = {
+  maxSize: 2400,
+  quality: 0.85
 };
 
 /**************************************************************************
@@ -91,6 +121,26 @@ class UtilitiesFile {
       method: method.toString().toUpperCase(),
       headers: requestHeaders
     });
+  }
+
+  async attemptToShrinkSize(file: File): Promise<File> {
+    const shrinkTarget =
+      SHRINK_MIME_TARGETS[file.type] || FileShrinkTarget.None;
+
+    switch (shrinkTarget) {
+      case FileShrinkTarget.Image: {
+        return await this.__shrinkImageSize(file);
+      }
+
+      default: {
+        logger.info(
+          `Not shrinking file: ${file.name} (no target for MIME: ${file.type})`
+        );
+
+        // Return file as-is (identity function)
+        return file;
+      }
+    }
   }
 
   detectAttributesFromUrl(fileUrl: string): FileAttributes {
@@ -138,6 +188,51 @@ class UtilitiesFile {
       extension: fileExtension,
       mimeGuess: mimeGuessOrNone || MIME_DEFAULT
     };
+  }
+
+  private async __shrinkImageSize(file: File): Promise<File> {
+    logger.debug(`Shrinking image file: ${file.name}...`);
+
+    try {
+      // Shrink image file
+      const imageBlob = await readAndCompressImage(file, {
+        quality: SHRINK_IMAGE_OPTIONS.quality,
+        maxWidth: SHRINK_IMAGE_OPTIONS.maxSize,
+        maxHeight: SHRINK_IMAGE_OPTIONS.maxSize,
+        mimeType: file.type
+      });
+
+      const imageFile = new File([imageBlob], file.name, {
+        type: file.type,
+        lastModified: file.lastModified
+      });
+
+      // Shrinking resulted in a smaller file, return shrunk image file
+      if (imageFile.size < file.size) {
+        logger.info(
+          `Shrunk image file: ${file.name} by ${Math.floor(
+            (1.0 - imageFile.size / file.size) * PERCENT_BASE
+          )}% (${file.size} bytes before, now ${imageFile.size} bytes)`
+        );
+
+        return imageFile;
+      }
+
+      // Shrinking resulted in a larger file, return original image file
+      logger.warn(
+        `Did not shrink image file: ${file.name} (it got larger than before)`
+      );
+
+      return file;
+    } catch (error) {
+      logger.error(
+        `Error attempting shrinking image file: ${file.name}`,
+        error
+      );
+
+      // Ignore error, return original file
+      return file;
+    }
   }
 }
 
