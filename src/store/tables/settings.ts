@@ -86,6 +86,10 @@ const $settings = defineStore("settings", {
         },
 
         files: {
+          uploads: {
+            optimize: true
+          },
+
           imagePreviews: {
             enabled: true,
             size: "large"
@@ -215,11 +219,15 @@ const $settings = defineStore("settings", {
       this.setGeneric(this.messages.chats, "clock24h", value);
     },
 
-    setMessagesFilesImagePreviews(value: boolean): void {
+    setMessagesFilesUploadsOptimize(value: boolean): void {
+      this.setGeneric(this.messages.files.uploads, "optimize", value);
+    },
+
+    setMessagesFilesImagePreviewsEnabled(value: boolean): void {
       this.setGeneric(this.messages.files.imagePreviews, "enabled", value);
     },
 
-    setMessagesFilesImageSize(value: string): void {
+    setMessagesFilesImagePreviewsSize(value: string): void {
       this.setGeneric(this.messages.files.imagePreviews, "size", value);
     },
 

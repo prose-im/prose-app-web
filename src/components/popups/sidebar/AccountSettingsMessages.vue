@@ -107,6 +107,26 @@ export default {
 
           fields: [
             {
+              id: "uploads-optimize",
+              type: FormFieldsetFieldType.Checkbox,
+              label: "Uploads:",
+
+              data: {
+                value: {
+                  inner: Store.$settings.messages.files.uploads.optimize,
+                  change: Store.$settings.setMessagesFilesUploadsOptimize
+                },
+
+                label: "Optimize uploaded files"
+              } as FormFieldsetFieldDataCheckbox
+            },
+
+            {
+              id: "spacer",
+              type: FormFieldsetFieldType.Spacer
+            },
+
+            {
               // TODO: implement functionality using this option
               id: "image-previews-enabled",
               type: FormFieldsetFieldType.Checkbox,
@@ -115,7 +135,7 @@ export default {
               data: {
                 value: {
                   inner: Store.$settings.messages.files.imagePreviews.enabled,
-                  change: Store.$settings.setMessagesFilesImagePreviews
+                  change: Store.$settings.setMessagesFilesImagePreviewsEnabled
                 },
 
                 label: "Show a preview of image files"
@@ -130,7 +150,7 @@ export default {
               data: {
                 value: {
                   inner: Store.$settings.messages.files.imagePreviews.size,
-                  change: Store.$settings.setMessagesFilesImageSize
+                  change: Store.$settings.setMessagesFilesImagePreviewsSize
                 },
 
                 placeholder: "Pick a size…",
