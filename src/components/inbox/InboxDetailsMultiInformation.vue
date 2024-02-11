@@ -19,6 +19,7 @@ list-disclosure(
   list-entry(
     v-for="entry in entries"
     :key="entry.id"
+    :multi-line="entry.multiLine"
     :class=`{
       [itemClass]: itemClass
     }`
@@ -56,6 +57,7 @@ interface Entry {
   id: string;
   title: string;
   icon?: string;
+  multiLine?: boolean;
 }
 
 export default {
@@ -89,7 +91,8 @@ export default {
         entries.push({
           id: "topic",
           title: topic,
-          icon: "megaphone.fill"
+          icon: "megaphone.fill",
+          multiLine: true
         });
       }
 
