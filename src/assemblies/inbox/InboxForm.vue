@@ -320,6 +320,10 @@ export default {
       return Store.$session;
     },
 
+    settings(): typeof Store.$settings {
+      return Store.$settings;
+    },
+
     rosterName(): string {
       return this.room?.name || "";
     }
@@ -537,6 +541,17 @@ export default {
     },
 
     async processQueuedFileUpload(file: File): Promise<Attachment> {
+      // Prepare file for upload? (eg. downsize if image)
+      // Important: replace previous file, with either shrunk file, or itself.
+      if (this.settings.messages.files.uploads.optimize !== false) {
+        file = await UtilitiesFile.attemptToShrinkSize(file);
+      } else {
+        this.$log.warn(
+          "Skipping pre-upload file optimizations, " +
+            "because user explicitly requested not to optimize"
+        );
+      }
+
       // Request file upload slot
       const slot = await Broker.$data.requestUploadSlot(file.name, file.size);
 
@@ -692,7 +707,10 @@ export default {
             // Alert of upload error
             this.$log.error(`Could not upload file queue`, error);
 
-            BaseAlert.error("Failed sending a file", "Try this again?");
+            BaseAlert.error(
+              "Failed sending a file",
+              "It might be too large. Try again?"
+            );
           } finally {
             this.isAttachFilePending = false;
           }
