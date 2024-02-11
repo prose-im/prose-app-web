@@ -69,6 +69,13 @@
     @close="onModalRemoveMessageClose"
     :context="modals.removeMessage.context"
   )
+
+  message-details(
+    v-if="popups.messageDetails.visible"
+    @close="onPopupMessageDetailsClose"
+    :room="room"
+    :message-id="popups.messageDetails.messageId"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -114,8 +121,11 @@ import {
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 
 // PROJECT: MODALS
-import EditMessage from "@/modals/inbox/EditMessage.vue";
 import RemoveMessage from "@/modals/inbox/RemoveMessage.vue";
+import EditMessage from "@/modals/inbox/EditMessage.vue";
+
+// PROJECT: POPUPS
+import MessageDetails from "@/popups/inbox/MessageDetails.vue";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
@@ -172,7 +182,7 @@ const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 export default {
   name: "InboxMessaging",
 
-  components: { EditMessage, RemoveMessage },
+  components: { MessageDetails, EditMessage, RemoveMessage },
 
   props: {
     room: {
@@ -226,6 +236,14 @@ export default {
           context: {
             messageId: ""
           }
+        }
+      },
+
+      popups: {
+        messageDetails: {
+          visible: false,
+
+          messageId: ""
         }
       },
 
@@ -869,6 +887,10 @@ export default {
       this.modals.removeMessage.visible = false;
     },
 
+    onPopupMessageDetailsClose(): void {
+      this.popups.messageDetails.visible = false;
+    },
+
     onPopoverClickAway(): void {
       // Hide popover (if any opened)
       this.hidePopover();
@@ -978,6 +1000,18 @@ export default {
       // Show confirm modal
       this.modals.removeMessage.context.messageId = messageId;
       this.modals.removeMessage.visible = true;
+    },
+
+    onPopoverActionsDetailsClick({ messageId }: { messageId: string }): void {
+      // Hide popover
+      this.hidePopover();
+
+      // Show details popup?
+      // Notice: room is required to be defined for the popup to work
+      if (this.room) {
+        this.popups.messageDetails.messageId = messageId;
+        this.popups.messageDetails.visible = true;
+      }
     },
 
     onPopoverReactionsPick({
@@ -1164,6 +1198,24 @@ export default {
               }
             );
           }
+
+          // Append information actions
+          items.push(
+            {
+              type: PopoverItemType.Divider
+            },
+
+            {
+              type: PopoverItemType.Button,
+              label: "Show details",
+              color: "lighter",
+              click: this.onPopoverActionsDetailsClick,
+
+              icon: {
+                name: "plus.viewfinder"
+              }
+            }
+          );
         }
 
         // Show popover
