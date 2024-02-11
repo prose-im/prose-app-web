@@ -52,7 +52,8 @@ base-modal(
   .m-add-channel__options
     form-fieldset-field(
       label="Create a private channel"
-      auto-size
+      auto-label-size
+      auto-input-size
     )
       form-toggle(
         v-model="private"

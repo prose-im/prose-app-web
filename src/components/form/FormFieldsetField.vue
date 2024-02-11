@@ -14,7 +14,8 @@ div(
     "c-form-fieldset-field",
     "c-form-fieldset-field--" + align,
     {
-      "c-form-fieldset-field--auto-size": autoSize
+      "c-form-fieldset-field--auto-label-size": autoLabelSize,
+      "c-form-fieldset-field--auto-input-size": autoInputSize
     }
   ]`
 )
@@ -55,7 +56,12 @@ export default {
       }
     },
 
-    autoSize: {
+    autoLabelSize: {
+      type: Boolean,
+      default: false
+    },
+
+    autoInputSize: {
       type: Boolean,
       default: false
     }
@@ -116,13 +122,13 @@ $c: ".c-form-fieldset-field";
 
   // --> BOOLEANS <--
 
-  &--auto-size {
-    #{$c}__label,
-    #{$c}__input {
-      width: auto;
-      flex: 0 0 auto;
-    }
+  &--auto-label-size #{$c}__label,
+  &--auto-input-size #{$c}__input {
+    width: auto;
+    flex: 0 0 auto;
+  }
 
+  &--auto-label-size {
     #{$c}__label {
       max-width: initial;
     }
