@@ -32,8 +32,10 @@ layout-popup-navigate(
           :class=`[
             "p-message-details__value",
             {
+              ["p-message-details__value--" + entry.data.color]: entry.data.color,
               "p-message-details__value--lighter": entry.data.lighter,
-              "u-select": entry.data.selectable
+              "u-select": entry.data.selectable,
+              "u-bold": entry.data.bolder
             }
           ]`
         )
@@ -85,8 +87,10 @@ interface Entry {
   data?: {
     label: string;
     value: string | void;
+    color?: string;
     lighter?: boolean;
     selectable?: boolean;
+    bolder?: boolean;
   };
 }
 
@@ -167,7 +171,9 @@ export default {
 
             data: {
               label: "Encrypted?",
-              value: this.checkMetaValue("encrypted")
+              value: this.getMetaValue("encrypted"),
+              color: this.getMetaState("encrypted") ? "green" : "red",
+              bolder: true
             }
           },
 
@@ -176,7 +182,7 @@ export default {
 
             data: {
               label: "Edited?",
-              value: this.checkMetaValue("edited")
+              value: this.getMetaValue("edited")
             }
           }
         ];
@@ -214,11 +220,14 @@ export default {
       }
     },
 
-    checkMetaValue(metaKey: string): string {
-      return (this.message?.metas as { [key: string]: boolean })?.[metaKey] ===
-        true
-        ? "Yes"
-        : "No";
+    getMetaState(metaKey: string): boolean {
+      return (
+        (this.message?.metas as { [key: string]: boolean })?.[metaKey] || false
+      );
+    },
+
+    getMetaValue(metaKey: string): string {
+      return this.getMetaState(metaKey) === true ? "Yes" : "No";
     },
 
     // --> EVENT LISTENERS <--
@@ -248,6 +257,14 @@ $c: ".p-message-details";
 
     &--lighter {
       color: rgb(var(--color-text-secondary));
+    }
+
+    &--green {
+      color: rgb(var(--color-base-green-normal));
+    }
+
+    &--red {
+      color: rgb(var(--color-base-red-normal));
     }
   }
 
