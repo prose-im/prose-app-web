@@ -10,6 +10,7 @@
 
 <template lang="pug">
 base-popup(
+  @close="onClose"
   :class=`[
     "c-layout-popup-navigate",
     "c-layout-popup-navigate--" + size,
@@ -114,6 +115,8 @@ export default {
     }
   },
 
+  emits: ["close"],
+
   data() {
     return {
       // --> STATE <--
@@ -168,6 +171,11 @@ export default {
     onWindowResize(): void {
       // Refresh actions separator state
       this.autoDetectActionsSeparator();
+    },
+
+    onClose(): void {
+      // Close popup
+      this.$emit("close");
     }
   }
 };
