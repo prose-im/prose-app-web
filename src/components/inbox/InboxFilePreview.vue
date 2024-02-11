@@ -34,6 +34,7 @@ teleport(
                 @click="onActionFullScreenClick"
                 :disabled="areActionsDisabled || !hasActionFullScreen"
                 icon="arrow.up.left.and.arrow.down.right"
+                context="grey"
                 size="12px"
               )
 
@@ -46,6 +47,7 @@ teleport(
                 @click="onActionNavigatePreviousClick"
                 :disabled="areActionsDisabled || !hasActionNavigatePrevious"
                 icon="chevron.left"
+                context="grey"
                 size="12px"
               )
 
@@ -58,6 +60,7 @@ teleport(
                 @click="onActionNavigateNextClick"
                 :disabled="areActionsDisabled || !hasActionNavigateNext"
                 icon="chevron.right"
+                context="grey"
                 size="12px"
               )
 
@@ -82,6 +85,7 @@ teleport(
                 @click="onActionDownloadClick"
                 :disabled="areActionsDisabled"
                 icon="arrow.down.circle.dotted"
+                context="grey"
                 size="18px"
               )
 
@@ -94,6 +98,7 @@ teleport(
                 @click="onActionShareClick"
                 :disabled="areActionsDisabled || true"
                 icon="square.and.arrow.up"
+                context="grey"
                 size="20px"
               )
 
