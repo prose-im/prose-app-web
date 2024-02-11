@@ -1,7 +1,7 @@
 <!--
  * This file is part of prose-app-web
  *
- * Copyright 2023, Prose Foundation
+ * Copyright 2024, Prose Foundation
  -->
 
 <!-- **********************************************************************
@@ -9,9 +9,7 @@
      ********************************************************************** -->
 
 <template lang="pug">
-base-divider(
-  class="c-list-divider"
-)
+span.c-base-divider
 </template>
 
 <!-- **********************************************************************
@@ -20,7 +18,7 @@ base-divider(
 
 <script lang="ts">
 export default {
-  name: "ListDivider"
+  name: "BaseDivider"
 };
 </script>
 
@@ -29,9 +27,11 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-list-divider";
+$c: ".c-base-divider";
 
 #{$c} {
-  margin-block: 7px;
+  background-color: rgb(var(--color-base-grey-light));
+  height: 1px;
+  display: block;
 }
 </style>
