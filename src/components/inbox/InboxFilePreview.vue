@@ -14,6 +14,8 @@ teleport(
 )
   .c-inbox-file-preview(
     v-hotkey="hotkeys"
+    ref="root"
+    tabindex="1"
   )
     .c-inbox-file-preview__inner
       layout-toolbar(
@@ -229,7 +231,8 @@ export default {
       return {
         esc: this.onHotkeyEscape,
         left: this.onHotkeyLeft,
-        right: this.onHotkeyRight
+        right: this.onHotkeyRight,
+        f: this.onHotkeyF
       };
     },
 
@@ -263,6 +266,13 @@ export default {
     }
   },
 
+  mounted() {
+    // Focus on component root (so that hotkeys can receive events)
+    // Notice: for this to work, a 'tabindex' of '1' on the root element is \
+    //   also required.
+    (this.$refs.root as HTMLElement).focus();
+  },
+
   methods: {
     // --> HELPERS <--
 
@@ -287,6 +297,11 @@ export default {
     onHotkeyEscape(): void {
       // Trigger close button click event
       this.onButtonCloseClick();
+    },
+
+    onHotkeyF(): void {
+      // Trigger full screen action click event
+      this.onActionFullScreenClick();
     },
 
     onActionFullScreenClick(): void {
@@ -365,7 +380,7 @@ $c: ".c-inbox-file-preview";
 $file-preview-border-radius: 9px;
 
 #{$c} {
-  background-color: transparent;
+  background-color: rgba(var(--color-base-grey-dark), 0.25);
   padding: 40px 60px;
   display: flex;
   align-items: center;
