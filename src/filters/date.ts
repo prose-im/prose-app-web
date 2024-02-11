@@ -20,6 +20,9 @@ const WEEK_TO_DAYS = 7; // 1 week
 
 const MINUTE_TO_MILLISECONDS = 60000; // 1 minute
 
+const DATE_TIME_FORMAT_REGION = "en-US";
+const DATE_TIME_FORMAT_TIMEZONE = "UTC";
+
 /**************************************************************************
  * FILTERS
  ***************************************************************************/
@@ -120,12 +123,20 @@ class FilterDate {
     // Generate local time from date (from the UTC timezone, as offset has \
     //   already been applied, therefore from a POV of UTC we will read the \
     //   local time)
-    return new Intl.DateTimeFormat("en-US", {
-      timeZone: "UTC",
+    return new Intl.DateTimeFormat(DATE_TIME_FORMAT_REGION, {
+      timeZone: DATE_TIME_FORMAT_TIMEZONE,
       hour: "numeric",
       minute: "numeric",
       hour12: true
     }).format(localDate);
+  }
+
+  prettyDateTime(date: Date): string {
+    const dateString = date.toLocaleString(DATE_TIME_FORMAT_REGION, {
+      timeZone: DATE_TIME_FORMAT_TIMEZONE
+    });
+
+    return `${dateString} (${DATE_TIME_FORMAT_TIMEZONE})`;
   }
 }
 
