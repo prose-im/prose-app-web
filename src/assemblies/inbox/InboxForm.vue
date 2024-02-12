@@ -552,34 +552,60 @@ export default {
         );
       }
 
-      // Request file upload slot
-      const slot = await Broker.$data.requestUploadSlot(file.name, file.size);
+      // Attempt to generate a thumbnail for file (if file is a media)
+      // Notice: generate thumbnail after shrinking file, since working on a \
+      //   smaller file will make the thumbnail generation process faster.
+      const thumbnailFile = await UtilitiesFile.attemptToGenerateThumbnail(
+        file
+      );
 
-      if (!slot) {
+      // Request file upload slot and upload file
+      const fileUrl = await this.uploadTargetFileToSlot(file);
+
+      if (!fileUrl) {
         throw new Error("Could not obtain an upload slot");
       }
 
-      // Extract headers from slot headers
-      const slotHeaders: FileUploadHeaders = {};
-
-      slot.uploadHeaders.forEach((header: UploadHeader) => {
-        slotHeaders[header.name] = header.value;
-      });
-
-      // Upload file
-      await UtilitiesFile.upload(
-        FileUploadMethod.PUT,
-        slot.uploadURL,
-        file,
-        slotHeaders
-      );
+      // Upload thumbnail file (as needed, if any)
+      const thumbnailUrl =
+        thumbnailFile !== undefined
+          ? await this.uploadTargetFileToSlot(thumbnailFile)
+          : undefined;
 
       // Generate attachment
-      const attachment = new Attachment(slot.downloadURL);
+      // TODO: set thumbnail, if any (via thumbnailUrl)
+      const attachment = new Attachment(fileUrl);
 
       attachment.description = file.name;
 
       return attachment;
+    },
+
+    async uploadTargetFileToSlot(file: File): Promise<string | void> {
+      // Request file upload slot
+      const slot = await Broker.$data.requestUploadSlot(file.name, file.size);
+
+      if (slot !== undefined) {
+        // Extract headers from slot headers
+        const slotHeaders: FileUploadHeaders = {};
+
+        slot.uploadHeaders.forEach((header: UploadHeader) => {
+          slotHeaders[header.name] = header.value;
+        });
+
+        // Upload file
+        await UtilitiesFile.upload(
+          FileUploadMethod.PUT,
+          slot.uploadURL,
+          file,
+          slotHeaders
+        );
+
+        // Return slot (containing the download URL)
+        return slot.downloadURL;
+      }
+
+      return undefined;
     },
 
     // --> EVENT LISTENERS <--

@@ -10,6 +10,7 @@
 
 // NPM
 import { readAndCompressImage } from "browser-image-resizer";
+import { VideoThumbnailGenerator } from "browser-video-thumbnail-generator";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -32,6 +33,15 @@ enum FileShrinkTarget {
   None = "none"
 }
 
+enum FileThumbnailTarget {
+  // Image target
+  Image = "image",
+  // Video target
+  Video = "video",
+  // None target
+  None = "none"
+}
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
@@ -43,8 +53,8 @@ type FileUploadHeaders = { [name: string]: string };
  * ************************************************************************* */
 
 interface FileAttributes {
-  url: string;
   name: string;
+  bareName: string | null;
   extension: string | null;
   mimeGuess: string;
 }
@@ -82,6 +92,7 @@ const KNOWN_MIMES: { [extension: string]: string } = {
 };
 
 const SHRINK_MIME_TARGETS: { [mime: string]: FileShrinkTarget } = {
+  // Images
   "image/jpeg": FileShrinkTarget.Image,
   "image/png": FileShrinkTarget.Image,
   "image/webp": FileShrinkTarget.Image
@@ -90,6 +101,25 @@ const SHRINK_MIME_TARGETS: { [mime: string]: FileShrinkTarget } = {
 const SHRINK_IMAGE_OPTIONS = {
   maxSize: 2400,
   quality: 0.85
+};
+
+const THUMBNAIL_MIME_TARGETS: { [mime: string]: FileThumbnailTarget } = {
+  // Images
+  "image/jpeg": FileThumbnailTarget.Image,
+  "image/png": FileThumbnailTarget.Image,
+  "image/webp": FileThumbnailTarget.Image,
+
+  // Videos
+  "video/webm": FileThumbnailTarget.Video,
+  "video/ogg": FileThumbnailTarget.Video
+};
+
+const THUMBNAIL_IMAGE_OPTIONS = {
+  maxSize: 640,
+  quality: 0.8,
+  mimeType: "image/webp",
+  nameSuffix: "thumbnail",
+  extension: "webp"
 };
 
 /**************************************************************************
@@ -124,10 +154,9 @@ class UtilitiesFile {
   }
 
   async attemptToShrinkSize(file: File): Promise<File> {
-    const shrinkTarget =
-      SHRINK_MIME_TARGETS[file.type] || FileShrinkTarget.None;
+    const target = SHRINK_MIME_TARGETS[file.type] || FileShrinkTarget.None;
 
-    switch (shrinkTarget) {
+    switch (target) {
       case FileShrinkTarget.Image: {
         return await this.__shrinkImageSize(file);
       }
@@ -139,6 +168,31 @@ class UtilitiesFile {
 
         // Return file as-is (identity function)
         return file;
+      }
+    }
+  }
+
+  async attemptToGenerateThumbnail(file: File): Promise<File | void> {
+    const target =
+      THUMBNAIL_MIME_TARGETS[file.type] || FileThumbnailTarget.None;
+
+    switch (target) {
+      case FileThumbnailTarget.Image: {
+        return this.__makeThumbnailFromImage(file);
+      }
+
+      case FileThumbnailTarget.Video: {
+        return this.__makeThumbnailFromVideo(file);
+      }
+
+      default: {
+        logger.info(
+          `Not generating thumbnail for file: ${file.name} ` +
+            `(no target for MIME: ${file.type})`
+        );
+
+        // Return no thumbnail file
+        return undefined;
       }
     }
   }
@@ -161,6 +215,10 @@ class UtilitiesFile {
       throw new Error("URL path has no file name");
     }
 
+    return this.detectAttributesFromFileName(fileName);
+  }
+
+  detectAttributesFromFileName(fileName: string): FileAttributes {
     // Acquire file extension (if any)
     let fileExtension;
 
@@ -173,6 +231,15 @@ class UtilitiesFile {
       fileExtension = null;
     }
 
+    // Acquire bare file name (name w/o extension)
+    let fileBareName;
+
+    if (fileExtensionStartIndex > -1) {
+      fileBareName = fileName.substring(0, fileExtensionStartIndex);
+    } else {
+      fileBareName = fileName;
+    }
+
     // Guess MIME type from extension (in known MIME types)
     let mimeGuessOrNone;
 
@@ -183,8 +250,8 @@ class UtilitiesFile {
     }
 
     return {
-      url: fileUrl,
       name: fileName,
+      bareName: fileBareName || null,
       extension: fileExtension,
       mimeGuess: mimeGuessOrNone || MIME_DEFAULT
     };
@@ -233,6 +300,104 @@ class UtilitiesFile {
       // Ignore error, return original file
       return file;
     }
+  }
+
+  private async __makeThumbnailFromImage(
+    file: File,
+    customName?: string
+  ): Promise<File | void> {
+    logger.debug(`Making thumbnail from image file: ${file.name}...`);
+
+    try {
+      // Generate thumbnail from image file
+      const thumbnailBlob = await readAndCompressImage(file, {
+        quality: THUMBNAIL_IMAGE_OPTIONS.quality,
+        maxWidth: THUMBNAIL_IMAGE_OPTIONS.maxSize,
+        maxHeight: THUMBNAIL_IMAGE_OPTIONS.maxSize,
+        mimeType: THUMBNAIL_IMAGE_OPTIONS.mimeType
+      });
+
+      // Acquire thumbnail file name (from detected source file attributes)
+      const fileName = customName || file.name,
+        fileAttributes = this.detectAttributesFromFileName(fileName);
+
+      const thumbnailFileName = `${fileAttributes.bareName || fileName}-${
+        THUMBNAIL_IMAGE_OPTIONS.nameSuffix
+      }.${THUMBNAIL_IMAGE_OPTIONS.extension}`;
+
+      // Generate thumnnail file
+      const thumbnailFile = new File([thumbnailBlob], thumbnailFileName, {
+        type: THUMBNAIL_IMAGE_OPTIONS.mimeType
+      });
+
+      logger.info(
+        `Made thumbnail from image file: ${file.name} with ` +
+          `file name: ${thumbnailFile.name} (${thumbnailFile.size} bytes)`
+      );
+
+      return thumbnailFile;
+    } catch (error) {
+      logger.error(
+        `Error attempting to make thumbnail from image file: ${file.name}`,
+        error
+      );
+
+      // Could not make any thumbnail
+      return undefined;
+    }
+  }
+
+  private async __makeThumbnailFromVideo(file: File): Promise<File | void> {
+    let thumbnailFile: File | void;
+
+    logger.debug(`Making thumbnail from video file: ${file.name}...`);
+
+    // Initialize generator
+    const generator = new VideoThumbnailGenerator(URL.createObjectURL(file));
+
+    try {
+      // Attempt to extract a cover image from video
+      // TODO: it appears that if video format is not compatible, then this \
+      //   will hang undefinitely (eg. trying to generate a cover from an \
+      //   H265 video on Firefox), some Promise rejects need to be implemented \
+      //   in the underlying library.
+      const { thumbnail } = await generator.getThumbnail();
+
+      // Fetch generated cover file
+      const coverResponse = await fetch(thumbnail),
+        coverBlob = await coverResponse.blob();
+
+      // Acquire cover file from thumbnail
+      const coverFile = new File([coverBlob], "cover", {
+        type: coverBlob.type
+      });
+
+      // Make final thumbnail image from extracted cover image (if any)
+      // Notice: specify original video file name, so that the thumbnail image \
+      //   file name gets derived from this original file name, and not the \
+      //   cover file name.
+      if (coverFile !== undefined) {
+        logger.info(
+          `Acquired cover image from video file: ${file.name}, ` +
+            `will now make final thumbnail from cover image file`
+        );
+
+        thumbnailFile = await this.__makeThumbnailFromImage(
+          coverFile,
+          file.name
+        );
+      }
+    } catch (error) {
+      logger.error(
+        `Error attempting to make thumbnail from video file: ${file.name}`,
+        error
+      );
+    } finally {
+      // Clean up generator internals (free memory)
+      generator.revokeUrls();
+    }
+
+    return thumbnailFile;
   }
 }
 
