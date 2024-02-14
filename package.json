@@ -33,8 +33,8 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-sdk-js": "0.1.52",
-    "@prose-im/prose-core-views": "0.29.4",
+    "@prose-im/prose-sdk-js": "0.1.54",
+    "@prose-im/prose-core-views": "0.30.1",
     "lodash.camelcase": "4.3.0",
     "lodash.upperfirst": "4.3.1",
     "lodash.clonedeep": "4.5.0",
@@ -48,6 +48,7 @@
     "smile2emoji": "3.10.0",
     "browser-downloads": "0.2.0",
     "browser-image-resizer": "2.4.1",
+    "webm-duration-fix": "1.0.4",
     "pinia": "2.1.4",
     "pinia-plugin-persistedstate": "3.1.0",
     "vue": "3.4.15",

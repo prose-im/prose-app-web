@@ -120,24 +120,49 @@ const fromCoreMessage = function (
     from: message.user.jid,
     content: message.content,
 
-    files: message.attachments.map(attachment => {
-      const fileAttributes = UtilitiesFile.detectAttributesFromUrl(
-        attachment.url
-      );
-
-      return {
-        name: attachment.description || fileAttributes.name,
-        type: fileAttributes.mimeGuess,
-        url: attachment.url
-      };
-    }),
-
+    // Metas
     metas: {
       secure: room.type === RoomType.PublicChannel,
       encrypted: false,
       edited: message.meta.isEdited
     },
 
+    // File attachments (if any)
+    files: message.attachments.map(attachment => {
+      // Detect file attributes from URL (as a fallback, if not enough data)
+      const fileAttributes = UtilitiesFile.detectAttributesFromUrl(
+        attachment.url
+      );
+
+      return {
+        // Common attributes
+        name: attachment.fileName || fileAttributes.name,
+        type: attachment.mediaType || fileAttributes.mimeGuess,
+        url: attachment.url,
+
+        preview: {
+          // Thumbnail URL (images & videos)
+          url: attachment.thumbnail?.url,
+
+          // Thumbnail Size (images & videos)
+          size:
+            attachment.thumbnail?.width && attachment.thumbnail?.height
+              ? {
+                  width: attachment.thumbnail.width,
+                  height: attachment.thumbnail.height
+                }
+              : undefined,
+
+          // Duration (videos & audios)
+          duration:
+            attachment.duration !== undefined
+              ? Number(attachment.duration)
+              : undefined
+        }
+      };
+    }),
+
+    // Reactions (if any)
     reactions: message.reactions.map(reaction => {
       return {
         reaction: reaction.reaction,

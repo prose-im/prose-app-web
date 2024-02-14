@@ -177,7 +177,10 @@ import {
   ParticipantInfo,
   SendMessageRequest,
   Attachment,
-  UploadHeader
+  AttachmentMetadata,
+  Thumbnail,
+  UploadHeader,
+  UploadSlot
 } from "@prose-im/prose-sdk-js";
 import { checkText as textSmilesToEmojis } from "smile2emoji";
 
@@ -208,7 +211,8 @@ import Broker from "@/broker";
 import {
   default as UtilitiesFile,
   FileUploadMethod,
-  FileUploadHeaders
+  FileUploadHeaders,
+  FileThumbnailTarget
 } from "@/utilities/file";
 
 // INTERFACES
@@ -613,33 +617,80 @@ export default {
       // Attempt to generate a thumbnail for file (if file is a media)
       // Notice: generate thumbnail after shrinking file, since working on a \
       //   smaller file will make the thumbnail generation process faster.
-      const thumbnailFile = await UtilitiesFile.attemptToGenerateThumbnail(
+      const thumbnailResult = await UtilitiesFile.attemptToGenerateThumbnail(
         file
       );
 
       // Request file upload slot and upload file
-      const fileUrl = await this.uploadTargetFileToSlot(file);
+      const fileSlot = await this.uploadTargetFileToSlot(file);
 
-      if (!fileUrl) {
+      if (!fileSlot) {
         throw new Error("Could not obtain an upload slot");
       }
 
       // Upload thumbnail file (as needed, if any)
-      const thumbnailUrl =
-        thumbnailFile !== undefined
-          ? await this.uploadTargetFileToSlot(thumbnailFile)
+      const thumbnailSlot =
+        thumbnailResult.image !== undefined
+          ? await this.uploadTargetFileToSlot(thumbnailResult.image.file)
           : undefined;
 
-      // Generate attachment
-      // TODO: set thumbnail, if any (via thumbnailUrl)
-      const attachment = new Attachment(fileUrl);
+      // Generate attachment metadata (and optional thumbnail)
+      const metadata = AttachmentMetadata.fromSlot(fileSlot);
 
-      attachment.description = file.name;
+      const thumbnail =
+        thumbnailSlot !== undefined && thumbnailResult.image !== undefined
+          ? Thumbnail.fromSlot(
+              thumbnailSlot,
+              thumbnailResult.image.width,
+              thumbnailResult.image.height
+            )
+          : undefined;
+
+      // Acquire detected media duration from thumbnail (only applies to \
+      //   audios and videos)
+      const duration = BigInt(thumbnailResult.metas?.duration || 0);
+
+      // Make actual attachment
+      let attachment: Attachment;
+
+      switch (thumbnailResult.target) {
+        // Image attachment
+        case FileThumbnailTarget.Image: {
+          attachment =
+            thumbnail !== undefined
+              ? Attachment.imageAttachment(metadata, thumbnail)
+              : Attachment.fileAttachment(metadata);
+
+          break;
+        }
+
+        case FileThumbnailTarget.Video: {
+          // Video attachment
+          attachment =
+            thumbnail !== undefined
+              ? Attachment.videoAttachment(metadata, duration, thumbnail)
+              : Attachment.fileAttachment(metadata);
+
+          break;
+        }
+
+        case FileThumbnailTarget.Audio: {
+          // Audio attachment
+          attachment = Attachment.audioAttachment(metadata, duration);
+
+          break;
+        }
+
+        default: {
+          // Other attachments
+          attachment = Attachment.fileAttachment(metadata);
+        }
+      }
 
       return attachment;
     },
 
-    async uploadTargetFileToSlot(file: File): Promise<string | void> {
+    async uploadTargetFileToSlot(file: File): Promise<UploadSlot | void> {
       // Request file upload slot
       const slot = await Broker.$data.requestUploadSlot(file.name, file.size);
 
@@ -660,7 +711,7 @@ export default {
         );
 
         // Return slot (containing the download URL)
-        return slot.downloadURL;
+        return slot;
       }
 
       return undefined;
@@ -727,11 +778,6 @@ export default {
     },
 
     async onAttachFile(file: File): Promise<void> {
-      // TODO: send optional image size for images (need a XEP for that)
-      // TODO: send optional audio duration for audios (need a XEP for that)
-      // TODO: find a way to pass MIME type for all uploads (not possible w/ \
-      //   OOB?)
-
       // Retain target room identifier
       // Notice: if the target room changes while the upload is pending, \
       //   this will ensure that we do not send the message to the wrong \

@@ -67,6 +67,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import fixWebmDuration from "webm-duration-fix";
+
 // ENUMERATIONS
 enum TimerMode {
   // Register mode.
@@ -266,7 +269,7 @@ export default {
         this.setupTimer(TimerMode.Register, true);
       });
 
-      recorder.addEventListener("stop", () => {
+      recorder.addEventListener("stop", async () => {
         this.$log.info("Audio recorder stopped");
 
         // Stop timer
@@ -274,7 +277,7 @@ export default {
 
         // Emit audio now?
         if (this.emitAudioOnStop === true) {
-          this.emitAudio();
+          await this.emitAudio();
         }
       });
 
@@ -343,7 +346,7 @@ export default {
       this.emitAudioOnStop = false;
     },
 
-    emitAudio() {
+    async emitAudio(): Promise<void> {
       try {
         // Mark as processing audio
         this.emitAudioProcessing = true;
@@ -362,11 +365,21 @@ export default {
           throw new Error("Cannot emit audio with no audio chunks");
         }
 
+        // Make audio blob
+        const audioBlob = new Blob(audioChunks, { type: RECORDER_AUDIO_MIME });
+
+        // Fix audio duration
+        // Notice: this is due to an issue in most major Web browsers, where \
+        //   WebM media files coming out of the MediaRecorder have their \
+        //   duration set to 'Infinity'. We need the duration to be set to an \
+        //   actual number, so that we can show the real duration in the UI.
+        const audioBlobWithDuration = await fixWebmDuration(audioBlob);
+
         // Create audio file
         const nowTime = Date.now();
 
         let audioFile = new File(
-          audioChunks,
+          [audioBlobWithDuration],
           `${RECORDER_AUDIO_FILE_TITLE} ${nowTime}.${RECORDER_AUDIO_EXTENSION}`,
 
           {
@@ -396,7 +409,7 @@ export default {
       this.onCancelClick();
     },
 
-    onSendClick(): void {
+    async onSendClick(): Promise<void> {
       // Any recorder? Send audio
       if (this.recorder !== null) {
         // Mark as eligible for sending (once stopped)
@@ -408,7 +421,7 @@ export default {
           this.recorder.stop();
         } else {
           // Emit audio in buffer straight away (already stopped)
-          this.emitAudio();
+          await this.emitAudio();
         }
       } else {
         // No recorder, equivalent to cancel

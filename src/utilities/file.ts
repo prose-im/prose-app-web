@@ -14,9 +14,9 @@ import { readAndCompressImage } from "browser-image-resizer";
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 import {
-  default as UtilitiesVideo,
-  VideoThumbnailPosition
-} from "@/utilities/video";
+  default as UtilitiesMedia,
+  MediaVideoThumbnailPosition
+} from "@/utilities/media";
 
 /**************************************************************************
  * ENUMERATIONS
@@ -41,6 +41,8 @@ enum FileThumbnailTarget {
   Image = "image",
   // Video target
   Video = "video",
+  // Audio target
+  Audio = "audio",
   // None target
   None = "none"
 }
@@ -60,6 +62,16 @@ interface FileAttributes {
   bareName: string | null;
   extension: string | null;
   mimeGuess: string;
+}
+
+interface FileThumbnailImage {
+  file: File;
+  width: number;
+  height: number;
+}
+
+interface FileThumbnailMetas {
+  duration?: number;
 }
 
 /**************************************************************************
@@ -115,7 +127,11 @@ const THUMBNAIL_MIME_TARGETS: { [mime: string]: FileThumbnailTarget } = {
   // Videos
   "video/webm": FileThumbnailTarget.Video,
   "video/ogg": FileThumbnailTarget.Video,
-  "video/mp4": FileThumbnailTarget.Video
+  "video/mp4": FileThumbnailTarget.Video,
+
+  // Audios
+  "audio/webm": FileThumbnailTarget.Audio,
+  "audio/ogg": FileThumbnailTarget.Audio
 };
 
 const THUMBNAIL_IMAGE_OPTIONS = {
@@ -176,17 +192,40 @@ class UtilitiesFile {
     }
   }
 
-  async attemptToGenerateThumbnail(file: File): Promise<File | void> {
+  async attemptToGenerateThumbnail(file: File): Promise<{
+    target: FileThumbnailTarget;
+    image: FileThumbnailImage | void;
+    metas: FileThumbnailMetas | void;
+  }> {
+    let thumbnailImage: FileThumbnailImage | void,
+      thumbnailMetas: FileThumbnailMetas | void;
+
+    // Generate thumbnail for target
     const target =
       THUMBNAIL_MIME_TARGETS[file.type] || FileThumbnailTarget.None;
 
     switch (target) {
       case FileThumbnailTarget.Image: {
-        return this.__makeThumbnailFromImage(file);
+        thumbnailImage = await this.__makeThumbnailFromImage(file);
+
+        break;
       }
 
       case FileThumbnailTarget.Video: {
-        return this.__makeThumbnailFromVideo(file);
+        const videoThumbnail = await this.__makeThumbnailFromVideo(file);
+
+        thumbnailImage = videoThumbnail.image;
+        thumbnailMetas = videoThumbnail.metas;
+
+        break;
+      }
+
+      case FileThumbnailTarget.Audio: {
+        // Notice: this could be used in the future to extract sound \
+        //   waveforms, to show them in the player before the sound has loaded.
+        thumbnailMetas = await this.__makeThumbnailFromAudio(file);
+
+        break;
       }
 
       default: {
@@ -194,11 +233,10 @@ class UtilitiesFile {
           `Not generating thumbnail for file: ${file.name} ` +
             `(no target for MIME: ${file.type})`
         );
-
-        // Return no thumbnail file
-        return undefined;
       }
     }
+
+    return { target, image: thumbnailImage, metas: thumbnailMetas };
   }
 
   detectAttributesFromUrl(fileUrl: string): FileAttributes {
@@ -274,7 +312,7 @@ class UtilitiesFile {
       });
 
       const imageFile = new File([imageBlob], file.name, {
-        type: file.type,
+        type: imageBlob.type,
         lastModified: file.lastModified
       });
 
@@ -309,7 +347,7 @@ class UtilitiesFile {
   private async __makeThumbnailFromImage(
     file: File,
     customName?: string
-  ): Promise<File | void> {
+  ): Promise<FileThumbnailImage | void> {
     logger.debug(`Making thumbnail from image file: ${file.name}...`);
 
     try {
@@ -331,7 +369,7 @@ class UtilitiesFile {
 
       // Generate thumnnail file
       const thumbnailFile = new File([thumbnailBlob], thumbnailFileName, {
-        type: THUMBNAIL_IMAGE_OPTIONS.mimeType
+        type: thumbnailBlob.type
       });
 
       logger.info(
@@ -339,7 +377,16 @@ class UtilitiesFile {
           `file name: ${thumbnailFile.name} (${thumbnailFile.size} bytes)`
       );
 
-      return thumbnailFile;
+      // Acquire image size
+      const thumbnailImageSize = await UtilitiesMedia.imageSizeFromFile(
+        thumbnailFile
+      );
+
+      return {
+        file: thumbnailFile,
+        width: thumbnailImageSize.width,
+        height: thumbnailImageSize.height
+      };
     } catch (error) {
       logger.error(
         `Error attempting to make thumbnail from image file: ${file.name}`,
@@ -351,8 +398,12 @@ class UtilitiesFile {
     }
   }
 
-  private async __makeThumbnailFromVideo(file: File): Promise<File | void> {
-    let thumbnailFile: File | void;
+  private async __makeThumbnailFromVideo(file: File): Promise<{
+    image: FileThumbnailImage | void;
+    metas: FileThumbnailMetas | void;
+  }> {
+    let thumbnailImage: FileThumbnailImage | void,
+      thumbnailMetas: FileThumbnailMetas | void;
 
     logger.debug(`Making thumbnail from video file: ${file.name}...`);
 
@@ -363,9 +414,9 @@ class UtilitiesFile {
 
     try {
       // Attempt to extract a cover image from video
-      const { thumbnailBlob } = await UtilitiesVideo.thumbnail(
+      const { thumbnailBlob, duration } = await UtilitiesMedia.videoThumbnail(
         fileUrl,
-        VideoThumbnailPosition.Middle
+        MediaVideoThumbnailPosition.Middle
       );
 
       // Acquire cover file from thumbnail
@@ -383,10 +434,14 @@ class UtilitiesFile {
             `will now make final thumbnail from cover image file`
         );
 
-        thumbnailFile = await this.__makeThumbnailFromImage(
+        thumbnailImage = await this.__makeThumbnailFromImage(
           coverFile,
           file.name
         );
+
+        thumbnailMetas = {
+          duration
+        };
       }
     } catch (error) {
       logger.error(
@@ -398,7 +453,42 @@ class UtilitiesFile {
       URL.revokeObjectURL(fileUrl);
     }
 
-    return thumbnailFile;
+    return {
+      image: thumbnailImage,
+      metas: thumbnailMetas
+    };
+  }
+
+  private async __makeThumbnailFromAudio(
+    file: File
+  ): Promise<FileThumbnailMetas | void> {
+    let thumbnailMetas: FileThumbnailMetas | void;
+
+    logger.debug(`Making thumbnail from audio file: ${file.name}...`);
+
+    // Obtain URL object from file
+    // Important: this has to be revoked at a later point, otherwise this will \
+    //   stay in browser memory!
+    const fileUrl = URL.createObjectURL(file);
+
+    try {
+      // Attempt to extract preview details from audio
+      const { duration } = await UtilitiesMedia.audioThumbnail(fileUrl);
+
+      thumbnailMetas = {
+        duration
+      };
+    } catch (error) {
+      logger.error(
+        `Error attempting to make thumbnail from audio file: ${file.name}`,
+        error
+      );
+    } finally {
+      // Revoke created URL object (free up memory)
+      URL.revokeObjectURL(fileUrl);
+    }
+
+    return thumbnailMetas;
   }
 }
 
@@ -406,6 +496,6 @@ class UtilitiesFile {
  * EXPORTS
  * ************************************************************************* */
 
-export { FileUploadMethod };
+export { FileUploadMethod, FileThumbnailTarget };
 export type { FileUploadHeaders };
 export default new UtilitiesFile();
