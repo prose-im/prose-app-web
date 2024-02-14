@@ -10,10 +10,13 @@
 
 // NPM
 import { readAndCompressImage } from "browser-image-resizer";
-import { VideoThumbnailGenerator } from "browser-video-thumbnail-generator";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+import {
+  default as UtilitiesVideo,
+  VideoThumbnailPosition
+} from "@/utilities/video";
 
 /**************************************************************************
  * ENUMERATIONS
@@ -111,7 +114,8 @@ const THUMBNAIL_MIME_TARGETS: { [mime: string]: FileThumbnailTarget } = {
 
   // Videos
   "video/webm": FileThumbnailTarget.Video,
-  "video/ogg": FileThumbnailTarget.Video
+  "video/ogg": FileThumbnailTarget.Video,
+  "video/mp4": FileThumbnailTarget.Video
 };
 
 const THUMBNAIL_IMAGE_OPTIONS = {
@@ -352,24 +356,21 @@ class UtilitiesFile {
 
     logger.debug(`Making thumbnail from video file: ${file.name}...`);
 
-    // Initialize generator
-    const generator = new VideoThumbnailGenerator(URL.createObjectURL(file));
+    // Obtain URL object from file
+    // Important: this has to be revoked at a later point, otherwise this will \
+    //   stay in browser memory!
+    const fileUrl = URL.createObjectURL(file);
 
     try {
       // Attempt to extract a cover image from video
-      // TODO: it appears that if video format is not compatible, then this \
-      //   will hang undefinitely (eg. trying to generate a cover from an \
-      //   H265 video on Firefox), some Promise rejects need to be implemented \
-      //   in the underlying library.
-      const { thumbnail } = await generator.getThumbnail();
-
-      // Fetch generated cover file
-      const coverResponse = await fetch(thumbnail),
-        coverBlob = await coverResponse.blob();
+      const { thumbnailBlob } = await UtilitiesVideo.thumbnail(
+        fileUrl,
+        VideoThumbnailPosition.Middle
+      );
 
       // Acquire cover file from thumbnail
-      const coverFile = new File([coverBlob], "cover", {
-        type: coverBlob.type
+      const coverFile = new File([thumbnailBlob], "cover", {
+        type: thumbnailBlob.type
       });
 
       // Make final thumbnail image from extracted cover image (if any)
@@ -393,8 +394,8 @@ class UtilitiesFile {
         error
       );
     } finally {
-      // Clean up generator internals (free memory)
-      generator.revokeUrls();
+      // Revoke created URL object (free up memory)
+      URL.revokeObjectURL(fileUrl);
     }
 
     return thumbnailFile;
