@@ -10,9 +10,12 @@
 
 <template lang="pug">
 .c-base-popover(
+  v-hotkey="hotkeys"
+  v-click-away="onClickAway"
   :style=`{
     transform: offsetAdapt.transform
   }`
+  :tabindex="tabindex"
   ref="root"
 )
   slot
@@ -33,8 +36,19 @@ export default {
     adapt: {
       type: Boolean,
       default: true
+    },
+
+    tabindex: {
+      type: Number,
+      default: 1,
+
+      validator(x: number) {
+        return x > 0;
+      }
     }
   },
+
+  emits: ["close"],
 
   data() {
     return {
@@ -48,11 +62,24 @@ export default {
     };
   },
 
+  computed: {
+    hotkeys(): { [name: string]: (event: Event) => void } {
+      return {
+        escape: this.onHotkeyEscape
+      };
+    }
+  },
+
   mounted() {
     // Automatically adapt popover offset?
     if (this.adapt === true) {
       this.autoAdaptOffset();
     }
+
+    // Focus on component root (so that hotkeys can receive events)
+    // Notice: for this to work, a 'tabindex' of '1' on the root element is \
+    //   also required.
+    (this.$refs.root as HTMLElement).focus();
   },
 
   methods: {
@@ -108,6 +135,22 @@ export default {
       } else {
         this.offsetAdapt.transform = null;
       }
+    },
+
+    // --> EVENT LISTENERS <--
+
+    onClickAway(): void {
+      this.$emit("close");
+    },
+
+    onHotkeyEscape(event: Event): void {
+      // Prevent escape key event to bubble up to parent (since we should be \
+      //   held captive in the open popover context)
+      event.stopPropagation();
+      event.preventDefault();
+
+      // Trigger click away event
+      this.onClickAway();
     }
   }
 };
@@ -129,5 +172,9 @@ $c: ".c-base-popover";
   padding-block: 7px;
   border-radius: 5px;
   box-shadow: 0 2px 6px 0 rgba(var(--color-shadow-primary), 0.025);
+
+  &:focus {
+    outline: 0 none;
+  }
 }
 </style>

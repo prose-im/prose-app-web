@@ -10,6 +10,8 @@
 
 <template lang="pug">
 base-popover(
+  @close="onClose"
+  :tabindex="tabindex"
   class="c-base-popover-list"
 )
   template(
@@ -74,7 +76,9 @@ base-popover(
       )
         base-popover-list(
           v-if="childrenPopoverVisible[index]"
+          @close="onChildClose(index)"
           :items="item.children"
+          :tabindex="tabindex - 1"
           class="c-base-popover-list__button-popover"
         )
 
@@ -128,6 +132,9 @@ export interface ItemIcon {
   properties?: object;
 }
 
+// CONSTANTS
+const CHILDREN_MAXIMUM_DEPTH = 10;
+
 export default {
   name: "BasePopoverList",
 
@@ -147,8 +154,22 @@ export default {
       default(): object {
         return {};
       }
+    },
+
+    tabindex: {
+      type: Number,
+      default: CHILDREN_MAXIMUM_DEPTH,
+
+      validator(x: number) {
+        // Make sure that we do not go too deep w/ too many children (honor \
+        //   maximum depth, which goes in reverse order from maximum to \
+        //   minimum, since lowest 'tabindex' has priority over higher ones)
+        return x > 0;
+      }
     }
   },
+
+  emits: ["close"],
 
   data() {
     return {
@@ -161,6 +182,24 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
+    onClose(): void {
+      const hasOpenChildren = Object.values(
+        this.childrenPopoverVisible
+      ).includes(true);
+
+      // Only bubble up close event if there are no open children
+      if (hasOpenChildren === false) {
+        this.$emit("close");
+      }
+    },
+
+    onChildClose(index: number): void {
+      // Hide child?
+      if (this.childrenPopoverVisible[index] === true) {
+        delete this.childrenPopoverVisible[index];
+      }
+    },
+
     onButtonMouseEnter(item: Item, index: number): void {
       if (item.children && item.children.length > 0) {
         this.childrenPopoverVisible[index] = true;
@@ -168,9 +207,8 @@ export default {
     },
 
     onButtonMouseLeave(index: number): void {
-      if (this.childrenPopoverVisible[index] === true) {
-        delete this.childrenPopoverVisible[index];
-      }
+      // Trigger child close event
+      this.onChildClose(index);
     }
   }
 };
