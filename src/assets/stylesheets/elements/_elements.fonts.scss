@@ -30,3 +30,12 @@
   font-family: $font-family-default;
   src: url("/fonts/outfit/outfit_semibold.woff2") format("woff2");
 }
+
+// Hack
+
+@font-face {
+  font-weight: $font-weight-regular;
+  font-style: normal;
+  font-family: $font-family-code;
+  src: url("/fonts/hack/hack_regular.woff2") format("woff2");
+}
