@@ -19,15 +19,25 @@ list-disclosure(
   list-entry(
     v-for="entry in entries"
     :key="entry.id"
+    :selectable="entry.selectable"
     :multi-line="entry.multiLine"
     :class=`{
       [itemClass]: itemClass
     }`
   )
     template(
+      v-if="entry.titleHtml"
       v-slot:default
     )
-      | {{ entry.title }}
+      span(
+        v-html="entry.titleHtml"
+      )
+
+    template(
+      v-else-if="entry.titleText"
+      v-slot:default
+    )
+      | {{ entry.titleText }}
 
     template(
       v-slot:icon
@@ -55,8 +65,10 @@ import Store from "@/store";
 // INTERFACES
 interface Entry {
   id: string;
-  title: string;
+  titleText?: string;
+  titleHtml?: string;
   icon?: string;
+  selectable?: boolean;
   multiLine?: boolean;
 }
 
@@ -90,15 +102,16 @@ export default {
       if (topic) {
         entries.push({
           id: "topic",
-          title: topic,
+          titleHtml: this.$filters.string.textIntoMultiLineHtml(topic),
           icon: "megaphone.fill",
+          selectable: true,
           multiLine: true
         });
       }
 
       entries.push({
         id: "members",
-        title: membersCount === 1 ? "1 member" : `${membersCount} members`,
+        titleText: membersCount === 1 ? "1 member" : `${membersCount} members`,
         icon: "person.fill.viewfinder"
       });
 
