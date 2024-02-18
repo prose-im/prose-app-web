@@ -118,7 +118,6 @@ layout-toolbar(
         tooltip="Send Files"
       )
         base-action(
-          @click="onActionAttachClick"
           :disabled="isFormDisabled"
           :size="actionIconSize"
           class="a-inbox-form__action"
@@ -533,10 +532,6 @@ export default {
     onActionRecordClick(): void {
       // Toggle popover
       this.isActionRecordRecorderVisible = !this.isActionRecordRecorderVisible;
-    },
-
-    onActionAttachClick(): void {
-      // TODO: open file picker
     },
 
     onActionEmojisClick(): void {
