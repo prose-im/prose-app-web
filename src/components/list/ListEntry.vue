@@ -29,6 +29,7 @@ div(
     :class=`[
       "c-list-entry__label",
       {
+        "u-select": selectable,
         "u-ellipsis": !multiLine
       }
     ]`
@@ -59,6 +60,11 @@ export default {
       validator(x: string) {
         return ["normal", "lighter"].includes(x);
       }
+    },
+
+    selectable: {
+      type: Boolean,
+      default: false
     },
 
     multiLine: {
@@ -123,7 +129,10 @@ $c: ".c-list-entry";
     #{$c}__label {
       font-size: 13.5px;
       line-height: 16px;
+      word-break: break-word;
+      hyphens: auto;
       padding-block: 3px;
+      overflow: hidden;
     }
   }
 }
