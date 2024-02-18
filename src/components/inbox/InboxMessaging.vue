@@ -172,9 +172,15 @@ interface StatePopover {
 
 // CONSTANTS
 const FRAME_STYLE = {
-  fontFamily: "Prose Outfit",
-  fontSize: "13.5px",
-  paddingBottom: "25px"
+  app: {
+    fontFamily: "Prose Outfit",
+    fontSize: "13.5px",
+    paddingBottom: "25px"
+  },
+
+  code: {
+    fontFamily: "Prose Hack"
+  }
 };
 
 const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
@@ -365,9 +371,13 @@ export default {
         ${styleElementsFonts}
 
         #app {
-          font-family: "${FRAME_STYLE.fontFamily}";
-          font-size: ${FRAME_STYLE.fontSize};
-          padding-bottom: ${FRAME_STYLE.paddingBottom};
+          font-family: "${FRAME_STYLE.app.fontFamily}";
+          font-size: ${FRAME_STYLE.app.fontSize};
+          padding-bottom: ${FRAME_STYLE.app.paddingBottom};
+        }
+
+        #app code {
+          font-family: "${FRAME_STYLE.code.fontFamily}";
         }
       `;
 
