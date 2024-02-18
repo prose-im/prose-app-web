@@ -165,12 +165,20 @@ class UtilitiesFile {
     }
 
     // Upload file
-    await fetch(url, {
+    const response = await fetch(url, {
       body: file,
       mode: "cors",
       method: method.toString().toUpperCase(),
       headers: requestHeaders
     });
+
+    // Handle upload failure?
+    if (response.ok === false) {
+      throw new Error(
+        `Failed uploading file to URL: ${url}, got status: ` +
+          `HTTP ${response.status}`
+      );
+    }
   }
 
   async attemptToShrinkSize(file: File): Promise<File> {
