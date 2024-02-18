@@ -126,7 +126,7 @@ $c: ".c-form-checkbox";
 
   #{$c}__input {
     border: 0 none;
-    outline: 0;
+    outline: 0 none;
     cursor: pointer;
     margin: 0;
     padding: 0;
