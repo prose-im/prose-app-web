@@ -9,7 +9,6 @@
  * ************************************************************************* */
 
 // NPM
-import cloneDeep from "lodash.clonedeep";
 import mitt from "mitt";
 import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
@@ -321,30 +320,41 @@ const $inbox = defineStore("inbox", {
         throw new Error("Cannot update a message with no identifier");
       }
 
-      // Acquire message from store
-      const existingMessage = container.byId[id] || null;
+      // Assert message (update only if a previous message exists)
+      // Notice: only update message if it exists in storage, by updating the \
+      //   whole message entry, instead of using 'Object.assign()', which is \
+      //   known to cause issues due to wasm-bindgen pointers once they get \
+      //   garbage-collected. We want to replace the whole Message object with \
+      //   the new one, which may contain new memory references.
+      const originalMessage = container.byId[id] || null;
 
-      if (existingMessage !== null) {
-        // Duplicate existing message (before it gets mutated)
-        const originalMessage = cloneDeep(existingMessage);
+      if (originalMessage !== null) {
+        // Find original message at index in list
+        const originalMessageIndex = container.list.findIndex(foundMessage => {
+          return id === foundMessage.id;
+        });
 
         this.$patch(() => {
-          // Delete existing message at previous identifier
-          delete container.byId[id];
+          // Delete existing message at previous identifier? (only if \
+          //   message identifier has changed)
+          if (messageId !== id) {
+            delete container.byId[id];
+          }
 
-          Object.assign(existingMessage, message);
+          // Store existing message at new identifier (or replace if \
+          //   identifier has not changed)
+          container.byId[messageId] = message;
 
-          // Update existing message identifier (w/ replacement identifier)
-          existingMessage.id = messageId;
-
-          // Store existing message at new identifier
-          container.byId[messageId] = existingMessage;
+          // Update message in list at index? (if any, should always find one)
+          if (originalMessageIndex > -1) {
+            container.list[originalMessageIndex] = message;
+          }
         });
 
         // Emit IPC updated event
         EventBus.emit("message:updated", {
           roomId: roomId,
-          message: existingMessage,
+          message: message,
           original: originalMessage
         } as EventMessageGeneric);
 

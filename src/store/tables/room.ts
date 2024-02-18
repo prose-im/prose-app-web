@@ -204,14 +204,17 @@ const $room = defineStore("room", {
     },
 
     updateRoom(roomID: RoomID, roomData: CoreRoom): CoreRoom | void {
-      // Assert room
-      const room = this.getRoom(roomID);
+      // Assert room (update only if it exists)
+      // Notice: only update room if it exists in storage, by updating the \
+      //   whole Map entry, instead of using 'Object.assign()', which is \
+      //   known to cause issues due to wasm-bindgen pointers once they get \
+      //   garbage-collected. We want to replace the whole Room object with \
+      //   the new one, which may contain new memory references.
+      if (this.getRoom(roomID) !== undefined) {
+        this.byId.set(roomID, roomData);
 
-      if (room) {
-        Object.assign(room, roomData);
+        return roomData;
       }
-
-      return room;
     },
 
     markRoomsChanged(): void {
