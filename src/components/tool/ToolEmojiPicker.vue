@@ -14,6 +14,7 @@ emoji-picker(
   :native="true"
   :static-texts="{ placeholder: 'Search for emojis'}"
   class="c-tool-emoji-picker"
+  ref="picker"
   disable-skin-tones
   display-recent
 )
@@ -25,6 +26,7 @@ emoji-picker(
 
 <script lang="ts">
 // NPM
+import { codes as keyCodes } from "keycode";
 import EmojiPicker from "vue3-emoji-picker";
 import "vue3-emoji-picker/css";
 
@@ -40,8 +42,55 @@ export default {
 
   emits: ["pick"],
 
+  mounted() {
+    // Setup search field
+    this.setupSearchField();
+  },
+
   methods: {
+    // --> HELPERS <--
+
+    setupSearchField(): void {
+      const pickerElement = (this.$refs.picker as typeof EmojiPicker)
+        .$el as HTMLElement;
+
+      // Attempt to find search field element
+      // Notice: this is a custom access into 'vue3-emoji-picker' internals, \
+      //   which is a bit hacky, although it is the only way to tune the \
+      //   search input behavior for now.
+      const fieldElement: HTMLInputElement | null =
+        pickerElement.querySelector(".v3-search input") || null;
+
+      // Any search field?
+      if (fieldElement !== null) {
+        // Focus on search field
+        fieldElement.focus();
+
+        // Un-focus on escape
+        fieldElement.addEventListener("keyup", this.onSearchFieldKeyUp);
+      }
+    },
+
     // --> EVENT LISTENERS <--
+
+    onSearchFieldKeyUp(event: KeyboardEvent): void {
+      const keyCode = event.keyCode;
+
+      switch (keyCode) {
+        // Escape
+        case keyCodes.esc: {
+          event.preventDefault();
+
+          // De-focus from search field
+          // Notice: this allows emoji picker parent to handle escape key \
+          //   presses, since the field will not automatically blur itself \
+          //   when pressing escape in its default behavior.
+          (event.target as HTMLInputElement)?.blur();
+
+          break;
+        }
+      }
+    },
 
     onEmojiSelect(emoji: Emoji): void {
       const emojiGlyph = emoji.i;
