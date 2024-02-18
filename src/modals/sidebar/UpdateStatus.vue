@@ -32,7 +32,7 @@ base-modal(
     )
       base-popover(
         v-if="isIconPopoverVisible"
-        v-click-away="onIconPopoverClickAway"
+        @close="onIconPopoverClose"
         class="m-update-status__icon-popover"
       )
         tool-emoji-picker(
@@ -198,7 +198,7 @@ export default {
       this.isIconPopoverVisible = !this.isIconPopoverVisible;
     },
 
-    onIconPopoverClickAway(): void {
+    onIconPopoverClose(): void {
       // Close popover
       this.isIconPopoverVisible = false;
     },

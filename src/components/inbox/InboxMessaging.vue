@@ -37,7 +37,7 @@
 
   base-popover-list(
     v-if="popover.items.length > 0"
-    v-click-away="onPopoverClickAway"
+    @close="onPopoverClose"
     :items="popover.items"
     :context="popover.context"
     :style="popover.style"
@@ -46,7 +46,7 @@
 
   base-popover(
     v-else-if="popover.component"
-    v-click-away="onPopoverClickAway"
+    @close="onPopoverClose"
     :style="popover.style"
     class="c-inbox-messaging__popover"
   )
@@ -901,7 +901,7 @@ export default {
       this.popups.messageDetails.visible = false;
     },
 
-    onPopoverClickAway(): void {
+    onPopoverClose(): void {
       // Hide popover (if any opened)
       this.hidePopover();
     },

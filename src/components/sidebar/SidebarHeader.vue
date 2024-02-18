@@ -26,7 +26,7 @@
 
     base-popover-list(
       v-if="isIdentityPopoverVisible"
-      v-click-away="onIdentityPopoverClickAway"
+      @close="onIdentityPopoverClose"
       :items="identityPopoverItems"
       class="c-sidebar-header__identity-popover"
     )
@@ -123,7 +123,7 @@ export default {
       this.isIdentityPopoverVisible = !this.isIdentityPopoverVisible;
     },
 
-    onIdentityPopoverClickAway(): void {
+    onIdentityPopoverClose(): void {
       // Close popover
       this.isIdentityPopoverVisible = false;
     },

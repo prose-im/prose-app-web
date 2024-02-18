@@ -32,7 +32,7 @@ layout-toolbar(
         )
           base-popover(
             v-if="isActionFormattingPopoverVisible"
-            v-click-away="onActionFormattingPopoverClickAway"
+            @close="onActionFormattingPopoverClose"
             class="a-inbox-form__action-popover a-inbox-form__action-popover--left"
           )
             inbox-form-formatting(
@@ -145,7 +145,7 @@ layout-toolbar(
         )
           base-popover(
             v-if="isActionEmojisPopoverVisible"
-            v-click-away="onActionEmojisPopoverClickAway"
+            @close="onActionEmojisPopoverClose"
             class="a-inbox-form__action-popover a-inbox-form__action-popover--right"
           )
             tool-emoji-picker(
@@ -524,7 +524,7 @@ export default {
         !this.isActionFormattingPopoverVisible;
     },
 
-    onActionFormattingPopoverClickAway(): void {
+    onActionFormattingPopoverClose(): void {
       // Close popover
       this.isActionFormattingPopoverVisible = false;
     },
@@ -539,7 +539,7 @@ export default {
       this.isActionEmojisPopoverVisible = !this.isActionEmojisPopoverVisible;
     },
 
-    onActionEmojisPopoverClickAway(): void {
+    onActionEmojisPopoverClose(): void {
       // Close popover
       this.isActionEmojisPopoverVisible = false;
     },

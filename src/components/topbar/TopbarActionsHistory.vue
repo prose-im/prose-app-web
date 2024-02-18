@@ -55,7 +55,7 @@ layout-actions(
     )
       base-popover-list(
         v-if="isActionHistoryPopoverVisible"
-        v-click-away="onActionHistoryPopoverClickAway"
+        @close="onActionHistoryPopoverClose"
         :items="actionHistoryPopoverItems"
         class="c-topbar-actions-history__popover"
       )
@@ -173,7 +173,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onActionHistoryPopoverClickAway(): void {
+    onActionHistoryPopoverClose(): void {
       // Close popover
       this.isActionHistoryPopoverVisible = false;
     },

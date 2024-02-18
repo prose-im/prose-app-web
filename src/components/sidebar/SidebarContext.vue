@@ -33,7 +33,7 @@
 
         base-popover-list(
           v-if="isAvatarPopoverVisible"
-          v-click-away="onAvatarPopoverClickAway"
+          @close="onAvatarPopoverClose"
           :items="avatarPopoverItems"
           class="c-sidebar-context__avatar-popover"
         )
@@ -89,7 +89,7 @@
     )
       base-popover-list(
         v-if="isActionsPopoverVisible"
-        v-click-away="onActionsPopoverClickAway"
+        @close="onActionsPopoverClose"
         :items="actionsPopoverItems"
         class="c-sidebar-context__actions-popover"
       )
@@ -522,7 +522,7 @@ export default {
       this.isAvatarPopoverVisible = !this.isAvatarPopoverVisible;
     },
 
-    onAvatarPopoverClickAway(): void {
+    onAvatarPopoverClose(): void {
       // Close popover
       this.isAvatarPopoverVisible = false;
     },
@@ -638,7 +638,7 @@ export default {
       this.isActionsPopoverVisible = !this.isActionsPopoverVisible;
     },
 
-    onActionsPopoverClickAway(): void {
+    onActionsPopoverClose(): void {
       // Close popover
       this.isActionsPopoverVisible = false;
     },

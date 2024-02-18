@@ -64,7 +64,7 @@ list-disclosure(
 
         base-popover(
           v-if="detailsPopover.id === entry.id"
-          v-click-away="onDetailsPopoverClickAway"
+          @close="onDetailsPopoverClose"
           class="c-inbox-details-user-security__details-popover"
         )
           component(
@@ -243,7 +243,7 @@ export default {
       }
     },
 
-    onDetailsPopoverClickAway(): void {
+    onDetailsPopoverClose(): void {
       this.detailsPopover.id = "";
       this.detailsPopover.component = null;
     }
