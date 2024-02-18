@@ -38,6 +38,11 @@ export default {
       default: true
     },
 
+    focus: {
+      type: Boolean,
+      default: true
+    },
+
     tabindex: {
       type: Number,
       default: 1,
@@ -76,10 +81,13 @@ export default {
       this.autoAdaptOffset();
     }
 
-    // Focus on component root (so that hotkeys can receive events)
+    // Automatically focus on component root? (so that hotkeys can receive \
+    //   events)
     // Notice: for this to work, a 'tabindex' of '1' on the root element is \
     //   also required.
-    (this.$refs.root as HTMLElement).focus();
+    if (this.focus === true) {
+      (this.$refs.root as HTMLElement).focus();
+    }
   },
 
   methods: {

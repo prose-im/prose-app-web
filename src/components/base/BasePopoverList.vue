@@ -11,6 +11,7 @@
 <template lang="pug">
 base-popover(
   @close="onClose"
+  :focus="focus"
   :tabindex="tabindex"
   class="c-base-popover-list"
 )
@@ -154,6 +155,11 @@ export default {
       default(): object {
         return {};
       }
+    },
+
+    focus: {
+      type: Boolean,
+      default: true
     },
 
     tabindex: {
