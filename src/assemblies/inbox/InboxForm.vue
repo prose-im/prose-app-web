@@ -172,14 +172,9 @@ import { PropType } from "vue";
 import {
   JID,
   Room,
-  RoomID,
   RoomType,
   ParticipantInfo,
   SendMessageRequest,
-  Attachment,
-  AttachmentMetadata,
-  Thumbnail,
-  UploadHeader,
   UploadSlot
 } from "@prose-im/prose-sdk-js";
 import { checkText as textSmilesToEmojis } from "smile2emoji";
@@ -208,18 +203,7 @@ import Store from "@/store";
 import Broker from "@/broker";
 
 // PROJECT: UTILITIES
-import {
-  default as UtilitiesFile,
-  FileUploadMethod,
-  FileUploadHeaders,
-  FileThumbnailTarget
-} from "@/utilities/file";
-
-// INTERFACES
-interface BatchFileUploadResult {
-  attachments: Array<Attachment>;
-  failedFiles: Array<File>;
-}
+import { default as UtilitiesUpload, UploadOptions } from "@/utilities/upload";
 
 // INSTANCES
 const MESSAGE_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
@@ -266,8 +250,6 @@ export default {
 
       isUserComposing: false,
       isAttachFilePending: false,
-
-      fileUploadQueue: {} as { [roomId: RoomID]: Array<File> },
 
       chatStateComposeTimeout: null as null | ReturnType<typeof setTimeout>,
       draftAutoSaveTimeout: null as null | ReturnType<typeof setTimeout>
@@ -353,7 +335,7 @@ export default {
           this.attemptDraftRestore(newValue);
 
           // Check if (still) uploading a file in this room
-          this.isAttachFilePending = newValue.id in this.fileUploadQueue;
+          this.isAttachFilePending = UtilitiesUpload.hasQueue(newValue.id);
         }
       }
     }
@@ -535,188 +517,6 @@ export default {
       }
     },
 
-    queueFileForUpload(roomId: RoomID, file: File): void {
-      // Assign queue register for room?
-      if (!(roomId in this.fileUploadQueue)) {
-        this.fileUploadQueue[roomId] = [];
-      }
-
-      // Append file to upload queue for room
-      this.fileUploadQueue[roomId].push(file);
-    },
-
-    async processQueuedFileUploads(
-      roomId: RoomID
-    ): Promise<BatchFileUploadResult> {
-      const result: BatchFileUploadResult = {
-        attachments: [],
-        failedFiles: []
-      };
-
-      // Upload next queued file
-      // Notice: this recurses until there are no files pending in the queue, \
-      //   this also does not error out in any case, so that upload errors do \
-      //   not block next upload.
-      await this.processNextQueuedFileUpload(roomId, result);
-
-      return result;
-    },
-
-    async processNextQueuedFileUpload(
-      roomId: RoomID,
-      result: BatchFileUploadResult
-    ): Promise<void> {
-      const currentFile = (this.fileUploadQueue[roomId] || []).shift() || null;
-
-      // Current file found in queue?
-      if (currentFile !== null) {
-        this.$log.debug(
-          `Uploading next file in queue: '${currentFile.name}'...`
-        );
-
-        try {
-          // Upload current file
-          const attachment = await this.processQueuedFileUpload(currentFile);
-
-          this.$log.info(`Uploaded next file in queue: '${currentFile.name}'`);
-
-          // Append uploaded file to success stack
-          result.attachments.push(attachment);
-        } catch (error) {
-          this.$log.error(
-            `Could not upload next file in queue: '${currentFile.name}'`,
-            error
-          );
-
-          // Append non-uploaded file to success stack
-          result.failedFiles.push(currentFile);
-        } finally {
-          // Process next file in queue (if any)
-          await this.processNextQueuedFileUpload(roomId, result);
-        }
-      } else {
-        this.$log.debug("Reached end of files queued for upload");
-
-        // Unassign queue register for room
-        delete this.fileUploadQueue[roomId];
-      }
-    },
-
-    async processQueuedFileUpload(file: File): Promise<Attachment> {
-      // Prepare file for upload? (eg. downsize if image)
-      // Important: replace previous file, with either shrunk file, or itself.
-      if (this.settings.messages.files.uploads.optimize !== false) {
-        file = await UtilitiesFile.attemptToShrinkSize(file);
-      } else {
-        this.$log.warn(
-          "Skipping pre-upload file optimizations, " +
-            "because user explicitly requested not to optimize"
-        );
-      }
-
-      // Attempt to generate a thumbnail for file (if file is a media)
-      // Notice: generate thumbnail after shrinking file, since working on a \
-      //   smaller file will make the thumbnail generation process faster.
-      const thumbnailResult = await UtilitiesFile.attemptToGenerateThumbnail(
-        file
-      );
-
-      // Request file upload slot and upload file
-      const fileSlot = await this.uploadTargetFileToSlot(file);
-
-      if (!fileSlot) {
-        throw new Error("Could not obtain an upload slot");
-      }
-
-      // Upload thumbnail file (as needed, if any)
-      const thumbnailSlot =
-        thumbnailResult.image !== undefined
-          ? await this.uploadTargetFileToSlot(thumbnailResult.image.file)
-          : undefined;
-
-      // Generate attachment metadata (and optional thumbnail)
-      const metadata = AttachmentMetadata.fromSlot(fileSlot);
-
-      const thumbnail =
-        thumbnailSlot !== undefined && thumbnailResult.image !== undefined
-          ? Thumbnail.fromSlot(
-              thumbnailSlot,
-              thumbnailResult.image.width,
-              thumbnailResult.image.height
-            )
-          : undefined;
-
-      // Acquire detected media duration from thumbnail (only applies to \
-      //   audios and videos)
-      const duration = BigInt(thumbnailResult.metas?.duration || 0);
-
-      // Make actual attachment
-      let attachment: Attachment;
-
-      switch (thumbnailResult.target) {
-        // Image attachment
-        case FileThumbnailTarget.Image: {
-          attachment =
-            thumbnail !== undefined
-              ? Attachment.imageAttachment(metadata, thumbnail)
-              : Attachment.fileAttachment(metadata);
-
-          break;
-        }
-
-        case FileThumbnailTarget.Video: {
-          // Video attachment
-          attachment =
-            thumbnail !== undefined
-              ? Attachment.videoAttachment(metadata, duration, thumbnail)
-              : Attachment.fileAttachment(metadata);
-
-          break;
-        }
-
-        case FileThumbnailTarget.Audio: {
-          // Audio attachment
-          attachment = Attachment.audioAttachment(metadata, duration);
-
-          break;
-        }
-
-        default: {
-          // Other attachments
-          attachment = Attachment.fileAttachment(metadata);
-        }
-      }
-
-      return attachment;
-    },
-
-    async uploadTargetFileToSlot(file: File): Promise<UploadSlot | void> {
-      // Request file upload slot
-      const slot = await Broker.$data.requestUploadSlot(file.name, file.size);
-
-      if (slot !== undefined) {
-        // Extract headers from slot headers
-        const slotHeaders: FileUploadHeaders = {};
-
-        slot.uploadHeaders.forEach((header: UploadHeader) => {
-          slotHeaders[header.name] = header.value;
-        });
-
-        // Upload file
-        await UtilitiesFile.upload(
-          FileUploadMethod.PUT,
-          slot.uploadURL,
-          file,
-          slotHeaders
-        );
-
-        // Return slot (containing the download URL)
-        return slot;
-      }
-
-      return undefined;
-    },
-
     // --> EVENT LISTENERS <--
 
     onActionFormattingClick(): void {
@@ -785,8 +585,21 @@ export default {
       const roomId = this.room?.id || null;
 
       if (roomId !== null) {
+        // Acquire upload options
+        const uploadOptions =
+          this.settings.messages.files.uploads.optimize !== false
+            ? UploadOptions.OptimizeAndShrink
+            : UploadOptions.NoneSpecified;
+
+        // Acquire slot generator
+        const slotGenerator = async (
+          file: File
+        ): Promise<UploadSlot | void> => {
+          return await Broker.$data.requestUploadSlot(file.name, file.size);
+        };
+
         // Queue file for upload
-        this.queueFileForUpload(roomId, file);
+        UtilitiesUpload.addToQueue(roomId, file, uploadOptions, slotGenerator);
 
         // Start processing queue?
         if (this.isAttachFilePending !== true) {
@@ -796,7 +609,7 @@ export default {
 
             // Process queue (start uploading now, until last item in queue is \
             //   processed)
-            const result = await this.processQueuedFileUploads(roomId);
+            const result = await UtilitiesUpload.processQueue(roomId);
 
             // No files sent?
             if (result.attachments.length === 0) {
