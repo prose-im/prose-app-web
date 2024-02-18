@@ -48,6 +48,7 @@
     v-else-if="popover.component"
     @close="onPopoverClose"
     :style="popover.style"
+    :focus="popover.focus"
     class="c-inbox-messaging__popover"
   )
     component(
@@ -162,6 +163,8 @@ interface StatePopover {
     insetInlineStart: string;
   };
 
+  focus: boolean;
+
   items: Array<PopoverItem>;
   component: null | object;
 
@@ -258,6 +261,8 @@ export default {
           insetBlockStart: "0px",
           insetInlineStart: "0px"
         },
+
+        focus: true,
 
         items: [],
         component: null,
@@ -543,7 +548,8 @@ export default {
       component,
       context,
       listeners,
-      interaction
+      interaction,
+      focus
     }: {
       anchor: StatePopoverAnchor;
       items?: Array<PopoverItem>;
@@ -551,6 +557,7 @@ export default {
       context?: object;
       listeners?: StatePopoverListeners;
       interaction?: StatePopoverInteraction;
+      focus?: boolean;
     }): void {
       const frameRuntime = this.frame();
 
@@ -577,6 +584,9 @@ export default {
       // Assign items and/or component (will show popover)
       this.popover.items = items || [];
       this.popover.component = component || null;
+
+      // Assign popover focus option (or default)
+      this.popover.focus = focus !== undefined ? focus : true;
 
       // Propagate interaction?
       if (interaction) {
@@ -971,7 +981,8 @@ export default {
         component: shallowRef(ToolEmojiPicker),
         context,
         listeners,
-        interaction
+        interaction,
+        focus: false
       });
     },
 
@@ -1267,7 +1278,8 @@ export default {
           anchor: event.origin.parent || event.origin.anchor,
           component: shallowRef(ToolEmojiPicker),
           listeners,
-          interaction
+          interaction,
+          focus: false
         });
 
         // Trigger container click

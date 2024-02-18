@@ -146,6 +146,7 @@ layout-toolbar(
           base-popover(
             v-if="isActionEmojisPopoverVisible"
             @close="onActionEmojisPopoverClose"
+            :focus="false"
             class="a-inbox-form__action-popover a-inbox-form__action-popover--right"
           )
             tool-emoji-picker(

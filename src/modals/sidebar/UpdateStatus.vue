@@ -33,6 +33,7 @@ base-modal(
       base-popover(
         v-if="isIconPopoverVisible"
         @close="onIconPopoverClose"
+        :focus="false"
         class="m-update-status__icon-popover"
       )
         tool-emoji-picker(
