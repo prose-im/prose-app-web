@@ -87,6 +87,10 @@ class BrokerDelegate implements ProseClientDelegate {
 
   contactChanged(_client: ProseClient, jids: Array<JID>): void {
     logger.info(`Contacts changed: ${jids.join(", ")}`);
+
+    if (jids.length > 0) {
+      Store.$roster.markContactsChanged();
+    }
   }
 
   contactListChanged(): void {
