@@ -41,7 +41,8 @@ div(
       "c-list-button__label",
       {
         "u-medium": emphasis,
-        "u-bold": important
+        "u-bold": important,
+        "u-ellipsis": ellipsis
       }
     ]`
   )
@@ -112,6 +113,11 @@ export default {
     },
 
     important: {
+      type: Boolean,
+      default: false
+    },
+
+    ellipsis: {
       type: Boolean,
       default: false
     },
