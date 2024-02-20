@@ -26,6 +26,7 @@ list-disclosure(
       }
     ]`
     size="small"
+    ellipsis
   )
     template(
       v-slot:icon
