@@ -76,7 +76,12 @@ export default {
   props: {
     jid: {
       type: Object as PropType<JID>,
-      required: true
+      default: null
+    },
+
+    name: {
+      type: String,
+      default: null
     },
 
     size: {
@@ -115,13 +120,16 @@ export default {
     },
 
     backgroundImage(): string | void {
-      const avatarDataUrl =
-        this.dataUrl !== null
-          ? this.dataUrl
-          : Store.$avatar.getAvatarDataUrl(this.jid);
+      // Acquire background image? (a JID is required to obtain avatar data)
+      if (this.jid !== null) {
+        const avatarDataUrl =
+          this.dataUrl !== null
+            ? this.dataUrl
+            : Store.$avatar.getAvatarDataUrl(this.jid);
 
-      if (avatarDataUrl) {
-        return `url(${avatarDataUrl})`;
+        if (avatarDataUrl) {
+          return `url(${avatarDataUrl})`;
+        }
       }
 
       return undefined;
@@ -130,7 +138,11 @@ export default {
     backgroundColor(): string | void {
       // Generate background color? (as avatar is textual)
       if (this.isTextual === true) {
-        return this.generateTextualPalette(this.jid);
+        const value = this.jid?.toString() || this.name || "";
+
+        if (value) {
+          return this.generateTextualPalette(value);
+        }
       }
 
       return undefined;
@@ -139,8 +151,10 @@ export default {
     contentText(): string | void {
       // Generate content text? (as avatar is textual)
       if (this.isTextual === true) {
+        const name = this.name || this.roomName || "";
+
         return this.normalizeTextualInitials(
-          this.generateTextualInitials(this.jid, this.roomName) || undefined
+          this.generateTextualInitials(this.jid, name) || undefined
         );
       }
 
@@ -186,7 +200,10 @@ export default {
     },
 
     roomName(): string {
-      const room = Store.$room.getRoom(this.jid.toString() as RoomID);
+      const room =
+        this.jid !== null
+          ? Store.$room.getRoom(this.jid.toString() as RoomID)
+          : undefined;
 
       return room?.name || "";
     }
@@ -207,24 +224,24 @@ export default {
       return undefined;
     },
 
-    generateTextualPalette(jid: JID): string {
-      const jidString = jid.toString();
+    generateTextualPalette(value: string): string {
+      // Compute value fingerprint
+      let valueFingerprint = 0;
 
-      // Compute JID fingerprint
-      let jidFingerprint = 0;
-
-      for (let i = 0; i < jidString.length; i++) {
-        jidFingerprint += jidString.charCodeAt(i);
+      for (let i = 0; i < value.length; i++) {
+        valueFingerprint += value.charCodeAt(i);
       }
 
-      // Acquire color based on JID fingerprint
+      // Acquire color based on value fingerprint
       const color =
-        TEXTUAL_PALETTE_COLORS[jidFingerprint % TEXTUAL_PALETTE_COLORS.length];
+        TEXTUAL_PALETTE_COLORS[
+          valueFingerprint % TEXTUAL_PALETTE_COLORS.length
+        ];
 
       return `#${color}`;
     },
 
-    generateTextualInitials(jid: JID, name = ""): string | void {
+    generateTextualInitials(jid: JID | null, name = ""): string | void {
       // #1. Extract initials from name (if any, and if long enough)
       if (name) {
         const nameChunks = name
@@ -248,7 +265,7 @@ export default {
       }
 
       // #2. Extract initials from JID (fallback)
-      if (jid.node && jid.node.length >= 1) {
+      if (jid?.node && jid?.node.length >= 1) {
         return jid.node.substring(0, 2);
       }
 
