@@ -211,7 +211,7 @@ export default {
     }
   },
 
-  emits: ["update:modelValue", "keystroke", "change", "submit"],
+  emits: ["update:modelValue", "keyup", "keystroke", "change", "submit"],
 
   data() {
     return {
@@ -392,7 +392,8 @@ export default {
 
     onFieldKeyUp(event: KeyboardEvent): void {
       if (event.target) {
-        // Propagate key event
+        // Propagate key events
+        this.$emit("keyup", event);
         this.$emit("keystroke", (event.target as HTMLInputElement).value);
       }
     },
