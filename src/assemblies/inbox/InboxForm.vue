@@ -75,7 +75,7 @@ layout-toolbar(
       .a-inbox-form__compose-inner
         form-field(
           v-model="message"
-          @keystroke="onKeystroke"
+          @keystroke="onKeyStroke"
           @submit="onSubmit"
           :suggestions="fieldSuggestions"
           :disabled="isFormDisabled"
@@ -678,7 +678,7 @@ export default {
       (this.$refs.message as typeof FormField).focusField();
     },
 
-    onKeystroke(value: string): void {
+    onKeyStroke(value: string): void {
       // Check for emoji replacements (eg. ':)' becomes a proper emoji')
       // Notice: for performance reasons, this is only applied on last typed \
       //   word, which needs to be complete (that is, followed with a space).
