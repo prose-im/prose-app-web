@@ -217,6 +217,21 @@ const $inbox = defineStore("inbox", {
       return entries[roomId];
     },
 
+    flush(roomId: RoomID): boolean {
+      const entries = this.entries;
+
+      // Flush inbox entry?
+      if (roomId in entries) {
+        delete entries[roomId];
+
+        // Flushed
+        return true;
+      }
+
+      // Not flushed
+      return false;
+    },
+
     getRooms(): Array<RoomID> {
       // Notice: no need to alias 'string' to 'RoomID' for each entry here, as \
       //   'RoomID' is already string-like.
