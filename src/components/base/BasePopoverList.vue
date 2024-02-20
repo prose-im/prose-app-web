@@ -36,6 +36,7 @@ base-popover(
       ]`
       size="small"
       icon-class="c-base-popover-list__button-icon"
+      ellipsis
     )
       template(
         v-slot:default
