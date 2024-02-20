@@ -325,7 +325,7 @@ export default {
     async syncGenericEager(
       entry: string,
       expunge: boolean,
-      fnLoad: (expunge: boolean) => Promise<void>
+      load: (expunge: boolean) => Promise<void>
     ): Promise<void> {
       // Can synchronize now? (connected)
       if (
@@ -336,7 +336,7 @@ export default {
         this.syncStaleness[entry] = false;
 
         // Load entries
-        await fnLoad(expunge);
+        await load(expunge);
       }
     },
 
