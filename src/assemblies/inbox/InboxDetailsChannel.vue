@@ -103,7 +103,10 @@ import {
 } from "@/components/inbox/InboxDetailsGenericActions.vue";
 
 // PROJECT: MODALS
-import LeaveMulti from "@/modals/inbox/LeaveMulti.vue";
+import {
+  default as LeaveMulti,
+  LeaveRoomHandler
+} from "@/modals/inbox/LeaveMulti.vue";
 import AddMultiMember from "@/modals/inbox/AddMultiMember.vue";
 
 // PROJECT: POPUPS
@@ -249,7 +252,7 @@ export default {
       this.popups.manageChannel.visible = false;
     },
 
-    async onModalLeaveChannelProceed(): Promise<void> {
+    async onModalLeaveChannelProceed(leave: LeaveRoomHandler): Promise<void> {
       try {
         if (!this.roomItem) {
           throw new Error("No room item");
@@ -257,10 +260,10 @@ export default {
 
         const roomName = this.roomItem.name;
 
-        // Remove item from sidebar (effectively leave the room)
         this.modals.leaveChannel.loading = true;
 
-        await this.roomItem.removeFromSidebar();
+        // Leave room
+        await leave(this.roomItem);
 
         // Show left alert
         BaseAlert.info(

@@ -11,7 +11,7 @@
 <template lang="pug">
 base-modal(
   @close="$emit('close')"
-  @confirm="$emit('proceed')"
+  @confirm="onConfirm"
   :confirm-label="confirmLabel"
   :confirm-loading="loading"
   class="m-leave-multi"
@@ -29,6 +29,15 @@ base-modal(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { SidebarItem } from "@prose-im/prose-sdk-js";
+
+// PROJECT: STORES
+import Store from "@/store";
+
+// TYPES
+export type LeaveRoomHandler = (item: SidebarItem) => Promise<void>;
+
 export default {
   name: "LeaveMulti",
 
@@ -55,6 +64,29 @@ export default {
       return this.type === "channel"
         ? "Leave This Channel"
         : "Leave This Group";
+    }
+  },
+
+  methods: {
+    // --> HELPERS <--
+
+    async leaveRoom(item: SidebarItem): Promise<void> {
+      // Remove item from sidebar (effectively leave the room)
+      await item.removeFromSidebar();
+
+      // Flush store for room
+      Store.$inbox.flush(item.room.id);
+
+      // Navigate away from room
+      this.$router.push({
+        name: "app.index"
+      });
+    },
+
+    // --> EVENT LISTENERS <--
+
+    onConfirm(): void {
+      this.$emit("proceed", this.leaveRoom);
     }
   }
 };

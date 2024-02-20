@@ -94,7 +94,10 @@ import {
 } from "@/components/inbox/InboxDetailsGenericActions.vue";
 
 // PROJECT: MODALS
-import LeaveMulti from "@/modals/inbox/LeaveMulti.vue";
+import {
+  default as LeaveMulti,
+  LeaveRoomHandler
+} from "@/modals/inbox/LeaveMulti.vue";
 
 // PROJECT: POPUPS
 import SharedFiles from "@/popups/inbox/SharedFiles.vue";
@@ -225,7 +228,7 @@ export default {
       this.popups.manageGroup.visible = false;
     },
 
-    async onModalLeaveGroupProceed(): Promise<void> {
+    async onModalLeaveGroupProceed(leave: LeaveRoomHandler): Promise<void> {
       try {
         if (!this.roomItem) {
           throw new Error("No room item");
@@ -233,10 +236,10 @@ export default {
 
         const roomName = this.roomItem.name;
 
-        // Remove item from sidebar (effectively leave the room)
         this.modals.leaveGroup.loading = true;
 
-        await this.roomItem.removeFromSidebar();
+        // Leave room
+        await leave(this.roomItem);
 
         // Show left alert
         BaseAlert.info(
