@@ -137,8 +137,11 @@ import { EventAvatarGeneric } from "@/store/tables/avatar";
 import {
   InboxNameOrigin,
   InboxEntryName,
+  InboxEntryStateLoading,
+  InboxInsertMode,
   EventMessageGeneric,
-  EventNameGeneric
+  EventNameGeneric,
+  EventStateLoadingGeneric
 } from "@/store/tables/inbox";
 import { SessionAppearance } from "@/store/tables/session";
 
@@ -207,10 +210,12 @@ export default {
       // --> DATA <--
 
       storeEvents: {
+        "message:restored": [Store.$inbox, this.onStoreMessageRestored],
         "message:inserted": [Store.$inbox, this.onStoreMessageInserted],
         "message:updated": [Store.$inbox, this.onStoreMessageUpdated],
         "message:retracted": [Store.$inbox, this.onStoreMessageRetracted],
         "name:changed": [Store.$inbox, this.onStoreNameChanged],
+        "state:loading:marked": [Store.$inbox, this.onStoreStateLoadingMarked],
         "avatar:changed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed],
         "avatar:flushed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed]
       },
@@ -226,8 +231,6 @@ export default {
       // --> STATE <--
 
       isFrameLoaded: false,
-      isMessageSyncStale: true,
-      isMessageSyncMoreLoading: false,
 
       modals: {
         removeMessage: {
@@ -275,12 +278,29 @@ export default {
   },
 
   computed: {
-    hasLoader(): boolean {
-      return this.isMessageSyncStale || this.isMessageSyncMoreLoading;
+    isMessageSyncStale(): boolean {
+      const archivesTimestamp = this.states?.archives.acquiredAt,
+        connectionTimestamp = this.session.lastConnectedAt;
+
+      return (
+        archivesTimestamp === undefined ||
+        connectionTimestamp === null ||
+        connectionTimestamp > archivesTimestamp
+      );
+    },
+
+    hasAnyLoader(): boolean {
+      return this.states?.loading.backwards || this.states?.loading.forwards
+        ? true
+        : false;
     },
 
     hasPlaceholder(): boolean {
-      return this.hasLoader === false && this.messages.length === 0;
+      return (
+        this.hasAnyLoader === false &&
+        this.isMessageSyncStale !== true &&
+        this.messages.length === 0
+      );
     },
 
     selfJID(): JID {
@@ -309,6 +329,10 @@ export default {
 
     names(): ReturnType<typeof Store.$inbox.getNames> {
       return this.room ? Store.$inbox.getNames(this.room.id) : {};
+    },
+
+    states(): ReturnType<typeof Store.$inbox.getStates> | void {
+      return this.room ? Store.$inbox.getStates(this.room.id) : undefined;
     }
   },
 
@@ -318,20 +342,15 @@ export default {
 
       handler(newValue: Room, oldValue: Room) {
         if (newValue && (!oldValue || newValue.id !== oldValue.id)) {
-          // Mark as stale
-          this.isMessageSyncStale = true;
-
           // Re-setup store (if runtime is available)
           const frameRuntime = this.frame();
 
           if (frameRuntime !== null) {
             this.setupStore(frameRuntime);
-          }
 
-          // Synchronize messages eagerly
-          // TODO: re-assert store (do not sync if store already set, as we \
-          //   are already connected and synced up)
-          this.syncMessagesEager();
+            // Synchronize messages eagerly
+            this.syncMessagesEager();
+          }
         }
       }
     }
@@ -343,9 +362,6 @@ export default {
       connected: this.onStoreConnected,
       appearance: this.onStoreAppearance
     });
-
-    // Synchronize messages eagerly
-    this.syncMessagesEager();
   },
 
   beforeUnmount() {
@@ -465,11 +481,6 @@ export default {
     },
 
     setupStore(runtime: MessagingRuntime): void {
-      // Mark as initializing?
-      if (this.isMessageSyncStale === true) {
-        runtime.MessagingStore.loader("forwards", true);
-      }
-
       // Pre-flush the store
       runtime.MessagingStore.flush();
 
@@ -481,6 +492,11 @@ export default {
 
       // Insert all messages already in store
       runtime.MessagingStore.insert(...this.messages);
+
+      // Restore loaders? (if states are known)
+      if (this.states) {
+        this.refreshLoaders(runtime, this.states.loading);
+      }
     },
 
     setupListeners(runtime: MessagingRuntime): void {
@@ -533,6 +549,21 @@ export default {
             ? Store.$avatar.getAvatarDataUrl(jidMaybe) || undefined
             : undefined
       });
+    },
+
+    refreshLoaders(
+      runtime: MessagingRuntime,
+      loading: InboxEntryStateLoading
+    ): void {
+      let direction: keyof InboxEntryStateLoading;
+
+      for (direction in loading) {
+        const directionValue = loading[direction];
+
+        if (directionValue !== undefined) {
+          runtime.MessagingStore.loader(direction, directionValue);
+        }
+      }
     },
 
     registerGlobalNames(): void {
@@ -664,80 +695,100 @@ export default {
     },
 
     async syncMessagesEager(): Promise<void> {
-      // Can synchronize now? (connected & room is known)
-      if (
-        this.room &&
-        this.isMessageSyncStale === true &&
-        Store.$session.connected === true
-      ) {
-        // Mark synchronization as non-stale
-        this.isMessageSyncStale = false;
+      // Freeze room reference (since we're going asynchronous and it might \
+      //   change in the state mid-way)
+      const room = this.room;
 
-        // Load all messages
-        const { messages } = await this.room.loadLatestMessages();
+      // Messages are stale and room is known?
+      if (this.isMessageSyncStale === true && room) {
+        // Mark as initializing
+        Store.$inbox.updateLoading(room.id, {
+          forwards: true
+        });
 
-        Store.$inbox.insertCoreMessages(this.room, messages);
+        // Can synchronize now? (connected)
+        if (this.session.connected === true) {
+          // Mark archives as acquired (ie. non-stale)
+          // Notice: do it early to prevent double concurrent loads.
+          Store.$inbox.markArchivesAcquired(room.id);
 
-        // Update loading marker
-        const frameRuntime = this.frame();
+          // Load all messages
+          const { messages } = await room.loadLatestMessages();
 
-        if (frameRuntime !== null) {
+          // Check if should insert or restore messages?
+          // Notice: this is required if there are already messages in the \
+          //   store, that could be more recent than those messages, eg. if \
+          //   a new message was received in-band and the room is opened later.
+          // Important: acquire insert mode AFTER loading messages and \
+          //   BEFORE inserting them to the store, since the loading could \
+          //   have taken quite some time, and some messages might have been \
+          //   inserted in the store mid-way.
+          const insertMode =
+            this.messages.length > 0
+              ? InboxInsertMode.Restore
+              : InboxInsertMode.Insert;
+
+          Store.$inbox.insertCoreMessages(room, messages, insertMode);
+
           // Mark forwards loading as complete
-          frameRuntime.MessagingStore.loader("forwards", false);
-
-          // TODO: Fix backwards loading after updating core lib
-          // Mark backwards loading as complete?
-          // if (result.complete === true) {
-          //   frameRuntime.MessagingStore.loader("backwards", false);
-          // }
-        } else {
-          this.$log.warn(
-            `Could not show loaders in message frame runtime upon eagerly ` +
-              `synchronizing messages, as it is not ready yet for: ` +
-              `${this.room.id}`
-          );
+          Store.$inbox.updateLoading(room.id, {
+            forwards: false
+          });
         }
       }
     },
 
     async seekMoreMessages(): Promise<void> {
+      // Freeze room reference (since we're going asynchronous and it might \
+      //   change in the state mid-way)
+      const room = this.room;
+
       // Can seek now? (connected and not stale)
       if (
-        Store.$session.connected === true &&
-        this.room &&
+        this.session.connected === true &&
+        room &&
         this.isMessageSyncStale !== true &&
-        this.isMessageSyncMoreLoading !== true
+        this.states?.loading.backwards !== true
       ) {
         const frameRuntime = this.frame();
 
         // Find first message with an archive identifier
-        let firstResultIdFromArchive =
+        let firstMessageArchiveId =
           this.messages.find(message => {
             return message.archiveId !== undefined ? true : false;
           })?.archiveId || undefined;
 
         // Load previous messages?
         // Notice: only load messages after first loaded identifier
-        if (firstResultIdFromArchive !== undefined && frameRuntime !== null) {
+        if (firstMessageArchiveId !== undefined && frameRuntime !== null) {
           // Mark backwards as loading
-          this.isMessageSyncMoreLoading = true;
-
-          frameRuntime.MessagingStore.loader("backwards", true);
+          Store.$inbox.updateLoading(room.id, {
+            backwards: true
+          });
 
           // Load earlier messages
-          const { messages } = await this.room.loadLatestMessages();
+          const { messages } = await room.loadMessagesBefore(
+            firstMessageArchiveId
+          );
 
-          Store.$inbox.insertCoreMessages(this.room, messages);
+          Store.$inbox.insertCoreMessages(
+            room,
+            messages,
+            InboxInsertMode.Restore
+          );
+
+          // TODO: store 'has more' from 'isLast' in the store, and stop \
+          //   loading previous results if we got them all.
 
           // Mark backwards loading as complete
-          frameRuntime.MessagingStore.loader("backwards", false);
-
-          this.isMessageSyncMoreLoading = false;
+          Store.$inbox.updateLoading(room.id, {
+            backwards: false
+          });
         } else {
           this.$log.warn(
             `Could not seek previous messages, as there is no first ` +
               `message from archives or frame is not ready yet for: ` +
-              `${this.room.id}`
+              `${room.id}`
           );
         }
       }
@@ -748,10 +799,14 @@ export default {
       messageId: string,
       reaction: string
     ): Promise<void> {
+      // Freeze room reference (since we're going asynchronous and it might \
+      //   change in the state mid-way)
+      const room = this.room;
+
       // Generate list of reactions
       const reactions: Set<string> = new Set(),
-        existingMessage = this.room
-          ? Store.$inbox.getMessage(this.room.id, messageId)
+        existingMessage = room
+          ? Store.$inbox.getMessage(room.id, messageId)
           : undefined;
 
       if (
@@ -799,7 +854,7 @@ export default {
       if (shouldPropagate === true) {
         // Send reaction to network
         for (const reaction of reactions) {
-          await this.room?.toggleReactionToMessage(messageId, reaction);
+          await room?.toggleReactionToMessage(messageId, reaction);
         }
       }
     },
@@ -847,12 +902,16 @@ export default {
 
       // Setup frame?
       if (frameRuntime !== null) {
+        // Setup frame
         this.setupDocument(frameRuntime);
         this.setupContext(frameRuntime);
         this.setupTheme(frameRuntime);
         this.setupEvents(frameRuntime);
         this.setupStore(frameRuntime);
         this.setupListeners(frameRuntime);
+
+        // Synchronize messages eagerly
+        this.syncMessagesEager();
       }
 
       // Mark frame as loaded
@@ -878,12 +937,17 @@ export default {
       { messageId }: { messageId: string },
       text: string
     ): Promise<void> {
+      // Freeze room reference (since we're going asynchronous and it might \
+      //   change in the state mid-way)
+      const room = this.room;
+
+      // Acquire frame runtime
       const frameRuntime = this.frame();
 
       try {
         // Load message original data
         const originalMessage = (
-          await this.room?.loadMessagesWithIDs([messageId])
+          await room?.loadMessagesWithIDs([messageId])
         )?.[0];
 
         // Send update to network
@@ -898,7 +962,7 @@ export default {
           messageRequest.attachments = originalMessage.attachments;
         }
 
-        await this.room?.updateMessage(messageId, messageRequest);
+        await room?.updateMessage(messageId, messageRequest);
 
         // Acknowledge update
         BaseAlert.info("Message edited", "The message has been updated");
@@ -931,15 +995,19 @@ export default {
     }: {
       messageId: string;
     }): Promise<void> {
+      // Freeze room reference (since we're going asynchronous and it might \
+      //   change in the state mid-way)
+      const room = this.room;
+
       // Remove from store
-      const wasRemoved = this.room
-        ? Store.$inbox.retractMessage(this.room.id, messageId)
+      const wasRemoved = room
+        ? Store.$inbox.retractMessage(room.id, messageId)
         : false;
 
       // Message removed in store? Proceed actual network removal & acknowledge
       if (wasRemoved === true) {
         // Send removal to network
-        await this.room?.retractMessage(messageId);
+        await room?.retractMessage(messageId);
 
         // Acknowledge removal
         BaseAlert.info("Message removed", "The message has been deleted");
@@ -1079,12 +1147,10 @@ export default {
 
     onStoreConnected(connected: boolean): void {
       if (connected === true) {
-        // Synchronize messages eagerly
-        this.syncMessagesEager();
-      } else {
-        // Mark synchronization as stale (will re-synchronize when connection \
-        //   is restored)
-        this.isMessageSyncStale = true;
+        // Synchronize messages eagerly?
+        if (this.frame() !== null) {
+          this.syncMessagesEager();
+        }
       }
     },
 
@@ -1094,6 +1160,13 @@ export default {
       if (frameRuntime !== null) {
         // Re-setup theme
         this.setupTheme(frameRuntime);
+      }
+    },
+
+    onStoreMessageRestored(event: EventMessageGeneric): void {
+      if (this.room?.id === event.roomId) {
+        // Restore into view
+        this.frame()?.MessagingStore.restore(event.message);
       }
     },
 
@@ -1138,6 +1211,21 @@ export default {
         if (frameRuntime !== null) {
           // Re-identify party
           this.identifyParty(frameRuntime, event.from, event.name);
+        }
+      }
+    },
+
+    onStoreStateLoadingMarked(event: EventStateLoadingGeneric): void {
+      if (this.room && this.room?.id === event.roomId) {
+        const frameRuntime = this.frame();
+
+        if (frameRuntime !== null) {
+          this.refreshLoaders(frameRuntime, event.loading);
+        } else {
+          this.$log.warn(
+            `Could not update loaders, as frame is not ready yet for: ` +
+              `${this.room.id}`
+          );
         }
       }
     },

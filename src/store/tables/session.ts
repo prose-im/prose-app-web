@@ -39,6 +39,8 @@ const $session = defineStore("session", {
 
   state: () => {
     return {
+      lastConnectedAt: null as number | null,
+
       connected: false,
       connecting: false,
 
@@ -55,6 +57,14 @@ const $session = defineStore("session", {
     },
 
     setConnected(connected: boolean): void {
+      // Update last connected date marker?
+      if (connected !== this.connected) {
+        // Update value
+        this.$patch({
+          lastConnectedAt: Date.now()
+        });
+      }
+
       this.setGeneric("connected", this.connected, connected);
     },
 

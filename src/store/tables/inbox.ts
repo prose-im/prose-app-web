@@ -38,6 +38,13 @@ enum InboxNameOrigin {
   Message = "message"
 }
 
+enum InboxInsertMode {
+  // Insert mode.
+  Insert = "insert",
+  // Restore mode.
+  Restore = "restore"
+}
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
@@ -58,6 +65,8 @@ type InboxEntryName = {
 };
 
 type InboxEntryStates = {
+  archives: InboxEntryStateArchives;
+  loading: InboxEntryStateLoading;
   composing: Array<CoreUser>;
 };
 
@@ -71,6 +80,11 @@ type EventNameGeneric = {
   roomId: RoomID;
   from: string;
   name: string;
+};
+
+type EventStateLoadingGeneric = {
+  roomId: RoomID;
+  loading: InboxEntryStateLoading;
 };
 
 /**************************************************************************
@@ -93,6 +107,15 @@ interface InboxEntry {
 
 interface InboxEntryMessage extends MessagingStoreMessageData {
   archiveId?: ArchiveID;
+}
+
+interface InboxEntryStateArchives {
+  acquiredAt?: boolean;
+}
+
+interface InboxEntryStateLoading {
+  backwards?: boolean;
+  forwards?: boolean;
 }
 
 /**************************************************************************
@@ -209,6 +232,8 @@ const $inbox = defineStore("inbox", {
             },
 
             states: {
+              archives: {},
+              loading: {},
               composing: []
             }
           };
@@ -263,31 +288,54 @@ const $inbox = defineStore("inbox", {
       return this.assert(roomId).states;
     },
 
-    insertCoreMessages(room: Room, messages: CoreMessage[]): boolean {
+    insertCoreMessages(
+      room: Room,
+      messages: CoreMessage[],
+      mode = InboxInsertMode.Insert
+    ): boolean {
       let hasInserted = false;
 
-      messages.forEach(message => {
-        // Update sender names contained into message
-        this.setName(
-          room.id,
-          message.user.jid,
-          message.user.name,
-          InboxNameOrigin.Message
-        );
-
-        // Insert messages
-        // Notice: update inserted marker if this message was inserted.
-        if (
-          this.insertMessage(room.id, fromCoreMessage(room, message)) === true
-        ) {
-          hasInserted = true;
+      // Insert or restore messages (forwards or backwards)
+      // Notice: instead of allocating a new Array by using the simple \
+      //   'Array.slice().reverse()' method, rather use zero-cost forward or \
+      //   backward loops, at the expense of more complex code.
+      if (mode === InboxInsertMode.Restore) {
+        for (let i = messages.length - 1; i >= 0; i--) {
+          hasInserted =
+            this.insertCoreMessage(room, messages[i], mode) || hasInserted;
         }
-      });
+      } else {
+        for (let i = 0; i < messages.length; i++) {
+          hasInserted =
+            this.insertCoreMessage(room, messages[i], mode) || hasInserted;
+        }
+      }
 
       return hasInserted;
     },
 
-    insertMessage(roomId: RoomID, message: InboxEntryMessage): boolean {
+    insertCoreMessage(
+      room: Room,
+      message: CoreMessage,
+      mode = InboxInsertMode.Insert
+    ): boolean {
+      // Update sender names contained into message
+      this.setName(
+        room.id,
+        message.user.jid,
+        message.user.name,
+        InboxNameOrigin.Message
+      );
+
+      // Insert message
+      return this.insertMessage(room.id, fromCoreMessage(room, message), mode);
+    },
+
+    insertMessage(
+      roomId: RoomID,
+      message: InboxEntryMessage,
+      mode = InboxInsertMode.Insert
+    ): boolean {
       const container = this.assert(roomId).messages;
 
       // Acquire message identifier
@@ -305,11 +353,21 @@ const $inbox = defineStore("inbox", {
         // Insert message in its container
         this.$patch(() => {
           container.byId[messageId] = message;
-          container.list.push(message);
+
+          if (mode === InboxInsertMode.Restore) {
+            container.list.unshift(message);
+          } else {
+            container.list.push(message);
+          }
         });
 
-        // Emit IPC inserted event
-        EventBus.emit("message:inserted", {
+        // Emit IPC event (restored or inserted)
+        const eventName =
+          mode === InboxInsertMode.Restore
+            ? "message:restored"
+            : "message:inserted";
+
+        EventBus.emit(eventName, {
           roomId: roomId,
           message
         } as EventMessageGeneric);
@@ -471,11 +529,56 @@ const $inbox = defineStore("inbox", {
     },
 
     setComposing(roomId: RoomID, composing: Array<CoreUser>): void {
+      const states = this.assert(roomId).states;
+
       // Filter-out local JID in the list of composing users
       const selfJID = Store.$account.getSelfJID();
 
-      this.assert(roomId).states.composing = composing.filter(user => {
-        return !user.jid.equals(selfJID);
+      this.$patch(() => {
+        states.composing = composing.filter(user => {
+          return !user.jid.equals(selfJID);
+        });
+      });
+    },
+
+    updateLoading(
+      roomId: RoomID,
+      loadingDifference: InboxEntryStateLoading
+    ): boolean {
+      const stateLoading = this.assert(roomId).states.loading;
+
+      // Bind updated marker
+      let wasUpdated = false;
+
+      // Update loading states
+      // Notice: this is a differential update, meaning directions that are \
+      //   not there in differential object will not affect the store.
+      let direction: keyof InboxEntryStateLoading;
+
+      for (direction in loadingDifference) {
+        if (stateLoading[direction] !== loadingDifference[direction]) {
+          this.$patch(() => {
+            stateLoading[direction] = loadingDifference[direction];
+          });
+
+          wasUpdated = true;
+        }
+      }
+
+      // Emit IPC marked event
+      EventBus.emit("state:loading:marked", {
+        roomId: roomId,
+        loading: stateLoading
+      } as EventStateLoadingGeneric);
+
+      return wasUpdated;
+    },
+
+    markArchivesAcquired(roomId: RoomID): void {
+      const stateArchives = this.assert(roomId).states.archives;
+
+      this.$patch(() => {
+        stateArchives.acquiredAt = Date.now();
       });
     }
   }
@@ -485,11 +588,13 @@ const $inbox = defineStore("inbox", {
  * EXPORTS
  * ************************************************************************* */
 
-export { InboxNameOrigin, fromCoreMessage };
+export { InboxNameOrigin, InboxInsertMode, fromCoreMessage };
 export type {
   EventMessageGeneric,
   EventNameGeneric,
+  EventStateLoadingGeneric,
   InboxEntryMessage,
-  InboxEntryName
+  InboxEntryName,
+  InboxEntryStateLoading
 };
 export default $inbox;
