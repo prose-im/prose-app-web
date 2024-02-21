@@ -110,7 +110,7 @@ interface InboxEntryMessage extends MessagingStoreMessageData {
 }
 
 interface InboxEntryStateArchives {
-  acquiredAt?: boolean;
+  acquiredAt?: number;
 }
 
 interface InboxEntryStateLoading {
