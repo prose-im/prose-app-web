@@ -713,27 +713,41 @@ export default {
           Store.$inbox.markArchivesAcquired(room.id);
 
           // Load all messages
-          const { messages } = await room.loadLatestMessages();
+          try {
+            const { messages } = await room.loadLatestMessages();
 
-          // Check if should insert or restore messages?
-          // Notice: this is required if there are already messages in the \
-          //   store, that could be more recent than those messages, eg. if \
-          //   a new message was received in-band and the room is opened later.
-          // Important: acquire insert mode AFTER loading messages and \
-          //   BEFORE inserting them to the store, since the loading could \
-          //   have taken quite some time, and some messages might have been \
-          //   inserted in the store mid-way.
-          const insertMode =
-            this.messages.length > 0
-              ? InboxInsertMode.Restore
-              : InboxInsertMode.Insert;
+            // Check if should insert or restore messages?
+            // Notice: this is required if there are already messages in the \
+            //   store, that could be more recent than those messages, eg. if \
+            //   a new message was received in-band and the room is opened later.
+            // Important: acquire insert mode AFTER loading messages and \
+            //   BEFORE inserting them to the store, since the loading could \
+            //   have taken quite some time, and some messages might have been \
+            //   inserted in the store mid-way.
+            const insertMode =
+              this.messages.length > 0
+                ? InboxInsertMode.Restore
+                : InboxInsertMode.Insert;
 
-          Store.$inbox.insertCoreMessages(room, messages, insertMode);
+            Store.$inbox.insertCoreMessages(room, messages, insertMode);
+          } catch (error) {
+            // Alert of load error
+            this.$log.error(
+              `Could not load latest messages, since an unrecoverable ` +
+                `error occurred for: ${room.id}`,
+              error
+            );
 
-          // Mark forwards loading as complete
-          Store.$inbox.updateLoading(room.id, {
-            forwards: false
-          });
+            BaseAlert.error(
+              "Failed loading messages",
+              "Latest messages could not be loaded"
+            );
+          } finally {
+            // Mark forwards loading as complete
+            Store.$inbox.updateLoading(room.id, {
+              forwards: false
+            });
+          }
         }
       }
     },
@@ -766,24 +780,38 @@ export default {
             backwards: true
           });
 
-          // Load earlier messages
-          const { messages } = await room.loadMessagesBefore(
-            firstMessageArchiveId
-          );
+          try {
+            // Load earlier messages
+            const { messages } = await room.loadMessagesBefore(
+              firstMessageArchiveId
+            );
 
-          Store.$inbox.insertCoreMessages(
-            room,
-            messages,
-            InboxInsertMode.Restore
-          );
+            Store.$inbox.insertCoreMessages(
+              room,
+              messages,
+              InboxInsertMode.Restore
+            );
 
-          // TODO: store 'has more' from 'isLast' in the store, and stop \
-          //   loading previous results if we got them all.
+            // TODO: store 'has more' from 'isLast' in the store, and stop \
+            //   loading previous results if we got them all.
+          } catch (error) {
+            // Alert of load error
+            this.$log.error(
+              `Could not seek previous messages, since an unrecoverable ` +
+                `error occurred for: ${room.id}`,
+              error
+            );
 
-          // Mark backwards loading as complete
-          Store.$inbox.updateLoading(room.id, {
-            backwards: false
-          });
+            BaseAlert.warning(
+              "Failed loading messages",
+              "Older messages could not be loaded"
+            );
+          } finally {
+            // Mark backwards loading as complete
+            Store.$inbox.updateLoading(room.id, {
+              backwards: false
+            });
+          }
         } else {
           this.$log.warn(
             `Could not seek previous messages, as there is no first ` +
