@@ -708,6 +708,8 @@ export default {
 
         // Can synchronize now? (connected)
         if (this.session.connected === true) {
+          this.$log.info(`Will load latest messages for: ${room.id}`);
+
           // Mark archives as acquired (ie. non-stale)
           // Notice: do it early to prevent double concurrent loads.
           Store.$inbox.markArchivesAcquired(room.id);
@@ -775,6 +777,8 @@ export default {
         // Load previous messages?
         // Notice: only load messages after first loaded identifier
         if (firstMessageArchiveId !== undefined && frameRuntime !== null) {
+          this.$log.info(`Will seek previous messages for: ${room.id}`);
+
           // Mark backwards as loading
           Store.$inbox.updateLoading(room.id, {
             backwards: true
