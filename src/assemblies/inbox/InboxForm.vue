@@ -76,6 +76,7 @@ layout-toolbar(
         form-field(
           v-model="message"
           @keystroke="onKeyStroke"
+          @keyup="onKeyUp"
           @submit="onSubmit"
           :suggestions="fieldSuggestions"
           :disabled="isFormDisabled"
@@ -178,6 +179,7 @@ import {
   UploadSlot
 } from "@prose-im/prose-sdk-js";
 import { checkText as textSmilesToEmojis } from "smile2emoji";
+import { codes as keyCodes } from "keycode";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -205,6 +207,12 @@ import Broker from "@/broker";
 // PROJECT: UTILITIES
 import { default as UtilitiesUpload, UploadOptions } from "@/utilities/upload";
 
+// ENUMERATIONS
+export enum Request {
+  // Edit Last Message request.
+  EditLastMessage = "edit-last-message"
+}
+
 // INSTANCES
 const MESSAGE_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
 
@@ -231,6 +239,8 @@ export default {
       default: undefined
     }
   },
+
+  emits: ["request"],
 
   data() {
     return {
@@ -348,6 +358,13 @@ export default {
   },
 
   methods: {
+    // --> EXTERNALS <--
+
+    async attachFileFromParent(file: File): Promise<void> {
+      // Trigger attach file event (this is an alias)
+      await this.onAttachFile(file);
+    },
+
     // --> HELPERS <--
 
     async propagateChatState(composing: boolean, room?: Room): Promise<void> {
@@ -675,7 +692,7 @@ export default {
       this.isActionEmojisPopoverVisible = false;
 
       // Focus on input
-      (this.$refs.message as typeof FormField).focusField();
+      (this.$refs.message as typeof FormField).focusFieldFromParent();
     },
 
     onKeyStroke(value: string): void {
@@ -707,6 +724,20 @@ export default {
 
       // Refresh mentions to suggest?
       this.refreshMessageFieldMentions(value);
+    },
+
+    onKeyUp(event: KeyboardEvent): void {
+      const keyCode = event.keyCode;
+
+      switch (keyCode) {
+        // Up
+        case keyCodes.up: {
+          // Request to edit last message
+          this.$emit("request", Request.EditLastMessage);
+
+          break;
+        }
+      }
     },
 
     async onSubmit(): Promise<void> {

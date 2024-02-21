@@ -38,11 +38,13 @@ layout-view(
       @file-preview="onMessagesFilePreview"
       @dragover="onMessagesDragOver"
       :room="room"
+      ref="messaging"
       class="v-app-inbox-base__timeline"
     )
 
     inbox-form(
       :room="room"
+      @request="onMessagesFormRequest"
       ref="form"
       class="v-app-inbox-base__form"
     )
@@ -78,7 +80,10 @@ import InboxBanner from "@/components/inbox/InboxBanner.vue";
 import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
 
 // PROJECT: ASSEMBLIES
-import InboxForm from "@/assemblies/inbox/InboxForm.vue";
+import {
+  default as InboxForm,
+  Request as FormRequest
+} from "@/assemblies/inbox/InboxForm.vue";
 import InboxTopbar from "@/assemblies/inbox/InboxTopbar.vue";
 import InboxDetails from "@/assemblies/inbox/InboxDetails.vue";
 
@@ -146,7 +151,18 @@ export default {
       // Send dropped files? (if any)
       if (event.dataTransfer?.files && event.dataTransfer.files.length > 0) {
         for (const file of event.dataTransfer.files) {
-          (this.$refs.form as typeof InboxForm).onAttachFile(file);
+          (this.$refs.form as typeof InboxForm).attachFileFromParent(file);
+        }
+      }
+    },
+
+    onMessagesFormRequest(request: FormRequest): void {
+      // Handle request, and propagate to receiver child
+      switch (request) {
+        case FormRequest.EditLastMessage: {
+          (this.$refs.messaging as typeof InboxMessaging).editLastFromParent();
+
+          break;
         }
       }
     },

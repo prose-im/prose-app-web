@@ -20,7 +20,8 @@ base-modal(
     | Edit message:
 
   form-field(
-    v-model="editedText"
+    v-model.trim="editedText"
+    @submit="onConfirm"
     :rows="5"
     placeholder="Enter edited message…"
     class="m-edit-message__field"
@@ -29,6 +30,8 @@ base-modal(
     size="large"
     align="left"
     field-class="m-edit-message__field-textarea"
+    submittable
+    autofocus
     autogrow
   )
 </template>

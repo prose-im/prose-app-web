@@ -354,6 +354,29 @@ export default {
   },
 
   methods: {
+    // --> EXTERNALS <--
+
+    editLastFromParent(): void {
+      let lastSelfMessageId = null,
+        selfJIDString = this.selfJID.toString();
+
+      // Find last message from self (if any)
+      for (let i = this.messages.length - 1; i >= 0; i--) {
+        let message = this.messages[i];
+
+        if (selfJIDString === message.from && message.id) {
+          lastSelfMessageId = message.id;
+
+          break;
+        }
+      }
+
+      // Any message identifier found?
+      if (lastSelfMessageId !== null) {
+        this.showEditMessage(lastSelfMessageId);
+      }
+    },
+
     // --> HELPERS <--
 
     frame(): MessagingRuntime | null {
@@ -781,6 +804,34 @@ export default {
       }
     },
 
+    showEditMessage(messageId: string): void {
+      const frameRuntime = this.frame();
+
+      if (frameRuntime !== null) {
+        // Acquire message contents
+        const messageData = frameRuntime.MessagingStore.resolve(messageId);
+
+        if (messageData && messageData.type === "text" && messageData.content) {
+          // Hide popover
+          this.hidePopover();
+
+          // Highlight message to edit
+          frameRuntime.MessagingStore.highlight(messageId);
+
+          // Show edit modal
+          this.modals.editMessage.context.messageId = messageId;
+          this.modals.editMessage.originalText = messageData.content;
+
+          this.modals.editMessage.visible = true;
+        } else {
+          BaseAlert.warning(
+            "No text to edit",
+            "The message does not contain any text to edit"
+          );
+        }
+      }
+    },
+
     makeFilePreviewFile(event: EventMessageFileView): FilePreviewFile {
       return {
         type: event.file.type as FilePreviewFileType,
@@ -987,31 +1038,8 @@ export default {
     },
 
     onPopoverActionsEditClick({ messageId }: { messageId: string }): void {
-      const frameRuntime = this.frame();
-
-      if (frameRuntime !== null) {
-        // Acquire message contents
-        const messageData = frameRuntime.MessagingStore.resolve(messageId);
-
-        if (messageData && messageData.type === "text" && messageData.content) {
-          // Hide popover
-          this.hidePopover();
-
-          // Highlight message to edit
-          frameRuntime.MessagingStore.highlight(messageId);
-
-          // Show edit modal
-          this.modals.editMessage.context.messageId = messageId;
-          this.modals.editMessage.originalText = messageData.content;
-
-          this.modals.editMessage.visible = true;
-        } else {
-          BaseAlert.warning(
-            "No text to edit",
-            "This message does not contain any text to edit"
-          );
-        }
-      }
+      // Show message editor
+      this.showEditMessage(messageId);
     },
 
     onPopoverActionsRemoveClick({ messageId }: { messageId: string }): void {
