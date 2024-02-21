@@ -127,6 +127,18 @@ export default {
   },
 
   methods: {
+    // --> EXTERNALS <--
+
+    selectFromParent(): void {
+      // Alias for local select method
+      this.select();
+    },
+
+    navigateFromParent(increment: number): void {
+      // Alias for local navigate method
+      this.navigate(increment);
+    },
+
     // --> HELPERS <--
 
     select(): void {

@@ -212,7 +212,7 @@ export default {
       this.isIconPopoverVisible = false;
 
       // Focus on input
-      (this.$refs.text as typeof FormField).focusField();
+      (this.$refs.text as typeof FormField).focusFieldFromParent();
     },
 
     onExampleStatusClick(icon: string, text: string): void {

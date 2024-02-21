@@ -257,6 +257,13 @@ export default {
   },
 
   methods: {
+    // --> EXTERNALS <--
+
+    focusFieldFromParent(): void {
+      // Alias focus field method
+      this.focusField();
+    },
+
     // --> HELPERS <--
 
     focusField(): void {
@@ -296,12 +303,14 @@ export default {
 
     selectActiveSuggestion(): void {
       // Select active suggestion
-      (this.$refs.suggest as typeof FormFieldSuggest)?.select();
+      (this.$refs.suggest as typeof FormFieldSuggest)?.selectFromParent();
     },
 
     navigateSuggestions(increment: number): void {
       // Navigate forwards or backwards in suggestions
-      (this.$refs.suggest as typeof FormFieldSuggest)?.navigate(increment);
+      (this.$refs.suggest as typeof FormFieldSuggest)?.navigateFromParent(
+        increment
+      );
     },
 
     clearAllSuggestions(): void {
@@ -391,11 +400,24 @@ export default {
     },
 
     onFieldKeyUp(event: KeyboardEvent): void {
-      if (event.target) {
-        // Propagate key events
-        this.$emit("keyup", event);
-        this.$emit("keystroke", (event.target as HTMLInputElement).value);
+      const inputElement = event.target as HTMLInputElement | void;
+
+      // Handle key event
+      const keyCode = event.keyCode;
+
+      switch (keyCode) {
+        // Escape
+        case keyCodes.esc: {
+          // De-focus from input
+          inputElement?.blur();
+
+          break;
+        }
       }
+
+      // Propagate key events
+      this.$emit("keyup", event);
+      this.$emit("keystroke", inputElement?.value || "");
     },
 
     onFieldInput(): void {
