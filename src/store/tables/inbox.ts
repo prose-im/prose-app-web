@@ -15,6 +15,7 @@ import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/mess
 import {
   Message as CoreMessage,
   UserBasicInfo as CoreUser,
+  ArchiveID,
   Room,
   RoomID,
   RoomType
@@ -91,7 +92,7 @@ interface InboxEntry {
 }
 
 interface InboxEntryMessage extends MessagingStoreMessageData {
-  archiveId?: string;
+  archiveId?: ArchiveID;
 }
 
 /**************************************************************************

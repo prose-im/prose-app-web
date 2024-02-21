@@ -674,7 +674,7 @@ export default {
         this.isMessageSyncStale = false;
 
         // Load all messages
-        const messages = await this.room.loadLatestMessages(undefined, true);
+        const { messages } = await this.room.loadLatestMessages();
 
         Store.$inbox.insertCoreMessages(this.room, messages);
 
@@ -725,7 +725,7 @@ export default {
           frameRuntime.MessagingStore.loader("backwards", true);
 
           // Load earlier messages
-          const messages = await this.room.loadLatestMessages(undefined, true);
+          const { messages } = await this.room.loadLatestMessages();
 
           Store.$inbox.insertCoreMessages(this.room, messages);
 
