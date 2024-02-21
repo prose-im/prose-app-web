@@ -178,7 +178,6 @@ import {
   SendMessageRequest,
   UploadSlot
 } from "@prose-im/prose-sdk-js";
-import { checkText as textSmilesToEmojis } from "smile2emoji";
 import { codes as keyCodes } from "keycode";
 
 // PROJECT: COMPONENTS
@@ -219,8 +218,6 @@ const MESSAGE_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 10000; // 10 seconds
 const DRAFT_AUTOSAVE_DEBOUNCE = 4000; // 4 seconds
-
-const SPACE_CHARACTER = " ";
 
 export default {
   name: "InboxForm",
@@ -440,42 +437,6 @@ export default {
       // Clear message field (and its mention query)
       this.message = "";
       this.mentionQuery = null;
-    },
-
-    replaceMessageFieldLastEmojis(message: string): string | null {
-      // Require a non-empty message ending with a space (do not replace \
-      //   if the user did not finish typing eg. their textual smile)
-      if (message && message.endsWith(SPACE_CHARACTER) === true) {
-        // Extract last word from message (in the most efficient way)
-        // Notice: we will not be calling 'textSmilesToEmojis' on the whole \
-        //   message, since it would split the message in words and attempt \
-        //   to replace every single word to an emoji, which could be heavy \
-        //   on large messages. Rather, we attempt the replacement on the last \
-        //   word that was typed only, and then merge it with the message if, \
-        //   and only if, an emoji replacement occurred.
-        const messageNoEndSpace = message.trimEnd(),
-          lastWordSpace = messageNoEndSpace.lastIndexOf(SPACE_CHARACTER);
-
-        // Acquire text from last word (this includes the trailing spaces)
-        const lastWordText = message.substring(
-          lastWordSpace + SPACE_CHARACTER.length
-        );
-
-        // Attempt to replace smiles to emojis (in last typed word)
-        const replacedLastWordText = textSmilesToEmojis(lastWordText);
-
-        // Any emoji replaced in last word? Return whole replaced message
-        if (lastWordText !== replacedLastWordText) {
-          // Merge replaced last word with original message
-          const updatedMessage =
-            message.substring(0, lastWordSpace + SPACE_CHARACTER.length) +
-            replacedLastWordText;
-
-          return updatedMessage;
-        }
-      }
-
-      return null;
     },
 
     refreshMessageFieldMentions(message: string): void {
@@ -699,7 +660,8 @@ export default {
       // Check for emoji replacements (eg. ':)' becomes a proper emoji')
       // Notice: for performance reasons, this is only applied on last typed \
       //   word, which needs to be complete (that is, followed with a space).
-      const replacedValue = this.replaceMessageFieldLastEmojis(value);
+      const replacedValue =
+        this.$filters.string.replaceLastSmileyToEmoji(value);
 
       if (replacedValue !== null) {
         // Update current value and model
