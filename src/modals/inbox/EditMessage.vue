@@ -21,6 +21,7 @@ base-modal(
 
   form-field(
     v-model.trim="editedText"
+    @keystroke="onFieldKeyStroke"
     @submit="onConfirm"
     :rows="5"
     placeholder="Enter edited message…"
@@ -73,6 +74,17 @@ export default {
 
   methods: {
     // --> EVENT LISTENERS <--
+
+    onFieldKeyStroke(value: string): void {
+      // Check for emoji replacements
+      const emojiTextValue =
+        this.$filters.string.replaceLastSmileyToEmoji(value);
+
+      if (emojiTextValue !== null) {
+        // Update model
+        this.editedText = emojiTextValue;
+      }
+    },
 
     onConfirm(): void {
       if (this.editedText) {
