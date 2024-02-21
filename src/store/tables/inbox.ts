@@ -111,6 +111,7 @@ interface InboxEntryMessage extends MessagingStoreMessageData {
 
 interface InboxEntryStateArchives {
   acquiredAt?: number;
+  lastArchiveId?: ArchiveID;
 }
 
 interface InboxEntryStateLoading {
@@ -579,6 +580,17 @@ const $inbox = defineStore("inbox", {
 
       this.$patch(() => {
         stateArchives.acquiredAt = Date.now();
+      });
+    },
+
+    setArchivesLastArchiveId(
+      roomId: RoomID,
+      lastArchiveId: ArchiveID | void
+    ): void {
+      const stateArchives = this.assert(roomId).states.archives;
+
+      this.$patch(() => {
+        stateArchives.lastArchiveId = lastArchiveId || undefined;
       });
     }
   }

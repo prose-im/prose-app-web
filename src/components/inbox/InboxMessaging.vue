@@ -732,6 +732,14 @@ export default {
                 : InboxInsertMode.Insert;
 
             Store.$inbox.insertCoreMessages(room, messages, insertMode);
+
+            // Update last archive identifier
+            // TODO: use returned archive-id from RSM here, nuke this \
+            //   temporary placeholder code
+            Store.$inbox.setArchivesLastArchiveId(
+              room.id,
+              messages[0]?.archiveId
+            );
           } catch (error) {
             // Alert of load error
             this.$log.error(
@@ -768,15 +776,11 @@ export default {
       ) {
         const frameRuntime = this.frame();
 
-        // Find first message with an archive identifier
-        let firstMessageArchiveId =
-          this.messages.find(message => {
-            return message.archiveId !== undefined ? true : false;
-          })?.archiveId || undefined;
+        // Acquire last archive identifier (page before this identifier, if any)
+        const lastArchiveId = this.states?.archives.lastArchiveId;
 
         // Load previous messages?
-        // Notice: only load messages after first loaded identifier
-        if (firstMessageArchiveId !== undefined && frameRuntime !== null) {
+        if (lastArchiveId !== undefined && frameRuntime !== null) {
           this.$log.info(`Will seek previous messages for: ${room.id}`);
 
           // Mark backwards as loading
@@ -786,9 +790,7 @@ export default {
 
           try {
             // Load earlier messages
-            const { messages } = await room.loadMessagesBefore(
-              firstMessageArchiveId
-            );
+            const { messages } = await room.loadMessagesBefore(lastArchiveId);
 
             Store.$inbox.insertCoreMessages(
               room,
@@ -796,8 +798,13 @@ export default {
               InboxInsertMode.Restore
             );
 
-            // TODO: store 'has more' from 'isLast' in the store, and stop \
-            //   loading previous results if we got them all.
+            // Update last archive identifier
+            // TODO: use returned archive-id from RSM here, nuke this \
+            //   temporary placeholder code
+            Store.$inbox.setArchivesLastArchiveId(
+              room.id,
+              messages[0]?.archiveId
+            );
           } catch (error) {
             // Alert of load error
             this.$log.error(
@@ -819,8 +826,8 @@ export default {
         } else {
           this.$log.warn(
             `Could not seek previous messages, as there is no first ` +
-              `message from archives or frame is not ready yet for: ` +
-              `${room.id}`
+              `message from archives, start of archive has been already ` +
+              `reached or frame is not ready yet for: ${room.id}`
           );
         }
       }
