@@ -716,7 +716,13 @@ export default {
 
           // Load all messages
           try {
-            const { messages } = await room.loadLatestMessages();
+            const result = await room.loadLatestMessages();
+
+            // Update last archive identifier
+            Store.$inbox.setArchivesLastArchiveId(
+              room.id,
+              result.lastMessageId
+            );
 
             // Check if should insert or restore messages?
             // Notice: this is required if there are already messages in the \
@@ -731,15 +737,8 @@ export default {
                 ? InboxInsertMode.Restore
                 : InboxInsertMode.Insert;
 
-            Store.$inbox.insertCoreMessages(room, messages, insertMode);
-
-            // Update last archive identifier
-            // TODO: use returned archive-id from RSM here, nuke this \
-            //   temporary placeholder code
-            Store.$inbox.setArchivesLastArchiveId(
-              room.id,
-              messages[0]?.archiveId
-            );
+            // Insert messages to store
+            Store.$inbox.insertCoreMessages(room, result.messages, insertMode);
           } catch (error) {
             // Alert of load error
             this.$log.error(
@@ -790,20 +789,19 @@ export default {
 
           try {
             // Load earlier messages
-            const { messages } = await room.loadMessagesBefore(lastArchiveId);
-
-            Store.$inbox.insertCoreMessages(
-              room,
-              messages,
-              InboxInsertMode.Restore
-            );
+            const result = await room.loadMessagesBefore(lastArchiveId);
 
             // Update last archive identifier
-            // TODO: use returned archive-id from RSM here, nuke this \
-            //   temporary placeholder code
             Store.$inbox.setArchivesLastArchiveId(
               room.id,
-              messages[0]?.archiveId
+              result.lastMessageId
+            );
+
+            // Insert messages to store
+            Store.$inbox.insertCoreMessages(
+              room,
+              result.messages,
+              InboxInsertMode.Restore
             );
           } catch (error) {
             // Alert of load error
