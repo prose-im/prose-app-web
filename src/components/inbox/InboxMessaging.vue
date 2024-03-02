@@ -88,6 +88,7 @@
 import {
   EventMessageActionsView,
   EventMessageFileView,
+  EventMessageHistoryView,
   EventMessageHistorySeek,
   EventMessageReactionsReact,
   EventMessageReactionsView,
@@ -96,6 +97,7 @@ import {
   Modifier as MessagingModifier,
   Platform as MessagingPlatform,
   Messaging as MessagingRuntime,
+  ViewVisibility as MessagingViewVisibility,
   SeekDirection as MessagingSeekDirection,
   Theme as MessagingTheme
 } from "@prose-im/prose-core-views/types/messaging";
@@ -225,6 +227,7 @@ export default {
         "message:reactions:view": this.onMessagingMessageReactionsView,
         "message:reactions:react": this.onMessagingMessageReactionsReact,
         "message:file:view": this.onMessagingMessageFileView,
+        "message:history:view": this.onMessagingMessageHistoryView,
         "message:history:seek": this.onMessagingMessageHistorySeek
       },
 
@@ -333,6 +336,10 @@ export default {
 
     states(): ReturnType<typeof Store.$inbox.getStates> | void {
       return this.room ? Store.$inbox.getStates(this.room.id) : undefined;
+    },
+
+    roomItem(): ReturnType<typeof Store.$room.getRoomItem> {
+      return this.room ? Store.$room.getRoomItem(this.room.id) : undefined;
     }
   },
 
@@ -1518,6 +1525,29 @@ export default {
 
         case MessagingSeekDirection.Forwards: {
           // Nothing done here.
+
+          break;
+        }
+      }
+    },
+
+    onMessagingMessageHistoryView(event: EventMessageHistoryView): void {
+      this.$log.debug("Got message history view", event);
+
+      // Handle view visibility
+      switch (event.visibility) {
+        case MessagingViewVisibility.Visible: {
+          // TODO: do it differently:
+          //   - check document focused state
+          //   - debounce mark as read (group them)
+          //   - mark as read when inserting message, or toggling document \
+          //       focus, and check which messages are unread and in view, and \
+          //       mark them as read (schedule it)
+          const unreadCount = this.roomItem?.unreadCount || 0;
+
+          if (unreadCount > 0) {
+            this.room?.markAsRead();
+          }
 
           break;
         }
