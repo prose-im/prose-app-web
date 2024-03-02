@@ -191,6 +191,8 @@ const FRAME_STYLE = {
   }
 };
 
+const CHECK_MARK_READ_DELAY = 500; // 1/2 second
+
 const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 
 export default {
@@ -234,6 +236,9 @@ export default {
       // --> STATE <--
 
       isFrameLoaded: false,
+      visibleMessageIds: new Set() as Set<string>,
+
+      checkMarkReadTimeout: null as null | ReturnType<typeof setTimeout>,
 
       modals: {
         removeMessage: {
@@ -367,11 +372,15 @@ export default {
     // Bind session event handlers
     useEvents(Store.$session, {
       connected: this.onStoreConnected,
+      visible: this.onStoreVisible,
       appearance: this.onStoreAppearance
     });
   },
 
   beforeUnmount() {
+    // Clear registered timeouts
+    this.unscheduleCheckMarkReadTimeout();
+
     // Un-setup store
     this.unsetupStore();
   },
@@ -488,6 +497,9 @@ export default {
     },
 
     setupStore(runtime: MessagingRuntime): void {
+      // Reset visible message identifiers
+      this.resetCheckMarkRead();
+
       // Pre-flush the store
       runtime.MessagingStore.flush();
 
@@ -506,11 +518,6 @@ export default {
       }
     },
 
-    setupListeners(runtime: MessagingRuntime): void {
-      runtime.addEventListener("click", this.onFrameInnerClick);
-      runtime.addEventListener("dragover", this.onFrameDragOver);
-    },
-
     unsetupStore(): void {
       for (let [eventName, eventPath] of Object.entries(this.storeEvents)) {
         (eventPath[0] as typeof Store.$inbox)
@@ -518,6 +525,11 @@ export default {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           .off(eventName, eventPath[1] as MittHandler<any>);
       }
+    },
+
+    setupListeners(runtime: MessagingRuntime): void {
+      runtime.addEventListener("click", this.onFrameInnerClick);
+      runtime.addEventListener("dragover", this.onFrameDragOver);
     },
 
     identifyAllParties(runtime: MessagingRuntime): void {
@@ -601,6 +613,64 @@ export default {
           }
         });
       }
+    },
+
+    scheduleCheckMarkReadTimeout(): void {
+      // Unschedule any already registered check mark read timeout
+      this.unscheduleCheckMarkReadTimeout();
+
+      // Schedule next check mark read timeout
+      this.checkMarkReadTimeout = setTimeout(() => {
+        this.triggerCheckMarkRead();
+      }, CHECK_MARK_READ_DELAY);
+    },
+
+    unscheduleCheckMarkReadTimeout(): void {
+      if (this.checkMarkReadTimeout !== null) {
+        clearTimeout(this.checkMarkReadTimeout);
+
+        this.checkMarkReadTimeout = null;
+      }
+    },
+
+    triggerCheckMarkRead(): void {
+      // Check if mark as read? (has unread messages and application is deemed \
+      //   visible)
+      if (
+        (this.roomItem?.unreadCount || 0) > 0 &&
+        this.session.visible === true
+      ) {
+        // Acquire last message from non-self
+        let lastNonSelfMessageId = null,
+          selfJIDString = this.selfJID.toString();
+
+        // Find last message from non-self (if any)
+        for (let i = this.messages.length - 1; i >= 0; i--) {
+          let message = this.messages[i];
+
+          if (selfJIDString !== message.from && message.id) {
+            lastNonSelfMessageId = message.id;
+
+            break;
+          }
+        }
+
+        // Check if last non-self message is in visible list?
+        if (
+          lastNonSelfMessageId !== null &&
+          this.visibleMessageIds.has(lastNonSelfMessageId) === true
+        ) {
+          this.room?.markAsRead();
+        }
+      }
+    },
+
+    resetCheckMarkRead(): void {
+      // Flush visible message identifiers from registry
+      this.visibleMessageIds.clear();
+
+      // Unschedule any already registered check mark read timeout
+      this.unscheduleCheckMarkReadTimeout();
     },
 
     showPopover({
@@ -1198,6 +1268,13 @@ export default {
       }
     },
 
+    onStoreVisible(visible: boolean): void {
+      // Check if should mark unread messages as read?
+      if (visible === true) {
+        this.triggerCheckMarkRead();
+      }
+    },
+
     onStoreAppearance(): void {
       const frameRuntime = this.frame();
 
@@ -1537,17 +1614,17 @@ export default {
       // Handle view visibility
       switch (event.visibility) {
         case MessagingViewVisibility.Visible: {
-          // TODO: do it differently:
-          //   - check document focused state
-          //   - debounce mark as read (group them)
-          //   - mark as read when inserting message, or toggling document \
-          //       focus, and check which messages are unread and in view, and \
-          //       mark them as read (schedule it)
-          const unreadCount = this.roomItem?.unreadCount || 0;
+          this.visibleMessageIds.add(event.id);
 
-          if (unreadCount > 0) {
-            this.room?.markAsRead();
-          }
+          // Schedule next mark as read (if there are unreads to be marked as \
+          //   read)
+          this.scheduleCheckMarkReadTimeout();
+
+          break;
+        }
+
+        case MessagingViewVisibility.Hidden: {
+          this.visibleMessageIds.delete(event.id);
 
           break;
         }

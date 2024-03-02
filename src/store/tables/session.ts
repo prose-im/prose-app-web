@@ -44,6 +44,8 @@ const $session = defineStore("session", {
       connected: false,
       connecting: false,
 
+      visible: false,
+
       protocol: "",
 
       appearance: SessionAppearance.Light
@@ -70,6 +72,10 @@ const $session = defineStore("session", {
 
     setConnecting(connecting: boolean): void {
       this.setGeneric("connecting", this.connecting, connecting);
+    },
+
+    setVisible(visible: boolean): void {
+      this.setGeneric("visible", this.visible, visible);
     },
 
     setProtocol(protocol = ""): void {
