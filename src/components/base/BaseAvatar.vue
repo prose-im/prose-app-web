@@ -259,7 +259,7 @@ export default {
         }
 
         // Extract first two characters of first name?
-        if (nameChunks.length > 0 && nameChunks[0].length >= 2) {
+        if (nameChunks.length > 0 && nameChunks[0].length >= 1) {
           return nameChunks[0].substring(0, 2);
         }
       }
