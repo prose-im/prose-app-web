@@ -37,6 +37,7 @@
 
   inbox-messaging-alert(
     v-else-if="unreadCount > 0 && !isLastUnreadMessageVisible"
+    @click="onAlertUnreadClick"
     icon="arrow.down"
     class="a-inbox-messaging__alert a-inbox-messaging__alert--bottom"
   )
@@ -683,8 +684,12 @@ export default {
         ) {
           this.room?.markAsRead();
 
-          this.isLastUnreadMessageVisible = false;
+          // No unread (anymore), mark last unread as visible
+          this.isLastUnreadMessageVisible = true;
         }
+      } else {
+        // No unread, mark last unread as visible
+        this.isLastUnreadMessageVisible = true;
       }
     },
 
@@ -1071,6 +1076,23 @@ export default {
     onFrameInnerClick(): void {
       // Trigger container click
       this.triggerContainerClick();
+    },
+
+    onAlertUnreadClick(): void {
+      // Acquire last message identifier? (if any)
+      if (this.messages.length > 0) {
+        let lastMessageId = this.messages[this.messages.length - 1].id || null;
+
+        // Dispatch scroll to last message?
+        if (lastMessageId !== null) {
+          let hasScrolled = this.frame()?.MessagingStore.scroll(lastMessageId);
+
+          // Mark last unread message as visible straight away? (if scrolled)
+          if (hasScrolled === true) {
+            this.isLastUnreadMessageVisible = true;
+          }
+        }
+      }
     },
 
     async onModalEditMessageEdit(
