@@ -9,15 +9,15 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-inbox-messaging(
+.a-inbox-messaging(
   ref="container"
 )
   iframe(
     @load="onFrameLoad"
     :class=`[
-      "c-inbox-messaging__frame",
+      "a-inbox-messaging__frame",
       {
-        "c-inbox-messaging__frame--visible": isFrameLoaded
+        "a-inbox-messaging__frame--visible": isFrameLoaded
       }
     ]`
     src="/includes/views/messaging.html"
@@ -27,7 +27,7 @@
 
   base-overlay(
     v-if="hasPlaceholder"
-    class="c-inbox-messaging__placeholder"
+    class="a-inbox-messaging__placeholder"
   )
     base-placeholder-image(
       illustration="conversation-empty"
@@ -35,13 +35,20 @@
       description="It's pretty quiet around here, send your first message to get the conversation rolling."
     )
 
+  inbox-messaging-alert(
+    v-else-if="unreadCount > 0 && !isLastUnreadMessageVisible"
+    icon="arrow.down"
+    class="a-inbox-messaging__alert a-inbox-messaging__alert--bottom"
+  )
+    | {{ unreadCount }} unread {{ (unreadCount === 1) ? 'message' : 'messages' }} below
+
   base-popover-list(
     v-if="popover.items.length > 0"
     @close="onPopoverClose"
     :items="popover.items"
     :context="popover.context"
     :style="popover.style"
-    class="c-inbox-messaging__popover"
+    class="a-inbox-messaging__popover"
   )
 
   base-popover(
@@ -49,7 +56,7 @@
     @close="onPopoverClose"
     :style="popover.style"
     :focus="popover.focus"
-    class="c-inbox-messaging__popover"
+    class="a-inbox-messaging__popover"
   )
     component(
       v-on="popover.listeners"
@@ -121,6 +128,7 @@ import {
   File as FilePreviewFile,
   FileType as FilePreviewFileType
 } from "@/components/inbox/InboxFilePreview.vue";
+import InboxMessagingAlert from "@/components/inbox/InboxMessagingAlert.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 
 // PROJECT: MODALS
@@ -198,7 +206,12 @@ const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 export default {
   name: "InboxMessaging",
 
-  components: { MessageDetails, EditMessage, RemoveMessage },
+  components: {
+    InboxMessagingAlert,
+    MessageDetails,
+    EditMessage,
+    RemoveMessage
+  },
 
   props: {
     room: {
@@ -236,6 +249,8 @@ export default {
       // --> STATE <--
 
       isFrameLoaded: false,
+      isLastUnreadMessageVisible: false,
+
       visibleMessageIds: new Set() as Set<string>,
 
       checkMarkReadTimeout: null as null | ReturnType<typeof setTimeout>,
@@ -309,6 +324,10 @@ export default {
         this.isMessageSyncStale !== true &&
         this.messages.length === 0
       );
+    },
+
+    unreadCount(): number {
+      return this.roomItem?.unreadCount || 0;
     },
 
     selfJID(): JID {
@@ -634,12 +653,7 @@ export default {
     },
 
     triggerCheckMarkRead(): void {
-      // Check if mark as read? (has unread messages and application is deemed \
-      //   visible)
-      if (
-        (this.roomItem?.unreadCount || 0) > 0 &&
-        this.session.visible === true
-      ) {
+      if (this.unreadCount > 0) {
         // Acquire last message from non-self
         let lastNonSelfMessageId = null,
           selfJIDString = this.selfJID.toString();
@@ -655,12 +669,21 @@ export default {
           }
         }
 
-        // Check if last non-self message is in visible list?
-        if (
+        // Update last message visible marker
+        this.isLastUnreadMessageVisible =
           lastNonSelfMessageId !== null &&
           this.visibleMessageIds.has(lastNonSelfMessageId) === true
+            ? true
+            : false;
+
+        // Mark as read? (application is in focus)
+        if (
+          this.session.visible === true &&
+          this.isLastUnreadMessageVisible === true
         ) {
           this.room?.markAsRead();
+
+          this.isLastUnreadMessageVisible = false;
         }
       }
     },
@@ -671,6 +694,9 @@ export default {
 
       // Unschedule any already registered check mark read timeout
       this.unscheduleCheckMarkReadTimeout();
+
+      // Reset states
+      this.isLastUnreadMessageVisible = false;
     },
 
     showPopover({
@@ -1639,7 +1665,10 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-inbox-messaging";
+$c: ".a-inbox-messaging";
+
+// VARIABLES
+$heads-up-edge-offset: 12px;
 
 #{$c} {
   position: relative;
@@ -1651,6 +1680,20 @@ $c: ".c-inbox-messaging";
 
     &--visible {
       visibility: visible;
+    }
+  }
+
+  #{$c}__alert {
+    position: absolute;
+    inset-inline-start: 50%;
+    transform: translateX(-50%);
+
+    &--top {
+      inset-block-start: $heads-up-edge-offset;
+    }
+
+    &--bottom {
+      inset-block-end: $heads-up-edge-offset;
     }
   }
 

@@ -77,13 +77,13 @@ import {
 } from "@/components/inbox/InboxFilePreview.vue";
 import InboxDropzone from "@/components/inbox/InboxDropzone.vue";
 import InboxBanner from "@/components/inbox/InboxBanner.vue";
-import InboxMessaging from "@/components/inbox/InboxMessaging.vue";
 
 // PROJECT: ASSEMBLIES
 import {
   default as InboxForm,
   Request as FormRequest
 } from "@/assemblies/inbox/InboxForm.vue";
+import InboxMessaging from "@/assemblies/inbox/InboxMessaging.vue";
 import InboxTopbar from "@/assemblies/inbox/InboxTopbar.vue";
 import InboxDetails from "@/assemblies/inbox/InboxDetails.vue";
 
