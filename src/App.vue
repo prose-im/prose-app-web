@@ -58,7 +58,7 @@ export default {
     }
   },
 
-  created() {
+  beforeMount() {
     // Initialize focus-based visibility
     this.initializeFocusVisibility();
 
@@ -125,6 +125,7 @@ export default {
         : null;
 
       if (this.matchMediaDarkMode !== null) {
+        // Initialize value (trigger an explicit dark mode change)
         this.onSystemDarkModeChange(this.matchMediaDarkMode);
       }
     },
