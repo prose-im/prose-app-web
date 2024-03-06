@@ -30,11 +30,13 @@
     "lint:ts": "vue-tsc",
     "lint:prettier": "prettier --check .",
     "lint": "npm run lint:js && npm run lint:ts && npm run lint:prettier",
-    "test": "npm run lint"
+    "test": "npm run lint",
+    "tauri": "tauri"
   },
   "dependencies": {
     "@prose-im/prose-sdk-js": "0.1.63",
     "@prose-im/prose-core-views": "0.34.1",
+    "@tauri-apps/api": "^1",
     "lodash.camelcase": "4.3.0",
     "lodash.upperfirst": "4.3.1",
     "lodash.merge": "4.6.2",
@@ -59,6 +61,7 @@
     "v-hotkey3": "0.1.4"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^1",
     "@types/node": "18.11.x",
     "@types/strophe.js": "1.2.x",
     "@types/lodash.camelcase": "4.3.x",
