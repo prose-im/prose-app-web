@@ -296,13 +296,29 @@ export default {
       const suggestions: Array<FormFieldSuggestSuggestion> = [];
 
       if (this.mentionQuery !== null) {
-        const mentionQuery = this.mentionQuery;
+        const mentionQuery = this.mentionQuery,
+          appendRegister: Set<string> = new Set();
 
-        // Append matches from room participants
+        // #1. Append matches from room participants
         this.room?.participants.forEach(participant => {
+          if (participant.jid !== undefined) {
+            this.appendSuggestionParticipant(
+              suggestions,
+              appendRegister,
+              participant.jid.toString(),
+              participant.name,
+              mentionQuery
+            );
+          }
+        });
+
+        // #2. Append matches from roster
+        this.rosterContactList.forEach(entry => {
           this.appendSuggestionParticipant(
             suggestions,
-            participant,
+            appendRegister,
+            entry.jid,
+            entry.name,
             mentionQuery
           );
         });
@@ -321,6 +337,10 @@ export default {
 
     settings(): typeof Store.$settings {
       return Store.$settings;
+    },
+
+    rosterContactList(): ReturnType<typeof Store.$roster.getContactsList> {
+      return Store.$roster.getContactsList();
     },
 
     rosterName(): string {
@@ -463,11 +483,13 @@ export default {
 
     appendSuggestionParticipant(
       suggestions: Array<FormFieldSuggestSuggestion>,
-      participant: ParticipantInfo,
+      appendRegister: Set<string>,
+      jidString: string,
+      name: string,
       query: string
     ): void {
-      if (participant.jid) {
-        const participantName = participant.name.toLowerCase();
+      if (appendRegister.has(jidString) === false) {
+        const participantName = name.toLowerCase();
 
         // Participant name matches mention query?
         if (!query || participantName.startsWith(query) === true) {
@@ -476,27 +498,26 @@ export default {
           //   value, so that the suggestion list does not pop in again \
           //   after this suggestion is picked by the user.
           suggestions.push({
-            label: participant.name,
-            value: participant.jid.toString(),
+            label: name,
+            value: jidString,
 
             action: {
               match: `@${query}`,
-
-              replacement: `[@${
-                participant.name
-              }](xmpp:${participant.jid.toString()}) `
+              replacement: `[@${name}](xmpp:${jidString}) `
             },
 
             icon: {
               component: BaseAvatar,
 
               properties: {
-                jid: participant.jid,
+                jid: new JID(jidString),
                 size: "18px",
                 shadow: "none"
               }
             }
           });
+
+          appendRegister.add(jidString);
         }
       }
     },
