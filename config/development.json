@@ -1,8 +1,9 @@
 {
   "environment": "development",
 
-  "hosts": {
-    "websocket": "ws://localhost:5280/xmpp-websocket/",
-    "identity": "https://localhost:5280/prose-identity/"
+  "overrides": {
+    "hostMeta": {
+      "prose.org.local": "<?xml version='1.0' encoding='utf-8'?>\n<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'>\n  <Link rel='urn:xmpp:alt-connections:websocket' href='ws://localhost:5280/xmpp-websocket/' />\n</XRD>"
+    }
   }
 }

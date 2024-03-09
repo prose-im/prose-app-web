@@ -53,9 +53,6 @@
 import { PropType } from "vue";
 import { JID, Room } from "@prose-im/prose-sdk-js";
 
-// PROJECT: COMMONS
-import CONFIG from "@/commons/config";
-
 // PROJECT: COMPONENTS
 import { Detail as BadgeDetail } from "@/components/base/BaseBadgeDetails.vue";
 
@@ -131,7 +128,7 @@ export default {
     },
 
     identityUrl(): string {
-      return `${CONFIG.hosts.identity}/verify/${encodeURIComponent(
+      return `https://${this.jid.domain}/identity/verify/${encodeURIComponent(
         this.jid.toString()
       )}/`;
     },
