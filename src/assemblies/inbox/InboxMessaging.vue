@@ -96,6 +96,7 @@
 import {
   EventMessageActionsView,
   EventMessageFileView,
+  EventMessageLinkOpen,
   EventMessageHistoryView,
   EventMessageHistorySeek,
   EventMessageReactionsReact,
@@ -248,6 +249,7 @@ export default {
         "message:reactions:view": this.onMessagingMessageReactionsView,
         "message:reactions:react": this.onMessagingMessageReactionsReact,
         "message:file:view": this.onMessagingMessageFileView,
+        "message:link:open": this.onMessagingMessageLinkOpen,
         "message:history:view": this.onMessagingMessageHistoryView,
         "message:history:seek": this.onMessagingMessageHistorySeek
       },
@@ -1643,6 +1645,38 @@ export default {
 
         default: {
           this.$log.error(`Got unsupported file view action: ${event.action}`);
+        }
+      }
+    },
+
+    onMessagingMessageLinkOpen(event: EventMessageLinkOpen): void {
+      this.$log.debug("Got message link open", event);
+
+      // Handle link protocol
+      switch (event.link.protocol) {
+        case "xmpp": {
+          // Open as an inline conversation
+          const jidString = event.link.url.split(":")[1] || null;
+
+          if (jidString !== null) {
+            this.$router.push({
+              name: "app.inbox",
+
+              params: {
+                roomId: jidString
+              }
+            });
+          }
+
+          break;
+        }
+
+        default: {
+          // Open as a new tab (ie. browser window)
+          // Important: set the 'noopener' policy so that the origin window \
+          //   cannot be accessed at target, which would create a huge \
+          //   security hole.
+          window.open(event.link.url, "_blank", "noopener");
         }
       }
     },
