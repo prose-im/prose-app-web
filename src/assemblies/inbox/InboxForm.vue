@@ -479,7 +479,10 @@ export default {
 
             action: {
               match: query,
-              replacement: `${participant.name} `
+
+              replacement: `[${
+                participant.name
+              }](xmpp:${participant.jid.toString()}) `
             },
 
             icon: {
