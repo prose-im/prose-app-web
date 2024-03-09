@@ -1702,7 +1702,9 @@ export default {
     },
 
     onMessagingMessageHistoryView(event: EventMessageHistoryView): void {
-      this.$log.debug("Got message history view", event);
+      // Notice: do not log anything there, as this event can be quite spammy \
+      //   when the user scrolls, and we do not want to pollute our debug logs \
+      //   too much here.
 
       // Handle view visibility
       switch (event.visibility) {
