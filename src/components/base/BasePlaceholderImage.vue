@@ -46,12 +46,12 @@ export default {
 
       validator(x: string) {
         return [
-          "contact-empty", // TODO: unused, bind somewhere
-          "contact-not-found", // TODO: unused, bind somewhere
+          "contact-empty",
+          "contact-not-found",
           "conversation-empty",
           "file-not-found",
           "file-upload",
-          "invitations-empty", // TODO: unused, bind somewhere
+          "invitations-empty",
           "goodbye",
           "welcome"
         ].includes(x);
