@@ -1658,7 +1658,7 @@ export default {
           // Open as an inline conversation
           const jidString = event.link.url.split(":")[1] || null;
 
-          if (jidString !== null) {
+          if (jidString !== null && jidString !== this.room?.id) {
             this.$router.push({
               name: "app.inbox",
 
