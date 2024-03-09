@@ -176,6 +176,7 @@ import {
   RoomType,
   ParticipantInfo,
   SendMessageRequest,
+  SendMessageRequestBody,
   UploadSlot
 } from "@prose-im/prose-sdk-js";
 import { codes as keyCodes } from "keycode";
@@ -591,13 +592,15 @@ export default {
             }
 
             // Send message (with file attachments)
-            let messageRequest = new SendMessageRequest();
+            let messageRequest = new SendMessageRequest(),
+              messageRequestBody = new SendMessageRequestBody();
 
-            messageRequest.body =
+            messageRequestBody.text =
               result.attachments.length === 1
                 ? "Shared 1 file"
                 : `Shared ${result.attachments.length} files`;
 
+            messageRequest.body = messageRequestBody;
             messageRequest.attachments = result.attachments;
 
             await this.room?.sendMessage(messageRequest);
@@ -734,9 +737,11 @@ export default {
           }
         } else {
           // Send message
-          let messageRequest = new SendMessageRequest();
+          let messageRequest = new SendMessageRequest(),
+            messageRequestBody = new SendMessageRequestBody();
 
-          messageRequest.body = message;
+          messageRequestBody.text = message;
+          messageRequest.body = messageRequestBody;
 
           await this.room?.sendMessage(messageRequest);
         }

@@ -109,7 +109,12 @@ import {
   SeekDirection as MessagingSeekDirection,
   Theme as MessagingTheme
 } from "@prose-im/prose-core-views/types/messaging";
-import { JID, Room, SendMessageRequest } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  Room,
+  SendMessageRequest,
+  SendMessageRequestBody
+} from "@prose-im/prose-sdk-js";
 import { PropType, shallowRef } from "vue";
 // @ts-expect-error download is a dependency w/o any declaration
 import download from "browser-downloads";
@@ -1113,9 +1118,11 @@ export default {
         )?.[0];
 
         // Send update to network
-        let messageRequest = new SendMessageRequest();
+        let messageRequest = new SendMessageRequest(),
+          messageRequestBody = new SendMessageRequestBody();
 
-        messageRequest.body = text;
+        messageRequestBody.text = text;
+        messageRequest.body = messageRequestBody;
 
         if (
           originalMessage?.attachments &&
