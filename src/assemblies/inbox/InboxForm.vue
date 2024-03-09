@@ -177,7 +177,8 @@ import {
   ParticipantInfo,
   SendMessageRequest,
   SendMessageRequestBody,
-  UploadSlot
+  UploadSlot,
+  Mention
 } from "@prose-im/prose-sdk-js";
 import { codes as keyCodes } from "keycode";
 
@@ -214,7 +215,8 @@ export enum Request {
 }
 
 // INSTANCES
-const MESSAGE_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
+const MESSAGE_TEXT_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
+const MESSAGE_CODE_MENTION_REGEX = /(@\[[^[\]]+\]\(xmpp:([^()]+)\))/g;
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 10000; // 10 seconds
@@ -450,7 +452,7 @@ export default {
       let matchedMentionQuery = undefined;
 
       if (message && message.includes("@") === true) {
-        matchedMentionQuery = message.match(MESSAGE_MENTION_REGEX)?.[1];
+        matchedMentionQuery = message.match(MESSAGE_TEXT_MENTION_REGEX)?.[1];
       }
 
       this.mentionQuery =
@@ -495,6 +497,32 @@ export default {
               }
             }
           });
+        }
+      }
+    },
+
+    *extractMessageMentions(message: string): Generator<Mention> {
+      // Find mentions in message code
+      // Notice: make sure to drain this regular expression before re-using it.
+      let match;
+
+      while ((match = MESSAGE_CODE_MENTION_REGEX.exec(message)) !== null) {
+        const matchedValue = match[0] || null,
+          jidString = match[2] || null;
+
+        if (matchedValue !== null && jidString !== null) {
+          try {
+            yield new Mention(
+              new JID(jidString),
+              match.index,
+              match.index + matchedValue.length
+            );
+          } catch (error) {
+            this.$log.warn(
+              `Could not extract mentionned JID: '${jidString}'`,
+              error
+            );
+          }
         }
       }
     },
@@ -743,7 +771,13 @@ export default {
           let messageRequest = new SendMessageRequest(),
             messageRequestBody = new SendMessageRequestBody();
 
+          // Generate message body (extract mentions from message)
           messageRequestBody.text = message;
+
+          for (const mention of this.extractMessageMentions(message)) {
+            messageRequestBody.addMention(mention);
+          }
+
           messageRequest.body = messageRequestBody;
 
           await this.room?.sendMessage(messageRequest);

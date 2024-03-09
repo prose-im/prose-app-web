@@ -1121,9 +1121,13 @@ export default {
         let messageRequest = new SendMessageRequest(),
           messageRequestBody = new SendMessageRequestBody();
 
+        // Generate message body
+        // TODO: restore message mentions (when rich-text editor is made \
+        //   common between inbox-form and message editor)
         messageRequestBody.text = text;
         messageRequest.body = messageRequestBody;
 
+        // Restore message attachments?
         if (
           originalMessage?.attachments &&
           originalMessage?.attachments?.length > 0
