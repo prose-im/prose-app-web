@@ -1047,6 +1047,32 @@ export default {
       };
     },
 
+    openInlineChat(jidString: string): void {
+      try {
+        const jid = new JID(jidString);
+
+        if (jid.equals(this.selfJID) === false) {
+          this.$router.push({
+            name: "app.inbox",
+
+            params: {
+              roomId: jidString
+            }
+          });
+        } else {
+          BaseAlert.warning(
+            "This is you",
+            "Cannot start a chat with yourself!"
+          );
+        }
+      } catch (error) {
+        this.$log.error(
+          `Could not open inline conversation with: '${jidString}'`,
+          error
+        );
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onFrameLoad(): void {
@@ -1659,13 +1685,7 @@ export default {
           const jidString = event.link.url.split(":")[1] || null;
 
           if (jidString !== null && jidString !== this.room?.id) {
-            this.$router.push({
-              name: "app.inbox",
-
-              params: {
-                roomId: jidString
-              }
-            });
+            this.openInlineChat(jidString);
           }
 
           break;
