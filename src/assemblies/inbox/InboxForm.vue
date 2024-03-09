@@ -480,9 +480,9 @@ export default {
             value: participant.jid.toString(),
 
             action: {
-              match: query,
+              match: `@${query}`,
 
-              replacement: `[${
+              replacement: `[@${
                 participant.name
               }](xmpp:${participant.jid.toString()}) `
             },
