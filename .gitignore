@@ -9,6 +9,7 @@ node_modules/
 
 # Builds
 dist
+src-tauri/target/
 
 # Configuration
 config/local.json
