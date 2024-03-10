@@ -83,7 +83,7 @@ teleport(
             )
               base-action(
                 @click="onActionDownloadClick"
-                :disabled="areActionsDisabled"
+                :disabled="areActionsDisabled || pendingActions.download"
                 icon="arrow.down.circle.dotted"
                 context="grey"
                 size="18px"
@@ -172,8 +172,7 @@ teleport(
 
 <script lang="ts">
 // NPM
-// @ts-expect-error download is a dependency w/o any declaration
-import download from "browser-downloads";
+import FileDownloader from "js-file-downloader";
 
 // ENUMERATIONS
 export enum FileType {
@@ -225,6 +224,10 @@ export default {
       // --> STATE <--
 
       activeIndex: this.initialIndex,
+
+      pendingActions: {
+        download: false
+      },
 
       loading: true,
       error: false
@@ -332,10 +335,27 @@ export default {
       }
     },
 
-    onActionDownloadClick(): void {
+    async onActionDownloadClick(): Promise<void> {
       if (this.activeFile) {
-        // Trigger a browser download of the file
-        download(this.activeFile.url, this.activeFile.name);
+        try {
+          // Mark as downloading
+          this.pendingActions.download = true;
+
+          // Trigger a browser download of the file
+          await new FileDownloader({
+            url: this.activeFile.url,
+            filename: this.activeFile.name
+          });
+        } catch (error) {
+          this.$log.error(
+            `Could not download file from preview at URL: ` +
+              `${this.activeFile.url}`,
+            error
+          );
+        } finally {
+          // Reset pending action marker
+          this.pendingActions.download = false;
+        }
       }
     },
 

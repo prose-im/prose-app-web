@@ -117,9 +117,8 @@ import {
   SendMessageRequestBody
 } from "@prose-im/prose-sdk-js";
 import { PropType, shallowRef } from "vue";
-// @ts-expect-error download is a dependency w/o any declaration
-import download from "browser-downloads";
 import { Handler as MittHandler } from "mitt";
+import FileDownloader from "js-file-downloader";
 
 // PROJECT: STYLES
 import styleElementsFonts from "@/assets/stylesheets/elements/_elements.fonts.scss?inline";
@@ -1623,7 +1622,9 @@ export default {
       this.sendMessageReaction(reactionMode, event.id, event.reaction);
     },
 
-    onMessagingMessageFileView(event: EventMessageFileView): void {
+    async onMessagingMessageFileView(
+      event: EventMessageFileView
+    ): Promise<void> {
       this.$log.debug("Got message file view", event);
 
       // Handle file view action
@@ -1663,8 +1664,19 @@ export default {
         }
 
         case MessagingFileAction.Download: {
-          // Trigger a browser download of the file
-          download(event.file.url, event.file.name || "");
+          try {
+            // Trigger a browser download of the file
+            await new FileDownloader({
+              url: event.file.url,
+              filename: event.file.name || undefined
+            });
+          } catch (error) {
+            this.$log.error(
+              `Could not download file from message file view event at URL: ` +
+                `${event.file.url}`,
+              error
+            );
+          }
 
           break;
         }

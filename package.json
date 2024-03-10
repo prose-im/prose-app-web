@@ -48,7 +48,7 @@
     "mitt": "3.0.0",
     "crypto-js": "4.1.1",
     "smile2emoji": "3.10.0",
-    "browser-downloads": "0.2.0",
+    "js-file-downloader": "1.1.25",
     "browser-image-resizer": "2.4.1",
     "webm-duration-fix": "1.0.4",
     "pinia": "2.1.4",

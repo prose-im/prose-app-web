@@ -83,8 +83,7 @@ layout-popup-navigate(
 
 <script lang="ts">
 // NPM
-// @ts-expect-error download is a dependency w/o any declaration
-import download from "browser-downloads";
+import FileDownloader from "js-file-downloader";
 
 // PROJECT: COMPONENTS
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
@@ -167,7 +166,7 @@ export default {
 
     // --> EVENT LISTENERS <--
 
-    onThumbnailClick(): void {
+    async onThumbnailClick(): Promise<void> {
       const fileCollection: FilePreviewCollection = [],
         fileIndex = 0;
 
@@ -177,8 +176,18 @@ export default {
       // TODO: add file data
 
       if (fileDownloadUrl !== null) {
-        // Download target file
-        download(fileDownloadUrl, fileDownloadName || undefined);
+        try {
+          // Download target file
+          await new FileDownloader({
+            url: fileDownloadUrl,
+            filename: fileDownloadName || undefined
+          });
+        } catch (error) {
+          this.$log.error(
+            `Could not download file from thumbnail at URL: ${fileDownloadUrl}`,
+            error
+          );
+        }
       } else {
         // Preview files
         this.$emit("filePreview", fileCollection, fileIndex);
