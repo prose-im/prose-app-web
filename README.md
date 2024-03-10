@@ -36,7 +36,7 @@ npm install
 
 ## Build
 
-_Builds Prose for use in a Web browser.__
+_Builds Prose for use in a Web browser._
 
 Building the Prose Web app is done per-target environment. Please check below for build instructions based on your target environment.
 
@@ -90,7 +90,7 @@ PROSE_CORE_VIEWS_PATH="../prose-core-views" npm run dev
 
 ## Bundle
 
-_Bundles Prose for use as a standalone application (macOS, Windows, etc.).__
+_Bundles Prose for use as a standalone application (macOS, Windows, etc.)._
 
 Prose can be bundled into a native-like application using [Tauri](https://tauri.app/), which uses the target system default Web renderer. The benefit of Tauri over eg. Electron, is that the resulting bundled application size is kept small (Tauri's overhead is about 600KB).
 
