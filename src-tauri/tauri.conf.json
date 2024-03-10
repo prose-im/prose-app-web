@@ -35,12 +35,19 @@
       }
     ],
     "bundle": {
-      "active": false,
-      "targets": ["dmg"],
-      "identifier": "org.prose.app",
+      "active": true,
+      "targets": ["app"],
+      "identifier": "org.prose.app-web",
       "publisher": "Prose Foundation",
       "category": "Business",
       "shortDescription": "Distributed, open-source, and native platform for workplace communication.",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ],
       "macOS": {
         "minimumSystemVersion": "12.0"
       }
@@ -64,18 +71,6 @@
     "security": {
       "csp": null,
       "devCsp": null
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "org.prose.web-app",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ]
     }
   }
 }
