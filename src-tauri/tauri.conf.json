@@ -1,31 +1,69 @@
 {
+  "package": {
+    "productName": "Prose",
+    "version": "../package.json"
+  },
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
     "devPath": "http://localhost:3010",
     "distDir": "../dist"
   },
-  "package": {
-    "productName": "Prose",
-    "version": "0.0.0"
-  },
   "tauri": {
-    "allowlist": {
-      "all": false,
-      "shell": {
-        "all": false,
-        "open": true
-      }
+    "pattern": {
+      "use": "brownfield"
     },
     "windows": [
       {
         "title": "Prose",
-        "width": 1024,
-        "height": 800
+        "userAgent": "prose-app-web",
+        "width": 1360,
+        "height": 940,
+        "minWidth": 980,
+        "minHeight": 680,
+        "resizable": true,
+        "maximizable": true,
+        "minimizable": true,
+        "closable": true,
+        "fullscreen": false,
+        "center": true,
+        "focus": true,
+        "visible": true,
+        "fileDropEnabled": true,
+        "hiddenTitle": true,
+        "titleBarStyle": "Overlay"
       }
     ],
+    "bundle": {
+      "active": false,
+      "targets": ["dmg"],
+      "identifier": "org.prose.app",
+      "publisher": "Prose Foundation",
+      "category": "Business",
+      "shortDescription": "Distributed, open-source, and native platform for workplace communication.",
+      "macOS": {
+        "minimumSystemVersion": "12.0"
+      }
+    },
+    "allowlist": {
+      "all": false,
+      "window": {
+        "startDragging": true
+      },
+      "shell": {
+        "all": false,
+        "open": true
+      },
+      "notification": {
+        "all": true
+      },
+      "clipboard": {
+        "all": true
+      }
+    },
     "security": {
-      "csp": null
+      "csp": null,
+      "devCsp": null
     },
     "bundle": {
       "active": true,

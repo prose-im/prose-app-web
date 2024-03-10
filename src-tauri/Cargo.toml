@@ -1,8 +1,8 @@
 [package]
-name = "prose-app"
+name = "prose-app-web"
 version = "0.0.0"
-description = "A Tauri App"
-authors = ["you"]
+description = "Prose Web application (Tauri packaging)"
+authors = ["Prose Foundation <dev@prose.org>"]
 edition = "2021"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -11,7 +11,7 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = ["shell-open"] }
+tauri = { version = "1", features = ["clipboard-all", "notification-all", "window-start-dragging", "shell-open"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 
