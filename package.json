@@ -24,14 +24,14 @@
     "dev": "vite",
     "build": "npm run clean && vite build",
     "preview": "vite preview",
+    "bundle": "tauri",
     "clean": "rm -rf dist/",
     "fix": "prettier --write .",
     "lint:js": "eslint --ext \".js,.ts,.vue\" --ignore-path .gitignore .",
     "lint:ts": "vue-tsc",
     "lint:prettier": "prettier --check .",
     "lint": "npm run lint:js && npm run lint:ts && npm run lint:prettier",
-    "test": "npm run lint",
-    "tauri": "tauri"
+    "test": "npm run lint"
   },
   "dependencies": {
     "@prose-im/prose-sdk-js": "0.1.64",
