@@ -9,7 +9,13 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-sidebar-header
+div(
+  :class=`[
+    "c-sidebar-header",
+    "c-sidebar-header--platform-" + runtimePlatform
+  ]`
+  data-tauri-drag-region
+)
   .c-sidebar-header__identity
     base-tooltip(
       :bypassed="isIdentityPopoverVisible"
@@ -73,6 +79,9 @@ import {
 // PROJECT: MODALS
 import { AddContactMode as SidebarAddContactMode } from "@/assemblies/app/AppSidebar.vue";
 
+// PROJECT: UTILITIES
+import { platform as runtimePlatform } from "@/utilities/runtime";
+
 export default {
   name: "SidebarHeader",
 
@@ -80,6 +89,10 @@ export default {
 
   data() {
     return {
+      // --> DATA <--
+
+      runtimePlatform,
+
       // --> STATE <--
 
       isIdentityPopoverVisible: false
@@ -184,6 +197,21 @@ $c: ".c-sidebar-header";
     margin-inline-start: 6px;
     margin-inline-end: (-1 * ($size-base-action-padding-sides - 1px));
     flex: 0 0 auto;
+  }
+
+  // --> PLATFORMS <--
+
+  &--platform-macos {
+    flex-direction: row-reverse;
+
+    #{$c}__identity {
+      flex: 0 0 auto;
+    }
+
+    #{$c}__actions {
+      margin-inline-start: 0;
+      margin-inline-end: 18px;
+    }
   }
 }
 </style>

@@ -9,7 +9,9 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-layout-toolbar
+.c-layout-toolbar(
+  data-tauri-drag-region
+)
   .c-layout-toolbar__left(
     v-if="$slots.left"
   )

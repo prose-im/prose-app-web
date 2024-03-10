@@ -11,6 +11,7 @@
 import fs from "fs";
 import path from "path";
 import merge from "lodash.merge";
+import autoprefixer from "autoprefixer";
 import vue from "@vitejs/plugin-vue";
 import viteWasmPlugin from "vite-plugin-wasm";
 import viteHtmlPlugin from "vite-plugin-html-config";
@@ -72,6 +73,11 @@ export default {
 
     fs: {
       strict: false
+    },
+
+    watch: {
+      // 3. tell vite to ignore watching `src-tauri`
+      ignored: ["**/src-tauri/**"]
     }
   },
 
@@ -162,6 +168,10 @@ export default {
           @import "@/assets/stylesheets/tools/all.scss";
         `
       }
+    },
+
+    postcss: {
+      plugins: [autoprefixer()]
     }
   },
 
@@ -196,6 +206,12 @@ export default {
         merge(config, localConfig);
       } catch (_) {
         // Ignore errors (local configuration not found)
+      }
+
+      // Replace platform with custom platform? (if any)
+      // Notice: this only applies to Tauri builds (eg. macOS bundle)
+      if (process.env.TAURI_PLATFORM) {
+        merge(config, { platform: process.env.TAURI_PLATFORM });
       }
 
       return config;

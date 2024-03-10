@@ -9,7 +9,9 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.v-app-index
+.v-app-index(
+  data-tauri-drag-region
+)
   base-placeholder-image(
     illustration="welcome"
     title="Good to see you"
