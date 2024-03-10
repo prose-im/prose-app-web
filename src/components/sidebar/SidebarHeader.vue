@@ -9,7 +9,9 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-sidebar-header
+.c-sidebar-header(
+  data-tauri-drag-region
+)
   .c-sidebar-header__identity
     base-tooltip(
       :bypassed="isIdentityPopoverVisible"
