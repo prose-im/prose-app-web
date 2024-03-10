@@ -46,10 +46,7 @@ To build Prose for a production environment (with all optimizations, meaning the
 npm run build
 ```
 
-The production build expects your endpoints to be local to the domain where the Prose application is running, using proxied paths:
-
-- `/websocket/` for the XMPP over WebSocket endpoint
-- `/identity/` for the Prose Identity responder endpoint
+The production build expects the XMPP domain you will connect to through Prose to expose its alternative connection endpoints through [XEP-0156: Discovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html), so make sure the `host-meta` file is properly added to your domain (served over HTTPS).
 
 ### Development target
 
@@ -87,6 +84,26 @@ If you would like to source a local `prose-core-views` ([repository](https://git
 
 ```
 PROSE_CORE_VIEWS_PATH="../prose-core-views" npm run dev
+```
+
+## Bundle
+
+Prose can be bundled into a native-like application using [Tauri](https://tauri.app/), which uses the target system default Web renderer. The benefit of Tauri over eg. Electron, is that the resulting bundled application size is kept small (Tauri's overhead is about 600KB).
+
+### Production bundle
+
+To bundle Prose as a final production application, run:
+
+```
+npm run bundle build
+```
+
+### Development bundle
+
+To bundle Prose as a development application (with Hot Module Replacement), run:
+
+```
+npm run bundle dev
 ```
 
 ## Design
