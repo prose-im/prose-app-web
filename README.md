@@ -48,7 +48,7 @@ To build Prose for a production environment (with all optimizations, meaning the
 npm run build
 ```
 
-The production build expects the XMPP domain you will connect to through Prose to expose its alternative connection endpoints (ie. WebSocket or BOSH) through [XEP-0156: Discovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html), so make sure the `host-meta` file is properly added to your domain (served over HTTPS).
+The production build expects the XMPP domain you will connect to through Prose to expose its alternative connection endpoints (ie. WebSocket or/and BOSH) through [XEP-0156: Discovering Alternative XMPP Connection Methods](https://xmpp.org/extensions/xep-0156.html), so make sure the `host-meta` file is properly added to your domain (served over HTTPS).
 
 ### Development target
 
