@@ -11,11 +11,14 @@
 // NPM
 import { createLogger } from "vue-logger-plugin";
 
+// PROJECT: COMMONS
+import CONFIG from "@/commons/config";
+
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
-const enabled = process.env.NODE_ENV !== "production";
+const enabled = CONFIG.environment !== "production";
 const level = "debug";
 
 /**************************************************************************
