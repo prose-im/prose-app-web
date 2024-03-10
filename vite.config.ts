@@ -208,6 +208,12 @@ export default {
         // Ignore errors (local configuration not found)
       }
 
+      // Replace platform with custom platform? (if any)
+      // Notice: this only applies to Tauri builds (eg. macOS bundle)
+      if (process.env.TAURI_PLATFORM) {
+        merge(config, { platform: process.env.TAURI_PLATFORM });
+      }
+
       return config;
     })()
   }
