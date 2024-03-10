@@ -29,7 +29,7 @@
     "fix": "prettier --write .",
     "lint:js": "eslint --ext \".js,.ts,.vue\" --ignore-path .gitignore .",
     "lint:ts": "vue-tsc",
-    "lint:prettier": "prettier --check .",
+    "lint:prettier": "prettier --check src/ res/ config/ *.*",
     "lint": "npm run lint:js && npm run lint:ts && npm run lint:prettier",
     "test": "npm run lint"
   },
