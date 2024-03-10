@@ -11,6 +11,7 @@
 import fs from "fs";
 import path from "path";
 import merge from "lodash.merge";
+import autoprefixer from "autoprefixer";
 import vue from "@vitejs/plugin-vue";
 import viteWasmPlugin from "vite-plugin-wasm";
 import viteHtmlPlugin from "vite-plugin-html-config";
@@ -167,6 +168,10 @@ export default {
           @import "@/assets/stylesheets/tools/all.scss";
         `
       }
+    },
+
+    postcss: {
+      plugins: [autoprefixer()]
     }
   },
 

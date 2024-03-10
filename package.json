@@ -75,6 +75,7 @@
     "@typescript-eslint/eslint-plugin": "5.48.x",
     "typescript": "4.9.x",
     "sass": "1.57.x",
+    "autoprefixer": "10.4.x",
     "vite": "4.2.x",
     "vite-plugin-wasm": "3.2.x",
     "vite-plugin-html-config": "1.0.x",
