@@ -96,6 +96,7 @@
 import {
   EventMessageActionsView,
   EventMessageFileView,
+  EventMessageLinkOpen,
   EventMessageHistoryView,
   EventMessageHistorySeek,
   EventMessageReactionsReact,
@@ -109,7 +110,12 @@ import {
   SeekDirection as MessagingSeekDirection,
   Theme as MessagingTheme
 } from "@prose-im/prose-core-views/types/messaging";
-import { JID, Room, SendMessageRequest } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  Room,
+  SendMessageRequest,
+  SendMessageRequestBody
+} from "@prose-im/prose-sdk-js";
 import { PropType, shallowRef } from "vue";
 // @ts-expect-error download is a dependency w/o any declaration
 import download from "browser-downloads";
@@ -243,6 +249,7 @@ export default {
         "message:reactions:view": this.onMessagingMessageReactionsView,
         "message:reactions:react": this.onMessagingMessageReactionsReact,
         "message:file:view": this.onMessagingMessageFileView,
+        "message:link:open": this.onMessagingMessageLinkOpen,
         "message:history:view": this.onMessagingMessageHistoryView,
         "message:history:seek": this.onMessagingMessageHistorySeek
       },
@@ -1040,6 +1047,32 @@ export default {
       };
     },
 
+    openInlineChat(jidString: string): void {
+      try {
+        const jid = new JID(jidString);
+
+        if (jid.equals(this.selfJID) === false) {
+          this.$router.push({
+            name: "app.inbox",
+
+            params: {
+              roomId: jidString
+            }
+          });
+        } else {
+          BaseAlert.warning(
+            "This is you",
+            "Cannot start a chat with yourself!"
+          );
+        }
+      } catch (error) {
+        this.$log.error(
+          `Could not open inline conversation with: '${jidString}'`,
+          error
+        );
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onFrameLoad(): void {
@@ -1113,10 +1146,16 @@ export default {
         )?.[0];
 
         // Send update to network
-        let messageRequest = new SendMessageRequest();
+        let messageRequest = new SendMessageRequest(),
+          messageRequestBody = new SendMessageRequestBody();
 
-        messageRequest.body = text;
+        // Generate message body
+        // TODO: restore message mentions (when rich-text editor is made \
+        //   common between inbox-form and message editor)
+        messageRequestBody.text = text;
+        messageRequest.body = messageRequestBody;
 
+        // Restore message attachments?
         if (
           originalMessage?.attachments &&
           originalMessage?.attachments?.length > 0
@@ -1636,6 +1675,32 @@ export default {
       }
     },
 
+    onMessagingMessageLinkOpen(event: EventMessageLinkOpen): void {
+      this.$log.debug("Got message link open", event);
+
+      // Handle link protocol
+      switch (event.link.protocol) {
+        case "xmpp": {
+          // Open as an inline conversation
+          const jidString = event.link.url.split(":")[1] || null;
+
+          if (jidString !== null && jidString !== this.room?.id) {
+            this.openInlineChat(jidString);
+          }
+
+          break;
+        }
+
+        default: {
+          // Open as a new tab (ie. browser window)
+          // Important: set the 'noopener' policy so that the origin window \
+          //   cannot be accessed at target, which would create a huge \
+          //   security hole.
+          window.open(event.link.url, "_blank", "noopener");
+        }
+      }
+    },
+
     onMessagingMessageHistorySeek(event: EventMessageHistorySeek): void {
       this.$log.debug("Got message history seek", event);
 
@@ -1657,7 +1722,9 @@ export default {
     },
 
     onMessagingMessageHistoryView(event: EventMessageHistoryView): void {
-      this.$log.debug("Got message history view", event);
+      // Notice: do not log anything there, as this event can be quite spammy \
+      //   when the user scrolls, and we do not want to pollute our debug logs \
+      //   too much here.
 
       // Handle view visibility
       switch (event.visibility) {

@@ -176,7 +176,9 @@ import {
   RoomType,
   ParticipantInfo,
   SendMessageRequest,
-  UploadSlot
+  SendMessageRequestBody,
+  UploadSlot,
+  Mention
 } from "@prose-im/prose-sdk-js";
 import { codes as keyCodes } from "keycode";
 
@@ -213,7 +215,8 @@ export enum Request {
 }
 
 // INSTANCES
-const MESSAGE_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
+const MESSAGE_TEXT_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
+const MESSAGE_CODE_MENTION_REGEX = /(@\[[^[\]]+\]\(xmpp:([^()]+)\))/g;
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 10000; // 10 seconds
@@ -293,13 +296,29 @@ export default {
       const suggestions: Array<FormFieldSuggestSuggestion> = [];
 
       if (this.mentionQuery !== null) {
-        const mentionQuery = this.mentionQuery;
+        const mentionQuery = this.mentionQuery,
+          appendRegister: Set<string> = new Set();
 
-        // Append matches from room participants
+        // #1. Append matches from room participants
         this.room?.participants.forEach(participant => {
+          if (participant.jid !== undefined) {
+            this.appendSuggestionParticipant(
+              suggestions,
+              appendRegister,
+              participant.jid.toString(),
+              participant.name,
+              mentionQuery
+            );
+          }
+        });
+
+        // #2. Append matches from roster
+        this.rosterContactList.forEach(entry => {
           this.appendSuggestionParticipant(
             suggestions,
-            participant,
+            appendRegister,
+            entry.jid,
+            entry.name,
             mentionQuery
           );
         });
@@ -318,6 +337,10 @@ export default {
 
     settings(): typeof Store.$settings {
       return Store.$settings;
+    },
+
+    rosterContactList(): ReturnType<typeof Store.$roster.getContactsList> {
+      return Store.$roster.getContactsList();
     },
 
     rosterName(): string {
@@ -449,7 +472,7 @@ export default {
       let matchedMentionQuery = undefined;
 
       if (message && message.includes("@") === true) {
-        matchedMentionQuery = message.match(MESSAGE_MENTION_REGEX)?.[1];
+        matchedMentionQuery = message.match(MESSAGE_TEXT_MENTION_REGEX)?.[1];
       }
 
       this.mentionQuery =
@@ -460,11 +483,13 @@ export default {
 
     appendSuggestionParticipant(
       suggestions: Array<FormFieldSuggestSuggestion>,
-      participant: ParticipantInfo,
+      appendRegister: Set<string>,
+      jidString: string,
+      name: string,
       query: string
     ): void {
-      if (participant.jid) {
-        const participantName = participant.name.toLowerCase();
+      if (appendRegister.has(jidString) === false) {
+        const participantName = name.toLowerCase();
 
         // Participant name matches mention query?
         if (!query || participantName.startsWith(query) === true) {
@@ -473,24 +498,52 @@ export default {
           //   value, so that the suggestion list does not pop in again \
           //   after this suggestion is picked by the user.
           suggestions.push({
-            label: participant.name,
-            value: participant.jid.toString(),
+            label: name,
+            value: jidString,
 
             action: {
-              match: query,
-              replacement: `${participant.name} `
+              match: `@${query}`,
+              replacement: `[@${name}](xmpp:${jidString}) `
             },
 
             icon: {
               component: BaseAvatar,
 
               properties: {
-                jid: participant.jid,
+                jid: new JID(jidString),
                 size: "18px",
                 shadow: "none"
               }
             }
           });
+
+          appendRegister.add(jidString);
+        }
+      }
+    },
+
+    *extractMessageMentions(message: string): Generator<Mention> {
+      // Find mentions in message code
+      // Notice: make sure to drain this regular expression before re-using it.
+      let match;
+
+      while ((match = MESSAGE_CODE_MENTION_REGEX.exec(message)) !== null) {
+        const matchedValue = match[0] || null,
+          jidString = match[2] || null;
+
+        if (matchedValue !== null && jidString !== null) {
+          try {
+            yield new Mention(
+              new JID(jidString),
+              match.index,
+              match.index + matchedValue.length
+            );
+          } catch (error) {
+            this.$log.warn(
+              `Could not extract mentionned JID: '${jidString}'`,
+              error
+            );
+          }
         }
       }
     },
@@ -591,13 +644,15 @@ export default {
             }
 
             // Send message (with file attachments)
-            let messageRequest = new SendMessageRequest();
+            let messageRequest = new SendMessageRequest(),
+              messageRequestBody = new SendMessageRequestBody();
 
-            messageRequest.body =
+            messageRequestBody.text =
               result.attachments.length === 1
                 ? "Shared 1 file"
                 : `Shared ${result.attachments.length} files`;
 
+            messageRequest.body = messageRequestBody;
             messageRequest.attachments = result.attachments;
 
             await this.room?.sendMessage(messageRequest);
@@ -734,9 +789,17 @@ export default {
           }
         } else {
           // Send message
-          let messageRequest = new SendMessageRequest();
+          let messageRequest = new SendMessageRequest(),
+            messageRequestBody = new SendMessageRequestBody();
 
-          messageRequest.body = message;
+          // Generate message body (extract mentions from message)
+          messageRequestBody.text = message;
+
+          for (const mention of this.extractMessageMentions(message)) {
+            messageRequestBody.addMention(mention);
+          }
+
+          messageRequest.body = messageRequestBody;
 
           await this.room?.sendMessage(messageRequest);
         }

@@ -1,7 +1,7 @@
 {
   "name": "@prose-im/prose-app-web",
   "description": "Prose Web application",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "type": "module",
   "homepage": "https://github.com/prose-im/prose-app-web",
   "license": "MPL-2.0",
@@ -34,9 +34,9 @@
     "tauri": "tauri"
   },
   "dependencies": {
-    "@prose-im/prose-sdk-js": "0.1.63",
-    "@prose-im/prose-core-views": "0.34.1",
-    "@tauri-apps/api": "^1",
+    "@prose-im/prose-sdk-js": "0.1.64",
+    "@prose-im/prose-core-views": "0.35.0",
+    "@tauri-apps/api": "1.5.3",
     "lodash.camelcase": "4.3.0",
     "lodash.upperfirst": "4.3.1",
     "lodash.merge": "4.6.2",
@@ -61,7 +61,6 @@
     "v-hotkey3": "0.1.4"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^1",
     "@types/node": "18.11.x",
     "@types/strophe.js": "1.2.x",
     "@types/lodash.camelcase": "4.3.x",
@@ -70,6 +69,7 @@
     "@types/escape-html": "1.0.x",
     "@types/crypto-js": "4.1.x",
     "@types/get-installed-path": "4.0.x",
+    "@tauri-apps/cli": "1.5.x",
     "@vitejs/plugin-vue": "4.0.x",
     "@typescript-eslint/parser": "5.48.x",
     "@typescript-eslint/eslint-plugin": "5.48.x",

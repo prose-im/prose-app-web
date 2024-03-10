@@ -10,6 +10,7 @@
 
 // NPM
 import {
+  JID,
   ProseClientConfig,
   ProseConnection,
   ProseConnectionErrorType,
@@ -25,42 +26,56 @@ import CONFIG from "@/commons/config";
 import logger from "@/utilities/logger";
 
 /**************************************************************************
+ * INTERFACES
+ * ************************************************************************* */
+
+interface ConnectionRelayHost {
+  url: string;
+  protocol?: string;
+}
+
+/**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const RELAY_HOST_METADATA_PARSE = [
+  {
+    xmlns: "urn:xmpp:alt-connections:websocket",
+    protocol: "wss"
+  },
+
+  {
+    xmlns: "urn:xmpp:alt-connections:xbosh",
+    protocol: undefined
+  }
+];
+
+/**************************************************************************
  * CLASS
  * ************************************************************************* */
 
 class BrokerConnectionStrophe implements ProseConnection {
   private readonly __config: ProseClientConfig;
-  private readonly __connection: Strophe.Connection;
 
+  private __connection?: Strophe.Connection;
   private __eventHandler?: ProseConnectionEventHandler;
 
   constructor(config: ProseClientConfig) {
     // Assign configuration
     this.__config = config;
-
-    // Acquire relay host
-    const relayHost = CONFIG.hosts.websocket || null;
-
-    if (!relayHost) {
-      throw new Error("No relay host to connect to");
-    }
-
-    // Create connection
-    this.__connection = new Strophe.Connection(relayHost, { protocol: "wss" });
-
-    // Configure connection
-    this.__connection.maxRetries = 0;
-
-    // Bind handlers
-    this.__connection.rawInput = this.__onInput.bind(this);
-    this.__connection.rawOutput = this.__onOutput.bind(this);
-
-    this.__bindDummyHandler(this.__connection);
   }
 
-  async connect(jid: string, password: string): Promise<void> {
+  async connect(jidString: string, password: string): Promise<void> {
+    // Acquire bare JID
+    // Important: strip resource from JID so that it can be parsed
+    const jid = new JID(jidString.split("/")[0]);
+
+    // Create connection (on domain)
+    const connection = await this.__createConnection(jid.domain);
+
+    // Connect (using just bound connection)
     return new Promise((resolve, reject) => {
-      this.__connection.connect(jid, password, status => {
+      connection.connect(jidString, password, status => {
         switch (status) {
           // [CONNECTING] The connection is currently being made
           case Strophe.Status.CONNECTING: {
@@ -161,7 +176,7 @@ class BrokerConnectionStrophe implements ProseConnection {
   }
 
   disconnect(): void {
-    this.__connection.disconnect("logout");
+    this.__connection?.disconnect("logout");
   }
 
   sendStanza(stanza: string): void {
@@ -177,11 +192,113 @@ class BrokerConnectionStrophe implements ProseConnection {
       throw new Error("Failed to send stanza");
     }
 
+    // Assert connection
+    if (!this.__connection) {
+      throw new Error("Cannot send stanza, there is no connection");
+    }
+
     this.__connection.send(element);
   }
 
   setEventHandler(handler: ProseConnectionEventHandler): void {
     this.__eventHandler = handler;
+  }
+
+  private async __createConnection(
+    domain: string
+  ): Promise<Strophe.Connection> {
+    // Acquire relay host from domain
+    if (!domain) {
+      throw new Error("No domain to acquire relay host from");
+    }
+
+    const relayHost = await this.__acquireRelayHost(domain);
+
+    // Create connection
+    const connection = new Strophe.Connection(relayHost.url, {
+      protocol: relayHost.protocol || undefined
+    });
+
+    // Configure connection
+    connection.maxRetries = 0;
+
+    // Bind handlers
+    connection.rawInput = this.__onInput.bind(this);
+    connection.rawOutput = this.__onOutput.bind(this);
+
+    this.__bindDummyHandler(connection);
+
+    // Assign connection
+    this.__connection = connection;
+
+    return connection;
+  }
+
+  private async __acquireRelayHost(
+    domain: string
+  ): Promise<ConnectionRelayHost> {
+    // XEP-0156: Discovering Alternative XMPP Connection Methods
+    // https://xmpp.org/extensions/xep-0156.html
+
+    try {
+      // Fetch host metadata file (if any)
+      let xmlString: string | null = null;
+
+      const hostMetaOverride = CONFIG.overrides?.hostMeta?.[domain] || null;
+
+      if (hostMetaOverride !== null) {
+        xmlString = hostMetaOverride;
+      } else {
+        const response = await fetch(
+          `https://${domain}/.well-known/host-meta`,
+          {
+            mode: "cors"
+          }
+        );
+
+        if (response.ok === true) {
+          xmlString = (await response.text()) || null;
+        }
+      }
+
+      if (xmlString !== null) {
+        // Read XML string from host-meta
+        const xmlElement = new DOMParser().parseFromString(
+          xmlString,
+          "text/xml"
+        );
+
+        // Acquire connection URL (priorized)
+        for (let i = 0; i < RELAY_HOST_METADATA_PARSE.length; i++) {
+          const metadataParse = RELAY_HOST_METADATA_PARSE[i];
+
+          const linkElement =
+            xmlElement.querySelector(`Link[rel="${metadataParse.xmlns}"]`) ||
+            null;
+
+          if (linkElement !== null) {
+            const linkUrl = linkElement.getAttribute("href") || null;
+
+            if (linkUrl !== null) {
+              return {
+                url: linkUrl,
+                protocol: metadataParse.protocol
+              };
+            }
+          }
+        }
+      }
+    } catch (error) {
+      logger.error(`Error loading relay host from domain: ${domain}`, error);
+    }
+
+    // Generate default URL (fallback)
+    logger.warn(`Using fallback relay host for domain: ${domain}`);
+
+    return {
+      url: `wss://${domain}/websocket/`,
+      protocol: "wss"
+    };
   }
 
   private __onInput(data: string): void {
