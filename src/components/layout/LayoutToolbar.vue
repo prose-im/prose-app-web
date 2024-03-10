@@ -61,6 +61,16 @@ $c: ".c-layout-toolbar";
   }
 
   #{$c}__left,
+  #{$c}__right,
+  #{$c}__middle {
+    pointer-events: none;
+
+    > * {
+      pointer-events: initial;
+    }
+  }
+
+  #{$c}__left,
   #{$c}__right {
     flex: 0 0 auto;
   }

@@ -16,6 +16,7 @@
     illustration="welcome"
     title="Good to see you"
     description="Get started by inviting your team, joining channels and sparking conversations."
+    class="v-app-index__placeholder"
   )
 </template>
 
@@ -42,5 +43,9 @@ $c: ".v-app-index";
   display: flex;
   align-items: center;
   justify-content: center;
+
+  #{$c}__placeholder {
+    pointer-events: none;
+  }
 }
 </style>

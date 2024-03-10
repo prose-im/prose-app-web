@@ -9,9 +9,7 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-sidebar-context(
-  data-tauri-drag-region
-)
+.c-sidebar-context
   base-tooltip(
     :bypassed="isAvatarPopoverVisible"
     align="left"
