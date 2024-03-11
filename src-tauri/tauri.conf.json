@@ -59,14 +59,7 @@
         "startDragging": true
       },
       "shell": {
-        "all": false,
         "open": true
-      },
-      "notification": {
-        "all": true
-      },
-      "clipboard": {
-        "all": true
       }
     },
     "security": {
