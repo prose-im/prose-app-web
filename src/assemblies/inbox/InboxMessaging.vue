@@ -161,6 +161,9 @@ import {
 } from "@/store/tables/inbox";
 import { SessionAppearance } from "@/store/tables/session";
 
+// PROJECT: UTILITIES
+import UtilitiesRuntime from "@/utilities/runtime";
+
 // ENUMERATIONS
 export enum MessageReactionMode {
   // Add reaction.
@@ -1687,7 +1690,9 @@ export default {
       }
     },
 
-    onMessagingMessageLinkOpen(event: EventMessageLinkOpen): void {
+    async onMessagingMessageLinkOpen(
+      event: EventMessageLinkOpen
+    ): Promise<void> {
       this.$log.debug("Got message link open", event);
 
       // Handle link protocol
@@ -1704,11 +1709,15 @@ export default {
         }
 
         default: {
-          // Open as a new tab (ie. browser window)
-          // Important: set the 'noopener' policy so that the origin window \
-          //   cannot be accessed at target, which would create a huge \
-          //   security hole.
-          window.open(event.link.url, "_blank", "noopener");
+          // Open URL as a new tab (ie. browser window)
+          try {
+            await UtilitiesRuntime.requestOpenUrl(event.link.url);
+          } catch (error) {
+            this.$log.error(
+              `Failed opening URL from message link open at: ${event.link.url}`,
+              error
+            );
+          }
         }
       }
     },
