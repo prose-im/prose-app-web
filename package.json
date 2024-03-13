@@ -23,6 +23,7 @@
   "scripts": {
     "dev": "vite",
     "build": "npm run clean && vite build",
+    "build:tauri": "cargo tauri build",
     "preview": "vite preview",
     "bundle": "tauri",
     "clean": "rm -rf dist/",
