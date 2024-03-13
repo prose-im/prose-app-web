@@ -29,7 +29,7 @@
         "center": true,
         "focus": true,
         "visible": true,
-        "fileDropEnabled": true,
+        "fileDropEnabled": false,
         "hiddenTitle": true,
         "titleBarStyle": "Overlay"
       }
@@ -60,6 +60,9 @@
       },
       "shell": {
         "open": true
+      },
+      "notification": {
+        "all": true
       }
     },
     "security": {
