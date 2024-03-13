@@ -16,6 +16,8 @@ directories = "5.0.1"
 reqwest = { version = "0.11.25", features = ["blocking"] }
 tokio = { version = "1.36.0", features = ["full"] }
 thiserror = "1.0.58"
+cocoa = "0.25.0"
+objc = "0.2.7"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
