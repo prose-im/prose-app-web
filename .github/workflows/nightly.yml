@@ -7,7 +7,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [macos-latest, ubuntu-20.04, windows-latest]
+        settings:
+          - platform: macos-latest
+            target: universal-apple-darwin
+            toolchain: aarch64-apple-darwin,x86_64-apple-darwin
+            bundles: app,dmg
+            os: mac
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+            toolchain: x86_64-pc-windows-msvc
+            bundles: msi,nsis
+            os: windows
+          - platform: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            toolchain: x86_64-unknown-linux-gnu
+            bundles: deb,appimage
+            os: linux
     runs-on: ${{ matrix.platform }}
 
     steps:
@@ -23,6 +38,8 @@ jobs:
 
       - name: Rust setup
         uses: dtolnay/rust-toolchain@stable
+        with:
+          target: "${{ matrix.settings.toolchain }}"
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -40,6 +57,15 @@ jobs:
         run: npm install
 
       - name: Build the app
+        id: build_os
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
+
+      - name: Upload unstable ${{ matrix.setting.os }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: "prose-nightly-${{ matrix.settings.os }}"
+          path: "${{ join(fromJSON(steps.build_os.outputs.artifactPaths), '\n') }}"
