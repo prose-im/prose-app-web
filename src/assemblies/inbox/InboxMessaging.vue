@@ -164,6 +164,19 @@ import { SessionAppearance } from "@/store/tables/session";
 // PROJECT: UTILITIES
 import UtilitiesRuntime from "@/utilities/runtime";
 
+// TAURI SPECIFICS
+import { invoke } from '@tauri-apps/api'
+import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
+// ask for permission to send notifications
+let permissionGranted = false
+if (window.__TAURI__ !== undefined) {
+  permissionGranted = await isPermissionGranted();
+  if (!permissionGranted) {
+    const permission = await requestPermission();
+    permissionGranted = permission === 'granted';
+  }
+}
+
 // ENUMERATIONS
 export enum MessageReactionMode {
   // Add reaction.
@@ -1668,11 +1681,31 @@ export default {
 
         case MessagingFileAction.Download: {
           try {
-            // Trigger a browser download of the file
-            await new FileDownloader({
-              url: event.file.url,
-              filename: event.file.name || undefined
-            });
+            if (window.__TAURI__ === undefined) {
+              // Trigger a browser download of the file
+              await new FileDownloader({
+                url: event.file.url,
+                filename: event.file.name || undefined
+              });
+            } else {
+              invoke('download_file', { url: event.file.url, filename: event.file.name || undefined })
+                .catch((error) => {
+                  if (permissionGranted) {
+                    sendNotification({
+                      title: 'Download failed!',
+                      body: `'${event.file.name}' could not be downloaded due to ${error}`
+                    });
+                  }
+                })
+                .then(() => {
+                  if (permissionGranted) {
+                    sendNotification({
+                      title: 'Download complete!',
+                      body: `'${event.file.name}' was downloaded successfully`
+                    });
+                  }
+                })
+            }
           } catch (error) {
             this.$log.error(
               `Could not download file from message file view event at URL: ` +
