@@ -100,8 +100,8 @@ interface State {
 // CONSTANTS
 const ALERT_SHOW_AFTER_DELAY = 250; // 250 milliseconds
 
-const ALERT_EXPIRE_HIDE_DELAY_DEFAULT = 6000; // 6 seconds
-const ALERT_EXPIRE_HIDE_DELAY_SHORT = 3000; // 3 seconds
+const ALERT_EXPIRE_HIDE_DELAY_DEFAULT = 4000; // 4 seconds
+const ALERT_EXPIRE_HIDE_DELAY_SHORT = 2000; // 2 seconds
 
 const ALERT_VISIBILITY_DEFAULT = Visibility.AutoHide;
 
