@@ -314,13 +314,13 @@ $c: ".c-base-alert";
   #{$c}__inner {
     background-color: rgba(var(--color-base-grey-dark), 0.95);
     border: 1px solid rgba(var(--color-black), 0.15);
-    padding: 8px 10px;
+    padding: 7px 10px;
     backdrop-filter: blur(9px);
     display: flex;
     align-items: center;
     box-shadow: 0 4px 10px 0 rgba(var(--color-shadow-primary), 0.07),
       inset 0 1px 0 0 rgba(var(--color-white), 0.2);
-    border-radius: 16px;
+    border-radius: 14px;
 
     #{$c}__badge {
       fill: rgb(var(--color-white));
@@ -330,7 +330,7 @@ $c: ".c-base-alert";
 
     #{$c}__text {
       color: rgba(var(--color-white));
-      line-height: 18px;
+      line-height: 17px;
       margin-block-start: -1px;
       padding-inline: 20px;
       flex: 1;
@@ -338,12 +338,12 @@ $c: ".c-base-alert";
       align-items: center;
 
       #{$c}__text-title {
-        font-size: 14.5px;
+        font-size: 14px;
         flex: 0 0 auto;
       }
 
       #{$c}__text-description {
-        font-size: 14px;
+        font-size: 13.5px;
         flex: 1;
         display: flex;
         align-items: center;
