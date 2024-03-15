@@ -59,6 +59,9 @@ import InboxDetailsUser from "@/assemblies/inbox/InboxDetailsUser.vue";
 import InboxDetailsGroup from "@/assemblies/inbox/InboxDetailsGroup.vue";
 import InboxDetailsChannel from "@/assemblies/inbox/InboxDetailsChannel.vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "InboxDetails",
 
@@ -88,6 +91,16 @@ export default {
 
       roomType: RoomType
     };
+  },
+
+  mounted() {
+    // Mark inbox details as mounted
+    Store.$session.setInterfaceInboxDetailsMounted(true);
+  },
+
+  unmounted() {
+    // Mark inbox details as unmounted
+    Store.$session.setInterfaceInboxDetailsMounted(false);
   },
 
   methods: {

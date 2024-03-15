@@ -48,7 +48,7 @@ $c: ".v-app-base";
 
   #{$c}__sidebar {
     border-inline-end: 1px solid rgb(var(--color-border-secondary));
-    width: 300px;
+    width: $size-sidebar-width;
     flex: 0 0 auto;
   }
 

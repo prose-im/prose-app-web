@@ -21,7 +21,9 @@ transition(
       "c-base-alert",
       "c-base-alert--" + level,
       {
-        "c-base-alert--after-toolbar": hasToolbar
+        "c-base-alert--with-toolbar": hasToolbar,
+        "c-base-alert--with-sidebar": hasSidebar,
+        "c-base-alert--with-inbox-details": hasInboxDetails
       }
     ]`
   )
@@ -184,11 +186,19 @@ export default {
     },
 
     hasToolbar(): boolean {
-      return this.layout.toolbar.mounted || false;
+      return this.session.interface.toolbar.mounted || false;
     },
 
-    layout(): typeof Store.$layout {
-      return Store.$layout;
+    hasSidebar(): boolean {
+      return this.session.interface.sidebar.mounted || false;
+    },
+
+    hasInboxDetails(): boolean {
+      return this.session.interface.inboxDetails.mounted || false;
+    },
+
+    session(): typeof Store.$session {
+      return Store.$session;
     }
   },
 
@@ -316,8 +326,11 @@ export default {
 <style lang="scss">
 $c: ".c-base-alert";
 
+// VARIABLES
+$alert-padding-sides: 12px;
+
 #{$c} {
-  padding-inline: 12px;
+  padding-inline: $alert-padding-sides;
   display: flex;
   justify-content: center;
   position: absolute;
@@ -391,8 +404,16 @@ $c: ".c-base-alert";
 
   // --> BOOLEANS <--
 
-  &--after-toolbar {
+  &--with-toolbar {
     margin-block-start: $size-layout-view-topbar-height;
+  }
+
+  &--with-sidebar {
+    padding-inline-start: ($alert-padding-sides + $size-sidebar-width);
+  }
+
+  &--with-inbox-details {
+    padding-inline-end: ($alert-padding-sides + $size-inbox-details-width);
   }
 }
 </style>

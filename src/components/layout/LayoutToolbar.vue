@@ -47,12 +47,12 @@ export default {
 
   mounted() {
     // Mark toolbar as mounted
-    Store.$layout.setToolbarMounted(true);
+    Store.$session.setInterfaceToolbarMounted(true);
   },
 
   unmounted() {
     // Mark toolbar as unmounted
-    Store.$layout.setToolbarMounted(false);
+    Store.$session.setInterfaceToolbarMounted(false);
   }
 };
 </script>
