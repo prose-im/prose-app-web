@@ -331,6 +331,7 @@ $alert-padding-sides: 12px;
 
 #{$c} {
   padding-inline: $alert-padding-sides;
+  pointer-events: none;
   display: flex;
   justify-content: center;
   position: absolute;
@@ -343,6 +344,7 @@ $alert-padding-sides: 12px;
     border: 1px solid rgba(var(--color-black), 0.15);
     padding: 7px 10px;
     backdrop-filter: blur(9px);
+    pointer-events: initial;
     display: flex;
     align-items: center;
     box-shadow: 0 4px 10px 0 rgba(var(--color-shadow-primary), 0.07),
