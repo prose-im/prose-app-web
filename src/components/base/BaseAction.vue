@@ -81,7 +81,7 @@ export default {
       default: "white",
 
       validator(x: string) {
-        return ["white", "grey"].includes(x);
+        return ["white", "grey", "dark"].includes(x);
       }
     },
 
@@ -189,11 +189,6 @@ $c: ".c-base-action";
       flex: 0 0 auto;
     }
 
-    #{$c}__icon,
-    #{$c}__dropdown {
-      fill: rgb(var(--color-base-grey-dark));
-    }
-
     #{$c}__dropdown {
       margin-inline-start: 7px;
     }
@@ -217,6 +212,12 @@ $c: ".c-base-action";
     &#{$c}--grey {
       > #{$c}__inner {
         background-color: darken-var(var(--color-base-grey-light), 3%);
+      }
+    }
+
+    &#{$c}--dark {
+      > #{$c}__inner {
+        background-color: rgba(var(--color-black), 0.06);
       }
     }
   }
@@ -245,6 +246,14 @@ $c: ".c-base-action";
 
   // --> CONTEXTS <--
 
+  &--white,
+  &--grey {
+    #{$c}__icon,
+    #{$c}__dropdown {
+      fill: rgb(var(--color-base-grey-dark));
+    }
+  }
+
   &--white {
     > #{$c}__inner {
       &:hover {
@@ -265,6 +274,23 @@ $c: ".c-base-action";
 
       &:active {
         background-color: darken-var(var(--color-base-grey-light), 8%);
+      }
+    }
+  }
+
+  &--dark {
+    #{$c}__icon,
+    #{$c}__dropdown {
+      fill: rgb(var(--color-white));
+    }
+
+    > #{$c}__inner {
+      &:hover {
+        background-color: rgba(var(--color-black), 0.08);
+      }
+
+      &:active {
+        background-color: rgba(var(--color-black), 0.12);
       }
     }
   }

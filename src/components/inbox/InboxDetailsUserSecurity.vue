@@ -277,7 +277,7 @@ $c: ".c-inbox-details-user-security";
     }
 
     &--encryption-unknown {
-      fill: rgb(var(--color-base-orange-normal));
+      fill: rgb(var(--color-base-orange-dark));
     }
 
     &--encryption-insecure {
@@ -287,7 +287,7 @@ $c: ".c-inbox-details-user-security";
 
   #{$c}__label {
     &--important {
-      color: rgb(var(--color-base-orange-normal));
+      color: rgb(var(--color-base-orange-dark));
     }
 
     &--critical {

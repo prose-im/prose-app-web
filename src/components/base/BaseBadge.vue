@@ -106,7 +106,7 @@ $c: ".c-base-badge";
   }
 
   &--orange {
-    background-color: rgb(var(--color-base-orange-normal));
+    background-color: rgb(var(--color-base-orange-dark));
   }
 
   &--red {

@@ -10,8 +10,8 @@
 
 <template lang="pug">
 transition(
-  enter-active-class="u-animate u-animate--fade-in-up-small u-animate--fast"
-  leave-active-class="u-animate u-animate--fade-out-down-small u-animate--superfast"
+  enter-active-class="u-animate u-animate--fade-in-down-small u-animate--fast"
+  leave-active-class="u-animate u-animate--fade-out-up-small u-animate--superfast"
 )
   div(
     v-if="title"
@@ -22,31 +22,31 @@ transition(
       "c-base-alert--" + level
     ]`
   )
-    span.c-base-alert__badge
+    .c-base-alert__inner
       base-icon(
         :name="badgeIcon"
-        size="24px"
-        class="c-base-alert__badge-icon"
+        size="16px"
+        class="c-base-alert__badge"
       )
 
-    .c-base-alert__text
-      p.c-base-alert__text-title.u-bold
-        | {{ title }}
+      .c-base-alert__text
+        p.c-base-alert__text-title.u-medium
+          | {{ title }}
 
-      p.c-base-alert__text-description(
-        v-if="description"
+        p.c-base-alert__text-description(
+          v-if="description"
+        )
+          | {{ description }}
+
+      base-action(
+        @click="onCloseClick"
+        class="c-base-alert__close"
+        icon="xmark"
+        context="dark"
+        size="9px"
+        auto-width
+        auto-height
       )
-        | {{ description }}
-
-    base-action(
-      @click="onCloseClick"
-      class="c-base-alert__close"
-      icon="xmark"
-      context="grey"
-      size="11px"
-      auto-width
-      auto-height
-    )
 </template>
 
 <!-- **********************************************************************
@@ -302,125 +302,76 @@ export default {
 <style lang="scss">
 $c: ".c-base-alert";
 
-// VARIABLES
-$badge-size: 54px;
-
 #{$c} {
-  background: rgba(var(--color-white), 0.95);
-  border: 1px solid rgba(var(--color-border-secondary), 0.9);
-  padding: 10px;
-  padding-inline-end: 80px;
-  backdrop-filter: blur(9px);
+  padding-inline: 12px;
   display: flex;
-  align-items: center;
+  justify-content: center;
   position: absolute;
-  inset-block-end: 30px;
-  left: 50%;
-  transform: translateX(-50%);
+  inset-block-start: ($size-layout-view-topbar-height + 18px);
+  inset-inline: 0;
   z-index: $index-foreground-primary;
-  box-shadow: 0 2px 4px 0 rgba(var(--color-shadow-primary), 0.04);
-  border-radius: 16px;
 
-  #{$c}__badge {
-    background-color: rgba(var(--color-base-grey-dark), 0.15);
-    width: $badge-size;
-    height: $badge-size;
-    margin-inline-end: 24px;
-    flex: 0 0 auto;
+  #{$c}__inner {
+    background-color: rgba(var(--color-base-grey-dark), 0.95);
+    border: 1px solid rgba(var(--color-black), 0.15);
+    padding: 8px 10px;
+    backdrop-filter: blur(9px);
     display: flex;
     align-items: center;
-    justify-content: center;
-    border-radius: 12px;
+    box-shadow: 0 4px 10px 0 rgba(var(--color-shadow-primary), 0.07),
+      inset 0 1px 0 0 rgba(var(--color-white), 0.2);
+    border-radius: 16px;
 
-    #{$c}__badge-icon {
-      fill: rgb(var(--color-base-grey-dark));
+    #{$c}__badge {
+      fill: rgb(var(--color-white));
+      margin-inline-start: 8px;
       flex: 0 0 auto;
     }
-  }
 
-  #{$c}__text {
-    flex: 1;
+    #{$c}__text {
+      color: rgba(var(--color-white));
+      line-height: 18px;
+      margin-block-start: -1px;
+      padding-inline: 20px;
+      flex: 1;
+      display: flex;
+      align-items: center;
 
-    #{$c}__text-title {
-      color: rgb(var(--color-text-primary));
-      font-size: 17px;
+      #{$c}__text-title {
+        font-size: 14.5px;
+        flex: 0 0 auto;
+      }
+
+      #{$c}__text-description {
+        font-size: 14px;
+        flex: 1;
+        display: flex;
+        align-items: center;
+
+        &:before {
+          content: "";
+          background-color: rgba(var(--color-white), 0.15);
+          width: 1px;
+          height: 16px;
+          margin-inline: 12px;
+          margin-block-end: -1px;
+          flex: 0 0 auto;
+        }
+      }
     }
-
-    #{$c}__text-description {
-      color: rgb(var(--color-text-primary));
-      font-size: 15px;
-      margin-block-start: 10px;
-    }
-  }
-
-  #{$c}__close {
-    position: absolute;
-    inset-inline-end: 15px;
   }
 
   // --> LEVELS <--
 
   &--error {
-    #{$c}__badge {
-      background-color: rgba(var(--color-base-red-normal), 0.15);
-
-      #{$c}__badge-icon {
-        fill: rgb(var(--color-base-red-normal));
-      }
-    }
-
-    #{$c}__text {
-      #{$c}__text-title {
-        color: rgb(var(--color-base-red-normal));
-      }
+    #{$c}__inner {
+      background-color: rgba(var(--color-base-red-normal), 0.95);
     }
   }
 
   &--warning {
-    #{$c}__badge {
-      background-color: rgba(var(--color-base-orange-normal), 0.15);
-
-      #{$c}__badge-icon {
-        fill: rgb(var(--color-base-orange-normal));
-      }
-    }
-
-    #{$c}__text {
-      #{$c}__text-title {
-        color: rgb(var(--color-base-orange-normal));
-      }
-    }
-  }
-
-  &--info {
-    #{$c}__badge {
-      background-color: rgba(var(--color-base-blue-normal), 0.15);
-
-      #{$c}__badge-icon {
-        fill: rgb(var(--color-base-blue-normal));
-      }
-    }
-
-    #{$c}__text {
-      #{$c}__text-title {
-        color: rgb(var(--color-base-blue-normal));
-      }
-    }
-  }
-
-  &--success {
-    #{$c}__badge {
-      background-color: rgba(var(--color-base-green-normal), 0.15);
-
-      #{$c}__badge-icon {
-        fill: rgb(var(--color-base-green-normal));
-      }
-    }
-
-    #{$c}__text {
-      #{$c}__text-title {
-        color: rgb(var(--color-base-green-normal));
-      }
+    #{$c}__inner {
+      background-color: rgba(var(--color-base-orange-normal), 0.95);
     }
   }
 }

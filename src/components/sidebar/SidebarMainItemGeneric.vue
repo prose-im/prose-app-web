@@ -209,7 +209,7 @@ $c: ".c-sidebar-main-item-generic";
   }
 
   #{$c}__error {
-    fill: rgb(var(--color-base-orange-normal));
+    fill: rgb(var(--color-base-orange-dark));
   }
 
   // --> BOOLEANS <--

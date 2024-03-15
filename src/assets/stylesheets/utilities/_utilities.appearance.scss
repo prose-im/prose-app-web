@@ -25,6 +25,7 @@
   --color-base-grey-normal: #{hex-var($color-base-grey-normal)};
   --color-base-orange-light: #{hex-var($color-base-orange-light)};
   --color-base-orange-normal: #{hex-var($color-base-orange-normal)};
+  --color-base-orange-dark: #{hex-var($color-base-orange-dark)};
   --color-base-purple-light: #{hex-var($color-base-purple-light)};
   --color-base-purple-normal: #{hex-var($color-base-purple-normal)};
   --color-base-red-normal: #{hex-var($color-base-red-normal)};
@@ -70,8 +71,9 @@
       )};
     --color-base-orange-light: #{hex-var(lighten($color-base-orange-light, 6%))};
     --color-base-orange-normal: #{hex-var(
-        lighten($color-base-orange-normal, 2%)
+        lighten($color-base-orange-normal, 3%)
       )};
+    --color-base-orange-dark: #{hex-var(lighten($color-base-orange-dark, 2%))};
     --color-base-purple-light: #{hex-var(lighten($color-base-purple-light, 2%))};
     --color-base-purple-normal: #{hex-var(
         lighten($color-base-purple-normal, 20%)
