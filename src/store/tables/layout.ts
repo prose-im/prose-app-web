@@ -40,6 +40,10 @@ const $layout = defineStore("layout", {
             actions: true
           }
         }
+      },
+
+      toolbar: {
+        mounted: false
       }
     };
   },
@@ -96,6 +100,12 @@ const $layout = defineStore("layout", {
     setInboxDetailsSectionActions(visible: boolean) {
       this.$patch(state => {
         state.inbox.details.sections.actions = visible;
+      });
+    },
+
+    setToolbarMounted(mounted: boolean) {
+      this.$patch(state => {
+        state.toolbar.mounted = mounted;
       });
     }
   }

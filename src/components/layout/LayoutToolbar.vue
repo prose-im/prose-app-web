@@ -39,8 +39,21 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
-  name: "LayoutToolbar"
+  name: "LayoutToolbar",
+
+  mounted() {
+    // Mark toolbar as mounted
+    Store.$layout.setToolbarMounted(true);
+  },
+
+  unmounted() {
+    // Mark toolbar as unmounted
+    Store.$layout.setToolbarMounted(false);
+  }
 };
 </script>
 

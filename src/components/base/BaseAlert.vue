@@ -19,7 +19,10 @@ transition(
     @mouseleave="onMouseLeave"
     :class=`[
       "c-base-alert",
-      "c-base-alert--" + level
+      "c-base-alert--" + level,
+      {
+        "c-base-alert--after-toolbar": hasToolbar
+      }
     ]`
   )
     .c-base-alert__inner
@@ -56,6 +59,9 @@ transition(
 <script lang="ts">
 // NPM
 import mitt, { Handler } from "mitt";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 // ENUMERATIONS
 enum Level {
@@ -175,6 +181,14 @@ export default {
           return "questionmark.circle.fill";
         }
       }
+    },
+
+    hasToolbar(): boolean {
+      return this.layout.toolbar.mounted || false;
+    },
+
+    layout(): typeof Store.$layout {
+      return Store.$layout;
     }
   },
 
@@ -307,7 +321,7 @@ $c: ".c-base-alert";
   display: flex;
   justify-content: center;
   position: absolute;
-  inset-block-start: ($size-layout-view-topbar-height + 18px);
+  inset-block-start: 18px;
   inset-inline: 0;
   z-index: $index-foreground-primary;
 
@@ -373,6 +387,12 @@ $c: ".c-base-alert";
     #{$c}__inner {
       background-color: rgba(var(--color-base-orange-normal), 0.95);
     }
+  }
+
+  // --> BOOLEANS <--
+
+  &--after-toolbar {
+    margin-block-start: $size-layout-view-topbar-height;
   }
 }
 </style>
