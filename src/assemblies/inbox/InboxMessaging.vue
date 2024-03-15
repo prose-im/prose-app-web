@@ -164,14 +164,6 @@ import { SessionAppearance } from "@/store/tables/session";
 // PROJECT: UTILITIES
 import UtilitiesRuntime from "@/utilities/runtime";
 
-// ENUMERATIONS
-export enum MessageReactionMode {
-  // Add reaction.
-  Add = "add",
-  // Retract reaction.
-  Retract = "retract"
-}
-
 // TYPES
 type StatePopoverAnchor = { x: number; y: number; height?: number };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -948,71 +940,6 @@ export default {
       }
     },
 
-    async sendMessageReaction(
-      mode: MessageReactionMode,
-      messageId: string,
-      reaction: string
-    ): Promise<void> {
-      // Freeze room reference (since we're going asynchronous and it might \
-      //   change in the state mid-way)
-      const room = this.room;
-
-      // Generate list of reactions
-      const reactions: Set<string> = new Set(),
-        existingMessage = room
-          ? Store.$inbox.getMessage(room.id, messageId)
-          : undefined;
-
-      if (
-        existingMessage !== undefined &&
-        existingMessage.reactions !== undefined &&
-        existingMessage.reactions.length > 0
-      ) {
-        const selfJIDString = this.selfJID.toString();
-
-        existingMessage.reactions.forEach(
-          (reaction: { reaction: string; authors: string[] }) => {
-            if (reaction.authors.includes(selfJIDString) === true) {
-              reactions.add(reaction.reaction as string);
-            }
-          }
-        );
-      }
-
-      // Add or retract reaction? (as needed)
-      let shouldPropagate = false;
-
-      switch (mode) {
-        case MessageReactionMode.Add: {
-          if (reactions.has(reaction) === false) {
-            reactions.add(reaction);
-
-            shouldPropagate = true;
-          }
-
-          break;
-        }
-
-        case MessageReactionMode.Retract: {
-          if (reactions.has(reaction) === true) {
-            reactions.delete(reaction);
-
-            shouldPropagate = true;
-          }
-
-          break;
-        }
-      }
-
-      // Apply reaction changes?
-      if (shouldPropagate === true) {
-        // Send reaction to network
-        for (const reaction of reactions) {
-          await room?.toggleReactionToMessage(messageId, reaction);
-        }
-      }
-    },
-
     showEditMessage(messageId: string): void {
       const frameRuntime = this.frame();
 
@@ -1328,18 +1255,18 @@ export default {
       }
     },
 
-    onPopoverReactionsPick({
+    async onPopoverReactionsPick({
       messageId,
       emoji
     }: {
       messageId: string;
       emoji: string;
-    }): void {
+    }): Promise<void> {
       // Hide popover
       this.hidePopover();
 
-      // Send message reaction
-      this.sendMessageReaction(MessageReactionMode.Add, messageId, emoji);
+      // Toggle message reaction
+      await this.room?.toggleReactionToMessage(messageId, emoji);
     },
 
     onStoreConnected(connected: boolean): void {
@@ -1607,16 +1534,13 @@ export default {
       }
     },
 
-    onMessagingMessageReactionsReact(event: EventMessageReactionsReact): void {
+    async onMessagingMessageReactionsReact(
+      event: EventMessageReactionsReact
+    ): Promise<void> {
       this.$log.debug("Got message reactions react", event);
 
       // Add or retract message reaction
-      const reactionMode =
-        event.active === false
-          ? MessageReactionMode.Retract
-          : MessageReactionMode.Add;
-
-      this.sendMessageReaction(reactionMode, event.id, event.reaction);
+      await this.room?.toggleReactionToMessage(event.id, event.reaction);
     },
 
     async onMessagingMessageFileView(
