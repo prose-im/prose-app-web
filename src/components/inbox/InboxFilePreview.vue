@@ -415,7 +415,7 @@ $file-preview-border-radius: 9px;
   z-index: $index-foreground-secondary;
 
   #{$c}__inner {
-    background-color: rgba(var(--color-white), 0.8);
+    background-color: rgba(var(--color-white), 0.9);
     border: 1px solid rgb(var(--color-border-tertiary));
     backdrop-filter: blur(8px);
     width: 100%;
