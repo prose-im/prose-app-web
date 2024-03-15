@@ -71,13 +71,13 @@ fn set_badge_count(count: u32) {
 #[tauri::command]
 #[cfg(not(target_os = "macos"))]
 fn set_badge_count(count: u32) {
-    println!("set_bage_count is not implemented for this platform");
+    println!("set_badge_count is not implemented for this platform");
 }
 
 fn main() {
     tauri::Builder::default()
-        .on_window_event(|event| match event.event() {
-            WindowEvent::CloseRequested { api, .. } => {
+        .on_window_event(|event| {
+            if let WindowEvent::CloseRequested { api, .. } = event.event() {
                 #[cfg(not(target_os = "macos"))]
                 {
                     event.window().hide().unwrap();
@@ -89,10 +89,6 @@ fn main() {
                 }
                 api.prevent_close();
             }
-            WindowEvent::Focused(focused) => {
-                println!("Window focused: {}", focused);
-            }
-            _ => {}
         })
         .invoke_handler(tauri::generate_handler![download_file, set_badge_count])
         .run(tauri::generate_context!())

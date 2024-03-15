@@ -4,5 +4,19 @@
 <dict>
   <key>NSMicrophoneUsageDescription</key>
   <string>Application requests access to the device's microphone.</string>
+  <key>CFBundleURLTypes</key>
+  <array>
+    <dict>
+      <key>CFBundleURLIconFile</key>
+      <string>generic</string>
+      <key>CFBundleURLName</key>
+      <string>Jabber URL</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>xmpp</string>
+        <string>jabber</string>
+      </array>
+    </dict>
+  </array>
 </dict>
 </plist>
