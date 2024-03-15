@@ -1166,9 +1166,6 @@ export default {
         }
 
         await room?.updateMessage(messageId, messageRequest);
-
-        // Acknowledge update
-        BaseAlert.info("Message edited", "The message has been updated");
       } catch (error) {
         // Alert of copy error
         this.$log.error(`Could not edit message #${messageId}`, error);
@@ -1211,9 +1208,6 @@ export default {
       if (wasRemoved === true) {
         // Send removal to network
         await room?.retractMessage(messageId);
-
-        // Acknowledge removal
-        BaseAlert.info("Message removed", "The message has been deleted");
       } else {
         BaseAlert.error(
           "Cannot remove message",
