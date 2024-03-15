@@ -69,11 +69,19 @@ enum Level {
   Success = "success"
 }
 
+export enum Visibility {
+  // Auto-hide visibility.
+  AutoHide = "auto-hide",
+  // Sticky visibility.
+  Sticky = "sticky"
+}
+
 // INTERFACES
 interface State {
   level: Level;
   title: string;
   description: string;
+  visibility: Visibility;
 
   timers: {
     show: null | ReturnType<typeof setTimeout>;
@@ -86,6 +94,8 @@ const ALERT_SHOW_AFTER_DELAY = 250; // 250 milliseconds
 
 const ALERT_EXPIRE_HIDE_DELAY_DEFAULT = 6000; // 6 seconds
 const ALERT_EXPIRE_HIDE_DELAY_SHORT = 3000; // 3 seconds
+
+const ALERT_VISIBILITY_DEFAULT = Visibility.AutoHide;
 
 // INSTANCES
 const EventBus = mitt();
@@ -100,6 +110,7 @@ export default {
       level: Level.Error,
       title: "",
       description: "",
+      visibility: ALERT_VISIBILITY_DEFAULT,
 
       timers: {
         show: null,
@@ -108,35 +119,39 @@ export default {
     } as State;
   },
 
-  error(title: string, description?: string) {
+  error(title: string, description?: string, visibility?: Visibility) {
     EventBus.emit("show", {
       level: Level.Error,
       title,
-      description
+      description,
+      visibility
     });
   },
 
-  warning(title: string, description?: string) {
+  warning(title: string, description?: string, visibility?: Visibility) {
     EventBus.emit("show", {
       level: Level.Warning,
       title,
-      description
+      description,
+      visibility
     });
   },
 
-  info(title: string, description?: string) {
+  info(title: string, description?: string, visibility?: Visibility) {
     EventBus.emit("show", {
       level: Level.Info,
       title,
-      description
+      description,
+      visibility
     });
   },
 
-  success(title: string, description?: string) {
+  success(title: string, description?: string, visibility?: Visibility) {
     EventBus.emit("show", {
       level: Level.Success,
       title,
-      description
+      description,
+      visibility
     });
   },
 
@@ -177,11 +192,13 @@ export default {
     show({
       level,
       title,
-      description = ""
+      description = "",
+      visibility = ALERT_VISIBILITY_DEFAULT
     }: {
       level: Level;
       title: string;
       description?: string;
+      visibility?: Visibility;
     }): void {
       if (!level || !title) {
         throw new Error("No alert level or title provided");
@@ -201,8 +218,9 @@ export default {
         this.level = level;
         this.title = title;
         this.description = description;
+        this.visibility = visibility;
 
-        // Schedule later alert hide
+        // Schedule later alert hide (as needed)
         this.scheduleHide();
       }, ALERT_SHOW_AFTER_DELAY);
     },
@@ -218,23 +236,25 @@ export default {
       }
     },
 
-    scheduleHide(shortLived = false): void {
+    scheduleHide(shortLived = false, force = false): void {
       // Unschedule any previously-scheduled hide
       this.unscheduleHide();
 
-      // Schedule later hide
-      this.timers.hide = setTimeout(
-        () => {
-          this.timers.hide = null;
+      // Schedule later hide? (if auto-hide visibility or forced)
+      if (force === true || this.visibility === Visibility.AutoHide) {
+        this.timers.hide = setTimeout(
+          () => {
+            this.timers.hide = null;
 
-          // Hide alert
-          this.hide();
-        },
+            // Hide alert
+            this.hide();
+          },
 
-        shortLived === true
-          ? ALERT_EXPIRE_HIDE_DELAY_SHORT
-          : ALERT_EXPIRE_HIDE_DELAY_DEFAULT
-      );
+          shortLived === true
+            ? ALERT_EXPIRE_HIDE_DELAY_SHORT
+            : ALERT_EXPIRE_HIDE_DELAY_DEFAULT
+        );
+      }
     },
 
     unscheduleHide(): void {
@@ -263,7 +283,7 @@ export default {
     },
 
     onMouseLeave(): void {
-      // Re-schedule closure (as it was previously unscheduled)
+      // Re-schedule closure (as it was previously unscheduled, as needed)
       this.scheduleHide(true);
     },
 
