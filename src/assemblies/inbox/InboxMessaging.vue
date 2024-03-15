@@ -191,7 +191,7 @@ interface StatePopover {
 const FRAME_STYLE = {
   app: {
     fontFamily: "Prose Outfit",
-    fontSize: "13.5px",
+    fontSize: "14px",
     paddingBottom: "25px"
   },
 
