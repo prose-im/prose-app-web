@@ -39,21 +39,8 @@
      ********************************************************************** -->
 
 <script lang="ts">
-// PROJECT: STORES
-import Store from "@/store";
-
 export default {
-  name: "LayoutToolbar",
-
-  mounted() {
-    // Mark toolbar as mounted
-    Store.$session.setInterfaceToolbarMounted(true);
-  },
-
-  unmounted() {
-    // Mark toolbar as unmounted
-    Store.$session.setInterfaceToolbarMounted(false);
-  }
+  name: "LayoutToolbar"
 };
 </script>
 

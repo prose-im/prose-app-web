@@ -293,6 +293,16 @@ export default {
     }
   },
 
+  mounted() {
+    // Mark toolbar as mounted
+    Store.$session.setInterfaceToolbarMounted(true);
+  },
+
+  unmounted() {
+    // Mark toolbar as unmounted
+    Store.$session.setInterfaceToolbarMounted(false);
+  },
+
   methods: {
     // --> EVENT LISTENERS <--
 
