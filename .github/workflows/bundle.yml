@@ -69,7 +69,7 @@ jobs:
           args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
 
       - name: Archive output files
-        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz src-tauri/target/release/bundle/
+        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz src-tauri/target/${{ matrix.settings.target }}/bundle/
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
