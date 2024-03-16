@@ -22,8 +22,6 @@
   },
   "scripts": {
     "dev": "vite",
-    "tauri": "tauri",
-    "build:tauri": "tauri build",
     "build": "npm run clean && vite build",
     "preview": "vite preview",
     "bundle": "tauri",

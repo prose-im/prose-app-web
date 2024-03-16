@@ -82,12 +82,13 @@ layout-popup-navigate(
      ********************************************************************** -->
 
 <script lang="ts">
-// NPM
-import FileDownloader from "js-file-downloader";
-
 // PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
 import { Collection as FilePreviewCollection } from "@/components/inbox/InboxFilePreview.vue";
+
+// PROJECT: UTILITIES
+import UtilitiesRuntime from "@/utilities/runtime";
 
 // CONSTANTS
 const SECTION_INITIAL = "images";
@@ -178,14 +179,21 @@ export default {
       if (fileDownloadUrl !== null) {
         try {
           // Download target file
-          await new FileDownloader({
-            url: fileDownloadUrl,
-            filename: fileDownloadName || undefined
-          });
+          await UtilitiesRuntime.requestFileDownload(
+            fileDownloadUrl,
+            fileDownloadName
+          );
+
+          BaseAlert.info("Shared file saved", "The file has been downloaded");
         } catch (error) {
           this.$log.error(
             `Could not download file from thumbnail at URL: ${fileDownloadUrl}`,
             error
+          );
+
+          BaseAlert.error(
+            "Failed saving shared file",
+            "Could not download. Try again?"
           );
         }
       } else {

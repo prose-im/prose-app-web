@@ -26,19 +26,6 @@ import { fromCoreMessage as inboxMessageFromCore } from "@/store/tables/inbox";
 import { AudioSound, default as UtilitiesAudio } from "@/utilities/audio";
 import logger from "@/utilities/logger";
 
-// TAURI SPECIFICS
-import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
-// ask for permission to send notifications
-let permissionGranted = false;
-if (window.__TAURI__ !== undefined) {
-  permissionGranted = await isPermissionGranted();
-
-  if (!permissionGranted) {
-    const permission = await requestPermission();
-    permissionGranted = permission === 'granted';
-  }
-}
-
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
@@ -170,9 +157,6 @@ class BrokerDelegate implements ProseClientDelegate {
 
         if (firstNonSelfMessage) {
           UtilitiesAudio.play(AudioSound.AlertMessageReceive);
-          if (permissionGranted) {
-            sendNotification({ title: firstNonSelfMessage.from, body: firstNonSelfMessage.content } )
-          }
         }
       }
     }

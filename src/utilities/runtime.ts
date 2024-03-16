@@ -9,7 +9,9 @@
  * ************************************************************************* */
 
 // NPM
+import { invoke as tauriInvoke } from "@tauri-apps/api";
 import { open as tauriOpen } from "@tauri-apps/api/shell";
+import FileDownloader from "js-file-downloader";
 
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
@@ -44,6 +46,21 @@ class UtilitiesRuntime {
       //   cannot be accessed at target, which would create a huge \
       //   security hole.
       window.open(url, target, "noopener");
+    }
+  }
+
+  async requestFileDownload(url: string, name?: string): Promise<void> {
+    const downloadOptions = {
+      url: url,
+      filename: name || undefined
+    };
+
+    if (this.__isApp === true) {
+      // Request to download file via Tauri API (application build)
+      await tauriInvoke("download_file", downloadOptions);
+    } else {
+      // Request to download file via browser APIs (Web build)
+      await new FileDownloader(downloadOptions);
     }
   }
 }

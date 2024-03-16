@@ -118,7 +118,6 @@ import {
 } from "@prose-im/prose-sdk-js";
 import { PropType, shallowRef } from "vue";
 import { Handler as MittHandler } from "mitt";
-import FileDownloader from "js-file-downloader";
 
 // PROJECT: STYLES
 import styleElementsFonts from "@/assets/stylesheets/elements/_elements.fonts.scss?inline";
@@ -163,23 +162,6 @@ import { SessionAppearance } from "@/store/tables/session";
 
 // PROJECT: UTILITIES
 import UtilitiesRuntime from "@/utilities/runtime";
-
-// TAURI SPECIFICS
-import { invoke } from "@tauri-apps/api";
-import {
-  isPermissionGranted,
-  requestPermission,
-  sendNotification
-} from "@tauri-apps/api/notification";
-// ask for permission to send notifications
-let permissionGranted = false;
-if (window.__TAURI__ !== undefined) {
-  permissionGranted = await isPermissionGranted();
-  if (!permissionGranted) {
-    const permission = await requestPermission();
-    permissionGranted = permission === "granted";
-  }
-}
 
 // TYPES
 type StatePopoverAnchor = { x: number; y: number; height?: number };
@@ -1603,39 +1585,22 @@ export default {
 
         case MessagingFileAction.Download: {
           try {
-            if (window.__TAURI__ === undefined) {
-              // Trigger a browser download of the file
-              await new FileDownloader({
-                url: event.file.url,
-                filename: event.file.name || undefined
-              });
-            } else {
-              invoke("download_file", {
-                url: event.file.url,
-                filename: event.file.name || undefined
-              })
-                .catch(error => {
-                  if (permissionGranted) {
-                    sendNotification({
-                      title: "Download failed!",
-                      body: `'${event.file.name}' could not be downloaded due to ${error}`
-                    });
-                  }
-                })
-                .then(() => {
-                  if (permissionGranted) {
-                    sendNotification({
-                      title: "Download complete!",
-                      body: `'${event.file.name}' was downloaded successfully`
-                    });
-                  }
-                });
-            }
+            await UtilitiesRuntime.requestFileDownload(
+              event.file.url,
+              event.file.name
+            );
+
+            BaseAlert.info("File saved", "The file has been downloaded");
           } catch (error) {
             this.$log.error(
               `Could not download file from message file view event at URL: ` +
                 `${event.file.url}`,
               error
+            );
+
+            BaseAlert.error(
+              "Failed saving file",
+              "The file could not be downloaded. Try again?"
             );
           }
 
