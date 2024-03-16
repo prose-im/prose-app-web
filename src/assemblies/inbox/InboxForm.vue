@@ -366,8 +366,20 @@ export default {
           // Check if (still) uploading a file in this room
           this.isAttachFilePending = UtilitiesUpload.hasQueue(newValue.id);
         }
+
+        // Attempt to auto-focus on the message field?
+        // Notice: only auto-focus when changing from one room to another, if \
+        //   we come from a previous room.
+        if (newValue && oldValue && newValue.id !== oldValue.id) {
+          this.focusMessageField();
+        }
       }
     }
+  },
+
+  mounted() {
+    // Auto-focus on the message field
+    this.focusMessageField();
   },
 
   beforeUnmount() {
@@ -453,6 +465,11 @@ export default {
       if (draft) {
         this.message = draft;
       }
+    },
+
+    focusMessageField(): void {
+      // Focus on input
+      (this.$refs.message as typeof FormField)?.focusFieldFromParent();
     },
 
     clearMessageField(): void {
@@ -707,7 +724,7 @@ export default {
       this.isActionEmojisPopoverVisible = false;
 
       // Focus on input
-      (this.$refs.message as typeof FormField).focusFieldFromParent();
+      this.focusMessageField();
     },
 
     onKeyStroke(value: string): void {
