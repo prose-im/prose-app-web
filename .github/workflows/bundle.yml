@@ -63,15 +63,17 @@ jobs:
         run: npm install --no-audit
 
       - name: Run bundle build
-        id: tauri_build
         uses: tauri-apps/tauri-action@v0
         with:
           tauriScript: npm run bundle
           args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
 
+      - name: Archive output files
+        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz src-tauri/target/${{ matrix.settings.target }}/release/bundle/
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ runner.os }})
-          path: ${{ steps.tauri_build.outputs.artifactPaths }}
+          path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz
           retention-days: 14
