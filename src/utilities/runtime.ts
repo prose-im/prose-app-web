@@ -49,7 +49,10 @@ class UtilitiesRuntime {
     }
   }
 
-  async requestFileDownload(url: string, name?: string): Promise<void> {
+  async requestFileDownload(
+    url: string,
+    name: string | null = null
+  ): Promise<void> {
     const downloadOptions = {
       url: url,
       filename: name || undefined
