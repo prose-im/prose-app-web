@@ -1,9 +1,13 @@
 // This file is part of prose-app-web
 //
-// Copyright 2023, Prose Foundation
+// Copyright 2024, Prose Foundation
 
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
+
+/**************************************************************************
+ * IMPORTS
+ * ************************************************************************* */
 
 use directories::UserDirs;
 use serde::{Deserialize, Serialize};
@@ -12,32 +16,52 @@ use thiserror::Error;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 
+/**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
+
 #[derive(Serialize, Deserialize, Debug, Error, PartialEq, Eq)]
 pub enum DownloadError {
-    #[error("Packet is too small, missing Bytes")]
+    #[error("Could not obtain download directory")]
+    CouldNotObtainDirectory,
+    #[error("Packet is too small, missing bytes")]
     CouldNotCreateFile,
-    #[error("Could not download File")]
+    #[error("Could not download file")]
     DownloadError,
 }
 
+/**************************************************************************
+ * COMMANDS
+ * ************************************************************************* */
+
 #[tauri::command]
 async fn download_file(url: &str, filename: &str) -> Result<(), DownloadError> {
-    // todo path traversal not secure yet
+    // TODO: path traversal not secure yet
     let filename = filename
         .to_string()
         .replace(['/', '\\', ':'], "")
         .replace("..", "");
 
-    let user_dirs = UserDirs::new().unwrap();
-    let download_dir = user_dirs.download_dir().unwrap();
+    // Acquire directories
+    let user_dirs = UserDirs::new().ok_or(DownloadError::CouldNotObtainDirectory)?;
+    let download_dir = user_dirs
+        .download_dir()
+        .ok_or(DownloadError::CouldNotObtainDirectory)?;
+
+    // Generate download path
     let download_path = download_dir.join(filename);
+
+    // Download file
     let mut response = reqwest::get(url)
         .await
         .map_err(|_| DownloadError::DownloadError)?;
+
+    // Create file on filesystem
     let mut file = File::create(download_path)
         .await
         .map_err(|_| DownloadError::CouldNotCreateFile)?;
 
+    // Drain bytes from HTTP response to file
     while let Some(chunk) = response
         .chunk()
         .await
@@ -47,22 +71,24 @@ async fn download_file(url: &str, filename: &str) -> Result<(), DownloadError> {
             .await
             .map_err(|_| DownloadError::DownloadError)?;
     }
+
     Ok(())
 }
 
 #[cfg(target_os = "macos")]
 #[tauri::command]
 fn set_badge_count(count: u32) {
-    // https://github.com/tauri-apps/tauri/issues/4489
-    use cocoa::{appkit::NSApp, base::nil, foundation::NSString};
+    // Reference: https://github.com/tauri-apps/tauri/issues/4489
+    use cocoa::{appkit::NSApp, foundation::NSString};
     use objc::{msg_send, sel, sel_impl};
 
     unsafe {
         let label = if count == 0 {
-            nil
+            cocoa::base::nil
         } else {
-            NSString::alloc(nil).init_str(&format!("{}", count))
+            NSString::alloc(cocoa::base::nil).init_str(&format!("{}", count))
         };
+
         let dock_tile: cocoa::base::id = msg_send![NSApp(), dockTile];
         let _: cocoa::base::id = msg_send![dock_tile, setBadgeLabel: label];
     }
@@ -73,6 +99,10 @@ fn set_badge_count(count: u32) {
 fn set_badge_count(count: u32) {
     println!("set_badge_count is not implemented for this platform");
 }
+
+/**************************************************************************
+ * MAIN
+ * ************************************************************************* */
 
 fn main() {
     tauri::Builder::default()
@@ -87,6 +117,7 @@ fn main() {
                 {
                     tauri::AppHandle::hide(&event.window().app_handle()).unwrap();
                 }
+
                 api.prevent_close();
             }
         })
