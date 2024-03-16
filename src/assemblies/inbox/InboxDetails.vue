@@ -59,6 +59,9 @@ import InboxDetailsUser from "@/assemblies/inbox/InboxDetailsUser.vue";
 import InboxDetailsGroup from "@/assemblies/inbox/InboxDetailsGroup.vue";
 import InboxDetailsChannel from "@/assemblies/inbox/InboxDetailsChannel.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceMounted } from "@/composables/interface";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -85,22 +88,18 @@ export default {
 
   emits: ["filePreview"],
 
+  setup() {
+    useInterfaceMounted((mounted: boolean) => {
+      Store.$session.setInterfaceInboxDetailsMounted(mounted);
+    });
+  },
+
   data() {
     return {
       // --> DATA <--
 
       roomType: RoomType
     };
-  },
-
-  mounted() {
-    // Mark inbox details as mounted
-    Store.$session.setInterfaceInboxDetailsMounted(true);
-  },
-
-  unmounted() {
-    // Mark inbox details as unmounted
-    Store.$session.setInterfaceInboxDetailsMounted(false);
   },
 
   methods: {

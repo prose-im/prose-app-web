@@ -55,6 +55,12 @@ import { PropType } from "vue";
 import TopbarActionsHistory from "@/components/topbar/TopbarActionsHistory.vue";
 import TopbarActionsSearch from "@/components/topbar/TopbarActionsSearch.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceMounted } from "@/composables/interface";
+
+// PROJECT: STORES
+import Store from "@/store";
+
 // TYPES
 export type Actions = Array<Array<Action>>;
 
@@ -84,6 +90,12 @@ export default {
         return [];
       }
     }
+  },
+
+  setup() {
+    useInterfaceMounted((mounted: boolean) => {
+      Store.$session.setInterfaceToolbarMounted(mounted);
+    });
   }
 };
 </script>
