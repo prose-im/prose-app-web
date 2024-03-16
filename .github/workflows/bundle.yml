@@ -1,9 +1,7 @@
-# TODO: restore
-# on:
-#   push:
-#     tags:
-#       - "*.*.*"
-on: [push, pull_request]
+on:
+  push:
+    tags:
+      - "*.*.*"
 
 name: Bundle and Publish
 
@@ -52,6 +50,7 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
+          shared-key: ${{ runner.os }}-${{ matrix.settings.toolchain }}-rust
 
       - name: Get current tag
         id: current_tag
