@@ -11,6 +11,7 @@
 <template lang="pug">
 layout-toolbar(
   class="a-spotlight-topbar"
+  draggable
 )
   template(
     v-slot:left
