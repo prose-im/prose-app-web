@@ -174,7 +174,6 @@ import {
   JID,
   Room,
   RoomType,
-  ParticipantInfo,
   SendMessageRequest,
   SendMessageRequestBody,
   UploadSlot,
