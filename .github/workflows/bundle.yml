@@ -14,8 +14,8 @@ jobs:
       matrix:
         settings:
           - platform: macos-latest
-            target: universal-apple-darwin
-            toolchain: aarch64-apple-darwin,x86_64-apple-darwin
+            target: aarch64-apple-darwin
+            toolchain: aarch64-apple-darwin
             bundles: dmg
             os: mac
 
