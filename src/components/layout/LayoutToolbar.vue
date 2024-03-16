@@ -10,7 +10,7 @@
 
 <template lang="pug">
 .c-layout-toolbar(
-  data-tauri-drag-region
+  :data-tauri-drag-region="attributeTauriDragRegion"
 )
   .c-layout-toolbar__left(
     v-if="$slots.left"
@@ -40,7 +40,20 @@
 
 <script lang="ts">
 export default {
-  name: "LayoutToolbar"
+  name: "LayoutToolbar",
+
+  props: {
+    draggable: {
+      type: Boolean,
+      default: false
+    }
+  },
+
+  computed: {
+    attributeTauriDragRegion(): string | null {
+      return this.draggable === true ? "" : null;
+    }
+  }
 };
 </script>
 
