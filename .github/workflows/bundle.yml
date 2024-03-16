@@ -1,0 +1,76 @@
+# TODO: restore
+# on:
+#   push:
+#     tags:
+#       - "*.*.*"
+on: [push, pull_request]
+
+name: Bundle and Publish
+
+jobs:
+  bundle:
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - platform: macos-latest
+            target: universal-apple-darwin
+            toolchain: aarch64-apple-darwin,x86_64-apple-darwin
+            bundles: app,dmg
+            os: mac
+
+    runs-on: ${{ matrix.settings.platform }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          registry-url: https://registry.npmjs.org
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          target: "${{ matrix.settings.toolchain }}"
+
+      - name: Verify versions
+        run: node --version && npm --version && node -p process.versions.v8 && rustc --version
+
+      - name: Cache build context (NodeJS)
+        id: cache-node
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: ${{ runner.os }}-node
+
+      - name: Cache build context (Rust)
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Get current tag
+        id: current_tag
+        uses: WyriHaximus/github-action-get-previous-tag@v1
+        with:
+          fallback: 0.0.0
+
+      - name: Install dependencies
+        run: npm install --no-audit
+
+      - name: Run bundle build
+        uses: tauri-apps/tauri-action@v0
+        with:
+          tauriScript: npm run bundle
+          args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }} Bundle
+          path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz
+          retention-days: 30
