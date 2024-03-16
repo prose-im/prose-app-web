@@ -16,7 +16,7 @@ jobs:
           - platform: macos-latest
             target: universal-apple-darwin
             toolchain: aarch64-apple-darwin,x86_64-apple-darwin
-            bundles: app,dmg
+            bundles: dmg
             os: mac
 
     runs-on: ${{ matrix.settings.platform }}
@@ -68,9 +68,12 @@ jobs:
           tauriScript: npm run bundle
           args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
 
+      - name: Archive output files
+        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz src-tauri/target/release/bundle/
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }} Bundle
+          name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ runner.os }})
           path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz
-          retention-days: 30
+          retention-days: 14
