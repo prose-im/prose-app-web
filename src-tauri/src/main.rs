@@ -10,7 +10,9 @@
  * ************************************************************************* */
 
 use directories::UserDirs;
+use path_trav::*;
 use serde::{Deserialize, Serialize};
+use std::path::Path;
 use tauri::{Manager, WindowEvent};
 use thiserror::Error;
 use tokio::fs::File;
@@ -26,6 +28,8 @@ pub enum DownloadError {
     CouldNotObtainDirectory,
     #[error("Packet is too small, missing bytes")]
     CouldNotCreateFile,
+    #[error("File name is dangerous, attempting path traversal")]
+    DangerousFileName,
     #[error("Could not download file")]
     DownloadError,
 }
@@ -36,17 +40,21 @@ pub enum DownloadError {
 
 #[tauri::command]
 async fn download_file(url: &str, filename: &str) -> Result<(), DownloadError> {
-    // TODO: path traversal not secure yet
-    let filename = filename
-        .to_string()
-        .replace(['/', '\\', ':'], "")
-        .replace("..", "");
+    // Acquire filename as path
+    let filename_path = Path::new(filename);
 
     // Acquire directories
     let user_dirs = UserDirs::new().ok_or(DownloadError::CouldNotObtainDirectory)?;
     let download_dir = user_dirs
         .download_dir()
         .ok_or(DownloadError::CouldNotObtainDirectory)?;
+
+    // Security: assert that provided filename is not attempting to perform a \
+    //   path traversal. For instance, passing a filename '../dangerous.txt' \
+    //   to store files outside of the Downloads folder.
+    if download_dir.is_path_trav(filename_path) == Ok(true) {
+        return Err(DownloadError::DangerousFileName);
+    }
 
     // Generate download path
     let download_path = download_dir.join(filename);

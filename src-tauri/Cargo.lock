@@ -2399,6 +2399,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "path_trav"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "13d097b5a2259048b00d3f1ed5ceb4017efe8be4dd336d10b8f09fadf007155d"
+dependencies = [
+ "substring",
+]
+
+[[package]]
 name = "pathdiff"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2704,6 +2713,7 @@ dependencies = [
  "cocoa 0.25.0",
  "directories",
  "objc",
+ "path_trav",
  "reqwest",
  "serde",
  "serde_json",
@@ -3399,6 +3409,15 @@ name = "strsim"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
+
+[[package]]
+name = "substring"
+version = "1.4.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "42ee6433ecef213b2e72f587ef64a2f5943e7cd16fbd82dbe8bc07486c534c86"
+dependencies = [
+ "autocfg",
+]
 
 [[package]]
 name = "syn"
