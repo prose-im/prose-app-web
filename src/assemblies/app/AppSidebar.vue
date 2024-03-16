@@ -62,6 +62,9 @@ import SidebarHeader from "@/components/sidebar/SidebarHeader.vue";
 import SidebarMain from "@/components/sidebar/SidebarMain.vue";
 import SidebarContext from "@/components/sidebar/SidebarContext.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceMounted } from "@/composables/interface";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 
@@ -97,6 +100,12 @@ export default {
     AddChannel
   },
 
+  setup() {
+    useInterfaceMounted((mounted: boolean) => {
+      Store.$session.setInterfaceSidebarMounted(mounted);
+    });
+  },
+
   data() {
     return {
       // --> STATES <--
@@ -125,16 +134,6 @@ export default {
     selfJID(): JID {
       return this.account.getSelfJID();
     }
-  },
-
-  mounted() {
-    // Mark sidebar as mounted
-    Store.$session.setInterfaceSidebarMounted(true);
-  },
-
-  unmounted() {
-    // Mark sidebar as unmounted
-    Store.$session.setInterfaceSidebarMounted(false);
   },
 
   methods: {

@@ -55,6 +55,9 @@ import { PropType } from "vue";
 import TopbarActionsHistory from "@/components/topbar/TopbarActionsHistory.vue";
 import TopbarActionsSearch from "@/components/topbar/TopbarActionsSearch.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceMounted } from "@/composables/interface";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -89,14 +92,10 @@ export default {
     }
   },
 
-  mounted() {
-    // Mark toolbar as mounted
-    Store.$session.setInterfaceToolbarMounted(true);
-  },
-
-  unmounted() {
-    // Mark toolbar as unmounted
-    Store.$session.setInterfaceToolbarMounted(false);
+  setup() {
+    useInterfaceMounted((mounted: boolean) => {
+      Store.$session.setInterfaceToolbarMounted(mounted);
+    });
   }
 };
 </script>

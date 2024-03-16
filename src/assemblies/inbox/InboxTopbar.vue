@@ -126,6 +126,9 @@ import BaseAlert from "@/components/base/BaseAlert.vue";
 import TopbarActionsHistory from "@/components/topbar/TopbarActionsHistory.vue";
 import TopbarActionsSearch from "@/components/topbar/TopbarActionsSearch.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceMounted } from "@/composables/interface";
+
 // INTERFACES
 interface IdentityBadge {
   status: string;
@@ -150,6 +153,12 @@ export default {
       type: Object as PropType<Room>,
       default: undefined
     }
+  },
+
+  setup() {
+    useInterfaceMounted((mounted: boolean) => {
+      Store.$session.setInterfaceToolbarMounted(mounted);
+    });
   },
 
   computed: {
@@ -291,16 +300,6 @@ export default {
 
       return detailsParts.join(" ");
     }
-  },
-
-  mounted() {
-    // Mark toolbar as mounted
-    Store.$session.setInterfaceToolbarMounted(true);
-  },
-
-  unmounted() {
-    // Mark toolbar as unmounted
-    Store.$session.setInterfaceToolbarMounted(false);
   },
 
   methods: {
