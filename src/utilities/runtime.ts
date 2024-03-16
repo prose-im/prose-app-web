@@ -11,12 +11,18 @@
 // NPM
 import { invoke as tauriInvoke } from "@tauri-apps/api";
 import { open as tauriOpen } from "@tauri-apps/api/shell";
+import {
+  isPermissionGranted as tauriIsPermissionGranted,
+  requestPermission as tauriRequestPermission,
+  sendNotification as tauriSendNotification
+} from "@tauri-apps/api/notification";
 import FileDownloader from "js-file-downloader";
 
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
 
 // PROJECT: UTILITIES
+import logger from "@/utilities/logger";
 import UtilitiesFile from "@/utilities/file";
 
 /**************************************************************************
@@ -24,6 +30,11 @@ import UtilitiesFile from "@/utilities/file";
  * ************************************************************************* */
 
 const platform = CONFIG.platform;
+
+const NOTIFICATION_PERMISSIONS = {
+  granted: "granted",
+  denied: "denied"
+};
 
 /**************************************************************************
  * RUNTIME
@@ -71,6 +82,57 @@ class UtilitiesRuntime {
       // Request to download file via browser APIs (Web build)
       await new FileDownloader(downloadOptions);
     }
+  }
+
+  async requestNotificationSend(title: string, body: string): Promise<void> {
+    const hasPermission = await this.requestNotificationPermission();
+
+    if (hasPermission === true) {
+      if (this.__isApp === true) {
+        // Request to show notification via Tauri API (application build)
+        tauriSendNotification({
+          title,
+          body
+        });
+      } else {
+        // Request to show notification via browser APIs (Web build)
+        new Notification(title, { body });
+      }
+    } else {
+      logger.warn(
+        "Not sending notification since permission is denied:",
+        title
+      );
+    }
+  }
+
+  async requestNotificationPermission(): Promise<boolean> {
+    let hasPermission = false;
+
+    if (this.__isApp === true) {
+      // Request to show notification via Tauri API (application build)
+      hasPermission = await tauriIsPermissionGranted();
+
+      if (hasPermission === false) {
+        hasPermission =
+          (await tauriRequestPermission()) === NOTIFICATION_PERMISSIONS.granted;
+      }
+    } else {
+      // Request to show notification via browser APIs (Web build)
+      hasPermission =
+        Notification.permission === NOTIFICATION_PERMISSIONS.granted;
+
+      if (
+        hasPermission === false &&
+        Notification.permission !== NOTIFICATION_PERMISSIONS.denied
+      ) {
+        hasPermission =
+          (await Notification.requestPermission()) ===
+          NOTIFICATION_PERMISSIONS.granted;
+      }
+    }
+
+    return hasPermission;
   }
 }
 
