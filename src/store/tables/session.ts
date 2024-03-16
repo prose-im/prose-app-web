@@ -48,7 +48,21 @@ const $session = defineStore("session", {
 
       protocol: "",
 
-      appearance: SessionAppearance.Light
+      appearance: SessionAppearance.Light,
+
+      interface: {
+        toolbar: {
+          mounted: false
+        },
+
+        sidebar: {
+          mounted: false
+        },
+
+        inboxDetails: {
+          mounted: false
+        }
+      }
     };
   },
 
@@ -84,6 +98,24 @@ const $session = defineStore("session", {
 
     setAppearance(appearance: SessionAppearance): void {
       this.setGeneric("appearance", this.appearance, appearance);
+    },
+
+    setInterfaceToolbarMounted(mounted: boolean) {
+      this.$patch(state => {
+        state.interface.toolbar.mounted = mounted;
+      });
+    },
+
+    setInterfaceSidebarMounted(mounted: boolean) {
+      this.$patch(state => {
+        state.interface.sidebar.mounted = mounted;
+      });
+    },
+
+    setInterfaceInboxDetailsMounted(mounted: boolean) {
+      this.$patch(state => {
+        state.interface.inboxDetails.mounted = mounted;
+      });
     },
 
     setGeneric<ValueType>(

@@ -127,6 +127,16 @@ export default {
     }
   },
 
+  mounted() {
+    // Mark sidebar as mounted
+    Store.$session.setInterfaceSidebarMounted(true);
+  },
+
+  unmounted() {
+    // Mark sidebar as unmounted
+    Store.$session.setInterfaceSidebarMounted(false);
+  },
+
   methods: {
     // --> HELPERS <--
 

@@ -138,7 +138,7 @@ $c: ".c-base-banner";
   }
 
   &--orange {
-    background-color: rgb(var(--color-base-orange-normal));
+    background-color: rgb(var(--color-base-orange-dark));
   }
 }
 </style>

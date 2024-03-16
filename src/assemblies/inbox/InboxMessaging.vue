@@ -165,24 +165,20 @@ import { SessionAppearance } from "@/store/tables/session";
 import UtilitiesRuntime from "@/utilities/runtime";
 
 // TAURI SPECIFICS
-import { invoke } from '@tauri-apps/api'
-import { isPermissionGranted, requestPermission, sendNotification } from '@tauri-apps/api/notification';
+import { invoke } from "@tauri-apps/api";
+import {
+  isPermissionGranted,
+  requestPermission,
+  sendNotification
+} from "@tauri-apps/api/notification";
 // ask for permission to send notifications
-let permissionGranted = false
+let permissionGranted = false;
 if (window.__TAURI__ !== undefined) {
   permissionGranted = await isPermissionGranted();
   if (!permissionGranted) {
     const permission = await requestPermission();
-    permissionGranted = permission === 'granted';
+    permissionGranted = permission === "granted";
   }
-}
-
-// ENUMERATIONS
-export enum MessageReactionMode {
-  // Add reaction.
-  Add = "add",
-  // Retract reaction.
-  Retract = "retract"
 }
 
 // TYPES
@@ -212,7 +208,7 @@ interface StatePopover {
 const FRAME_STYLE = {
   app: {
     fontFamily: "Prose Outfit",
-    fontSize: "13.5px",
+    fontSize: "14px",
     paddingBottom: "25px"
   },
 
@@ -961,71 +957,6 @@ export default {
       }
     },
 
-    async sendMessageReaction(
-      mode: MessageReactionMode,
-      messageId: string,
-      reaction: string
-    ): Promise<void> {
-      // Freeze room reference (since we're going asynchronous and it might \
-      //   change in the state mid-way)
-      const room = this.room;
-
-      // Generate list of reactions
-      const reactions: Set<string> = new Set(),
-        existingMessage = room
-          ? Store.$inbox.getMessage(room.id, messageId)
-          : undefined;
-
-      if (
-        existingMessage !== undefined &&
-        existingMessage.reactions !== undefined &&
-        existingMessage.reactions.length > 0
-      ) {
-        const selfJIDString = this.selfJID.toString();
-
-        existingMessage.reactions.forEach(
-          (reaction: { reaction: string; authors: string[] }) => {
-            if (reaction.authors.includes(selfJIDString) === true) {
-              reactions.add(reaction.reaction as string);
-            }
-          }
-        );
-      }
-
-      // Add or retract reaction? (as needed)
-      let shouldPropagate = false;
-
-      switch (mode) {
-        case MessageReactionMode.Add: {
-          if (reactions.has(reaction) === false) {
-            reactions.add(reaction);
-
-            shouldPropagate = true;
-          }
-
-          break;
-        }
-
-        case MessageReactionMode.Retract: {
-          if (reactions.has(reaction) === true) {
-            reactions.delete(reaction);
-
-            shouldPropagate = true;
-          }
-
-          break;
-        }
-      }
-
-      // Apply reaction changes?
-      if (shouldPropagate === true) {
-        // Send reaction to network
-        for (const reaction of reactions) {
-          await room?.toggleReactionToMessage(messageId, reaction);
-        }
-      }
-    },
-
     showEditMessage(messageId: string): void {
       const frameRuntime = this.frame();
 
@@ -1179,9 +1110,6 @@ export default {
         }
 
         await room?.updateMessage(messageId, messageRequest);
-
-        // Acknowledge update
-        BaseAlert.info("Message edited", "The message has been updated");
       } catch (error) {
         // Alert of copy error
         this.$log.error(`Could not edit message #${messageId}`, error);
@@ -1224,9 +1152,6 @@ export default {
       if (wasRemoved === true) {
         // Send removal to network
         await room?.retractMessage(messageId);
-
-        // Acknowledge removal
-        BaseAlert.info("Message removed", "The message has been deleted");
       } else {
         BaseAlert.error(
           "Cannot remove message",
@@ -1347,18 +1272,18 @@ export default {
       }
     },
 
-    onPopoverReactionsPick({
+    async onPopoverReactionsPick({
       messageId,
       emoji
     }: {
       messageId: string;
       emoji: string;
-    }): void {
+    }): Promise<void> {
       // Hide popover
       this.hidePopover();
 
-      // Send message reaction
-      this.sendMessageReaction(MessageReactionMode.Add, messageId, emoji);
+      // Toggle message reaction
+      await this.room?.toggleReactionToMessage(messageId, emoji);
     },
 
     onStoreConnected(connected: boolean): void {
@@ -1626,16 +1551,13 @@ export default {
       }
     },
 
-    onMessagingMessageReactionsReact(event: EventMessageReactionsReact): void {
+    async onMessagingMessageReactionsReact(
+      event: EventMessageReactionsReact
+    ): Promise<void> {
       this.$log.debug("Got message reactions react", event);
 
       // Add or retract message reaction
-      const reactionMode =
-        event.active === false
-          ? MessageReactionMode.Retract
-          : MessageReactionMode.Add;
-
-      this.sendMessageReaction(reactionMode, event.id, event.reaction);
+      await this.room?.toggleReactionToMessage(event.id, event.reaction);
     },
 
     async onMessagingMessageFileView(
@@ -1688,11 +1610,14 @@ export default {
                 filename: event.file.name || undefined
               });
             } else {
-              invoke('download_file', { url: event.file.url, filename: event.file.name || undefined })
-                .catch((error) => {
+              invoke("download_file", {
+                url: event.file.url,
+                filename: event.file.name || undefined
+              })
+                .catch(error => {
                   if (permissionGranted) {
                     sendNotification({
-                      title: 'Download failed!',
+                      title: "Download failed!",
                       body: `'${event.file.name}' could not be downloaded due to ${error}`
                     });
                   }
@@ -1700,11 +1625,11 @@ export default {
                 .then(() => {
                   if (permissionGranted) {
                     sendNotification({
-                      title: 'Download complete!',
+                      title: "Download complete!",
                       body: `'${event.file.name}' was downloaded successfully`
                     });
                   }
-                })
+                });
             }
           } catch (error) {
             this.$log.error(

@@ -112,7 +112,7 @@ $c: ".c-base-badge-details";
     &--orange {
       #{$c}__text {
         #{$c}__title {
-          color: rgb(var(--color-base-orange-normal));
+          color: rgb(var(--color-base-orange-dark));
         }
       }
     }

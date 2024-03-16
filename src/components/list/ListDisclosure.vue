@@ -27,7 +27,7 @@ div(
       }
     ]`
   )
-    span.c-list-disclosure__header-title.u-medium
+    span.c-list-disclosure__header-title
       | {{ title }}
 
     base-icon(
