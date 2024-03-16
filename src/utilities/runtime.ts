@@ -16,6 +16,9 @@ import FileDownloader from "js-file-downloader";
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
 
+// PROJECT: UTILITIES
+import UtilitiesFile from "@/utilities/file";
+
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
@@ -53,9 +56,12 @@ class UtilitiesRuntime {
     url: string,
     name: string | null = null
   ): Promise<void> {
+    // Generate download options
+    // Notice: attempt to extract file name from URL (if none given)
     const downloadOptions = {
-      url: url,
-      filename: name || undefined
+      url,
+      filename:
+        name || UtilitiesFile.detectAttributesFromUrl(url).name || undefined
     };
 
     if (this.__isApp === true) {
