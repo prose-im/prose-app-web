@@ -118,7 +118,6 @@ import {
 } from "@prose-im/prose-sdk-js";
 import { PropType, shallowRef } from "vue";
 import { Handler as MittHandler } from "mitt";
-import FileDownloader from "js-file-downloader";
 
 // PROJECT: STYLES
 import styleElementsFonts from "@/assets/stylesheets/elements/_elements.fonts.scss?inline";
@@ -1586,16 +1585,22 @@ export default {
 
         case MessagingFileAction.Download: {
           try {
-            // Trigger a browser download of the file
-            await new FileDownloader({
-              url: event.file.url,
-              filename: event.file.name || undefined
-            });
+            await UtilitiesRuntime.requestFileDownload(
+              event.file.url,
+              event.file.name
+            );
+
+            BaseAlert.info("File saved", "The file has been downloaded");
           } catch (error) {
             this.$log.error(
               `Could not download file from message file view event at URL: ` +
                 `${event.file.url}`,
               error
+            );
+
+            BaseAlert.error(
+              "Failed saving file",
+              "The file could not be downloaded. Try again?"
             );
           }
 

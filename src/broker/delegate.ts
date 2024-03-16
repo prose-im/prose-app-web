@@ -24,6 +24,7 @@ import { fromCoreMessage as inboxMessageFromCore } from "@/store/tables/inbox";
 
 // PROJECT: UTILITIES
 import { AudioSound, default as UtilitiesAudio } from "@/utilities/audio";
+import UtilitiesRuntime from "@/utilities/runtime";
 import logger from "@/utilities/logger";
 
 /**************************************************************************
@@ -141,14 +142,16 @@ class BrokerDelegate implements ProseClientDelegate {
     // Insert all appended messages
     const hasInserted = Store.$inbox.insertCoreMessages(room, messages);
 
-    // Play incoming message sound? (only for messages from remote users)
+    // Trigger a notification? (only for messages from remote users)
     if (hasInserted === true) {
-      // Check if notifications are paused or not
       const hasNotifications =
-        Store.$settings.notifications.action.notify.sound === true &&
         (Store.$settings.notifications.pause.until || 0) <= Date.now();
 
-      if (hasNotifications === true) {
+      // Play incoming message sound? (check if sounds are allowed or not)
+      if (
+        hasNotifications === true &&
+        Store.$settings.notifications.action.notify.sound === true
+      ) {
         const selfJIDString = Store.$account.getSelfJID().toString();
 
         const firstNonSelfMessage = messages.find(message => {
@@ -158,6 +161,19 @@ class BrokerDelegate implements ProseClientDelegate {
         if (firstNonSelfMessage) {
           UtilitiesAudio.play(AudioSound.AlertMessageReceive);
         }
+      }
+
+      // Send incoming message banner? (check if banners are allowed or not)
+      if (
+        hasNotifications === true &&
+        Store.$settings.notifications.action.notify.banner === true
+      ) {
+        messages.forEach(message => {
+          UtilitiesRuntime.requestNotificationSend(
+            message.user.name,
+            message.text
+          );
+        });
       }
     }
   }

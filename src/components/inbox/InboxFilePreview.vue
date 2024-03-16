@@ -171,8 +171,11 @@ teleport(
      ********************************************************************** -->
 
 <script lang="ts">
-// NPM
-import FileDownloader from "js-file-downloader";
+// PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
+
+// PROJECT: UTILITIES
+import UtilitiesRuntime from "@/utilities/runtime";
 
 // ENUMERATIONS
 export enum FileType {
@@ -341,16 +344,23 @@ export default {
           // Mark as downloading
           this.pendingActions.download = true;
 
-          // Trigger a browser download of the file
-          await new FileDownloader({
-            url: this.activeFile.url,
-            filename: this.activeFile.name
-          });
+          // Trigger a download of the file
+          await UtilitiesRuntime.requestFileDownload(
+            this.activeFile.url,
+            this.activeFile.name
+          );
+
+          BaseAlert.info("Media saved", "The media has been downloaded");
         } catch (error) {
           this.$log.error(
             `Could not download file from preview at URL: ` +
               `${this.activeFile.url}`,
             error
+          );
+
+          BaseAlert.error(
+            "Failed saving media",
+            "The media could not be downloaded. Try again?"
           );
         } finally {
           // Reset pending action marker
