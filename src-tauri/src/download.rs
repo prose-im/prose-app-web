@@ -85,7 +85,7 @@ pub async fn download_file<R: Runtime>(
 
         downloaded = min(downloaded + chunk.len(), total_size);
 
-        if last_report.elapsed().as_millis() > 100 {
+        if last_report.elapsed().as_millis() > 100 || downloaded == total_size {
             last_report = Instant::now();
             window
                 .emit(

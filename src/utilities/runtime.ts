@@ -9,7 +9,6 @@
  * ************************************************************************* */
 
 // NPM
-import { invoke as tauriInvoke } from "@tauri-apps/api";
 import { open as tauriOpen } from "@tauri-apps/api/shell";
 import { appWindow as tauriAppWindow } from "@tauri-apps/api/window";
 import FileDownloader from "js-file-downloader";
@@ -19,7 +18,6 @@ import CONFIG from "@/commons/config";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
-import UtilitiesFile from "@/utilities/file";
 
 /**************************************************************************
  * CONSTANTS
@@ -53,7 +51,7 @@ class UtilitiesRuntime {
 
   constructor() {
     // Initialize markers
-    this.__isBrowser = platform === "web" ? true : false;
+    this.__isBrowser = platform === "web";
     this.__isApp = window.__TAURI__ !== undefined;
     this.__handlers = new Map();
 
@@ -66,7 +64,7 @@ class UtilitiesRuntime {
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
-    if (this.__isApp === true) {
+    if (this.__isApp) {
       // Request to open via Tauri API (application build)
       await tauriOpen(url);
     } else {
@@ -129,9 +127,9 @@ class UtilitiesRuntime {
     }
   }
 
-  setBadgeCount(count: number) {
+  async setBadgeCount(count: number) {
     if (this.__isApp) {
-      invoke("plugin:notifications|set_badge_count", {
+      await invoke("plugin:notifications|set_badge_count", {
         count
       })
     }
@@ -142,7 +140,7 @@ class UtilitiesRuntime {
    let hasPermission =
       Notification.permission === NOTIFICATION_PERMISSIONS.granted;
     if (
-      hasPermission === false &&
+      !hasPermission &&
       Notification.permission !== NOTIFICATION_PERMISSIONS.denied
     ) {
       hasPermission =
