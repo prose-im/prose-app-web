@@ -743,16 +743,25 @@ export default {
     onGlobalKeyPress({ event }: { event: KeyboardEvent }): void {
       // Message field not already focused?
       if (this.isMessageFieldFocused !== true) {
-        const keyCode = event.keyCode;
+        // Intercept this keyboard input
+        // Notice: this is required, since browsers such as Safari will not be \
+        //   done processing events when focus is requested, therefore the \
+        //   event might be dispatched to the now-focused field, resulting in \
+        //   a double-dispatch condition, leading to 2 same characters being \
+        //   appended to the field. Intercepting the event fixes this issue.
+        event.preventDefault();
+        event.stopPropagation();
 
         // Append key value to model?
         // Notice: this is quite hacky, which is why we restrict such \
         //   inserts on single-character keys only.
+        const keyCode = event.keyCode;
+
         if (keyCode !== keyCodes.enter && event.key.length === 1) {
           this.message += event.key;
         }
 
-        // Auto-focus on the message field (as needed)
+        // Auto-focus on the message field
         this.focusMessageField();
       }
     },
