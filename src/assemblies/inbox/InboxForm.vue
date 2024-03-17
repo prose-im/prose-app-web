@@ -846,42 +846,20 @@ export default {
         // Mark user as not composing anymore
         this.isUserComposing = false;
 
-        // Invite users to room?
-        if (message.startsWith("/invite ") === true) {
-          const jid = new JID(message.substring("/invite ".length).trim());
+        // Send message
+        let messageRequest = new SendMessageRequest(),
+          messageRequestBody = new SendMessageRequestBody();
 
-          switch (this.room?.type) {
-            case RoomType.DirectMessage:
-            case RoomType.Group:
-            case RoomType.Generic:
-              this.$log.warn("This room type does not allow inviting users");
+        // Generate message body (extract mentions from message)
+        messageRequestBody.text = message;
 
-              break;
-
-            case RoomType.PrivateChannel:
-            case RoomType.PublicChannel:
-              this.$log.info(`Inviting user ${jid} to room ${this.room.id}`);
-
-              await this.room.inviteUsers([jid.toString()]);
-
-              break;
-          }
-        } else {
-          // Send message
-          let messageRequest = new SendMessageRequest(),
-            messageRequestBody = new SendMessageRequestBody();
-
-          // Generate message body (extract mentions from message)
-          messageRequestBody.text = message;
-
-          for (const mention of this.extractMessageMentions(message)) {
-            messageRequestBody.addMention(mention);
-          }
-
-          messageRequest.body = messageRequestBody;
-
-          await this.room?.sendMessage(messageRequest);
+        for (const mention of this.extractMessageMentions(message)) {
+          messageRequestBody.addMention(mention);
         }
+
+        messageRequest.body = messageRequestBody;
+
+        await this.room?.sendMessage(messageRequest);
 
         // Clear message field value
         this.clearMessageField();
