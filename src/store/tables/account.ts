@@ -19,6 +19,9 @@ import { InboxNameOrigin } from "@/store/tables/inbox";
 // PROJECT: BROKER
 import Broker from "@/broker";
 
+// PROJECT: UTILITIES
+import UtilitiesRuntime from "@/utilities/runtime";
+
 /**************************************************************************
  * INTERFACES
  * ************************************************************************* */
@@ -147,6 +150,9 @@ const $account = defineStore("account", {
     async logout() {
       // Disconnect from server
       Broker.client.logout();
+
+      // Reset unread count
+      UtilitiesRuntime.requestUnreadCountUpdate(0);
 
       // Clear stored credentials and information
       // Notice: retain last JID for later quick-login
