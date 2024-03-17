@@ -549,7 +549,10 @@ export default {
 
     setupListeners(runtime: MessagingRuntime): void {
       runtime.addEventListener("click", this.onFrameInnerClick);
-      runtime.addEventListener("dragover", this.onFrameDragOver);
+      runtime.addEventListener("keyup", this.onFrameInnerKey);
+      runtime.addEventListener("keydown", this.onFrameInnerKey);
+      runtime.addEventListener("keypress", this.onFrameInnerKey);
+      runtime.addEventListener("dragover", this.onFrameInnerDragOver);
     },
 
     identifyAllParties(runtime: MessagingRuntime): void {
@@ -1024,7 +1027,25 @@ export default {
       this.isFrameLoaded = true;
     },
 
-    onFrameDragOver(event: DragEvent): void {
+    onFrameInnerClick(): void {
+      // Trigger container click
+      this.triggerContainerClick();
+    },
+
+    onFrameInnerKey(event: KeyboardEvent): void {
+      // Prevent frame to capture keyboard events
+      // Notice: frames capture all keyboard events when focused, meaning the \
+      //   parent document will not receive any such event. In our case, we do \
+      //   not want the frame to capture keyboard events at all, therefore we \
+      //   need to intercept there at the frame document level, and then \
+      //   re-dispatch the same keyboard event to the parent document.
+      event.stopPropagation();
+
+      // Re-dispatch the event on the wrapper component
+      this.$el.dispatchEvent(new KeyboardEvent(event.type, event));
+    },
+
+    onFrameInnerDragOver(event: DragEvent): void {
       // Prevent frame to capture 'dragover' event (it is impossible to catch \
       //   for a parent if capture is not prevented there)
       event.preventDefault();
@@ -1032,11 +1053,6 @@ export default {
 
       // Re-emit event to parent
       this.$emit("dragover", event);
-    },
-
-    onFrameInnerClick(): void {
-      // Trigger container click
-      this.triggerContainerClick();
     },
 
     onAlertUnreadClick(): void {
