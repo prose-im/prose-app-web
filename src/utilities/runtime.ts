@@ -19,6 +19,7 @@ import CONFIG from "@/commons/config";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+import BaseAlert from "@/components/base/BaseAlert.vue";
 
 /**************************************************************************
  * CONSTANTS
@@ -46,19 +47,23 @@ type ProgressHandler = (progress: number, total: number) => void;
 class UtilitiesRuntime {
   private readonly __isBrowser: boolean;
   private readonly __isApp: boolean;
-  private __handlers: Map<number, ProgressHandler>;
+  private __download_progress_handlers: Map<number, ProgressHandler>;
 
   constructor() {
     // Initialize markers
     this.__isBrowser = platform === "web";
     this.__isApp = window.__TAURI__ !== undefined;
-    this.__handlers = new Map();
+    this.__download_progress_handlers = new Map();
 
     tauriAppWindow.listen<ProgressPayload>("download://progress", ({ payload }) => {
-      const handler = this.__handlers.get(payload.id)
+      const handler = this.__download_progress_handlers.get(payload.id)
       if (handler != null) {
         handler(payload.progress, payload.total)
       }
+    });
+
+    tauriAppWindow.listen<string>("scheme-request-received", ({ payload }) => {
+      BaseAlert.info("opened", payload)
     });
   }
 
@@ -89,14 +94,14 @@ class UtilitiesRuntime {
       const id = ids[0];
 
       if (progressHandler != undefined) {
-        this.__handlers.set(id, progressHandler);
+        this.__download_progress_handlers.set(id, progressHandler);
       }
       await tauriInvoke("plugin:downloader|download_file", {
         id,
         url,
         filename,
       })
-      this.__handlers.delete(id)
+      this.__download_progress_handlers.delete(id)
     } else {
       // Request to download file via browser APIs (Web build)
       await new FileDownloader({

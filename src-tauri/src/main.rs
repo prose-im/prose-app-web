@@ -11,7 +11,26 @@ mod notifications;
 use tauri::{Manager, WindowEvent};
 
 fn main() {
+    // if there are problems with deep linking, check this
+    tauri_plugin_deep_link::prepare("prose");
     tauri::Builder::default()
+        .setup(|app| {
+            let handle = app.handle();
+            let _ = tauri_plugin_deep_link::register("xmpp", move |request| {
+                if let Some(window) = handle.get_window("main") {
+                    // rather fail silently than crash the app
+                    let _ = window.set_focus();
+                    let _ = window.emit("scheme-request-received", request);
+                }
+            })
+            .unwrap();
+            #[cfg(not(target_os = "macos"))]
+            if let Some(url) = std::env::args().nth(1) {
+                app.emit_all("scheme-request-received", url).unwrap();
+            }
+
+            Ok(())
+        })
         .on_window_event(|event| {
             if let WindowEvent::CloseRequested { api, .. } = event.event() {
                 #[cfg(not(target_os = "macos"))]

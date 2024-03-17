@@ -20,6 +20,7 @@ cocoa = "0.25.0"
 objc = "0.2.7"
 percent-encoding = "2.3.1"
 mac-notification-sys = "0.6.1"
+tauri-plugin-deep-link = "0.1.2"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
