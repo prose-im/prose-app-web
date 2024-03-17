@@ -180,7 +180,7 @@ $c: ".c-list-disclosure";
 
   &--separated {
     #{$c}__header {
-      border-block-end: 1px solid rgba(var(--color-base-grey-normal), 0.2);
+      border-block-end: 1px solid rgba(var(--color-border-secondary));
       padding-block-end: 4px;
     }
   }
