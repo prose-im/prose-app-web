@@ -20,6 +20,9 @@ import mitt from "mitt";
 import { defineStore } from "pinia";
 import { firstBy } from "thenby";
 
+// PROJECT: UTILITIES
+import UtilitiesRuntime from "@/utilities/runtime";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 
@@ -153,6 +156,9 @@ const $room = defineStore("room", {
           itemsByRoomId = new Map<RoomID, SidebarItem>(),
           roomsById = new Map<RoomID, CoreRoom>();
 
+        // Initialize total unread count
+        let totalUnreadCount = 0;
+
         // Load rooms
         const sidebarItems = await Broker.$room.sidebarItems();
 
@@ -181,6 +187,9 @@ const $room = defineStore("room", {
           // Reference item by its identifier
           itemsByRoomId.set(item.room.id, item);
           roomsById.set(item.room.id, item.room);
+
+          // Increment unread count
+          totalUnreadCount += item.unreadCount;
         });
 
         // Append all rooms
@@ -197,6 +206,9 @@ const $room = defineStore("room", {
           // Store rooms map
           state.byId = roomsById;
         });
+
+        // Update unread count (it might have changed)
+        UtilitiesRuntime.requestUnreadCountUpdate(totalUnreadCount);
 
         // Mark as loaded
         LOCAL_STATES.loaded = true;

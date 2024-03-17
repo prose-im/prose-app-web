@@ -24,6 +24,7 @@ import CONFIG from "@/commons/config";
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 import UtilitiesFile from "@/utilities/file";
+import UtilitiesTitle from "@/utilities/title";
 
 /**************************************************************************
  * CONSTANTS
@@ -133,6 +134,16 @@ class UtilitiesRuntime {
     }
 
     return hasPermission;
+  }
+
+  async requestUnreadCountUpdate(count: number): Promise<void> {
+    if (this.__isApp === true) {
+      // Request to update unread count via Tauri API (application build)
+      await tauriInvoke("set_badge_count", { count });
+    } else {
+      // Request to update unread count via browser APIs (Web build)
+      UtilitiesTitle.setUnreadCount(count);
+    }
   }
 }
 
