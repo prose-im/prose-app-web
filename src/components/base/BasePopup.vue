@@ -12,9 +12,10 @@
 teleport(
   to="#app"
 )
-  .c-base-popup(
+  base-foreground(
     v-hotkey="hotkeys"
     v-bind="$attrs"
+    class="c-base-popup"
   )
     div(
       :class=`[
@@ -92,15 +93,6 @@ export default {
 $c: ".c-base-popup";
 
 #{$c} {
-  background-color: rgba(var(--color-base-grey-dark), 0.35);
-  user-select: none;
-  position: fixed;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  inset: 0;
-  z-index: $index-foreground-secondary;
-
   #{$c}__popup {
     background-color: rgb(var(--color-white));
     border-radius: 7px;

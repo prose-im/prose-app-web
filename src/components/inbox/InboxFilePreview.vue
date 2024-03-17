@@ -12,10 +12,9 @@
 teleport(
   to="#app"
 )
-  .c-inbox-file-preview(
+  base-foreground(
     v-hotkey="hotkeys"
-    ref="root"
-    tabindex="1"
+    class="c-inbox-file-preview"
   )
     .c-inbox-file-preview__inner
       layout-toolbar(
@@ -277,13 +276,6 @@ export default {
     }
   },
 
-  mounted() {
-    // Focus on component root (so that hotkeys can receive events)
-    // Notice: for this to work, a 'tabindex' of '1' on the root element is \
-    //   also required.
-    (this.$refs.root as HTMLElement).focus();
-  },
-
   methods: {
     // --> HELPERS <--
 
@@ -415,14 +407,7 @@ $c: ".c-inbox-file-preview";
 $file-preview-border-radius: 9px;
 
 #{$c} {
-  background-color: rgba(var(--color-base-grey-dark), 0.25);
   padding: 40px 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: fixed;
-  inset: 0;
-  z-index: $index-foreground-secondary;
 
   #{$c}__inner {
     background-color: rgba(var(--color-white), 0.9);
