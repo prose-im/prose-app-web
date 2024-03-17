@@ -77,6 +77,7 @@ layout-toolbar(
           v-model="message"
           @keystroke="onKeyStroke"
           @keyup="onKeyUp"
+          @focus="onFocus"
           @submit="onSubmit"
           :suggestions="fieldSuggestions"
           :disabled="isFormDisabled"
@@ -180,6 +181,7 @@ import {
   Mention
 } from "@prose-im/prose-sdk-js";
 import { codes as keyCodes } from "keycode";
+import { useKeypress } from "vue3-keypress";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -252,6 +254,8 @@ export default {
       message: "",
 
       mentionQuery: null as string | null,
+
+      isMessageFieldFocused: false,
 
       isActionFormattingPopoverVisible: false,
       isActionRecordRecorderVisible: false,
@@ -375,6 +379,15 @@ export default {
         }
       }
     }
+  },
+
+  beforeMount() {
+    // Listen for global key presses (useful to restore focus on message field)
+    useKeypress({
+      keyEvent: "keypress",
+      keyBinds: [],
+      onAnyKey: this.onGlobalKeyPress
+    });
   },
 
   mounted() {
@@ -727,6 +740,23 @@ export default {
       this.focusMessageField();
     },
 
+    onGlobalKeyPress({ event }: { event: KeyboardEvent }): void {
+      // Message field not already focused?
+      if (this.isMessageFieldFocused !== true) {
+        const keyCode = event.keyCode;
+
+        // Append key value to model?
+        // Notice: this is quite hacky, which is why we restrict such \
+        //   inserts on single-character keys only.
+        if (keyCode !== keyCodes.enter && event.key.length === 1) {
+          this.message += event.key;
+        }
+
+        // Auto-focus on the message field (as needed)
+        this.focusMessageField();
+      }
+    },
+
     onKeyStroke(value: string): void {
       // Check for emoji replacements (eg. ':)' becomes a proper emoji')
       // Notice: for performance reasons, this is only applied on last typed \
@@ -771,6 +801,10 @@ export default {
           break;
         }
       }
+    },
+
+    onFocus(focused: boolean): void {
+      this.isMessageFieldFocused = focused;
     },
 
     async onSubmit(): Promise<void> {

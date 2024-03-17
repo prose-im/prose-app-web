@@ -57,6 +57,7 @@
     "vue-router": "4.2.5",
     "vue-logger-plugin": "2.2.3",
     "vue3-click-away": "1.2.4",
+    "vue3-keypress": "4.0.1",
     "vue3-emoji-picker": "1.1.8",
     "v-hotkey3": "0.1.4"
   },
