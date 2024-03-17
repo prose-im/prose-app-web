@@ -11,6 +11,9 @@
 // NPM
 import { onMounted, onUnmounted } from "vue";
 
+// PROJECT: UTILITIES
+import UtilitiesTitle from "@/utilities/title";
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
@@ -33,8 +36,17 @@ function useInterfaceMounted(setter: Setter): void {
   });
 }
 
+function useInterfaceTitle(title: string): void {
+  // --> LIFECYCLE <--
+
+  onMounted(() => {
+    // Update current title
+    UtilitiesTitle.update(title);
+  });
+}
+
 /**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
-export { useInterfaceMounted };
+export { useInterfaceMounted, useInterfaceTitle };

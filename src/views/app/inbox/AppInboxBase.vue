@@ -87,6 +87,9 @@ import InboxMessaging from "@/assemblies/inbox/InboxMessaging.vue";
 import InboxTopbar from "@/assemblies/inbox/InboxTopbar.vue";
 import InboxDetails from "@/assemblies/inbox/InboxDetails.vue";
 
+// PROJECT: UTILITIES
+import UtilitiesTitle from "@/utilities/title";
+
 export default {
   name: "AppInboxBase",
 
@@ -131,6 +134,19 @@ export default {
 
     layout(): typeof Store.$layout {
       return Store.$layout;
+    }
+  },
+
+  watch: {
+    room: {
+      immediate: true,
+
+      handler(newValue: Room, oldValue: Room) {
+        if (newValue && (!oldValue || newValue.id !== oldValue.id)) {
+          // Update current title (to room name)
+          UtilitiesTitle.update(newValue.name);
+        }
+      }
     }
   },
 

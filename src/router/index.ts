@@ -39,6 +39,7 @@ import Broker from "@/broker";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+import UtilitiesTitle from "@/utilities/title";
 
 /**************************************************************************
  * ENUMERATIONS
@@ -294,9 +295,19 @@ class Router {
     });
 
     // Bind to router events
-    router.afterEach(to => {
+    router.afterEach((to, from) => {
+      // Ensure title from last route has been cleared
+      // Notice: only if route path changed, since pushing twice the same \
+      //   route with the same parameters will lead to this hook being called \
+      //   twice, even if we did not actually navigate following the second \
+      //   route push. This would lead to the page title for the mounted view \
+      //   being wrongfully reset.
+      if (to?.path !== from?.path) {
+        UtilitiesTitle.reset();
+      }
+
       // Update current history?
-      if (to && to.name) {
+      if (to?.name) {
         // No navigation state pending, meaning the route changes by pushing \
         //   the state.
         if (this.__pendingNavigateState === null) {

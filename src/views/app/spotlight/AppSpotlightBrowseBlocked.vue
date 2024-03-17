@@ -38,6 +38,9 @@ import BaseAvatar from "@/components/base/BaseAvatar.vue";
 import BaseButton from "@/components/base/BaseButton.vue";
 import { Groups as ListBrowseGroups } from "@/components/list/ListBrowse.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceTitle } from "@/composables/interface";
+
 // PROJECT: STORES
 import Store from "@/store";
 import {
@@ -50,6 +53,10 @@ import Broker from "@/broker";
 
 export default {
   name: "AppSpotlightBrowseBlocked",
+
+  setup() {
+    useInterfaceTitle("Blocked");
+  },
 
   data() {
     return {

@@ -26,8 +26,15 @@ import { shallowRef } from "vue";
 // PROJECT: ASSEMBLIES
 import SpotlightTopbar from "@/assemblies/spotlight/SpotlightTopbar.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceTitle } from "@/composables/interface";
+
 export default {
   name: "AppSpotlightReplies",
+
+  setup() {
+    useInterfaceTitle("Replies");
+  },
 
   data() {
     return {

@@ -38,6 +38,9 @@ import StartLoginForm, {
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import StartServerIdentity from "@/components/start/StartServerIdentity.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceTitle } from "@/composables/interface";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -45,6 +48,10 @@ export default {
   name: "StartLogin",
 
   components: { StartLoginForm, StartServerIdentity },
+
+  setup() {
+    useInterfaceTitle("Login");
+  },
 
   data() {
     return {
