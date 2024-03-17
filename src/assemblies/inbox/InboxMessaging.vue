@@ -1589,8 +1589,8 @@ export default {
               event.file.url,
               event.file.name,
               (actual, total) => {
-                let percent = Math.round(actual / total * 100)
-                console.log(`${percent}% done`)
+                let percent = Math.round((actual / total) * 100);
+                console.log(`${percent}% done`);
               }
             );
 

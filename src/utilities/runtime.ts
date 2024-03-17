@@ -22,9 +22,7 @@ import logger from "@/utilities/logger";
 
 import BaseAlert from "@/components/base/BaseAlert.vue";
 
-import UtilitiesFile from "@/utilities/file";
 import UtilitiesTitle from "@/utilities/title";
-
 
 /**************************************************************************
  * CONSTANTS
@@ -48,28 +46,55 @@ interface ProgressPayload {
 }
 
 type ProgressHandler = (progress: number, total: number) => void;
+type FocusHandler = (focus: boolean) => void;
 
 class UtilitiesRuntime {
   private readonly __isBrowser: boolean;
   private readonly __isApp: boolean;
   private __download_progress_handlers: Map<number, ProgressHandler>;
-
+  private __isWindowFocused: boolean;
+  private __WindowFocusedCallbacks: Array<FocusHandler>;
   constructor() {
     // Initialize markers
     this.__isBrowser = platform === "web";
     this.__isApp = window.__TAURI__ !== undefined;
     this.__download_progress_handlers = new Map();
+    this.__isWindowFocused = true;
+    this.__WindowFocusedCallbacks = [];
 
-    tauriAppWindow.listen<ProgressPayload>("download://progress", ({ payload }) => {
-      const handler = this.__download_progress_handlers.get(payload.id)
-      if (handler != null) {
-        handler(payload.progress, payload.total)
-      }
-    });
+    if (this.__isApp) {
+      tauriAppWindow.listen<ProgressPayload>(
+        "download://progress",
+        ({ payload }) => {
+          const handler = this.__download_progress_handlers.get(payload.id);
+          if (handler != null) {
+            handler(payload.progress, payload.total);
+          }
+        }
+      );
 
-    tauriAppWindow.listen<string>("scheme-request-received", ({ payload }) => {
-      BaseAlert.info("opened", payload)
-    });
+      tauriAppWindow.listen<string>(
+        "scheme-request-received",
+        ({ payload }) => {
+          BaseAlert.info("opened", payload);
+        }
+      );
+      // unfortunately "visibilitychange" is less precise than Tauri
+      // especially if Tauri window is behind another window(s)
+      tauriAppWindow.listen<boolean>("window-focused", ({ payload }) => {
+        this.__isWindowFocused = payload;
+        this.__WindowFocusedCallbacks.forEach(callback =>
+          callback(this.__isWindowFocused)
+        );
+      });
+    } else {
+      document.addEventListener("visibilitychange", () => {
+        this.__isWindowFocused = document.visibilityState === "visible";
+        this.__WindowFocusedCallbacks.forEach(callback =>
+          callback(this.__isWindowFocused)
+        );
+      });
+    }
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
@@ -85,6 +110,13 @@ class UtilitiesRuntime {
     }
   }
 
+  isWindowFocused(): boolean {
+    return this.__isWindowFocused;
+  }
+
+  registerWindowFocusCallback(callback: FocusHandler): void {
+    this.__WindowFocusedCallbacks.push(callback);
+  }
 
   async requestFileDownload(
     url: string,
@@ -104,9 +136,9 @@ class UtilitiesRuntime {
       await tauriInvoke("plugin:downloader|download_file", {
         id,
         url,
-        filename,
-      })
-      this.__download_progress_handlers.delete(id)
+        filename
+      });
+      this.__download_progress_handlers.delete(id);
     } else {
       // Request to download file via browser APIs (Web build)
       await new FileDownloader({
@@ -116,12 +148,16 @@ class UtilitiesRuntime {
   }
 
   async requestNotificationSend(title: string, body: string): Promise<void> {
+    // do not send notification if window is focused
+    if (this.__isWindowFocused) {
+      return;
+    }
     if (this.__isApp) {
       // Request to show notification via Tauri API (application build)
       await tauriInvoke("plugin:notifications|send_notification", {
         title,
         body
-      })
+      });
     } else {
       const hasPermission = await this.requestNotificationPermission();
       if (hasPermission) {
@@ -140,13 +176,13 @@ class UtilitiesRuntime {
     if (this.__isApp) {
       await tauriInvoke("plugin:notifications|set_badge_count", {
         count
-      })
+      });
     }
   }
 
   async requestNotificationPermission(): Promise<boolean> {
     // Request to show notification via browser APIs (Web build)
-   let hasPermission =
+    let hasPermission =
       Notification.permission === NOTIFICATION_PERMISSIONS.granted;
     if (
       !hasPermission &&
@@ -161,7 +197,7 @@ class UtilitiesRuntime {
   }
 
   async requestUnreadCountUpdate(count: number): Promise<void> {
-    if (this.__isApp === true) {
+    if (this.__isApp) {
       // Request to update unread count via Tauri API (application build)
       await tauriInvoke("set_badge_count", { count });
     } else {

@@ -44,8 +44,8 @@ fn main() {
 
                 api.prevent_close();
             }
-            WindowEvent::Focused(focus) => {
-                event.window().emit("window-focused", focus).unwrap()
+            WindowEvent::Focused(focused) => {
+                event.window().emit("window-focused", focused).unwrap()
             }
             _ => {}
         })
