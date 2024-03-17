@@ -35,6 +35,12 @@ teleport(
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPOSABLES
+import { useInterfaceMounted } from "@/composables/interface";
+
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "BasePopup",
 
@@ -46,6 +52,12 @@ export default {
   },
 
   emits: ["confirm", "close"],
+
+  setup() {
+    useInterfaceMounted((mounted: boolean) => {
+      Store.$session.setInterfacePopupMounted(mounted);
+    });
+  },
 
   computed: {
     hotkeys(): { [name: string]: () => void } {

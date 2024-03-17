@@ -61,6 +61,10 @@ const $session = defineStore("session", {
 
         inboxDetails: {
           mounted: false
+        },
+
+        popup: {
+          mounted: false
         }
       }
     };
@@ -115,6 +119,12 @@ const $session = defineStore("session", {
     setInterfaceInboxDetailsMounted(mounted: boolean) {
       this.$patch(state => {
         state.interface.inboxDetails.mounted = mounted;
+      });
+    },
+
+    setInterfacePopupMounted(mounted: boolean) {
+      this.$patch(state => {
+        state.interface.popup.mounted = mounted;
       });
     },
 
