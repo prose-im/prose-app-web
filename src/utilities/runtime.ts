@@ -9,6 +9,7 @@
  * ************************************************************************* */
 
 // NPM
+import { invoke as tauriInvoke } from "@tauri-apps/api";
 import { open as tauriOpen } from "@tauri-apps/api/shell";
 import { appWindow as tauriAppWindow } from "@tauri-apps/api/window";
 import FileDownloader from "js-file-downloader";
@@ -33,8 +34,6 @@ const NOTIFICATION_PERMISSIONS = {
 /**************************************************************************
  * RUNTIME
  * ************************************************************************* */
-// TAURI SPECIFICS
-import { invoke } from '@tauri-apps/api'
 
 interface ProgressPayload {
   id: number;
@@ -92,7 +91,7 @@ class UtilitiesRuntime {
       if (progressHandler != undefined) {
         this.__handlers.set(id, progressHandler);
       }
-      await invoke("plugin:downloader|download_file", {
+      await tauriInvoke("plugin:downloader|download_file", {
         id,
         url,
         filename,
@@ -109,7 +108,7 @@ class UtilitiesRuntime {
   async requestNotificationSend(title: string, body: string): Promise<void> {
     if (this.__isApp) {
       // Request to show notification via Tauri API (application build)
-      await invoke("plugin:notifications|send_notification", {
+      await tauriInvoke("plugin:notifications|send_notification", {
         title,
         body
       })
@@ -129,7 +128,7 @@ class UtilitiesRuntime {
 
   async setBadgeCount(count: number) {
     if (this.__isApp) {
-      await invoke("plugin:notifications|set_badge_count", {
+      await tauriInvoke("plugin:notifications|set_badge_count", {
         count
       })
     }
