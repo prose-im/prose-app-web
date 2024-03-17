@@ -38,6 +38,9 @@ import BaseAvatar from "@/components/base/BaseAvatar.vue";
 import BaseButton from "@/components/base/BaseButton.vue";
 import { Groups as ListBrowseGroups } from "@/components/list/ListBrowse.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceTitle } from "@/composables/interface";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 
@@ -55,6 +58,10 @@ enum RespondDecision {
 
 export default {
   name: "AppSpotlightBrowseInvites",
+
+  setup() {
+    useInterfaceTitle("Invites");
+  },
 
   data() {
     return {

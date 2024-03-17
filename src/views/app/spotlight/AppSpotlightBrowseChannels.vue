@@ -38,6 +38,9 @@ import BaseIcon from "@/components/base/BaseIcon.vue";
 import BaseButton from "@/components/base/BaseButton.vue";
 import { Groups as ListBrowseGroups } from "@/components/list/ListBrowse.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceTitle } from "@/composables/interface";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 
@@ -47,6 +50,10 @@ import { ChannelEntry, ChannelType } from "@/store/tables/channel";
 
 export default {
   name: "AppSpotlightBrowseChannels",
+
+  setup() {
+    useInterfaceTitle("Channels");
+  },
 
   data() {
     return {

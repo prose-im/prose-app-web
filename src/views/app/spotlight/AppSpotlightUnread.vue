@@ -30,8 +30,15 @@ import {
   Actions as SpotlightTopbarActions
 } from "@/assemblies/spotlight/SpotlightTopbar.vue";
 
+// PROJECT: COMPOSABLES
+import { useInterfaceTitle } from "@/composables/interface";
+
 export default {
   name: "AppSpotlightUnread",
+
+  setup() {
+    useInterfaceTitle("Unread Stack");
+  },
 
   data() {
     return {
