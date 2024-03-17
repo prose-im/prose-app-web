@@ -267,10 +267,13 @@ export default {
     // --> HELPERS <--
 
     focusField(): void {
-      const fieldElement = (this.$refs.field as HTMLElement) || null;
+      // Attempt to focus? (not already focused)
+      if (this.isFocused !== true) {
+        const fieldElement = (this.$refs.field as HTMLElement) || null;
 
-      if (fieldElement !== null) {
-        fieldElement.focus();
+        if (fieldElement !== null) {
+          fieldElement.focus();
+        }
       }
     },
 
