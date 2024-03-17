@@ -145,15 +145,14 @@ class BrokerDelegate implements ProseClientDelegate {
     // Trigger a notification? (only for messages from remote users)
     if (hasInserted === true) {
       const hasNotifications =
-        (Store.$settings.notifications.pause.until || 0) <= Date.now();
+          (Store.$settings.notifications.pause.until || 0) <= Date.now(),
+        selfJIDString = Store.$account.getSelfJID().toString();
 
       // Play incoming message sound? (check if sounds are allowed or not)
       if (
         hasNotifications === true &&
         Store.$settings.notifications.action.notify.sound === true
       ) {
-        const selfJIDString = Store.$account.getSelfJID().toString();
-
         const firstNonSelfMessage = messages.find(message => {
           return message.from !== selfJIDString;
         });
@@ -169,10 +168,12 @@ class BrokerDelegate implements ProseClientDelegate {
         Store.$settings.notifications.action.notify.banner === true
       ) {
         messages.forEach(message => {
-          UtilitiesRuntime.requestNotificationSend(
-            message.user.name,
-            message.text
-          );
+          if (message.from !== selfJIDString) {
+            UtilitiesRuntime.requestNotificationSend(
+              message.user.name,
+              message.text
+            );
+          }
         });
       }
     }
