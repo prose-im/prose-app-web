@@ -76,7 +76,9 @@ div(
 
       input(
         v-model.trim="searchQuery"
-        @keydown="onSearchInputKeyDown"
+        @keypress.stop
+        @keydown.stop="onSearchInputKeyDown"
+        @keyup.stop
         :name="name ? (name + '_search') : null"
         :disabled="disabled"
         :class=`[

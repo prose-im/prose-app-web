@@ -26,8 +26,9 @@ div(
 )
   textarea(
     v-if="type === 'textarea'"
-    @keydown="onFieldKeyDown"
-    @keyup="onFieldKeyUp"
+    @keypress.stop
+    @keydown.stop="onFieldKeyDown"
+    @keyup.stop="onFieldKeyUp"
     @input="onFieldInput"
     @focus="onFieldFocus"
     @blur="onFieldBlur"
@@ -50,8 +51,9 @@ div(
 
   input(
     v-else
-    @keydown="onFieldKeyDown"
-    @keyup="onFieldKeyUp"
+    @keypress.stop
+    @keydown.stop="onFieldKeyDown"
+    @keyup.stop="onFieldKeyUp"
     @input="onFieldInput"
     @focus="onFieldFocus"
     @blur="onFieldBlur"
