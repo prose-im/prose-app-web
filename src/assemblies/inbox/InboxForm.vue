@@ -577,6 +577,32 @@ export default {
       }
     },
 
+    mayHandleGlobalKeyPress(event: KeyboardEvent): boolean {
+      // Notice: this is quite hacky, as we restrict auto-focus on \
+      //   single-character keys only, which typically map to a written \
+      //   character. We also do not want to process this when a modifier key \
+      //   is pressed, since the user does not intend to write text in this \
+      //   case. As well, do not change focus state if user has already focus \
+      //   on a field.
+      const activeTagName = document.activeElement?.tagName || null;
+
+      if (
+        this.isMessageFieldFocused !== true &&
+        this.session.interface.popup.mounted !== true &&
+        event.key.length === 1 &&
+        !event.altKey &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.shiftKey &&
+        activeTagName !== "INPUT" &&
+        activeTagName !== "TEXTAREA"
+      ) {
+        return true;
+      }
+
+      return false;
+    },
+
     // --> EVENT LISTENERS <--
 
     onActionFormattingClick(): void {
@@ -741,8 +767,8 @@ export default {
     },
 
     onGlobalKeyPress({ event }: { event: KeyboardEvent }): void {
-      // Message field not already focused?
-      if (this.isMessageFieldFocused !== true) {
+      // May handle global key press?
+      if (this.mayHandleGlobalKeyPress(event) === true) {
         // Intercept this keyboard input
         // Notice: this is required, since browsers such as Safari will not be \
         //   done processing events when focus is requested, therefore the \
@@ -752,14 +778,8 @@ export default {
         event.preventDefault();
         event.stopPropagation();
 
-        // Append key value to model?
-        // Notice: this is quite hacky, which is why we restrict such \
-        //   inserts on single-character keys only.
-        const keyCode = event.keyCode;
-
-        if (keyCode !== keyCodes.enter && event.key.length === 1) {
-          this.message += event.key;
-        }
+        // Append key value to model
+        this.message += event.key;
 
         // Auto-focus on the message field
         this.focusMessageField();
