@@ -21,8 +21,20 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPOSABLES
+import { useInterfaceMounted } from "@/composables/interface";
+
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "BaseForeground",
+
+  setup() {
+    useInterfaceMounted((mounted: boolean) => {
+      Store.$session.setInterfaceForegroundMounted(mounted);
+    });
+  },
 
   mounted() {
     // Focus on component root (so that bound event listeners can receive \

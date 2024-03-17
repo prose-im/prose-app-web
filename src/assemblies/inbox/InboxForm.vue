@@ -588,7 +588,7 @@ export default {
 
       if (
         this.isMessageFieldFocused !== true &&
-        this.session.interface.popup.mounted !== true &&
+        this.session.interface.foreground.mounted !== true &&
         event.key.length === 1 &&
         !event.altKey &&
         !event.ctrlKey &&

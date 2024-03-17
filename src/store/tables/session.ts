@@ -63,7 +63,7 @@ const $session = defineStore("session", {
           mounted: false
         },
 
-        popup: {
+        foreground: {
           mounted: false
         }
       }
@@ -122,9 +122,9 @@ const $session = defineStore("session", {
       });
     },
 
-    setInterfacePopupMounted(mounted: boolean) {
+    setInterfaceForegroundMounted(mounted: boolean) {
       this.$patch(state => {
-        state.interface.popup.mounted = mounted;
+        state.interface.foreground.mounted = mounted;
       });
     },
 
