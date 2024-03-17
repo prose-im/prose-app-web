@@ -2,7 +2,7 @@
 <!--
  * This file is part of prose-app-web
  *
- * Copyright 2023, Prose Foundation
+ * Copyright 2024, Prose Foundation
  -->
 
 <!-- **********************************************************************
