@@ -1587,14 +1587,10 @@ export default {
           try {
             await UtilitiesRuntime.requestFileDownload(
               event.file.url,
-              event.file.name,
-              (actual, total) => {
-                let percent = Math.round(actual / total * 100)
-                console.log(`${percent}% done`)
-              }
+              event.file.name
             );
 
-            BaseAlert.success("File saved", "The file has been downloaded");
+            BaseAlert.info("File saved", "The file has been downloaded");
           } catch (error) {
             this.$log.error(
               `Could not download file from message file view event at URL: ` +
