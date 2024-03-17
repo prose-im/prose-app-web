@@ -24,11 +24,7 @@ class UtilitiesTitle {
     title = title === undefined ? this.__lastTitle : title;
 
     // Update with new title
-    if (this.__unreadCount > 0) {
-      document.title = `💬(${this.__unreadCount}) ${title}`;
-    } else {
-      document.title = title;
-    }
+    this.__apply(title, this.__unreadCount);
 
     // Update last title
     this.__lastTitle = title;
@@ -50,6 +46,14 @@ class UtilitiesTitle {
 
       // Re-compute title
       this.update();
+    }
+  }
+
+  private __apply(title: string, unreadCount: number): void {
+    if (unreadCount > 0) {
+      document.title = `💬(${unreadCount}) ${title}`;
+    } else {
+      document.title = title;
     }
   }
 }
