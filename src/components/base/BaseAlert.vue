@@ -15,6 +15,7 @@ transition(
 )
   div(
     v-if="title"
+    v-hotkey="hotkeys"
     @mouseover="onMouseOver"
     @mouseleave="onMouseLeave"
     :class=`[
@@ -199,6 +200,12 @@ export default {
 
     session(): typeof Store.$session {
       return Store.$session;
+    },
+
+    hotkeys(): { [name: string]: (event: Event) => void } {
+      return {
+        esc: this.onHotkeyEscape
+      };
     }
   },
 
@@ -213,6 +220,8 @@ export default {
   },
 
   methods: {
+    // --> HELPERS <--
+
     show({
       level,
       title,
@@ -312,6 +321,14 @@ export default {
     },
 
     onCloseClick(): void {
+      // Hide alert
+      this.hide();
+    },
+
+    onHotkeyEscape(event: Event): void {
+      event.stopPropagation();
+      event.preventDefault();
+
       // Hide alert
       this.hide();
     }
