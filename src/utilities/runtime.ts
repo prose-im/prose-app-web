@@ -11,11 +11,7 @@
 // NPM
 import { invoke as tauriInvoke } from "@tauri-apps/api";
 import { open as tauriOpen } from "@tauri-apps/api/shell";
-import {
-  isPermissionGranted as tauriIsPermissionGranted,
-  requestPermission as tauriRequestPermission,
-  sendNotification as tauriSendNotification
-} from "@tauri-apps/api/notification";
+import { appWindow as tauriAppWindow } from "@tauri-apps/api/window";
 import FileDownloader from "js-file-downloader";
 
 // PROJECT: COMMONS
@@ -23,8 +19,12 @@ import CONFIG from "@/commons/config";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+
+import BaseAlert from "@/components/base/BaseAlert.vue";
+
 import UtilitiesFile from "@/utilities/file";
 import UtilitiesTitle from "@/utilities/title";
+
 
 /**************************************************************************
  * CONSTANTS
@@ -41,18 +41,39 @@ const NOTIFICATION_PERMISSIONS = {
  * RUNTIME
  * ************************************************************************* */
 
+interface ProgressPayload {
+  id: number;
+  progress: number;
+  total: number;
+}
+
+type ProgressHandler = (progress: number, total: number) => void;
+
 class UtilitiesRuntime {
   private readonly __isBrowser: boolean;
   private readonly __isApp: boolean;
+  private __download_progress_handlers: Map<number, ProgressHandler>;
 
   constructor() {
     // Initialize markers
-    this.__isBrowser = platform === "web" ? true : false;
-    this.__isApp = !this.__isBrowser;
+    this.__isBrowser = platform === "web";
+    this.__isApp = window.__TAURI__ !== undefined;
+    this.__download_progress_handlers = new Map();
+
+    tauriAppWindow.listen<ProgressPayload>("download://progress", ({ payload }) => {
+      const handler = this.__download_progress_handlers.get(payload.id)
+      if (handler != null) {
+        handler(payload.progress, payload.total)
+      }
+    });
+
+    tauriAppWindow.listen<string>("scheme-request-received", ({ payload }) => {
+      BaseAlert.info("opened", payload)
+    });
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
-    if (this.__isApp === true) {
+    if (this.__isApp) {
       // Request to open via Tauri API (application build)
       await tauriOpen(url);
     } else {
@@ -64,73 +85,76 @@ class UtilitiesRuntime {
     }
   }
 
+
   async requestFileDownload(
     url: string,
-    name: string | null = null
+    filename: string | null = null,
+    progressHandler?: ProgressHandler
   ): Promise<void> {
-    // Generate download options
-    // Notice: attempt to extract file name from URL (if none given)
-    const downloadOptions = {
-      url,
-      filename:
-        name || UtilitiesFile.detectAttributesFromUrl(url).name || undefined
-    };
-
-    if (this.__isApp === true) {
+    // Tauri build
+    if (this.__isApp) {
       // Request to download file via Tauri API (application build)
-      await tauriInvoke("download_file", downloadOptions);
+      const ids = new Uint32Array(1);
+      window.crypto.getRandomValues(ids);
+      const id = ids[0];
+
+      if (progressHandler != undefined) {
+        this.__download_progress_handlers.set(id, progressHandler);
+      }
+      await tauriInvoke("plugin:downloader|download_file", {
+        id,
+        url,
+        filename,
+      })
+      this.__download_progress_handlers.delete(id)
     } else {
       // Request to download file via browser APIs (Web build)
-      await new FileDownloader(downloadOptions);
+      await new FileDownloader({
+        url
+      });
     }
   }
 
   async requestNotificationSend(title: string, body: string): Promise<void> {
-    const hasPermission = await this.requestNotificationPermission();
-
-    if (hasPermission === true) {
-      if (this.__isApp === true) {
-        // Request to show notification via Tauri API (application build)
-        tauriSendNotification({
-          title,
-          body
-        });
-      } else {
+    if (this.__isApp) {
+      // Request to show notification via Tauri API (application build)
+      await tauriInvoke("plugin:notifications|send_notification", {
+        title,
+        body
+      })
+    } else {
+      const hasPermission = await this.requestNotificationPermission();
+      if (hasPermission) {
         // Request to show notification via browser APIs (Web build)
         new Notification(title, { body });
+      } else {
+        logger.warn(
+          "Not sending notification since permission is denied:",
+          title
+        );
       }
-    } else {
-      logger.warn(
-        "Not sending notification since permission is denied:",
-        title
-      );
+    }
+  }
+
+  async setBadgeCount(count: number) {
+    if (this.__isApp) {
+      await tauriInvoke("plugin:notifications|set_badge_count", {
+        count
+      })
     }
   }
 
   async requestNotificationPermission(): Promise<boolean> {
-    let hasPermission = false;
-
-    if (this.__isApp === true) {
-      // Request to show notification via Tauri API (application build)
-      hasPermission = await tauriIsPermissionGranted();
-
-      if (hasPermission === false) {
-        hasPermission =
-          (await tauriRequestPermission()) === NOTIFICATION_PERMISSIONS.granted;
-      }
-    } else {
-      // Request to show notification via browser APIs (Web build)
+    // Request to show notification via browser APIs (Web build)
+   let hasPermission =
+      Notification.permission === NOTIFICATION_PERMISSIONS.granted;
+    if (
+      !hasPermission &&
+      Notification.permission !== NOTIFICATION_PERMISSIONS.denied
+    ) {
       hasPermission =
-        Notification.permission === NOTIFICATION_PERMISSIONS.granted;
-
-      if (
-        hasPermission === false &&
-        Notification.permission !== NOTIFICATION_PERMISSIONS.denied
-      ) {
-        hasPermission =
-          (await Notification.requestPermission()) ===
-          NOTIFICATION_PERMISSIONS.granted;
-      }
+        (await Notification.requestPermission()) ===
+        NOTIFICATION_PERMISSIONS.granted;
     }
 
     return hasPermission;
