@@ -211,7 +211,14 @@ export default {
     }
   },
 
-  emits: ["update:modelValue", "keyup", "keystroke", "change", "submit"],
+  emits: [
+    "update:modelValue",
+    "keyup",
+    "keystroke",
+    "focus",
+    "change",
+    "submit"
+  ],
 
   data() {
     return {
@@ -438,10 +445,16 @@ export default {
 
     onFieldFocus(): void {
       this.isFocused = true;
+
+      // Propagate focus event
+      this.$emit("focus", true);
     },
 
     onFieldBlur(): void {
       this.isFocused = false;
+
+      // Propagate focus event
+      this.$emit("focus", false);
     },
 
     onSuggestSelect(suggestion: FormFieldSuggestSuggestion): void {
