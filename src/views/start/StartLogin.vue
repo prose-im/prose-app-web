@@ -10,10 +10,6 @@
 
 <template lang="pug">
 .v-start-login
-  start-server-identity(
-    class="v-start-login__identity"
-  )
-
   .v-start-login__box
     start-login-form(
       @submit="onFormSubmit"
@@ -36,7 +32,6 @@ import StartLoginForm, {
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
-import StartServerIdentity from "@/components/start/StartServerIdentity.vue";
 
 // PROJECT: COMPOSABLES
 import { useInterfaceTitle } from "@/composables/interface";
@@ -47,7 +42,7 @@ import Store from "@/store";
 export default {
   name: "StartLogin",
 
-  components: { StartLoginForm, StartServerIdentity },
+  components: { StartLoginForm },
 
   setup() {
     useInterfaceTitle("Login");
@@ -112,13 +107,6 @@ $c: ".v-start-login";
   display: flex;
   align-items: center;
 
-  #{$c}__identity {
-    position: absolute;
-    inset-block-start: 30px;
-    inset-inline-start: 46px;
-    z-index: 2;
-  }
-
   #{$c}__box {
     background: rgba(var(--color-white), 0.8);
     border-block: 1px solid rgba(var(--color-base-purple-light), 0.325);
@@ -147,25 +135,6 @@ $c: ".v-start-login";
     position: absolute;
     inset: 0;
     z-index: 0;
-  }
-}
-
-// --> MEDIA-QUERIES <--
-
-@media (max-width: 640px) {
-  #{$c} {
-    #{$c}__identity {
-      left: 50%;
-      transform: translateX(-50%);
-    }
-  }
-}
-
-@media (max-height: 640px) {
-  #{$c} {
-    #{$c}__identity {
-      display: none;
-    }
   }
 }
 </style>
