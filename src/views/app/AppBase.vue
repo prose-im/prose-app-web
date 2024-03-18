@@ -44,7 +44,7 @@ $c: ".v-app-base";
   height: 100%;
   width: 100%;
   display: flex;
-  overflow: hidden;
+  overflow: clip;
 
   #{$c}__sidebar {
     border-inline-end: 1px solid rgb(var(--color-border-secondary));

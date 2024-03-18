@@ -198,7 +198,7 @@ $c: ".s-app";
   user-select: none;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: clip;
   display: flex;
   position: absolute;
   inset: 0;
