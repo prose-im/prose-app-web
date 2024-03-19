@@ -57,24 +57,35 @@ class UtilitiesRuntime {
   private readonly __isBrowser: boolean;
   private readonly __isApp: boolean;
 
-  private __isWindowFocused = true;
-  private __windowFocusedCallbacks: Array<RuntimeFocusHandler> = [];
+  private __states = {
+    focused: false
+  };
 
-  private __downloadProgressHandlers: Map<number, RuntimeProgressHandler> =
-    new Map();
+  private __handlers = {
+    focus: null as RuntimeFocusHandler | null,
+    download: new Map() as Map<number, RuntimeProgressHandler>
+  };
 
   constructor() {
     // Initialize markers
     this.__isBrowser = platform === "web";
     this.__isApp = !this.__isBrowser && window.__TAURI__ !== undefined;
 
-    // Register listeners
-    this.__registerListeners();
+    // Bind listeners
+    this.__bindListeners();
   }
 
-  // TODO: call it from somewhere?
-  registerWindowFocusCallback(callback: RuntimeFocusHandler): void {
-    this.__windowFocusedCallbacks.push(callback);
+  registerFocusHandler(handler: RuntimeFocusHandler): boolean {
+    // Register platform-agnostic focus handler
+    this.__handlers.focus = handler;
+
+    // Return current value (can be used to synchronize external states)
+    return this.__states.focused;
+  }
+
+  unregisterFocusHandler(): void {
+    // Unregister platform-agnostic focus handler
+    this.__handlers.focus = null;
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
@@ -97,13 +108,10 @@ class UtilitiesRuntime {
   ): Promise<void> {
     if (this.__isApp === true) {
       // Request to download file via Tauri API (application build)
-      // TODO: simplify this random number generation
-      const ids = new Uint32Array(1);
-      window.crypto.getRandomValues(ids);
-      const id = ids[0];
+      const id = Date.now();
 
       if (progressHandler !== undefined) {
-        this.__downloadProgressHandlers.set(id, progressHandler);
+        this.__handlers.download.set(id, progressHandler);
       }
 
       await tauriInvoke("plugin:downloader|download_file", {
@@ -112,20 +120,29 @@ class UtilitiesRuntime {
         filename
       });
 
-      this.__downloadProgressHandlers.delete(id);
+      this.__handlers.download.delete(id);
     } else {
-      // TODO: implement download progress callback here too
-
       // Request to download file via browser APIs (Web build)
       await new FileDownloader({
-        url
+        url,
+
+        process: (event: ProgressEvent): undefined => {
+          if (
+            event.lengthComputable === true &&
+            progressHandler !== undefined
+          ) {
+            progressHandler(event.loaded, event.total);
+          }
+
+          return undefined;
+        }
       });
     }
   }
 
   async requestNotificationSend(title: string, body: string): Promise<void> {
     // Skip notification banners if window has focus
-    if (this.__isWindowFocused !== true) {
+    if (this.__states.focused !== true) {
       const hasPermission = await this.requestNotificationPermission();
 
       if (hasPermission === true) {
@@ -186,16 +203,16 @@ class UtilitiesRuntime {
     }
   }
 
-  private __registerListeners(): void {
+  private __bindListeners(): void {
     if (this.__isApp === true) {
       // Register listeners via Tauri API (application build)
+      this.__states.focused = true;
+
       tauriAppWindow.listen<RuntimeProgressPayload>(
         "download:progress",
 
         ({ payload }) => {
-          const progressHandler = this.__downloadProgressHandlers.get(
-            payload.id
-          );
+          const progressHandler = this.__handlers.download.get(payload.id);
 
           if (progressHandler !== undefined) {
             progressHandler(payload.progress, payload.total);
@@ -212,21 +229,27 @@ class UtilitiesRuntime {
       );
 
       tauriAppWindow.listen<boolean>("window:focus", ({ payload }) => {
-        this.__isWindowFocused = payload;
-
-        this.__windowFocusedCallbacks.forEach(callback =>
-          callback(this.__isWindowFocused)
-        );
+        this.__changeFocusState(payload);
       });
     } else {
       // Register listeners via browser Document API (Web build)
-      document.addEventListener("visibilitychange", () => {
-        this.__isWindowFocused = document.visibilityState === "visible";
+      this.__states.focused =
+        document.visibilityState === "visible" ? true : false;
 
-        this.__windowFocusedCallbacks.forEach(callback =>
-          callback(this.__isWindowFocused)
+      document.addEventListener("visibilitychange", () => {
+        this.__changeFocusState(
+          document.visibilityState === "visible" ? true : false
         );
       });
+    }
+  }
+
+  private __changeFocusState(focused: boolean): void {
+    this.__states.focused = focused;
+
+    // Trigger focus handler? (if any)
+    if (this.__handlers.focus !== null) {
+      this.__handlers.focus(focused);
     }
   }
 }

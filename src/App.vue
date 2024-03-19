@@ -33,8 +33,8 @@
 import Store from "@/store";
 import { SessionAppearance } from "@/store/tables/session";
 
-// CONSTANTS
-const FOCUS_CHANGE_EVENTS = ["focus", "blur"];
+// PROJECT: UTILITIES
+import UtilitiesRuntime from "@/utilities/runtime";
 
 export default {
   name: "App",
@@ -59,9 +59,6 @@ export default {
   },
 
   beforeMount() {
-    // Initialize focus-based visibility
-    this.initializeFocusVisibility();
-
     // Detect if system requests dark mode
     this.initializeSystemDarkMode();
   },
@@ -112,13 +109,6 @@ export default {
       }
     },
 
-    initializeFocusVisibility(): void {
-      // Initialize value (trigger an explicit focus change)
-      // Notice: this is required, since focus status might have changed from \
-      //   last stored one, or default, before those event listeners got bound.
-      this.onFocusChange();
-    },
-
     initializeSystemDarkMode(): void {
       this.matchMediaDarkMode = window.matchMedia
         ? window.matchMedia("(prefers-color-scheme: dark)")
@@ -131,17 +121,19 @@ export default {
     },
 
     setupListenerFocusChange(): void {
-      // Bind all focus event listeners
-      FOCUS_CHANGE_EVENTS.forEach(eventName => {
-        document.addEventListener(eventName, this.onFocusChange);
-      });
+      // Register platform-dependant focus change handler
+      const hasFocus = UtilitiesRuntime.registerFocusHandler(
+        this.onFocusChange
+      );
+
+      // Initialize value (trigger an explicit focus change)
+      // Notice: this is required, since focus status might have changed from \
+      //   last stored one, or default, before those event listeners got bound.
+      this.onFocusChange(hasFocus);
     },
 
     unsetupListenerFocusChange(): void {
-      // Unbind all focus event listeners
-      FOCUS_CHANGE_EVENTS.forEach(eventName => {
-        document.removeEventListener(eventName, this.onFocusChange);
-      });
+      UtilitiesRuntime.unregisterFocusHandler();
     },
 
     setupListenerSystemDarkMode(): void {
@@ -164,10 +156,8 @@ export default {
 
     // --> EVENT LISTENERS <--
 
-    onFocusChange(): void {
-      const isDocumentVisible = document.hasFocus() === true ? true : false;
-
-      this.session.setVisible(isDocumentVisible);
+    onFocusChange(focused: boolean): void {
+      this.session.setVisible(focused);
     },
 
     onSystemDarkModeChange({ matches = false }): void {
