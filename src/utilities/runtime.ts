@@ -66,13 +66,13 @@ class UtilitiesRuntime {
   constructor() {
     // Initialize markers
     this.__isBrowser = platform === "web";
-    this.__isApp = !this.__isBrowser;
+    this.__isApp = !this.__isBrowser && window.__TAURI__ !== undefined;
 
     // Register listeners
     this.__registerListeners();
   }
 
-  // TODO: call it from somewhere
+  // TODO: call it from somewhere?
   registerWindowFocusCallback(callback: RuntimeFocusHandler): void {
     this.__windowFocusedCallbacks.push(callback);
   }
