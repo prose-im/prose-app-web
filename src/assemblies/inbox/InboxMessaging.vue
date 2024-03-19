@@ -1612,7 +1612,6 @@ export default {
                 }
               }
             );
-
           } catch (error) {
             this.$log.error(
               `Could not download file from message file view event at URL: ` +
