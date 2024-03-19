@@ -64,7 +64,10 @@ pub async fn download_file<R: Runtime>(
             .to_string();
     }
 
-    // Security: remove path traversal characters from filename
+    // Security: ensure that provided filename is not attempting to perform a \
+    //   path traversal. For instance, passing a filename '../dangerous.txt' \
+    //   to store files outside of the Downloads folder. Sanitize the file \
+    //   name if it is deemed dangerous.
     filename = remove_path_traversal(&filename);
 
     // No filename? Assign fallback filename
