@@ -163,15 +163,16 @@ $c: ".c-inbox-details-user-identity";
   text-align: center;
 
   #{$c}__avatar {
-    margin-block-end: 16px;
+    margin-block-end: 15px;
   }
 
   #{$c}__details {
     padding-inline: 8px;
-    margin-block-end: 20px;
+    margin-block-end: 18px;
 
     #{$c}__name {
       font-size: 15px;
+      line-height: 17px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -190,7 +191,8 @@ $c: ".c-inbox-details-user-identity";
     #{$c}__role {
       color: rgb(var(--color-text-secondary));
       font-size: 13px;
-      margin-block-start: 6px;
+      line-height: 16px;
+      margin-block-start: 4px;
     }
   }
 
