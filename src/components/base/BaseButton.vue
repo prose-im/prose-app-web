@@ -274,7 +274,7 @@ $size-ultra-large-padding-sides: 44px;
   &--dark,
   &--red {
     #{$c}__inner {
-      box-shadow: 0 4px 4px 0 rgba($color-button-dark-normal, 0.04),
+      box-shadow: 0 2px 3px 0 rgba($color-button-dark-normal, 0.04),
         inset 0 1px 0 0 rgba(var(--color-white), 0.15);
 
       #{$c}__icon {
@@ -286,7 +286,7 @@ $size-ultra-large-padding-sides: 44px;
       }
 
       &:active {
-        box-shadow: 0 1px 1px 0 rgba($color-button-dark-normal, 0.12);
+        box-shadow: 0 1px 1px 0 rgba($color-button-dark-normal, 0.1);
       }
     }
   }

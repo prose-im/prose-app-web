@@ -21,6 +21,7 @@
       :active="sectionActive.unread"
       title="Unread stack"
       icon="tray.2"
+      disabled
     )
 
     sidebar-main-section(
@@ -28,6 +29,7 @@
       :active="sectionActive.replies"
       title="Replies"
       icon="arrowshape.turn.up.left.2"
+      disabled
     )
 
     sidebar-main-section(
@@ -35,6 +37,7 @@
       :active="sectionActive.conversations"
       title="Direct messages"
       icon="message"
+      disabled
     )
 
     sidebar-main-section(
