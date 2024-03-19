@@ -207,7 +207,7 @@ export default {
                   change: Store.$settings.setNotificationsActionNotifyBadge
                 },
 
-                label: "Show a badge in the tab bar"
+                label: "Show an unread count badge"
               } as FormFieldsetFieldDataCheckbox
             },
 

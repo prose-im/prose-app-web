@@ -23,6 +23,9 @@ import { firstBy } from "thenby";
 // PROJECT: UTILITIES
 import UtilitiesRuntime from "@/utilities/runtime";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 
@@ -208,7 +211,13 @@ const $room = defineStore("room", {
         });
 
         // Update unread count (it might have changed)
-        UtilitiesRuntime.requestUnreadCountUpdate(totalUnreadCount);
+        // Notice: check if badges are allowed or not, otherwise reset back to \
+        //   zero.
+        UtilitiesRuntime.requestUnreadCountUpdate(
+          Store.$settings.notifications.action.notify.badge === true
+            ? totalUnreadCount
+            : 0
+        );
 
         // Mark as loaded
         LOCAL_STATES.loaded = true;
