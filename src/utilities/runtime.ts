@@ -140,6 +140,8 @@ class UtilitiesRuntime {
       });
       this.__download_progress_handlers.delete(id);
     } else {
+      // TODO: implement download progress callback here too
+
       // Request to download file via browser APIs (Web build)
       await new FileDownloader({
         url
