@@ -22,7 +22,8 @@ fn main() {
                     let _ = window.set_focus();
                     let _ = window.emit("scheme-request-received", request);
                 }
-            }).unwrap();
+            })
+            .unwrap();
             #[cfg(not(target_os = "macos"))]
             if let Some(url) = std::env::args().nth(1) {
                 app.emit_all("scheme-request-received", url).unwrap();
