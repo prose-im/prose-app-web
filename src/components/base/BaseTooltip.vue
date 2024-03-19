@@ -153,7 +153,6 @@ export default {
 $c: ".c-base-tooltip";
 
 // VARIABLES
-$tooltip-area-width: 1000px;
 $tooltip-spacing-block: 6px;
 $tooltip-spacing-inline: -3px;
 
@@ -166,7 +165,7 @@ $tooltip-spacing-inline: -3px;
     line-height: 18px;
     user-select: none;
     cursor: default;
-    width: $tooltip-area-width;
+    width: max-content;
     opacity: 0;
     display: block;
     visibility: hidden;
@@ -227,9 +226,9 @@ $tooltip-spacing-inline: -3px;
 
   &--center {
     > #{$c}__overlay {
-      inset-inline-start: 50%;
-      margin-inline-start: (-1 * calc($tooltip-area-width / 2));
       text-align: center;
+      inset-inline-start: 50%;
+      transform: translateX(-50%);
     }
   }
 
