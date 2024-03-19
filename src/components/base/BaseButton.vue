@@ -274,7 +274,7 @@ $size-ultra-large-padding-sides: 44px;
   &--dark,
   &--red {
     #{$c}__inner {
-      box-shadow: 0 3px 3px 0 rgba($color-button-dark-normal, 0.04),
+      box-shadow: 0 2px 3px 0 rgba($color-button-dark-normal, 0.04),
         inset 0 1px 0 0 rgba(var(--color-white), 0.15);
 
       #{$c}__icon {
