@@ -16,6 +16,7 @@
     "windows": [
       {
         "title": "Prose",
+        "userAgent": "prose-app-web",
         "width": 1360,
         "height": 940,
         "minWidth": 980,
