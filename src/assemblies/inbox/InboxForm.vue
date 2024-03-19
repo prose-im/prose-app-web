@@ -593,7 +593,6 @@ export default {
         !event.altKey &&
         !event.ctrlKey &&
         !event.metaKey &&
-        !event.shiftKey &&
         activeTagName !== "INPUT" &&
         activeTagName !== "TEXTAREA"
       ) {
