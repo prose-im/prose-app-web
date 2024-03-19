@@ -19,9 +19,6 @@ import CONFIG from "@/commons/config";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
-
-import BaseAlert from "@/components/base/BaseAlert.vue";
-
 import UtilitiesTitle from "@/utilities/title";
 
 /**************************************************************************
@@ -36,69 +33,52 @@ const NOTIFICATION_PERMISSIONS = {
 };
 
 /**************************************************************************
- * RUNTIME
+ * TYPES
  * ************************************************************************* */
 
-interface ProgressPayload {
+export type RuntimeProgressHandler = (progress: number, total: number) => void;
+export type RuntimeFocusHandler = (focused: boolean) => void;
+
+/**************************************************************************
+ * INTERFACES
+ * ************************************************************************* */
+
+interface RuntimeProgressPayload {
   id: number;
   progress: number;
   total: number;
 }
 
-type ProgressHandler = (progress: number, total: number) => void;
-type FocusHandler = (focus: boolean) => void;
+/**************************************************************************
+ * RUNTIME
+ * ************************************************************************* */
 
 class UtilitiesRuntime {
   private readonly __isBrowser: boolean;
   private readonly __isApp: boolean;
-  private __download_progress_handlers: Map<number, ProgressHandler>;
-  private __isWindowFocused: boolean;
-  private __WindowFocusedCallbacks: Array<FocusHandler>;
+
+  private __isWindowFocused = true;
+  private __windowFocusedCallbacks: Array<RuntimeFocusHandler> = [];
+
+  private __downloadProgressHandlers: Map<number, RuntimeProgressHandler> =
+    new Map();
+
   constructor() {
     // Initialize markers
     this.__isBrowser = platform === "web";
-    this.__isApp = window.__TAURI__ !== undefined;
-    this.__download_progress_handlers = new Map();
-    this.__isWindowFocused = true;
-    this.__WindowFocusedCallbacks = [];
+    this.__isApp = !this.__isBrowser;
 
-    if (this.__isApp) {
-      tauriAppWindow.listen<ProgressPayload>(
-        "download://progress",
-        ({ payload }) => {
-          const handler = this.__download_progress_handlers.get(payload.id);
-          if (handler != null) {
-            handler(payload.progress, payload.total);
-          }
-        }
-      );
+    // Register listeners
+    this.__registerListeners();
+  }
 
-      tauriAppWindow.listen<string>(
-        "scheme-request-received",
-        ({ payload }) => {
-          BaseAlert.info("opened", payload);
-        }
-      );
-      // unfortunately "visibilitychange" is less precise than Tauri
-      // especially if Tauri window is behind another window(s)
-      tauriAppWindow.listen<boolean>("window-focused", ({ payload }) => {
-        this.__isWindowFocused = payload;
-        this.__WindowFocusedCallbacks.forEach(callback =>
-          callback(this.__isWindowFocused)
-        );
-      });
-    } else {
-      document.addEventListener("visibilitychange", () => {
-        this.__isWindowFocused = document.visibilityState === "visible";
-        this.__WindowFocusedCallbacks.forEach(callback =>
-          callback(this.__isWindowFocused)
-        );
-      });
-    }
+  // TODO: call it from somewhere
+  registerWindowFocusCallback(callback: RuntimeFocusHandler): void {
+    this.__windowFocusedCallbacks.push(callback);
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
-    if (this.__isApp) {
+    if (this.__isApp === true) {
       // Request to open via Tauri API (application build)
       await tauriOpen(url);
     } else {
@@ -110,35 +90,29 @@ class UtilitiesRuntime {
     }
   }
 
-  isWindowFocused(): boolean {
-    return this.__isWindowFocused;
-  }
-
-  registerWindowFocusCallback(callback: FocusHandler): void {
-    this.__WindowFocusedCallbacks.push(callback);
-  }
-
   async requestFileDownload(
     url: string,
     filename: string | null = null,
-    progressHandler?: ProgressHandler
+    progressHandler?: RuntimeProgressHandler
   ): Promise<void> {
-    // Tauri build
-    if (this.__isApp) {
+    if (this.__isApp === true) {
       // Request to download file via Tauri API (application build)
+      // TODO: simplify this random number generation
       const ids = new Uint32Array(1);
       window.crypto.getRandomValues(ids);
       const id = ids[0];
 
-      if (progressHandler != undefined) {
-        this.__download_progress_handlers.set(id, progressHandler);
+      if (progressHandler !== undefined) {
+        this.__downloadProgressHandlers.set(id, progressHandler);
       }
+
       await tauriInvoke("plugin:downloader|download_file", {
         id,
         url,
         filename
       });
-      this.__download_progress_handlers.delete(id);
+
+      this.__downloadProgressHandlers.delete(id);
     } else {
       // TODO: implement download progress callback here too
 
@@ -150,21 +124,21 @@ class UtilitiesRuntime {
   }
 
   async requestNotificationSend(title: string, body: string): Promise<void> {
-    // do not send notification if window is focused
-    if (this.__isWindowFocused) {
-      return;
-    }
-    if (this.__isApp) {
-      // Request to show notification via Tauri API (application build)
-      await tauriInvoke("plugin:notifications|send_notification", {
-        title,
-        body
-      });
-    } else {
+    // Skip notification banners if window has focus
+    if (this.__isWindowFocused !== true) {
       const hasPermission = await this.requestNotificationPermission();
-      if (hasPermission) {
-        // Request to show notification via browser APIs (Web build)
-        new Notification(title, { body });
+
+      if (hasPermission === true) {
+        if (this.__isApp === true) {
+          // Request to show notification via Tauri API (application build)
+          await tauriInvoke("plugin:notifications|send_notification", {
+            title,
+            body
+          });
+        } else {
+          // Request to show notification via browser APIs (Web build)
+          new Notification(title, { body });
+        }
       } else {
         logger.warn(
           "Not sending notification since permission is denied:",
@@ -174,37 +148,85 @@ class UtilitiesRuntime {
     }
   }
 
-  async setBadgeCount(count: number) {
-    if (this.__isApp) {
-      await tauriInvoke("plugin:notifications|set_badge_count", {
-        count
-      });
-    }
-  }
-
   async requestNotificationPermission(): Promise<boolean> {
-    // Request to show notification via browser APIs (Web build)
-    let hasPermission =
-      Notification.permission === NOTIFICATION_PERMISSIONS.granted;
-    if (
-      !hasPermission &&
-      Notification.permission !== NOTIFICATION_PERMISSIONS.denied
-    ) {
+    let hasPermission = false;
+
+    if (this.__isApp === true) {
+      // Request to show notification via Tauri API (application build)
+      // Notice: permission request is managed at a lower level, therefore \
+      //   always consider we have permission here.
+      hasPermission = true;
+    } else {
+      // Request to show notification via browser APIs (Web build)
       hasPermission =
-        (await Notification.requestPermission()) ===
-        NOTIFICATION_PERMISSIONS.granted;
+        Notification.permission === NOTIFICATION_PERMISSIONS.granted;
+
+      if (
+        hasPermission === false &&
+        Notification.permission !== NOTIFICATION_PERMISSIONS.denied
+      ) {
+        hasPermission =
+          (await Notification.requestPermission()) ===
+          NOTIFICATION_PERMISSIONS.granted;
+      }
     }
 
     return hasPermission;
   }
 
   async requestUnreadCountUpdate(count: number): Promise<void> {
-    if (this.__isApp) {
+    if (this.__isApp === true) {
       // Request to update unread count via Tauri API (application build)
-      await tauriInvoke("set_badge_count", { count });
+      await tauriInvoke("plugin:notifications|set_badge_count", {
+        count
+      });
     } else {
       // Request to update unread count via browser APIs (Web build)
       UtilitiesTitle.setUnreadCount(count);
+    }
+  }
+
+  private __registerListeners(): void {
+    if (this.__isApp === true) {
+      // Register listeners via Tauri API (application build)
+      tauriAppWindow.listen<RuntimeProgressPayload>(
+        "download:progress",
+
+        ({ payload }) => {
+          const progressHandler = this.__downloadProgressHandlers.get(
+            payload.id
+          );
+
+          if (progressHandler !== undefined) {
+            progressHandler(payload.progress, payload.total);
+          }
+        }
+      );
+
+      tauriAppWindow.listen<string>(
+        "url:open",
+
+        ({ payload }) => {
+          // TODO: open conversation in Prose
+        }
+      );
+
+      tauriAppWindow.listen<boolean>("window:focus", ({ payload }) => {
+        this.__isWindowFocused = payload;
+
+        this.__windowFocusedCallbacks.forEach(callback =>
+          callback(this.__isWindowFocused)
+        );
+      });
+    } else {
+      // Register listeners via browser Document API (Web build)
+      document.addEventListener("visibilitychange", () => {
+        this.__isWindowFocused = document.visibilityState === "visible";
+
+        this.__windowFocusedCallbacks.forEach(callback =>
+          callback(this.__isWindowFocused)
+        );
+      });
     }
   }
 }

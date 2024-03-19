@@ -1,3 +1,11 @@
+// This file is part of prose-app-web
+//
+// Copyright 2024, Prose Foundation
+
+/**************************************************************************
+ * IMPORTS
+ * ************************************************************************* */
+
 use directories::UserDirs;
 use percent_encoding::percent_decode;
 use serde::{Deserialize, Serialize};
@@ -9,12 +17,9 @@ use thiserror::Error;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
 
-#[derive(Debug, Clone, serde::Serialize)]
-struct DownloadProgress {
-    id: u64,
-    progress: usize,
-    total: usize,
-}
+/**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
 
 #[derive(Serialize, Deserialize, Debug, Error, PartialEq, Eq)]
 pub enum DownloadError {
@@ -26,6 +31,21 @@ pub enum DownloadError {
     DownloadError,
 }
 
+/**************************************************************************
+ * STRUCTURES
+ * ************************************************************************* */
+
+#[derive(Debug, Clone, serde::Serialize)]
+struct DownloadProgress {
+    id: u64,
+    progress: usize,
+    total: usize,
+}
+
+/**************************************************************************
+ * COMMANDS
+ * ************************************************************************* */
+
 #[tauri::command]
 pub async fn download_file<R: Runtime>(
     window: Window<R>,
@@ -34,88 +54,111 @@ pub async fn download_file<R: Runtime>(
     filename: &str,
 ) -> Result<String, DownloadError> {
     let mut filename = filename.to_string();
-    // if no filename provided, use the last part of the url
+
+    // No filename provided? Then use the last part of the URL
     if filename.is_empty() || filename == "undefined" {
         let url_fragment = url.split('/').last().unwrap_or("");
+
         filename = percent_decode(url_fragment.as_ref())
             .decode_utf8_lossy()
             .to_string();
     }
 
+    // Security: remove path traversal characters from filename
     filename = remove_path_traversal(&filename);
 
+    // No filename? Assign fallback filename
     if filename.is_empty() {
-        filename = "file".to_string();
+        filename = "File".to_string();
     }
 
-    // fetch the download directory
+    // Acquire the download directory
     let user_dirs = UserDirs::new().ok_or_else(|| DownloadError::CouldNotObtainDirectory)?;
     let download_dir = user_dirs
         .download_dir()
         .ok_or_else(|| DownloadError::CouldNotObtainDirectory)?;
-    let mut download_path = download_dir.join(&filename);
 
-    // if the file already exists, add a number to the filename
+    // Generate unique filename (if it already exists, otherwise do not change)
+    let mut download_path = download_dir.join(&filename);
     let (pure_filename, filename_extension) = split_filename(&filename);
+
     let mut i = 1;
+
     while download_path.exists() {
         download_path = download_dir.join(format!("{pure_filename} ({i}){filename_extension}"));
+
         i += 1;
     }
 
+    // Download file
     let mut response = reqwest::get(url)
         .await
         .map_err(|_| DownloadError::DownloadError)?;
 
+    // Create file on filesystem
     let mut file = File::create(&download_path)
         .await
         .map_err(|_| DownloadError::CouldNotCreateFile)?;
 
-    let total_size = response.content_length().unwrap_or(0) as usize;
-    let mut downloaded = 0;
-    let mut last_report = Instant::now();
+    // Compute total download size
+    let total_bytes = response.content_length().unwrap_or(0) as usize;
+    let mut downloaded_bytes = 0;
+    let mut last_size_report = Instant::now();
+
+    // Drain bytes from HTTP response to file
     while let Some(chunk) = response
         .chunk()
         .await
         .map_err(|_| DownloadError::DownloadError)?
     {
+        // Write received bytes
         file.write_all(&chunk)
             .await
             .map_err(|_| DownloadError::DownloadError)?;
 
-        downloaded = min(downloaded + chunk.len(), total_size);
+        // Compute download progress (de-bounced)
+        downloaded_bytes = min(downloaded_bytes + chunk.len(), total_bytes);
 
-        if last_report.elapsed().as_millis() > 100 || downloaded == total_size {
-            last_report = Instant::now();
+        if last_size_report.elapsed().as_millis() > 100 || downloaded_bytes == total_bytes {
+            last_size_report = Instant::now();
             window
                 .emit(
-                    "download://progress",
+                    "download:progress",
                     DownloadProgress {
                         id,
-                        progress: downloaded,
-                        total: total_size,
+                        progress: downloaded_bytes,
+                        total: total_bytes,
                     },
                 )
                 .unwrap();
         }
     }
 
+    // Flush downloaded file on disk
     file.flush()
         .await
         .map_err(|_| DownloadError::DownloadError)?;
-    println!("Downloaded {}", download_path.to_string_lossy());
+
     Ok(download_path.to_string_lossy().to_string())
 }
 
-/// Splits file into pure filename and extension while conserving double file extensions (.tar.gz, .tar.bz2, .tar.xz)
+/**************************************************************************
+ * HELPERS
+ * ************************************************************************* */
+
 fn split_filename(filename: &str) -> (String, String) {
+    // Splits file into pure filename and extension while conserving double \
+    //   file extensions (.tar.gz, .tar.bz2, .tar.xz)
     const DOUBLE_FILE_EXTENSION: [&str; 3] = [".tar.gz", ".tar.bz2", ".tar.xz"];
+
     for extension in DOUBLE_FILE_EXTENSION.iter() {
         if filename.ends_with(extension) {
             let pure_filename = filename.strip_suffix(extension).unwrap_or(filename);
+
             return (pure_filename.to_string(), extension.to_string());
         }
     }
+
     let extension = if filename.contains('.') {
         filename
             .split('.')
@@ -125,32 +168,41 @@ fn split_filename(filename: &str) -> (String, String) {
     } else {
         "".to_string()
     };
+
     let pure_filename = filename.strip_suffix(&extension).unwrap_or(filename);
+
     (pure_filename.to_string(), extension)
 }
 
-pub fn init<R: Runtime>() -> TauriPlugin<R> {
+fn remove_path_traversal(filename: &str) -> String {
+    // TODO: path traversal not secure yet
+    // TODO: can't use fs::canonicalize because it doesn't work with \
+    //   non-existing files; many path traversal crates are based on \
+    //   fs::canonicalize, therefore they also can't be used.
+    // 1. Remove control characters
+    // 2. Remove all path separators
+    // 3. Remove path traversal
+    filename
+        .replace(|c| c < ' ', "")
+        .replace(['/', '\\', ':', '~', '@', '?', '[', ']'], "")
+        .replace("..", "")
+}
+
+/**************************************************************************
+ * PROVIDERS
+ * ************************************************************************* */
+
+pub fn provide<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("downloader")
         .invoke_handler(tauri::generate_handler![download_file])
-        .setup(|_app_handle| {
-            // setup plugin specific state here
-            //app_handle.manage(MyState::default());
-            Ok(())
-        })
+        .setup(|_| Ok(()))
         .build()
 }
 
-fn remove_path_traversal(filename: &str) -> String {
-    // todo path traversal not secure yet
-    // can't use fs::canonicalize because it doesn't work with non-existing files
-    // many path traversal crates are based on fs::canonicalize, therefore they also can't be used
-    filename
-        .replace(|c| c < ' ', "") // remove control characters
-        .replace(['/', '\\', ':', '~', '@', '?', '[', ']'], "") // remove all path separators
-        .replace("..", "") // remove path traversal
-}
+/**************************************************************************
+ * TESTS
+ * ************************************************************************* */
 
-// Test
 #[cfg(test)]
 mod tests {
     use super::*;
