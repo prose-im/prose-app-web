@@ -14,9 +14,10 @@
       <key>CFBundleURLSchemes</key>
       <array>
         <string>xmpp</string>
-        <string>jabber</string>
       </array>
     </dict>
   </array>
+  <key>NSHumanReadableCopyright</key>
+  <string>Copyright © 2024, Prose Foundation</string>
 </dict>
 </plist>
