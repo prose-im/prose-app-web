@@ -69,7 +69,7 @@ class UtilitiesRuntime {
   constructor() {
     // Initialize markers
     this.__isBrowser = platform === "web";
-    this.__isApp = !this.__isBrowser && window.__TAURI__ !== undefined;
+    this.__isApp = !this.__isBrowser;
 
     // Bind listeners
     this.__bindListeners();
