@@ -67,11 +67,8 @@ export default {
   },
 
   mounted() {
-    // Start watching for URL opens
-    this.setupListenerUrlOpen();
-
-    // Start watching for focus changes
-    this.setupListenerFocusChange();
+    // Start watching for runtime events
+    this.setupListenersRuntime();
 
     // Start watching for dark mode changes
     this.setupListenerSystemDarkMode();
@@ -83,11 +80,8 @@ export default {
   },
 
   unmounted() {
-    // Stop watching for URL opens
-    this.unsetupListenerUrlOpen();
-
-    // Stop watching for focus changes
-    this.unsetupListenerFocusChange();
+    // Stop watching for runtime events
+    this.unsetupListenersRuntime();
 
     // Stop watching for dark mode changes
     this.unsetupListenerSystemDarkMode();
@@ -129,29 +123,21 @@ export default {
       }
     },
 
-    setupListenerUrlOpen(): void {
-      // Register platform-dependant URL open handler
-      UtilitiesRuntime.registerOpenHandler(this.onUrlOpen);
-    },
+    setupListenersRuntime(): void {
+      // Register platform-dependant handlers
+      const { focused } = UtilitiesRuntime.registerHandlers({
+        open: this.onUrlOpen,
+        focus: this.onFocusChange
+      });
 
-    setupListenerFocusChange(): void {
-      // Register platform-dependant focus change handler
-      const hasFocus = UtilitiesRuntime.registerFocusHandler(
-        this.onFocusChange
-      );
-
-      // Initialize value (trigger an explicit focus change)
+      // Initialize focused value (trigger an explicit focus change)
       // Notice: this is required, since focus status might have changed from \
       //   last stored one, or default, before those event listeners got bound.
-      this.onFocusChange(hasFocus);
+      this.onFocusChange(focused);
     },
 
-    unsetupListenerUrlOpen(): void {
-      UtilitiesRuntime.unregisterOpenHandler();
-    },
-
-    unsetupListenerFocusChange(): void {
-      UtilitiesRuntime.unregisterFocusHandler();
+    unsetupListenersRuntime(): void {
+      UtilitiesRuntime.unregisterHandlers();
     },
 
     setupListenerSystemDarkMode(): void {

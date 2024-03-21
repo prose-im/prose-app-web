@@ -77,27 +77,27 @@ class UtilitiesRuntime {
     this.__bindListeners();
   }
 
-  registerFocusHandler(handler: RuntimeFocusHandler): boolean {
-    // Register platform-agnostic focus handler
-    this.__handlers.focus = handler;
+  registerHandlers({
+    open,
+    focus
+  }: {
+    open: RuntimeOpenHandler;
+    focus: RuntimeFocusHandler;
+  }): { focused: boolean } {
+    // Register platform-agnostic handlers
+    this.__handlers.open = open;
+    this.__handlers.focus = focus;
 
-    // Return current value (can be used to synchronize external states)
-    return this.__states.focused;
+    // Return current values (can be used to synchronize external states)
+    return {
+      focused: this.__states.focused
+    };
   }
 
-  registerOpenHandler(handler: RuntimeOpenHandler): void {
-    // Register platform-agnostic open handler
-    this.__handlers.open = handler;
-  }
-
-  unregisterFocusHandler(): void {
-    // Unregister platform-agnostic focus handler
-    this.__handlers.focus = null;
-  }
-
-  unregisterOpenHandler(): void {
-    // Unregister platform-agnostic open handler
+  unregisterHandlers(): void {
+    // Unregister platform-agnostic handlers
     this.__handlers.open = null;
+    this.__handlers.focus = null;
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
