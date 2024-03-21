@@ -131,7 +131,9 @@ const THUMBNAIL_MIME_TARGETS: { [mime: string]: FileThumbnailTarget } = {
 
   // Audios
   "audio/webm": FileThumbnailTarget.Audio,
-  "audio/ogg": FileThumbnailTarget.Audio
+  "audio/ogg": FileThumbnailTarget.Audio,
+  "audio/mp3": FileThumbnailTarget.Audio,
+  "audio/mp4": FileThumbnailTarget.Audio
 };
 
 const THUMBNAIL_IMAGE_OPTIONS = {

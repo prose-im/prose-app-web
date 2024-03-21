@@ -84,17 +84,40 @@ export interface Audio {
   duration: number;
 }
 
+interface MediaFormat {
+  extension: string;
+  mime: string;
+  codec: string;
+  bitrate: number;
+  postProcessor?: (blob: Blob) => Promise<Blob>;
+}
+
 // CONSTANTS
 const MINUTE_TO_SECONDS = 60; // 1 minute
 
 const TIMER_INTERVAL_TIME = 1000; // 1 second
 const TIMER_SECONDS_MAXIMUM = 600; // 10 minutes
 
-const RECORDER_AUDIO_BITRATE = 32000; // 32 Kbps
-const RECORDER_AUDIO_EXTENSION = "weba";
-const RECORDER_AUDIO_MIME = "audio/webm";
-const RECORDER_AUDIO_CODEC = "opus";
 const RECORDER_AUDIO_FILE_TITLE = "Audio Recording";
+
+const RECORDER_AUDIO_FORMATS: Array<MediaFormat> = [
+  // #1. OPUS in WebM container (preferred; for Firefox + Chrome)
+  {
+    extension: "weba",
+    mime: "audio/webm",
+    codec: "opus",
+    bitrate: 32000,
+    postProcessor: fixWebmDuration
+  },
+
+  // #2. MPEG-4 HE-AAC in M4A container (fallback; for Safari)
+  {
+    extension: "m4a",
+    mime: "audio/mp4",
+    codec: "mp4a.40.5",
+    bitrate: 48000
+  }
+];
 
 export default {
   name: "InboxFormRecorder",
@@ -131,6 +154,7 @@ export default {
 
       // --> STATE <--
 
+      format: null as null | MediaFormat,
       stream: null as null | MediaStream,
       recorder: null as null | MediaRecorder,
 
@@ -229,11 +253,19 @@ export default {
           throw new Error("Audio recorder instance already bound");
         }
 
+        // Obtain supported format
+        this.format = this.detectSupportedFormat();
+
+        // No supported format?
+        if (this.format === null) {
+          throw new Error("Audio recorder does not support any format");
+        }
+
         // Capture media stream
         this.stream = await this.captureMediaStream();
 
         // Create media recorder
-        this.recorder = this.createMediaRecorder(this.stream);
+        this.recorder = this.createMediaRecorder(this.format, this.stream);
 
         // Start recording
         this.recorder.start();
@@ -243,6 +275,21 @@ export default {
         // Raise an error
         this.$emit("error", error);
       }
+    },
+
+    detectSupportedFormat(): MediaFormat | null {
+      // Acquire supported encoding format (ordered)
+      return (
+        RECORDER_AUDIO_FORMATS.find(format => {
+          return MediaRecorder.isTypeSupported(
+            this.generateFormatMimeType(format)
+          );
+        }) || null
+      );
+    },
+
+    generateFormatMimeType(format: MediaFormat): string {
+      return `${format.mime}; codecs=${format.codec}`;
     },
 
     async captureMediaStream(): Promise<MediaStream> {
@@ -255,10 +302,13 @@ export default {
       throw new Error("Audio recording unavailable");
     },
 
-    createMediaRecorder(stream: MediaStream): MediaRecorder {
+    createMediaRecorder(
+      format: MediaFormat,
+      stream: MediaStream
+    ): MediaRecorder {
       const recorder = new MediaRecorder(stream, {
-        mimeType: `${RECORDER_AUDIO_MIME}; codecs=${RECORDER_AUDIO_CODEC}`,
-        audioBitsPerSecond: RECORDER_AUDIO_BITRATE
+        mimeType: this.generateFormatMimeType(format),
+        audioBitsPerSecond: format.bitrate
       });
 
       // Bind event listeners
@@ -277,7 +327,7 @@ export default {
 
         // Emit audio now?
         if (this.emitAudioOnStop === true) {
-          await this.emitAudio();
+          await this.emitAudio(format);
         }
       });
 
@@ -346,7 +396,7 @@ export default {
       this.emitAudioOnStop = false;
     },
 
-    async emitAudio(): Promise<void> {
+    async emitAudio(format: MediaFormat): Promise<void> {
       try {
         // Mark as processing audio
         this.emitAudioProcessing = true;
@@ -366,24 +416,28 @@ export default {
         }
 
         // Make audio blob
-        const audioBlob = new Blob(audioChunks, { type: RECORDER_AUDIO_MIME });
+        let audioBlob = new Blob(audioChunks, {
+          type: format.mime
+        });
 
-        // Fix audio duration
+        // Fix audio duration?
         // Notice: this is due to an issue in most major Web browsers, where \
         //   WebM media files coming out of the MediaRecorder have their \
         //   duration set to 'Infinity'. We need the duration to be set to an \
         //   actual number, so that we can show the real duration in the UI.
-        const audioBlobWithDuration = await fixWebmDuration(audioBlob);
+        if (format.postProcessor !== undefined) {
+          audioBlob = await format.postProcessor(audioBlob);
+        }
 
         // Create audio file
         const nowTime = Date.now();
 
         let audioFile = new File(
-          [audioBlobWithDuration],
-          `${RECORDER_AUDIO_FILE_TITLE} ${nowTime}.${RECORDER_AUDIO_EXTENSION}`,
+          [audioBlob],
+          `${RECORDER_AUDIO_FILE_TITLE} ${nowTime}.${format.extension}`,
 
           {
-            type: RECORDER_AUDIO_MIME,
+            type: format.mime,
             lastModified: nowTime
           }
         );
@@ -410,8 +464,8 @@ export default {
     },
 
     async onSendClick(): Promise<void> {
-      // Any recorder? Send audio
-      if (this.recorder !== null) {
+      // Any format and recorder? Send audio
+      if (this.format !== null && this.recorder !== null) {
         // Mark as eligible for sending (once stopped)
         this.emitAudioOnStop = true;
 
@@ -421,7 +475,7 @@ export default {
           this.recorder.stop();
         } else {
           // Emit audio in buffer straight away (already stopped)
-          await this.emitAudio();
+          await this.emitAudio(this.format);
         }
       } else {
         // No recorder, equivalent to cancel
