@@ -38,6 +38,7 @@ const NOTIFICATION_PERMISSIONS = {
 
 export type RuntimeProgressHandler = (progress: number, total: number) => void;
 export type RuntimeFocusHandler = (focused: boolean) => void;
+export type RuntimeOpenHandler = (protocol: string, path: string) => void;
 
 /**************************************************************************
  * INTERFACES
@@ -63,6 +64,7 @@ class UtilitiesRuntime {
 
   private __handlers = {
     focus: null as RuntimeFocusHandler | null,
+    open: null as RuntimeOpenHandler | null,
     download: new Map() as Map<number, RuntimeProgressHandler>
   };
 
@@ -83,9 +85,19 @@ class UtilitiesRuntime {
     return this.__states.focused;
   }
 
+  registerOpenHandler(handler: RuntimeOpenHandler): void {
+    // Register platform-agnostic open handler
+    this.__handlers.open = handler;
+  }
+
   unregisterFocusHandler(): void {
     // Unregister platform-agnostic focus handler
     this.__handlers.focus = null;
+  }
+
+  unregisterOpenHandler(): void {
+    // Unregister platform-agnostic open handler
+    this.__handlers.open = null;
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
@@ -224,7 +236,20 @@ class UtilitiesRuntime {
         "url:open",
 
         ({ payload }) => {
-          // TODO: open conversation in Prose
+          try {
+            const urlParts = payload.toLowerCase().split(":");
+
+            if (!urlParts[0] || !urlParts[1]) {
+              throw new Error("Empty URL protocol or path");
+            }
+
+            // Trigger open handler? (if any)
+            if (this.__handlers.open !== null) {
+              this.__handlers.open(urlParts[0], urlParts[1]);
+            }
+          } catch (error) {
+            logger.error(`Not opening URL as it is invalid: ${payload}`, error);
+          }
         }
       );
 

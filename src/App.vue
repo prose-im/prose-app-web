@@ -29,6 +29,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
+
 // PROJECT: STORES
 import Store from "@/store";
 import { SessionAppearance } from "@/store/tables/session";
@@ -64,6 +67,9 @@ export default {
   },
 
   mounted() {
+    // Start watching for URL opens
+    this.setupListenerUrlOpen();
+
     // Start watching for focus changes
     this.setupListenerFocusChange();
 
@@ -77,6 +83,9 @@ export default {
   },
 
   unmounted() {
+    // Stop watching for URL opens
+    this.unsetupListenerUrlOpen();
+
     // Stop watching for focus changes
     this.unsetupListenerFocusChange();
 
@@ -120,6 +129,11 @@ export default {
       }
     },
 
+    setupListenerUrlOpen(): void {
+      // Register platform-dependant URL open handler
+      UtilitiesRuntime.registerOpenHandler(this.onUrlOpen);
+    },
+
     setupListenerFocusChange(): void {
       // Register platform-dependant focus change handler
       const hasFocus = UtilitiesRuntime.registerFocusHandler(
@@ -130,6 +144,10 @@ export default {
       // Notice: this is required, since focus status might have changed from \
       //   last stored one, or default, before those event listeners got bound.
       this.onFocusChange(hasFocus);
+    },
+
+    unsetupListenerUrlOpen(): void {
+      UtilitiesRuntime.unregisterOpenHandler();
     },
 
     unsetupListenerFocusChange(): void {
@@ -155,6 +173,32 @@ export default {
     },
 
     // --> EVENT LISTENERS <--
+
+    onUrlOpen(protocol: string, path: string): void {
+      switch (protocol) {
+        case "xmpp": {
+          BaseAlert.info("Opened XMPP URL", path);
+
+          this.$router.push({
+            name: "app.inbox",
+
+            params: {
+              roomId: path
+            }
+          });
+
+          break;
+        }
+
+        default: {
+          BaseAlert.warn(`Cannot open ${protocol.toUpperCase()} URL`, path);
+
+          this.$log.warn(
+            `No URL open handler for protocol: ${protocol} and path: ${path}`
+          );
+        }
+      }
+    },
 
     onFocusChange(focused: boolean): void {
       this.session.setVisible(focused);
