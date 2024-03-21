@@ -10,11 +10,10 @@
       <key>CFBundleURLIconFile</key>
       <string>generic</string>
       <key>CFBundleURLName</key>
-      <string>Jabber URL</string>
+      <string>XMPP URL</string>
       <key>CFBundleURLSchemes</key>
       <array>
         <string>xmpp</string>
-        <string>jabber</string>
       </array>
     </dict>
   </array>
