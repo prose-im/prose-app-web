@@ -34,7 +34,7 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-sdk-js": "0.1.64",
+    "@prose-im/prose-sdk-js": "0.1.65",
     "@prose-im/prose-core-views": "0.37.6",
     "@tauri-apps/api": "1.5.3",
     "lodash.camelcase": "4.3.0",
