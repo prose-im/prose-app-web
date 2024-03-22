@@ -187,15 +187,7 @@ class UtilitiesUpload {
         : undefined;
 
     // Generate attachment metadata (and optional thumbnail)
-    // Notice: prefer using local file type instead of media type from file \
-    //   upload slot, since upload slot media type might sometimes be invalid \
-    //   since it is auto-detected from the download URL.
-    const metadata = new AttachmentMetadata(
-      fileSlot.downloadURL,
-      file.type || fileSlot.mediaType,
-      fileSlot.fileName,
-      fileSlot.fileSize
-    );
+    const metadata = AttachmentMetadata.fromSlot(fileSlot);
 
     const thumbnail =
       thumbnailSlot !== undefined && thumbnailResult.image !== undefined

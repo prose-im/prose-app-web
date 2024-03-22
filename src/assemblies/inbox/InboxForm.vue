@@ -691,7 +691,11 @@ export default {
         const slotGenerator = async (
           file: File
         ): Promise<UploadSlot | void> => {
-          return await Broker.$data.requestUploadSlot(file.name, file.size);
+          return await Broker.$data.requestUploadSlot(
+            file.name,
+            file.size,
+            file.type
+          );
         };
 
         // Queue file for upload
