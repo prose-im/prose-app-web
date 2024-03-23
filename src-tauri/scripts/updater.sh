@@ -4,14 +4,18 @@
 #
 # Copyright 2024, Prose Foundation
 
-CDN_BASE_URL="https://files.prose.org/apps"
-
 # Read arguments
 while [ "$1" != "" ]; do
     argument_key=`echo $1 | awk -F= '{print $1}'`
     argument_value=`echo $1 | awk -F= '{print $2}'`
 
     case $argument_key in
+        -e | --endpoint)
+            ENDPOINT_URL="$argument_value"
+            ;;
+        -b | --bucket)
+            BUCKET="$argument_value"
+            ;;
         -v | --version)
             # Notice: strip any leading 'v' to the version number
             VERSION="${argument_value/v}"
@@ -28,6 +32,20 @@ while [ "$1" != "" ]; do
     shift
 done
 
+# Ensure endpoint URL is provided
+if [ -z "$ENDPOINT_URL" ]; then
+  echo "No endpoint URL was provided, please provide it using '--endpoint'"
+
+  exit 1
+fi
+
+# Ensure bucket is provided
+if [ -z "$BUCKET" ]; then
+  echo "No bucket was provided, please provide it using '--bucket'"
+
+  exit 1
+fi
+
 # Ensure release version is provided
 if [ -z "$VERSION" ]; then
   echo "No version was provided, please provide it using '--version'"
@@ -43,7 +61,7 @@ function generate_url {
   extension=$4
 
   # Generate version update archive URL
-  url="$CDN_BASE_URL/versions/$VERSION/$platform/$architecture/update/"
+  url="$ENDPOINT_URL/$BUCKET/versions/$VERSION/$platform/$architecture/update/"
   url+="Prose$extension.tar.gz"
 
   # Ensure file exists at URL

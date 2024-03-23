@@ -150,7 +150,7 @@ jobs:
 
       - name: Generate update manifest
         run: |
-          ./src-tauri/scripts/updater.sh --version=${{ needs.bundle.outputs.tag }} --manifest=manifest.json
+          ./src-tauri/scripts/updater.sh --endpoint=${{ vars.S3_ENDPOINT }} --bucket=${{ vars.S3_BUCKET }} --version=${{ needs.bundle.outputs.tag }} --manifest=manifest.json
 
       - name: Publish update manifest
         env:
