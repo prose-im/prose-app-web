@@ -67,6 +67,12 @@
     "security": {
       "csp": null,
       "devCsp": null
+    },
+    "updater": {
+      "active": true,
+      "dialog": true,
+      "endpoints": ["https://files.prose.org/apps/updates/latest.json"],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE5RDUzQTgxQ0U3NkQ2QgpSV1JyYmVjY3FGT2RDcG5rRG9ZZGxUeTlacFJLS0paNUZ2dkRoVFU0Tjd4UUdCMjFSckx4d1MrUAo="
     }
   }
 }
