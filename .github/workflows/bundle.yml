@@ -61,7 +61,7 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             src-tauri/target
-          key: ${{ runner.os }}-${{ matrix.settings.target }}-cargo
+          key: ${{ runner.os }}-cargo
 
       - name: Get current tag
         id: current_tag
