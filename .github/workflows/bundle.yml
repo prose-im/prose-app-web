@@ -8,18 +8,16 @@ name: Bundle and Publish
 jobs:
   bundle:
     environment: bundle-build
+    runs-on: ${{ matrix.platform }}
 
     strategy:
       fail-fast: false
       matrix:
-        settings:
-          - platform: macos-latest
-            target: aarch64-apple-darwin
-            toolchain: aarch64-apple-darwin
-            bundles: app,dmg
-            os: mac
-
-    runs-on: ${{ matrix.settings.platform }}
+        platform: macos-latest
+        target: aarch64-apple-darwin
+        toolchain: aarch64-apple-darwin
+        bundles: app,dmg
+        os: mac
 
     outputs:
       tag: ${{ steps.current_tag.outputs.tag }}
@@ -37,7 +35,7 @@ jobs:
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
-          target: "${{ matrix.settings.toolchain }}"
+          target: "${{ matrix.toolchain }}"
 
       - name: Verify versions
         run: node --version && npm --version && node -p process.versions.v8 && rustc --version
@@ -55,7 +53,7 @@ jobs:
         uses: swatinem/rust-cache@v2
         with:
           workspaces: "./src-tauri -> target"
-          shared-key: ${{ runner.os }}-${{ matrix.settings.toolchain }}-rust
+          shared-key: ${{ runner.os }}-${{ matrix.toolchain }}-rust
 
       - name: Get current tag
         id: current_tag
@@ -77,16 +75,16 @@ jobs:
           APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
         with:
           tauriScript: npm run bundle
-          args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
+          args: --target ${{ matrix.target }} --bundles ${{ matrix.bundles }}
 
       - name: Archive output files
-        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz -C src-tauri/target/${{ matrix.settings.target }}/release/bundle/ .
+        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.os }}.tar.gz -C src-tauri/target/${{ matrix.target }}/release/bundle/ .
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ runner.os }})
-          path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz
+          path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.os }}.tar.gz
           retention-days: 7
 
   publish:
@@ -94,19 +92,27 @@ jobs:
     environment: bundle-publish
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        name: macOS
+        platform: macos
+        os: mac
+        format: dmg
+
     steps:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.bundle.outputs.tag }} Bundle (${{ runner.os }})
+          name: ${{ needs.bundle.outputs.tag }} Bundle (${{ matrix.name }})
 
       - name: Extract build artifacts
-        run: tar -xzvf ./bundle-${{ needs.bundle.outputs.tag }}-${{ matrix.settings.os }}.tar.gz
+        run: tar -xzvf ./bundle-${{ needs.bundle.outputs.tag }}-${{ matrix.os }}.tar.gz
 
-      - name: Publish application (macOS)
+      - name: Publish application
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} dmg/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/macos/ --recursive --exclude "*" --include "*.dmg"
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.format }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.platform }}/ --recursive --exclude "*" --include "*.${{ matrix.format }}"
