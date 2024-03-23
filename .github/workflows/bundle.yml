@@ -8,18 +8,17 @@ name: Bundle and Publish
 jobs:
   bundle:
     environment: bundle-build
-    runs-on: ${{ matrix.settings.platform }}
+    runs-on: ${{ matrix.settings.runner }}
 
     strategy:
       fail-fast: false
       matrix:
         settings:
-          - platform: macos-latest
+          - runner: macos-latest
+            system: mac
             architecture: aarch64
             target: aarch64-apple-darwin
-            toolchain: aarch64-apple-darwin
             bundles: app,dmg,updater
-            os: mac
 
     outputs:
       tag: ${{ steps.current_tag.outputs.tag }}
@@ -35,9 +34,11 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@stable
+        uses: actions-rs/toolchain@v1
         with:
-          target: "${{ matrix.settings.toolchain }}"
+          toolchain: stable
+          target: ${{ matrix.settings.target }}
+          override: true
 
       - name: Verify versions
         run: node --version && npm --version && node -p process.versions.v8 && rustc --version
@@ -51,11 +52,16 @@ jobs:
             node_modules
           key: ${{ runner.os }}-node
 
-      - name: Cache build context (Rust)
-        uses: swatinem/rust-cache@v2
+      - name: Cache build context (Cargo)
+        id: cache-cargo
+        uses: actions/cache@v3
         with:
-          workspaces: "./src-tauri -> target"
-          shared-key: ${{ runner.os }}-${{ matrix.settings.toolchain }}-rust
+          path: |
+            ~/.cargo/bin
+            ~/.cargo/registry
+            ~/.cargo/git
+            src-tauri/target
+          key: ${{ runner.os }}-${{ matrix.settings.target }}-cargo
 
       - name: Get current tag
         id: current_tag
@@ -82,13 +88,13 @@ jobs:
           args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
 
       - name: Archive output files
-        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz -C src-tauri/target/${{ matrix.settings.target }}/release/bundle/ .
+        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz -C src-tauri/target/${{ matrix.settings.target }}/release/bundle/ .
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ runner.os }} ${{ matrix.settings.architecture }})
-          path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz
+          path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
           retention-days: 7
 
   publish:
@@ -100,10 +106,10 @@ jobs:
       fail-fast: false
       matrix:
         settings:
-          - platform: macos
+          - name: macOS
+            platform: macos
+            system: mac
             architecture: aarch64
-            name: macOS
-            os: mac
             format: dmg
 
     steps:
@@ -113,7 +119,7 @@ jobs:
           name: ${{ needs.bundle.outputs.tag }} Bundle (${{ matrix.settings.name }} ${{ matrix.settings.architecture }})
 
       - name: Extract build artifacts
-        run: tar -xzvf ./bundle-${{ needs.bundle.outputs.tag }}-${{ matrix.settings.os }}.tar.gz
+        run: tar -xzvf ./bundle-${{ needs.bundle.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
 
       - name: Publish application
         env:
