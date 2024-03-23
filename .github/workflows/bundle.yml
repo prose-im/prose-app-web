@@ -119,7 +119,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.format }}/ s3://${{ vars.S3_BUCKET }}/versions/v${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/ --exclude "*" --include "*.${{ matrix.settings.format }}" --exclude ".*"
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.format }}/ s3://${{ vars.S3_BUCKET }}/versions/v${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/ --recursive --exclude "*" --include "*.${{ matrix.settings.format }}" --exclude ".*"
 
       - name: Publish update
         env:
@@ -127,4 +127,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.platform }}/ s3://${{ vars.S3_BUCKET }}/versions/v${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/update/ --exclude "*" --include "*.tar.gz" --include "*.tar.gz.sig"
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.platform }}/ s3://${{ vars.S3_BUCKET }}/versions/v${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/update/ --recursive --exclude "*" --include "*.tar.gz" --include "*.tar.gz.sig"
