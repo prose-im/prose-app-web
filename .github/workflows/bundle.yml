@@ -93,7 +93,7 @@ jobs:
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ runner.os }} ${{ matrix.settings.architecture }})
+          name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ matrix.settings.system }}-${{ matrix.settings.architecture }})
           path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
           retention-days: 7
 
@@ -106,8 +106,7 @@ jobs:
       fail-fast: false
       matrix:
         settings:
-          - name: macOS
-            platform: macos
+          - platform: macos
             system: mac
             architecture: aarch64
             format: dmg
@@ -116,7 +115,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.bundle.outputs.tag }} Bundle (${{ matrix.settings.name }} ${{ matrix.settings.architecture }})
+          name: ${{ needs.bundle.outputs.tag }} Bundle (${{ matrix.settings.system }}-${{ matrix.settings.architecture }})
 
       - name: Extract build artifacts
         run: tar -xzvf ./bundle-${{ needs.bundle.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
