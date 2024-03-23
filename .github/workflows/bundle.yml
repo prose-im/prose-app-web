@@ -18,7 +18,7 @@ jobs:
             system: mac
             architecture: aarch64
             target: aarch64-apple-darwin
-            bundles: app,dmg,updater
+            bundles: dmg,updater
 
     outputs:
       tag: ${{ steps.current_tag.outputs.tag }}
