@@ -158,4 +158,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} manifest.json s3://${{ vars.S3_BUCKET }}/updates/latest.json"
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} manifest.json s3://${{ vars.S3_BUCKET }}/updates/latest.json
