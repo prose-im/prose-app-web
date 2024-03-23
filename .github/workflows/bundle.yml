@@ -97,7 +97,7 @@ jobs:
           path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
           retention-days: 7
 
-  publish:
+  publish-version:
     needs: bundle
     environment: bundle-publish
     runs-on: ubuntu-latest
@@ -120,7 +120,7 @@ jobs:
       - name: Extract build artifacts
         run: tar -xzvf ./bundle-${{ needs.bundle.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
 
-      - name: Publish application
+      - name: Publish application version
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
@@ -128,10 +128,28 @@ jobs:
         run: |
           aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.format }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/ --recursive --exclude "*" --include "*.${{ matrix.settings.format }}" --exclude ".*"
 
-      - name: Publish update
+      - name: Publish update archive
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
           aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.platform }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/update/ --recursive --exclude "*" --include "*.tar.gz" --include "*.tar.gz.sig"
+
+  publish-manifest:
+    needs: [bundle, publish-version]
+    environment: bundle-publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Generate update manifest
+        run: |
+          ./src-tauri/scripts/updater.sh --version=${{ needs.bundle.outputs.tag }} --manifest=manifest.json
+
+      - name: Publish update manifest
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
+        run: |
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} manifest.json s3://${{ vars.S3_BUCKET }}/updates/latest.json"
