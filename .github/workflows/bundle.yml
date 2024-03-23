@@ -117,4 +117,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.format }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/ --recursive --exclude "*" --include "*.${{ matrix.settings.format }}"
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.format }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/ --recursive --exclude "*" --include "*.${{ matrix.settings.format }}" --exclude ".*"
