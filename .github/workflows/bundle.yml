@@ -7,6 +7,8 @@ name: Bundle and Publish
 
 jobs:
   bundle:
+    environment: bundle-build
+
     strategy:
       fail-fast: false
       matrix:
@@ -18,6 +20,9 @@ jobs:
             os: mac
 
     runs-on: ${{ matrix.settings.platform }}
+
+    outputs:
+      tag: ${{ steps.current_tag.outputs.tag }}
 
     steps:
       - name: Checkout code
@@ -63,6 +68,13 @@ jobs:
 
       - name: Run bundle build
         uses: tauri-apps/tauri-action@v0
+        env:
+          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+          APPLE_SIGNING_IDENTITY: ${{ vars.APPLE_SIGNING_IDENTITY }}
+          APPLE_ID: ${{ vars.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
         with:
           tauriScript: npm run bundle
           args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
@@ -76,3 +88,25 @@ jobs:
           name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ runner.os }})
           path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.os }}.tar.gz
           retention-days: 7
+
+  publish:
+    needs: bundle
+    environment: bundle-publish
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.bundle.outputs.tag }} Bundle (${{ runner.os }})
+
+      - name: Extract build artifacts
+        run: tar -xzvf ./bundle-${{ needs.bundle.outputs.tag }}-${{ matrix.settings.os }}.tar.gz
+
+      - name: Publish application (macOS)
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: true
+        run: |
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} dmg/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/macos/ --recursive --exclude "*" --include "*.dmg"
