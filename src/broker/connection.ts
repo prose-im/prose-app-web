@@ -60,6 +60,8 @@ class BrokerConnectionStrophe implements ProseConnection {
   private __connection?: Strophe.Connection;
   private __eventHandler?: ProseConnectionEventHandler;
 
+  private __connectIntent = false;
+
   constructor(config: ProseClientConfig) {
     // Assign configuration
     this.__config = config;
@@ -79,23 +81,47 @@ class BrokerConnectionStrophe implements ProseConnection {
         switch (status) {
           // [CONNECTING] The connection is currently being made
           case Strophe.Status.CONNECTING: {
-            logger.debug("Connecting…");
+            logger.info("Connecting…");
+
+            // Enable connect intent marker
+            this.__connectIntent = true;
 
             break;
           }
 
           // [DISCONNECTING] The connection is currently being terminated
           case Strophe.Status.DISCONNECTING: {
-            logger.debug("Disconnecting…");
+            // Hack: make sure we have ever intended to be connected before \
+            //   triggering the disconnecting handler, since Strophe emits the \
+            //   disconnecting event when re-initializing the connection, \
+            //   which we do not expect and (may) cause side-effects with the \
+            //   core client connection management system.
+            if (this.__connectIntent === true) {
+              logger.info("Disconnecting…");
+            } else {
+              logger.warn("Received disconnecting (but was not connected)");
+            }
 
             break;
           }
 
           // [DISCONNECTED] The connection has been terminated
           case Strophe.Status.DISCONNECTED: {
-            logger.warn("Disconnected");
+            // Hack: make sure we have ever intended to be connected before \
+            //   triggering the disconnected handler, since Strophe emits the \
+            //   disconnected event when first re-initializing the connection, \
+            //   which we do not expect and (will) cause side-effects with the \
+            //   core client connection management system.
+            if (this.__connectIntent === true) {
+              logger.warn("Disconnected");
 
-            this.__eventHandler?.handleDisconnect();
+              // Disable connect intent marker
+              this.__connectIntent = true;
+
+              this.__eventHandler?.handleDisconnect();
+            } else {
+              logger.warn("Received disconnected (but was not connected)");
+            }
 
             break;
           }
@@ -147,7 +173,7 @@ class BrokerConnectionStrophe implements ProseConnection {
 
           // [AUTHENTICATING] The connection is authenticating
           case Strophe.Status.AUTHENTICATING: {
-            logger.debug("Authenticating…");
+            logger.info("Authenticating…");
 
             break;
           }

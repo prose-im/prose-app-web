@@ -112,12 +112,17 @@ class BrokerClient {
     this.__cancelScheduledReconnectTimer();
 
     // Schedule reconnect
-    this.__reconnectTimeout = setTimeout(() => {
+    this.__reconnectTimeout = setTimeout(async () => {
       delete this.__reconnectTimeout;
 
-      logger.debug("Reconnecting now…");
+      try {
+        logger.debug("Reconnecting now…");
 
-      this.__connect(credentials.jid, credentials.password);
+        await this.__connect(credentials.jid, credentials.password);
+      } catch (error) {
+        // Ignore reconnection errors here
+        logger.warn("Could not reconnect client", error);
+      }
     }, afterDelay);
   }
 
@@ -135,6 +140,9 @@ class BrokerClient {
     // Disconnect client and flush its cache
     await this.client?.disconnect();
     await this.client?.deleteCachedData();
+
+    // Void client
+    delete this.client;
 
     // Reset all stores
     Store.reset();
@@ -160,18 +168,18 @@ class BrokerClient {
     // Mark as connecting
     Store.$session.setConnecting(true);
 
-    // Initialize client
-    const client = await ProseClient.init(
-      new BrokerConnection(),
-      this.__delegate,
-      this.__configuration()
-    );
-
-    this.client = client;
+    // Initialize client? (or re-use existing client)
+    if (this.client === undefined) {
+      this.client = await ProseClient.init(
+        new BrokerConnection(),
+        this.__delegate,
+        this.__configuration()
+      );
+    }
 
     try {
       // Connect client
-      await client.connect(jid, password);
+      await this.client.connect(jid, password);
     } catch (error) {
       // Mark as disconnected
       Store.$session.setConnected(false);
@@ -239,6 +247,8 @@ class BrokerClient {
   private __cancelScheduledReconnectTimer(): void {
     if (this.__reconnectTimeout !== undefined) {
       clearTimeout(this.__reconnectTimeout);
+
+      delete this.__reconnectTimeout;
     }
   }
 }
