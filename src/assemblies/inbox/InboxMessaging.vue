@@ -154,6 +154,7 @@ import {
   InboxEntryName,
   InboxEntryStateLoading,
   InboxInsertMode,
+  InboxArchivesAcquiredMode,
   EventMessageGeneric,
   EventNameGeneric,
   EventStateLoadingGeneric
@@ -865,6 +866,15 @@ export default {
             BaseAlert.error(
               "Failed loading messages",
               "Latest messages could not be loaded"
+            );
+
+            // Mark archives as stale (since they failed loading)
+            // Notice: it is important to reset acquired marker since this \
+            //   will let the application try again loading archives at a \
+            //   later point.
+            Store.$inbox.markArchivesAcquired(
+              room.id,
+              InboxArchivesAcquiredMode.Stale
             );
           } finally {
             // Mark forwards loading as complete

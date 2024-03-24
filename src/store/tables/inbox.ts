@@ -45,6 +45,13 @@ enum InboxInsertMode {
   Restore = "restore"
 }
 
+enum InboxArchivesAcquiredMode {
+  // Up-to-date mode.
+  UpToDate = "up-to-date",
+  // Stale mode.
+  Stale = "stale"
+}
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
@@ -576,11 +583,26 @@ const $inbox = defineStore("inbox", {
       return wasUpdated;
     },
 
-    markArchivesAcquired(roomId: RoomID): void {
+    markArchivesAcquired(
+      roomId: RoomID,
+      mode = InboxArchivesAcquiredMode.UpToDate
+    ): void {
       const stateArchives = this.assert(roomId).states.archives;
 
       this.$patch(() => {
-        stateArchives.acquiredAt = Date.now();
+        switch (mode) {
+          case InboxArchivesAcquiredMode.UpToDate: {
+            stateArchives.acquiredAt = Date.now();
+
+            break;
+          }
+
+          case InboxArchivesAcquiredMode.Stale: {
+            stateArchives.acquiredAt = undefined;
+
+            break;
+          }
+        }
       });
     },
 
@@ -601,7 +623,13 @@ const $inbox = defineStore("inbox", {
  * EXPORTS
  * ************************************************************************* */
 
-export { InboxNameOrigin, InboxInsertMode, fromCoreMessage };
+export {
+  InboxNameOrigin,
+  InboxInsertMode,
+  InboxArchivesAcquiredMode,
+  fromCoreMessage
+};
+
 export type {
   EventMessageGeneric,
   EventNameGeneric,
@@ -610,4 +638,5 @@ export type {
   InboxEntryName,
   InboxEntryStateLoading
 };
+
 export default $inbox;
