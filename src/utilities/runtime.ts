@@ -39,6 +39,7 @@ const NOTIFICATION_PERMISSIONS = {
 export type RuntimeProgressHandler = (progress: number, total: number) => void;
 export type RuntimeFocusHandler = (focused: boolean) => void;
 export type RuntimeMenuHandler = (menu: string) => void;
+export type RuntimeOpenHandler = (protocol: string, path: string) => void;
 
 /**************************************************************************
  * INTERFACES
@@ -64,28 +65,39 @@ class UtilitiesRuntime {
 
   private __handlers = {
     focus: null as RuntimeFocusHandler | null,
+    open: null as RuntimeOpenHandler | null,
     download: new Map() as Map<number, RuntimeProgressHandler>
   };
 
   constructor() {
     // Initialize markers
     this.__isBrowser = platform === "web";
-    this.__isApp = !this.__isBrowser && window.__TAURI__ !== undefined;
+    this.__isApp = !this.__isBrowser;
 
     // Bind listeners
     this.__bindListeners();
   }
 
-  registerFocusHandler(handler: RuntimeFocusHandler): boolean {
-    // Register platform-agnostic focus handler
-    this.__handlers.focus = handler;
+  registerHandlers({
+    open,
+    focus
+  }: {
+    open: RuntimeOpenHandler;
+    focus: RuntimeFocusHandler;
+  }): { focused: boolean } {
+    // Register platform-agnostic handlers
+    this.__handlers.open = open;
+    this.__handlers.focus = focus;
 
-    // Return current value (can be used to synchronize external states)
-    return this.__states.focused;
+    // Return current values (can be used to synchronize external states)
+    return {
+      focused: this.__states.focused
+    };
   }
 
-  unregisterFocusHandler(): void {
-    // Unregister platform-agnostic focus handler
+  unregisterHandlers(): void {
+    // Unregister platform-agnostic handlers
+    this.__handlers.open = null;
     this.__handlers.focus = null;
   }
 
@@ -237,7 +249,20 @@ class UtilitiesRuntime {
         "url:open",
 
         ({ payload }) => {
-          // TODO: open conversation in Prose
+          try {
+            const urlParts = payload.toLowerCase().split(":");
+
+            if (!urlParts[0] || !urlParts[1]) {
+              throw new Error("Empty URL protocol or path");
+            }
+
+            // Trigger open handler? (if any)
+            if (this.__handlers.open !== null) {
+              this.__handlers.open(urlParts[0], urlParts[1]);
+            }
+          } catch (error) {
+            logger.error(`Not opening URL as it is invalid: ${payload}`, error);
+          }
         }
       );
 

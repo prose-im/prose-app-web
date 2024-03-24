@@ -24,13 +24,15 @@ import logger from "@/utilities/logger";
 class BrokerModuleData extends BrokerModule {
   async requestUploadSlot(
     fileName: string,
-    fileSize: number
+    fileSize: number,
+    fileType?: string
   ): Promise<UploadSlot | void> {
     logger.info(`Will request upload slot for file name: '${fileName}'`);
 
     return await this._client.client?.requestUploadSlot(
       fileName,
-      BigInt(fileSize)
+      BigInt(fileSize),
+      fileType
     );
   }
 }

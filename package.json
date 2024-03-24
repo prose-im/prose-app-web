@@ -1,7 +1,7 @@
 {
   "name": "@prose-im/prose-app-web",
   "description": "Prose Web application",
-  "version": "0.1.21",
+  "version": "0.2.0",
   "type": "module",
   "homepage": "https://github.com/prose-im/prose-app-web",
   "license": "MPL-2.0",
@@ -34,8 +34,8 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-sdk-js": "0.1.64",
-    "@prose-im/prose-core-views": "0.37.6",
+    "@prose-im/prose-sdk-js": "0.1.65",
+    "@prose-im/prose-core-views": "0.37.7",
     "@tauri-apps/api": "1.5.3",
     "lodash.camelcase": "4.3.0",
     "lodash.upperfirst": "4.3.1",

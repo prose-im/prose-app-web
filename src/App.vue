@@ -29,6 +29,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMPONENTS
+import BaseAlert from "@/components/base/BaseAlert.vue";
+
 // PROJECT: STORES
 import Store from "@/store";
 import { SessionAppearance } from "@/store/tables/session";
@@ -64,8 +67,8 @@ export default {
   },
 
   mounted() {
-    // Start watching for focus changes
-    this.setupListenerFocusChange();
+    // Start watching for runtime events
+    this.setupListenersRuntime();
 
     // Start watching for dark mode changes
     this.setupListenerSystemDarkMode();
@@ -77,8 +80,8 @@ export default {
   },
 
   unmounted() {
-    // Stop watching for focus changes
-    this.unsetupListenerFocusChange();
+    // Stop watching for runtime events
+    this.unsetupListenersRuntime();
 
     // Stop watching for dark mode changes
     this.unsetupListenerSystemDarkMode();
@@ -120,20 +123,21 @@ export default {
       }
     },
 
-    setupListenerFocusChange(): void {
-      // Register platform-dependant focus change handler
-      const hasFocus = UtilitiesRuntime.registerFocusHandler(
-        this.onFocusChange
-      );
+    setupListenersRuntime(): void {
+      // Register platform-dependant handlers
+      const { focused } = UtilitiesRuntime.registerHandlers({
+        open: this.onUrlOpen,
+        focus: this.onFocusChange
+      });
 
-      // Initialize value (trigger an explicit focus change)
+      // Initialize focused value (trigger an explicit focus change)
       // Notice: this is required, since focus status might have changed from \
       //   last stored one, or default, before those event listeners got bound.
-      this.onFocusChange(hasFocus);
+      this.onFocusChange(focused);
     },
 
-    unsetupListenerFocusChange(): void {
-      UtilitiesRuntime.unregisterFocusHandler();
+    unsetupListenersRuntime(): void {
+      UtilitiesRuntime.unregisterHandlers();
     },
 
     setupListenerSystemDarkMode(): void {
@@ -155,6 +159,32 @@ export default {
     },
 
     // --> EVENT LISTENERS <--
+
+    onUrlOpen(protocol: string, path: string): void {
+      switch (protocol) {
+        case "xmpp": {
+          BaseAlert.info("Opened XMPP URL", path);
+
+          this.$router.push({
+            name: "app.inbox",
+
+            params: {
+              roomId: path
+            }
+          });
+
+          break;
+        }
+
+        default: {
+          BaseAlert.warn(`Cannot open ${protocol.toUpperCase()} URL`, path);
+
+          this.$log.warn(
+            `No URL open handler for protocol: ${protocol} and path: ${path}`
+          );
+        }
+      }
+    },
 
     onFocusChange(focused: boolean): void {
       this.session.setVisible(focused);

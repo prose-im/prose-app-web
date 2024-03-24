@@ -1,8 +1,8 @@
 # <picture><source media="(prefers-color-scheme: dark)" srcset="https://github.com/prose-im/prose-app-web/assets/1451907/8e6c83c6-26a0-4505-9561-50a9c97bf236" /><img src="https://github.com/prose-im/prose-app-web/assets/1451907/dd3f7cb4-b156-4ecc-a15f-744dea259e27" alt="prose-app-web" width="150" height="60" /></picture>
 
-[![Test and Lint](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml) [![Build and Release](https://github.com/prose-im/prose-app-web/actions/workflows/build.yml/badge.svg)](https://github.com/prose-im/prose-app-web/actions/workflows/build.yml) [![GitHub Release](https://img.shields.io/github/v/release/prose-im/prose-app-web.svg)](https://github.com/prose-im/prose-app-web/releases)
+[![Test and Lint](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml) [![Build and Release](https://github.com/prose-im/prose-app-web/actions/workflows/build.yml/badge.svg)](https://github.com/prose-im/prose-app-web/actions/workflows/build.yml) [![Bundle and Publish](https://github.com/prose-im/prose-app-web/actions/workflows/bundle.yml/badge.svg)](https://github.com/prose-im/prose-app-web/actions/workflows/bundle.yml) [![GitHub Release](https://img.shields.io/github/v/release/prose-im/prose-app-web.svg)](https://github.com/prose-im/prose-app-web/releases)
 
-**Prose Web application. Built in TypeScript / VueJS.**
+**Prose Web application. Built in TypeScript / VueJS / WebAssembly.**
 
 The Prose project was originally announced in a blog post: [Introducing Prose, Decentralized Team Messaging in an Era of Centralized SaaS](https://prose.org/blog/introducing-prose/). This project is the Web implementation of the Prose app.
 
@@ -22,7 +22,7 @@ The Prose Web app consists mostly of VueJS views, bound to core libraries, namel
 
 The app uses the core client library to connect to XMPP. It calls programmatic methods in order to interact with its internal database and the network. It binds as well to an event bus to receive network events, or update events from the store. Messages are shown in their own view, which is provided by the core views library.
 
-This decoupling makes things extremely clean, and enables common code sharing between platforms (eg. Web, macOS, etc.).
+This decoupling makes things extremely clean, and enables common code sharing between platforms (eg. Web, macOS, iOS, etc.).
 
 ## Installation
 
@@ -36,7 +36,7 @@ npm install
 
 ## Build
 
-_👉 Builds Prose for use in a Web browser._
+_👉 This builds Prose for use in a Web browser._
 
 Building the Prose Web app is done per-target environment. Please check below for build instructions based on your target environment.
 
@@ -90,7 +90,7 @@ PROSE_CORE_VIEWS_PATH="../prose-core-views" npm run dev
 
 ## Bundle
 
-_👉 Bundles Prose for use as a standalone application (macOS, Windows, etc.)._
+_👉 This bundles Prose for use as a standalone application (macOS, Windows, etc.)._
 
 Prose can be bundled into a native-like application using [Tauri](https://tauri.app/), which uses the target system default Web renderer. The benefit of Tauri over eg. Electron, is that the resulting bundled application size is kept small (Tauri's overhead is about 600KB).
 
