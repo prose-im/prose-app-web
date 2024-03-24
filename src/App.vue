@@ -196,7 +196,9 @@ export default {
         case "settings":
         case "profile": {
           // Emit event to parent of those popups
-          // TODO
+          this.session.dispatchRequest("popup", {
+            target: menu
+          });
 
           break;
         }

@@ -145,6 +145,11 @@ const $session = defineStore("session", {
         // Broadcast state change
         EventBus.emit(key, nextValue);
       }
+    },
+
+    dispatchRequest(key: string, payload?: object): void {
+      // Broadcast request event
+      EventBus.emit(`request:${key}`, payload);
     }
   }
 });
