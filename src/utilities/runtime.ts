@@ -196,15 +196,13 @@ class UtilitiesRuntime {
       await tauriAppWindow.setFullscreen(true);
       // set html to fill whole page (z-index, height, width,...)
     } else {
-      await element.requestFullscreen()
+      await element.requestFullscreen();
     }
   }
 
   async leaveFullscreen(): Promise<void> {
-    if (this.__isApp)
-      await tauriAppWindow.setFullscreen(false);
+    if (this.__isApp) await tauriAppWindow.setFullscreen(false);
   }
-
 
   async requestUnreadCountUpdate(count: number): Promise<void> {
     if (this.__isApp === true) {
@@ -243,10 +241,10 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<string>("tauri://menu-event", ({payload}) => {
+      tauriAppWindow.listen<string>("tauri://menu-event", ({ payload }) => {
         console.log("menu clicked " + payload);
         // todo handle update request and settings
-      })
+      });
 
       tauriAppWindow.listen<boolean>("window:focus", ({ payload }) => {
         this.__changeFocusState(payload);
