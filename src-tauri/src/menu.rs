@@ -31,10 +31,10 @@ pub fn create() -> Menu {
             APP_NAME,
             Menu::new()
                 .add_native_item(MenuItem::About(APP_NAME.to_string(), about))
-                .add_item(CustomMenuItem::new("updates", "Check for Updates..."))
+                .add_item(CustomMenuItem::new("updates", "Check for Updates…"))
                 .add_native_item(MenuItem::Separator)
-                .add_item(CustomMenuItem::new("settings", "Settings...").accelerator("Cmd+,"))
-                .add_item(CustomMenuItem::new("profile", "Edit Profile..."))
+                .add_item(CustomMenuItem::new("settings", "Account Settings…").accelerator("Cmd+,"))
+                .add_item(CustomMenuItem::new("profile", "Edit Profile…"))
                 .add_native_item(MenuItem::Separator)
                 .add_native_item(MenuItem::Hide)
                 .add_native_item(MenuItem::HideOthers)
