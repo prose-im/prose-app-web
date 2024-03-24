@@ -203,18 +203,6 @@ class UtilitiesRuntime {
 
     return hasPermission;
   }
-  async requestFullscreen(element: HTMLElement): Promise<void> {
-    if (this.__isApp) {
-      await tauriAppWindow.setFullscreen(true);
-      // set html to fill whole page (z-index, height, width,...)
-    } else {
-      await element.requestFullscreen();
-    }
-  }
-
-  async leaveFullscreen(): Promise<void> {
-    if (this.__isApp) await tauriAppWindow.setFullscreen(false);
-  }
 
   async requestUnreadCountUpdate(count: number): Promise<void> {
     if (this.__isApp === true) {
@@ -226,6 +214,48 @@ class UtilitiesRuntime {
       // Request to update unread count via browser APIs (Web build)
       UtilitiesTitle.setUnreadCount(count);
     }
+  }
+
+  async requestFullscreenEnter(element: HTMLElement): Promise<boolean> {
+    let enteredFullScreen = false;
+
+    if (this.__isApp === true) {
+      // Request to enter full screen mode via Tauri API (application build)
+      await tauriAppWindow.setFullscreen(true);
+
+      enteredFullScreen = true;
+    } else {
+      // Request to enter full screen mode via browser APIs (Web build)
+      // Notice: do not mark as entered full screen there, since it is not \
+      //   a real whole-application full screen, but rather an element-based \
+      //   full screen.
+      await element.requestFullscreen();
+    }
+
+    return enteredFullScreen;
+  }
+
+  async requestFullscreenLeave(): Promise<boolean> {
+    let leftFullScreen = false;
+
+    if (this.__isApp === true) {
+      // Request to leave full screen mode via Tauri API (application build)
+      await tauriAppWindow.setFullscreen(false);
+
+      leftFullScreen = true;
+    } else {
+      // Request to leave full screen mode via browser APIs (Web build)
+      // Notice: do not mark as left full screen there, since it was not \
+      //   a real whole-application full screen, but rather an element-based \
+      //   full screen.
+      try {
+        await document.exitFullscreen();
+      } catch (_) {
+        // Ignore errors (not in full screen mode)
+      }
+    }
+
+    return leftFullScreen;
   }
 
   private __bindListeners(): void {

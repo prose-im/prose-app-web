@@ -32,7 +32,7 @@ teleport(
               base-action(
                 @click="onActionFullScreenClick"
                 :disabled="areActionsDisabled || !hasActionFullScreen"
-                icon="arrow.up.left.and.arrow.down.right"
+                :icon="fullScreen ? 'arrow.down.right.and.arrow.up.left' : 'arrow.up.left.and.arrow.down.right'"
                 context="grey"
                 size="12px"
               )
@@ -231,9 +231,10 @@ export default {
         download: false
       },
 
+      fullScreen: false,
+
       loading: true,
-      error: false,
-      previously_requested_fullscreen: false
+      error: false
     };
   },
 
@@ -286,6 +287,20 @@ export default {
       this.error = false;
     },
 
+    async fullScreenEnter(): Promise<void> {
+      // Request full screen mode on the media element
+      this.fullScreen = await UtilitiesRuntime.requestFullscreenEnter(
+        this.$refs.viewer as HTMLElement
+      );
+    },
+
+    async fullScreenLeave(): Promise<void> {
+      // Request to leave full screen mode
+      await UtilitiesRuntime.requestFullscreenLeave();
+
+      this.fullScreen = false;
+    },
+
     // --> EVENT LISTENERS <--
 
     onHotkeyLeft(): void {
@@ -308,10 +323,13 @@ export default {
       this.onActionFullScreenClick();
     },
 
-    onActionFullScreenClick(): void {
+    async onActionFullScreenClick(): Promise<void> {
       if (this.hasActionFullScreen === true) {
-        this.previously_requested_fullscreen = true;
-        UtilitiesRuntime.requestFullscreen(this.$refs.viewer as HTMLElement);
+        if (this.fullScreen !== true) {
+          await this.fullScreenEnter();
+        } else {
+          await this.fullScreenLeave();
+        }
       }
     },
 
@@ -366,11 +384,13 @@ export default {
       // TODO: not implemented yet
     },
 
-    onButtonCloseClick(): void {
-      if (this.previously_requested_fullscreen) {
-        this.previously_requested_fullscreen = false;
-        UtilitiesRuntime.leaveFullscreen();
+    async onButtonCloseClick(): Promise<void> {
+      // Forcibly leave full screen mode? (if active)
+      if (this.fullScreen === true) {
+        await this.fullScreenLeave();
       }
+
+      // Close file preview
       this.$emit("close");
     },
 
