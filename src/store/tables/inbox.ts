@@ -45,6 +45,13 @@ enum InboxInsertMode {
   Restore = "restore"
 }
 
+enum InboxArchivesAcquiredMode {
+  // Up-to-date mode.
+  UpToDate = "up-to-date",
+  // Stale mode.
+  Stale = "stale"
+}
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
@@ -148,7 +155,8 @@ const fromCoreMessage = function (
     metas: {
       secure: room.type === RoomType.PublicChannel,
       encrypted: false,
-      edited: message.meta.isEdited
+      edited: message.meta.isEdited,
+      transient: message.meta.isTransient
     },
 
     // File attachments (if any)
@@ -478,6 +486,59 @@ const $inbox = defineStore("inbox", {
       return false;
     },
 
+    trimMessages(roomId: RoomID, retain: number): boolean {
+      const container = this.assert(roomId).messages;
+
+      // Should message list be trimmed? (above retain limit)
+      if (container.list.length > retain) {
+        const messagesToTrim = container.list.slice(
+          0,
+          container.list.length - retain
+        );
+
+        // Trim messages from their container
+        // Notice: fire a single $patch event for all trim passes.
+        this.$patch(() => {
+          // Trim all messages at once from list
+          container.list.splice(0, messagesToTrim.length);
+
+          // Trim individual messages from identifier map
+          for (let i = 0; i < messagesToTrim.length; i++) {
+            const messageToTrim = messagesToTrim[i];
+
+            // Remove from identifier map? (if message is identified)
+            if (
+              messageToTrim.id &&
+              container.byId[messageToTrim.id] !== undefined
+            ) {
+              delete container.byId[messageToTrim.id];
+            }
+
+            // Emit IPC trimmed event
+            EventBus.emit("message:trimmed", {
+              roomId: roomId,
+              message: messageToTrim
+            } as EventMessageGeneric);
+          }
+        });
+
+        // Update last archive identifier marker?
+        // Notice: we need to move the last archive identifier to match the \
+        //   now-first message in the container list.
+        const lastArchiveId = container.list[0]?.archiveId || null;
+
+        if (lastArchiveId !== null) {
+          this.setArchivesLastArchiveId(roomId, lastArchiveId);
+        }
+
+        // Mark as trimmed
+        return true;
+      }
+
+      // Mark as non-trimmed
+      return false;
+    },
+
     setName(
       roomId: RoomID,
       from: string,
@@ -575,11 +636,26 @@ const $inbox = defineStore("inbox", {
       return wasUpdated;
     },
 
-    markArchivesAcquired(roomId: RoomID): void {
+    markArchivesAcquired(
+      roomId: RoomID,
+      mode = InboxArchivesAcquiredMode.UpToDate
+    ): void {
       const stateArchives = this.assert(roomId).states.archives;
 
       this.$patch(() => {
-        stateArchives.acquiredAt = Date.now();
+        switch (mode) {
+          case InboxArchivesAcquiredMode.UpToDate: {
+            stateArchives.acquiredAt = Date.now();
+
+            break;
+          }
+
+          case InboxArchivesAcquiredMode.Stale: {
+            stateArchives.acquiredAt = undefined;
+
+            break;
+          }
+        }
       });
     },
 
@@ -600,7 +676,13 @@ const $inbox = defineStore("inbox", {
  * EXPORTS
  * ************************************************************************* */
 
-export { InboxNameOrigin, InboxInsertMode, fromCoreMessage };
+export {
+  InboxNameOrigin,
+  InboxInsertMode,
+  InboxArchivesAcquiredMode,
+  fromCoreMessage
+};
+
 export type {
   EventMessageGeneric,
   EventNameGeneric,
@@ -609,4 +691,5 @@ export type {
   InboxEntryName,
   InboxEntryStateLoading
 };
+
 export default $inbox;

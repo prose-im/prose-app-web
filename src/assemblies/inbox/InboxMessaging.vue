@@ -154,6 +154,7 @@ import {
   InboxEntryName,
   InboxEntryStateLoading,
   InboxInsertMode,
+  InboxArchivesAcquiredMode,
   EventMessageGeneric,
   EventNameGeneric,
   EventStateLoadingGeneric
@@ -201,6 +202,8 @@ const FRAME_STYLE = {
 
 const CHECK_MARK_READ_DELAY = 500; // 1/2 second
 
+const ROOM_TRIM_MESSAGES_RETAIN = 250; // 250 messages
+
 const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 
 export default {
@@ -231,6 +234,7 @@ export default {
         "message:inserted": [Store.$inbox, this.onStoreMessageInserted],
         "message:updated": [Store.$inbox, this.onStoreMessageUpdated],
         "message:retracted": [Store.$inbox, this.onStoreMessageRetracted],
+        "message:trimmed": [Store.$inbox, this.onStoreMessageTrimmed],
         "name:changed": [Store.$inbox, this.onStoreNameChanged],
         "state:loading:marked": [Store.$inbox, this.onStoreStateLoadingMarked],
         "avatar:changed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed],
@@ -384,6 +388,14 @@ export default {
             this.syncMessagesEager();
           }
         }
+
+        if (oldValue && (!newValue || oldValue.id !== newValue.id)) {
+          // Trim messages from previous room
+          // Notice: this is done to avoid retaining too many messages loaded \
+          //   from eg. MAM archives, which will slow down restoring this room \
+          //   when switching back to it.
+          Store.$inbox.trimMessages(oldValue.id, ROOM_TRIM_MESSAGES_RETAIN);
+        }
       }
     }
   },
@@ -412,11 +424,15 @@ export default {
       let lastSelfMessageId = null,
         selfJIDString = this.selfJID.toString();
 
-      // Find last message from self (if any)
+      // Find last non-transient message from self (if any)
       for (let i = this.messages.length - 1; i >= 0; i--) {
         let message = this.messages[i];
 
-        if (selfJIDString === message.from && message.id) {
+        if (
+          selfJIDString === message.from &&
+          message.id &&
+          message.metas?.transient !== true
+        ) {
           lastSelfMessageId = message.id;
 
           break;
@@ -860,7 +876,16 @@ export default {
 
             BaseAlert.error(
               "Failed loading messages",
-              "Latest messages could not be loaded"
+              `Latest messages with ${room.name}`
+            );
+
+            // Mark archives as stale (since they failed loading)
+            // Notice: it is important to reset acquired marker since this \
+            //   will let the application try again loading archives at a \
+            //   later point.
+            Store.$inbox.markArchivesAcquired(
+              room.id,
+              InboxArchivesAcquiredMode.Stale
             );
           } finally {
             // Mark forwards loading as complete
@@ -924,7 +949,7 @@ export default {
 
             BaseAlert.warning(
               "Failed loading messages",
-              "Older messages could not be loaded"
+              `Older messages with ${room.name}`
             );
           } finally {
             // Mark backwards loading as complete
@@ -946,10 +971,12 @@ export default {
       const frameRuntime = this.frame();
 
       if (frameRuntime !== null) {
-        // Acquire message contents
-        const messageData = frameRuntime.MessagingStore.resolve(messageId);
+        // Acquire message
+        const message = this.room
+          ? Store.$inbox.getMessage(this.room.id, messageId)
+          : undefined;
 
-        if (messageData && messageData.type === "text" && messageData.content) {
+        if (message && message.type === "text" && message.content) {
           // Hide popover
           this.hidePopover();
 
@@ -958,7 +985,7 @@ export default {
 
           // Show edit modal
           this.modals.editMessage.context.messageId = messageId;
-          this.modals.editMessage.originalText = messageData.content;
+          this.modals.editMessage.originalText = message.content;
 
           this.modals.editMessage.visible = true;
         } else {
@@ -1179,16 +1206,18 @@ export default {
     }: {
       messageId: string;
     }): Promise<void> {
-      // Acquire message contents
-      const messageData = this.frame()?.MessagingStore.resolve(messageId);
+      // Acquire message
+      const message = this.room
+        ? Store.$inbox.getMessage(this.room.id, messageId)
+        : undefined;
 
-      if (messageData && messageData.type === "text" && messageData.content) {
+      if (message && message.type === "text" && message.content) {
         try {
           // Copy to clipboard
-          await navigator.clipboard.writeText(messageData.content);
+          await navigator.clipboard.writeText(message.content);
 
           // Acknowledge copy
-          this.$log.info(`Copied message text: ${messageData.content}`);
+          this.$log.info(`Copied message text: ${message.content}`);
 
           BaseAlert.success(
             "Text copied",
@@ -1200,7 +1229,7 @@ export default {
         } catch (error) {
           // Alert of copy error
           this.$log.error(
-            `Could not copy message text: ${messageData.content}`,
+            `Could not copy message text: ${message.content}`,
             error
           );
 
@@ -1349,6 +1378,12 @@ export default {
       }
     },
 
+    onStoreMessageTrimmed(event: EventMessageGeneric): void {
+      // Pass to retracted event handler (since we are basically doing the \
+      //   same thing here, ie. removing a message from the messaging view)
+      this.onStoreMessageRetracted(event);
+    },
+
     onStoreNameChanged(event: EventNameGeneric): void {
       if (this.room?.id === event.roomId) {
         // Check if should re-identify (if runtime is available)
@@ -1396,8 +1431,10 @@ export default {
 
       // Show popover with actions? (if any origin set)
       if (event.origin) {
-        // Acquire message contents
-        const messageData = this.frame()?.MessagingStore.resolve(event.id);
+        // Acquire message
+        const message = this.room
+          ? Store.$inbox.getMessage(this.room.id, event.id)
+          : undefined;
 
         // Build context
         const context = {
@@ -1429,57 +1466,60 @@ export default {
           }
         ];
 
-        if (messageData) {
-          // Message exists for sure? Append more actions.
-          items.push({
-            type: PopoverItemType.Button,
-            label: "Add reaction…",
+        // Message exists for sure? Append more actions.
+        if (message) {
+          // Message is not transient? Append more actions.
+          if (message.metas?.transient !== true) {
+            items.push({
+              type: PopoverItemType.Button,
+              label: "Add reaction…",
 
-            icon: {
-              name: "face.smiling"
-            },
-
-            click: () => {
-              this.onPopoverActionsReactionClick({
-                anchor,
-                interaction,
-                context
-              });
-            }
-          });
-
-          // Message from self? Append private actions.
-          if (this.selfJID.toString() === messageData.from) {
-            items.push(
-              {
-                type: PopoverItemType.Divider
+              icon: {
+                name: "face.smiling"
               },
 
-              {
-                type: PopoverItemType.Button,
-                label: "Edit message…",
-                emphasis: true,
-                disabled: !this.session.connected,
-                click: this.onPopoverActionsEditClick,
-
-                icon: {
-                  name: "pencil"
-                }
-              },
-
-              {
-                type: PopoverItemType.Button,
-                label: "Remove message",
-                color: "red",
-                emphasis: true,
-                disabled: !this.session.connected,
-                click: this.onPopoverActionsRemoveClick,
-
-                icon: {
-                  name: "trash"
-                }
+              click: () => {
+                this.onPopoverActionsReactionClick({
+                  anchor,
+                  interaction,
+                  context
+                });
               }
-            );
+            });
+
+            // Message from self? Append private actions.
+            if (this.selfJID.toString() === message.from) {
+              items.push(
+                {
+                  type: PopoverItemType.Divider
+                },
+
+                {
+                  type: PopoverItemType.Button,
+                  label: "Edit message…",
+                  emphasis: true,
+                  disabled: !this.session.connected,
+                  click: this.onPopoverActionsEditClick,
+
+                  icon: {
+                    name: "pencil"
+                  }
+                },
+
+                {
+                  type: PopoverItemType.Button,
+                  label: "Remove message",
+                  color: "red",
+                  emphasis: true,
+                  disabled: !this.session.connected,
+                  click: this.onPopoverActionsRemoveClick,
+
+                  icon: {
+                    name: "trash"
+                  }
+                }
+              );
+            }
           }
 
           // Append information actions
