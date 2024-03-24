@@ -202,6 +202,8 @@ const FRAME_STYLE = {
 
 const CHECK_MARK_READ_DELAY = 500; // 1/2 second
 
+const ROOM_TRIM_MESSAGES_RETAIN = 250; // 250 messages
+
 const POPOVER_ANCHOR_HEIGHT_Y_OFFSET = 7;
 
 export default {
@@ -232,6 +234,7 @@ export default {
         "message:inserted": [Store.$inbox, this.onStoreMessageInserted],
         "message:updated": [Store.$inbox, this.onStoreMessageUpdated],
         "message:retracted": [Store.$inbox, this.onStoreMessageRetracted],
+        "message:trimmed": [Store.$inbox, this.onStoreMessageTrimmed],
         "name:changed": [Store.$inbox, this.onStoreNameChanged],
         "state:loading:marked": [Store.$inbox, this.onStoreStateLoadingMarked],
         "avatar:changed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed],
@@ -384,6 +387,14 @@ export default {
             // Synchronize messages eagerly
             this.syncMessagesEager();
           }
+        }
+
+        if (oldValue && (!newValue || oldValue.id !== newValue.id)) {
+          // Trim messages from previous room
+          // Notice: this is done to avoid retaining too many messages loaded \
+          //   from eg. MAM archives, which will slow down restoring this room \
+          //   when switching back to it.
+          Store.$inbox.trimMessages(oldValue.id, ROOM_TRIM_MESSAGES_RETAIN);
         }
       }
     }
@@ -1365,6 +1376,12 @@ export default {
           this.frame()?.MessagingStore.retract(messageId);
         }
       }
+    },
+
+    onStoreMessageTrimmed(event: EventMessageGeneric): void {
+      // Pass to retracted event handler (since we are basically doing the \
+      //   same thing here, ie. removing a message from the messaging view)
+      this.onStoreMessageRetracted(event);
     },
 
     onStoreNameChanged(event: EventNameGeneric): void {
