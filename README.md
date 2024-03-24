@@ -2,7 +2,7 @@
 
 [![Test and Lint](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml/badge.svg?branch=master)](https://github.com/prose-im/prose-app-web/actions/workflows/test.yml) [![Build and Release](https://github.com/prose-im/prose-app-web/actions/workflows/build.yml/badge.svg)](https://github.com/prose-im/prose-app-web/actions/workflows/build.yml) [![Bundle and Publish](https://github.com/prose-im/prose-app-web/actions/workflows/bundle.yml/badge.svg)](https://github.com/prose-im/prose-app-web/actions/workflows/bundle.yml) [![GitHub Release](https://img.shields.io/github/v/release/prose-im/prose-app-web.svg)](https://github.com/prose-im/prose-app-web/releases)
 
-**Prose Web application. Built in TypeScript / VueJS.**
+**Prose Web application. Built in TypeScript / VueJS / WebAssembly.**
 
 The Prose project was originally announced in a blog post: [Introducing Prose, Decentralized Team Messaging in an Era of Centralized SaaS](https://prose.org/blog/introducing-prose/). This project is the Web implementation of the Prose app.
 
