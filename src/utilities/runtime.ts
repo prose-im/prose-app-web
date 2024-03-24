@@ -38,6 +38,7 @@ const NOTIFICATION_PERMISSIONS = {
 
 export type RuntimeProgressHandler = (progress: number, total: number) => void;
 export type RuntimeFocusHandler = (focused: boolean) => void;
+export type RuntimeMenuHandler = (menu: string) => void;
 
 /**************************************************************************
  * INTERFACES
@@ -241,6 +242,11 @@ class UtilitiesRuntime {
           // TODO: open conversation in Prose
         }
       );
+
+      tauriAppWindow.listen<string>("tauri://menu-event", ({payload}) => {
+        console.log("menu clicked " + payload);
+        // todo handle update request and settings
+      })
 
       tauriAppWindow.listen<boolean>("window:focus", ({ payload }) => {
         this.__changeFocusState(payload);
