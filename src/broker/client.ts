@@ -40,7 +40,8 @@ import BrokerDelegate from "@/broker/delegate";
  * CONSTANTS
  * ************************************************************************* */
 
-const RECONNECT_INTERVAL = 5000; // 5 seconds
+const RECONNECT_INTERVAL = 4000; // 4 seconds
+const RECONNECT_ATTEMPTS_COUNT_CAP = 15;
 
 const PING_INTERVAL_SECONDS = 60; // 1 minute
 
@@ -58,6 +59,8 @@ class BrokerClient {
 
   private __delegate: BrokerDelegate;
   private __credentials?: { jid: JID; password: string };
+
+  private __reconnectAttempts = 0;
   private __reconnectTimeout?: ReturnType<typeof setTimeout>;
 
   constructor() {
@@ -94,7 +97,7 @@ class BrokerClient {
     await this.__connect(jid, password);
   }
 
-  reconnect(afterDelay = 0): void {
+  reconnect(afterBaseDelay = 0): void {
     const credentials = this.__credentials;
 
     if (credentials === undefined) {
@@ -111,19 +114,42 @@ class BrokerClient {
     // Cancel any scheduled reconnect timeout
     this.__cancelScheduledReconnectTimer();
 
+    // Bump reconnect attempts count? (only if a non-zero delay is set, that \
+    //   is, if this reconnect attempt is not manual)
+    // Notice: reset reconnect attempts count back to a value of one if the \
+    //   user interacted and requested a manual reconnection.
+    if (afterBaseDelay > 0) {
+      // Cap reconnect attempts to a maximum value (that's reasonable)
+      if (this.__reconnectAttempts < RECONNECT_ATTEMPTS_COUNT_CAP) {
+        this.__reconnectAttempts += 1;
+      }
+    } else {
+      this.__reconnectAttempts = 1;
+    }
+
+    // Compute actual reconnect delay (taking into account reconnect attempts)
+    // Notice: this prevents hitting the server too often with reconnection \
+    //   retries in the event of a long downtime. The reconnect attempts count \
+    //   is capped to a maximum, to avoid overflowing its number type on \
+    //   forever-down clients, and also to avoid obtaining a delay that's too \
+    //   high.
+    const afterActualDelay = afterBaseDelay * this.__reconnectAttempts;
+
     // Schedule reconnect
     this.__reconnectTimeout = setTimeout(async () => {
       delete this.__reconnectTimeout;
 
       try {
-        logger.debug("Reconnecting now…");
+        logger.info("Reconnecting now…");
 
         await this.__connect(credentials.jid, credentials.password);
       } catch (error) {
         // Ignore reconnection errors here
         logger.warn("Could not reconnect client", error);
       }
-    }, afterDelay);
+    }, afterActualDelay);
+
+    logger.debug(`Scheduled reconnect attempt in ${afterActualDelay}ms`);
   }
 
   async observe(): Promise<void> {
@@ -149,19 +175,23 @@ class BrokerClient {
   }
 
   private __onClientConnected(): void {
+    // Update global markers
     Store.$session.setConnected(true);
     Store.$session.setConnecting(false);
+
+    // Clear reconnect attempts
+    this.__reconnectAttempts = 0;
   }
 
   private __onClientDisconnected(): void {
+    // Update global markers
     Store.$session.setConnected(false);
     Store.$session.setConnecting(false);
 
-    if (!this.__credentials) {
-      return;
+    // Schedule next reconnect? (still authenticated)
+    if (this.__credentials) {
+      this.reconnect(RECONNECT_INTERVAL);
     }
-
-    this.reconnect(RECONNECT_INTERVAL);
   }
 
   private async __connect(jid: JID, password: string): Promise<void> {
