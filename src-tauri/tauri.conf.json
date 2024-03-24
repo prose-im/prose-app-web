@@ -55,7 +55,8 @@
     "allowlist": {
       "all": false,
       "window": {
-        "startDragging": true
+        "startDragging": true,
+        "setFullscreen": true
       },
       "shell": {
         "open": true
