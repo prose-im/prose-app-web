@@ -17,7 +17,6 @@ mod notifications;
  * IMPORTS
  * ************************************************************************* */
 
-use crate::menu::{create_menu, menu_event_handler};
 use tauri::{Manager, WindowEvent};
 
 /**************************************************************************
@@ -27,9 +26,11 @@ use tauri::{Manager, WindowEvent};
 fn main() {
     // Prepare Prose for deep-linking
     tauri_plugin_deep_link::prepare("prose");
+
+    // Create Prose bundle
     tauri::Builder::default()
-        .menu(create_menu())
-        .on_menu_event(menu_event_handler)
+        .menu(menu::create())
+        .on_menu_event(menu::handler)
         .setup(|app| {
             let handle = app.handle();
 

@@ -142,6 +142,7 @@ pub async fn download_file<R: Runtime>(
         .await
         .map_err(|_| DownloadError::DownloadError)?;
 
+    // Bounce Dock icon for Downloads folder
     #[cfg(target_os = "macos")]
     notifications::make_download_bounce(download_path.to_string_lossy().as_ref());
 

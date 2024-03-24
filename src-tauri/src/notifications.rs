@@ -21,11 +21,7 @@ fn send_notification(title: String, body: String) {}
 #[cfg(target_os = "macos")]
 #[tauri::command]
 fn send_notification(title: String, body: String) {
-    let _ = Notification::default()
-        .title(&title)
-        .message(&body)
-        //.sound(Sound::Default)
-        .send();
+    let _ = Notification::default().title(&title).message(&body).send();
 }
 
 #[tauri::command]
