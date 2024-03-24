@@ -232,7 +232,8 @@ export default {
       },
 
       loading: true,
-      error: false
+      error: false,
+      previously_requested_fullscreen: false
     };
   },
 
@@ -309,8 +310,8 @@ export default {
 
     onActionFullScreenClick(): void {
       if (this.hasActionFullScreen === true) {
-        // Request full screen mode on the media element
-        (this.$refs.viewer as HTMLElement).requestFullscreen();
+        this.previously_requested_fullscreen = true;
+        UtilitiesRuntime.requestFullscreen(this.$refs.viewer as HTMLElement);
       }
     },
 
@@ -366,6 +367,10 @@ export default {
     },
 
     onButtonCloseClick(): void {
+      if (this.previously_requested_fullscreen) {
+        this.previously_requested_fullscreen = false;
+        UtilitiesRuntime.leaveFullscreen();
+      }
       this.$emit("close");
     },
 
