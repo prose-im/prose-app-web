@@ -116,7 +116,5 @@ pub fn create() -> Menu {
  * ************************************************************************* */
 
 pub fn handler(event: tauri::WindowMenuEvent) {
-    let _ = event
-        .window()
-        .emit("tauri://menu-event", event.menu_item_id());
+    let _ = event.window().emit("menu:select", event.menu_item_id());
 }

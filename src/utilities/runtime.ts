@@ -10,6 +10,7 @@
 
 // NPM
 import { invoke as tauriInvoke } from "@tauri-apps/api";
+import { emit as tauriEmit, TauriEvent } from "@tauri-apps/api/event";
 import { open as tauriOpen } from "@tauri-apps/api/shell";
 import { appWindow as tauriAppWindow } from "@tauri-apps/api/window";
 import FileDownloader from "js-file-downloader";
@@ -38,8 +39,8 @@ const NOTIFICATION_PERMISSIONS = {
 
 export type RuntimeProgressHandler = (progress: number, total: number) => void;
 export type RuntimeFocusHandler = (focused: boolean) => void;
-export type RuntimeMenuHandler = (menu: string) => void;
 export type RuntimeOpenHandler = (protocol: string, path: string) => void;
+export type RuntimeMenuHandler = (menu: string) => Promise<void>;
 
 /**************************************************************************
  * INTERFACES
@@ -66,6 +67,7 @@ class UtilitiesRuntime {
   private __handlers = {
     focus: null as RuntimeFocusHandler | null,
     open: null as RuntimeOpenHandler | null,
+    menu: null as RuntimeMenuHandler | null,
     download: new Map() as Map<number, RuntimeProgressHandler>
   };
 
@@ -80,14 +82,17 @@ class UtilitiesRuntime {
 
   registerHandlers({
     open,
-    focus
+    focus,
+    menu
   }: {
     open: RuntimeOpenHandler;
     focus: RuntimeFocusHandler;
+    menu: RuntimeMenuHandler;
   }): { focused: boolean } {
     // Register platform-agnostic handlers
     this.__handlers.open = open;
     this.__handlers.focus = focus;
+    this.__handlers.menu = menu;
 
     // Return current values (can be used to synchronize external states)
     return {
@@ -99,6 +104,7 @@ class UtilitiesRuntime {
     // Unregister platform-agnostic handlers
     this.__handlers.open = null;
     this.__handlers.focus = null;
+    this.__handlers.menu = null;
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
@@ -258,6 +264,15 @@ class UtilitiesRuntime {
     return leftFullScreen;
   }
 
+  async requestUpdateCheck(): Promise<void> {
+    if (this.__isApp === true) {
+      // Request to check for updates via Tauri API (application build)
+      await tauriEmit(TauriEvent.CHECK_UPDATE);
+    } else {
+      // Feature not available on other platforms (eg. Web build)
+    }
+  }
+
   private __bindListeners(): void {
     if (this.__isApp === true) {
       // Register listeners via Tauri API (application build)
@@ -296,9 +311,11 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<string>("tauri://menu-event", ({ payload }) => {
-        console.log("menu clicked " + payload);
-        // todo handle update request and settings
+      tauriAppWindow.listen<string>("menu:select", async ({ payload }) => {
+        // Trigger menu handler? (if any)
+        if (this.__handlers.menu !== null) {
+          await this.__handlers.menu(payload);
+        }
       });
 
       tauriAppWindow.listen<boolean>("window:focus", ({ payload }) => {

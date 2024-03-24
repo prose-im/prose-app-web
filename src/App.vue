@@ -127,7 +127,8 @@ export default {
       // Register platform-dependant handlers
       const { focused } = UtilitiesRuntime.registerHandlers({
         open: this.onUrlOpen,
-        focus: this.onFocusChange
+        focus: this.onFocusChange,
+        menu: this.onMenuSelect
       });
 
       // Initialize focused value (trigger an explicit focus change)
@@ -188,6 +189,25 @@ export default {
 
     onFocusChange(focused: boolean): void {
       this.session.setVisible(focused);
+    },
+
+    async onMenuSelect(menu: string): Promise<void> {
+      switch (menu) {
+        case "settings":
+        case "profile": {
+          // Emit event to parent of those popups
+          // TODO
+
+          break;
+        }
+
+        case "updates": {
+          // Check for updates
+          await UtilitiesRuntime.requestUpdateCheck();
+
+          break;
+        }
+      }
     },
 
     onSystemDarkModeChange({ matches = false }): void {
