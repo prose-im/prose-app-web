@@ -865,7 +865,7 @@ export default {
 
             BaseAlert.error(
               "Failed loading messages",
-              "Latest messages could not be loaded"
+              `Latest messages with ${room.name}`
             );
 
             // Mark archives as stale (since they failed loading)
@@ -938,7 +938,7 @@ export default {
 
             BaseAlert.warning(
               "Failed loading messages",
-              "Older messages could not be loaded"
+              `Older messages with ${room.name}`
             );
           } finally {
             // Mark backwards loading as complete
