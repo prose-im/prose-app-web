@@ -117,7 +117,9 @@ class BrokerClient {
     // Bump reconnect attempts count? (only if a non-zero delay is set, that \
     //   is, if this reconnect attempt is not manual)
     // Notice: reset reconnect attempts count back to a value of one if the \
-    //   user interacted and requested a manual reconnection.
+    //   user interacted and requested a manual reconnection, since it \
+    //   signaled its presence on screen, therefore we can start being more \
+    //   aggressive with automatic retries again.
     if (afterBaseDelay > 0) {
       // Cap reconnect attempts to a maximum value (that's reasonable)
       if (this.__reconnectAttempts < RECONNECT_ATTEMPTS_COUNT_CAP) {
