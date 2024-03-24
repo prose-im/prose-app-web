@@ -6,7 +6,7 @@
  * IMPORTS
  * ************************************************************************* */
 
-use mac_notification_sys::{Notification, Sound};
+use mac_notification_sys::Notification;
 use tauri::plugin::{Builder, TauriPlugin};
 use tauri::Runtime;
 
@@ -24,7 +24,7 @@ fn send_notification(title: String, body: String) {
     let _ = Notification::default()
         .title(&title)
         .message(&body)
-        .sound(Sound::Default)
+        //.sound(Sound::Default)
         .send();
 }
 
