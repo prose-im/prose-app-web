@@ -146,6 +146,9 @@ import SignOut from "@/modals/sidebar/SignOut.vue";
 import EditProfile from "@/popups/sidebar/EditProfile.vue";
 import AccountSettings from "@/popups/sidebar/AccountSettings.vue";
 
+// PROJECT: COMPOSABLES
+import { useEvents } from "@/composables/events";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 
@@ -464,6 +467,13 @@ export default {
     }
   },
 
+  created() {
+    // Bind session event handlers
+    useEvents(Store.$session, {
+      "request:popup": this.onStoreRequestPopup
+    });
+  },
+
   methods: {
     // --> HELPERS <--
 
@@ -516,6 +526,24 @@ export default {
     },
 
     // --> EVENT LISTENERS <--
+
+    onStoreRequestPopup({ target }: { target: string }): void {
+      switch (target) {
+        case "settings": {
+          // Request to open account settings (alias click event)
+          this.onAvatarPopoverAccountSettingsClick();
+
+          break;
+        }
+
+        case "profile": {
+          // Request to open profile editor (alias click event)
+          this.onAvatarPopoverEditProfileClick();
+
+          break;
+        }
+      }
+    },
 
     onAvatarImageClick(): void {
       // Toggle popover

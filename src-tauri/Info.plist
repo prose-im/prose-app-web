@@ -17,5 +17,7 @@
       </array>
     </dict>
   </array>
+  <key>NSHumanReadableCopyright</key>
+  <string>Copyright © Prose Foundation</string>
 </dict>
 </plist>

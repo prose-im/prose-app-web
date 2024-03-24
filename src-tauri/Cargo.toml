@@ -1,7 +1,8 @@
+workspace = { members = ["crates/notifications"] }
 [package]
 name = "prose-app-web"
 version = "0.0.0"
-description = "Prose Web application (Tauri packaging)"
+description = "Prose Web application (Tauri bundle)"
 authors = ["Prose Foundation <dev@prose.org>"]
 edition = "2021"
 
@@ -9,7 +10,7 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [ "updater", "window-start-dragging", "shell-open", "notification-all"] }
+tauri = { version = "1", features = ["updater", "window-set-fullscreen", "window-start-dragging", "shell-open", "notification-all"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 directories = "5.0.1"
@@ -21,6 +22,7 @@ objc = "0.2.7"
 percent-encoding = "2.3.1"
 mac-notification-sys = "0.6.1"
 tauri-plugin-deep-link = "0.1.2"
+notifications = { path = "crates/notifications" }
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

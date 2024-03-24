@@ -10,6 +10,7 @@
  * ************************************************************************* */
 
 mod download;
+mod menu;
 mod notifications;
 
 /**************************************************************************
@@ -26,7 +27,10 @@ fn main() {
     // Prepare Prose for deep-linking
     tauri_plugin_deep_link::prepare("prose");
 
+    // Create Prose bundle
     tauri::Builder::default()
+        .menu(menu::create())
+        .on_menu_event(menu::handler)
         .setup(|app| {
             let handle = app.handle();
 

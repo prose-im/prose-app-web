@@ -76,10 +76,10 @@ pub async fn download_file<R: Runtime>(
     }
 
     // Acquire the download directory
-    let user_dirs = UserDirs::new().ok_or_else(|| DownloadError::CouldNotObtainDirectory)?;
+    let user_dirs = UserDirs::new().ok_or(DownloadError::CouldNotObtainDirectory)?;
     let download_dir = user_dirs
         .download_dir()
-        .ok_or_else(|| DownloadError::CouldNotObtainDirectory)?;
+        .ok_or(DownloadError::CouldNotObtainDirectory)?;
 
     // Generate unique filename (if it already exists, otherwise do not change)
     let mut download_path = download_dir.join(&filename);
@@ -141,6 +141,10 @@ pub async fn download_file<R: Runtime>(
     file.flush()
         .await
         .map_err(|_| DownloadError::DownloadError)?;
+
+    // Bounce Dock icon for Downloads folder
+    #[cfg(target_os = "macos")]
+    notifications::make_download_bounce(download_path.to_string_lossy().as_ref());
 
     Ok(download_path.to_string_lossy().to_string())
 }
