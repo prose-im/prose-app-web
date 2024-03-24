@@ -412,11 +412,15 @@ export default {
       let lastSelfMessageId = null,
         selfJIDString = this.selfJID.toString();
 
-      // Find last message from self (if any)
+      // Find last non-transient message from self (if any)
       for (let i = this.messages.length - 1; i >= 0; i--) {
         let message = this.messages[i];
 
-        if (selfJIDString === message.from && message.id) {
+        if (
+          selfJIDString === message.from &&
+          message.id &&
+          message.metas?.transient !== true
+        ) {
           lastSelfMessageId = message.id;
 
           break;
@@ -946,10 +950,12 @@ export default {
       const frameRuntime = this.frame();
 
       if (frameRuntime !== null) {
-        // Acquire message contents
-        const messageData = frameRuntime.MessagingStore.resolve(messageId);
+        // Acquire message
+        const message = this.room
+          ? Store.$inbox.getMessage(this.room.id, messageId)
+          : undefined;
 
-        if (messageData && messageData.type === "text" && messageData.content) {
+        if (message && message.type === "text" && message.content) {
           // Hide popover
           this.hidePopover();
 
@@ -958,7 +964,7 @@ export default {
 
           // Show edit modal
           this.modals.editMessage.context.messageId = messageId;
-          this.modals.editMessage.originalText = messageData.content;
+          this.modals.editMessage.originalText = message.content;
 
           this.modals.editMessage.visible = true;
         } else {
@@ -1179,16 +1185,18 @@ export default {
     }: {
       messageId: string;
     }): Promise<void> {
-      // Acquire message contents
-      const messageData = this.frame()?.MessagingStore.resolve(messageId);
+      // Acquire message
+      const message = this.room
+        ? Store.$inbox.getMessage(this.room.id, messageId)
+        : undefined;
 
-      if (messageData && messageData.type === "text" && messageData.content) {
+      if (message && message.type === "text" && message.content) {
         try {
           // Copy to clipboard
-          await navigator.clipboard.writeText(messageData.content);
+          await navigator.clipboard.writeText(message.content);
 
           // Acknowledge copy
-          this.$log.info(`Copied message text: ${messageData.content}`);
+          this.$log.info(`Copied message text: ${message.content}`);
 
           BaseAlert.success(
             "Text copied",
@@ -1200,7 +1208,7 @@ export default {
         } catch (error) {
           // Alert of copy error
           this.$log.error(
-            `Could not copy message text: ${messageData.content}`,
+            `Could not copy message text: ${message.content}`,
             error
           );
 
@@ -1396,8 +1404,10 @@ export default {
 
       // Show popover with actions? (if any origin set)
       if (event.origin) {
-        // Acquire message contents
-        const messageData = this.frame()?.MessagingStore.resolve(event.id);
+        // Acquire message
+        const message = this.room
+          ? Store.$inbox.getMessage(this.room.id, event.id)
+          : undefined;
 
         // Build context
         const context = {
@@ -1429,57 +1439,60 @@ export default {
           }
         ];
 
-        if (messageData) {
-          // Message exists for sure? Append more actions.
-          items.push({
-            type: PopoverItemType.Button,
-            label: "Add reaction…",
+        // Message exists for sure? Append more actions.
+        if (message) {
+          // Message is not transient? Append more actions.
+          if (message.metas?.transient !== true) {
+            items.push({
+              type: PopoverItemType.Button,
+              label: "Add reaction…",
 
-            icon: {
-              name: "face.smiling"
-            },
-
-            click: () => {
-              this.onPopoverActionsReactionClick({
-                anchor,
-                interaction,
-                context
-              });
-            }
-          });
-
-          // Message from self? Append private actions.
-          if (this.selfJID.toString() === messageData.from) {
-            items.push(
-              {
-                type: PopoverItemType.Divider
+              icon: {
+                name: "face.smiling"
               },
 
-              {
-                type: PopoverItemType.Button,
-                label: "Edit message…",
-                emphasis: true,
-                disabled: !this.session.connected,
-                click: this.onPopoverActionsEditClick,
-
-                icon: {
-                  name: "pencil"
-                }
-              },
-
-              {
-                type: PopoverItemType.Button,
-                label: "Remove message",
-                color: "red",
-                emphasis: true,
-                disabled: !this.session.connected,
-                click: this.onPopoverActionsRemoveClick,
-
-                icon: {
-                  name: "trash"
-                }
+              click: () => {
+                this.onPopoverActionsReactionClick({
+                  anchor,
+                  interaction,
+                  context
+                });
               }
-            );
+            });
+
+            // Message from self? Append private actions.
+            if (this.selfJID.toString() === message.from) {
+              items.push(
+                {
+                  type: PopoverItemType.Divider
+                },
+
+                {
+                  type: PopoverItemType.Button,
+                  label: "Edit message…",
+                  emphasis: true,
+                  disabled: !this.session.connected,
+                  click: this.onPopoverActionsEditClick,
+
+                  icon: {
+                    name: "pencil"
+                  }
+                },
+
+                {
+                  type: PopoverItemType.Button,
+                  label: "Remove message",
+                  color: "red",
+                  emphasis: true,
+                  disabled: !this.session.connected,
+                  click: this.onPopoverActionsRemoveClick,
+
+                  icon: {
+                    name: "trash"
+                  }
+                }
+              );
+            }
           }
 
           // Append information actions
