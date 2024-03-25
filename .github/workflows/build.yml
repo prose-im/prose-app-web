@@ -32,7 +32,7 @@ jobs:
           path: |
             ~/.npm
             node_modules
-          key: ${{ runner.os }}-node
+          key: ${{ runner.os }}-${{ runner.arch }}-node
 
       - name: Get current tag
         id: current_tag
