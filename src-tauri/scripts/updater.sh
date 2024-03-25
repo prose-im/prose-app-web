@@ -136,7 +136,8 @@ manifest="{"$'\n'
 manifest+="  \"version\": \"$VERSION\","$'\n'
 manifest+="  \"platforms\": {"$'\n'
 
-make_platform manifest "macos" "aarch64" ".app" "darwin" && manifest+=$'\n'
+make_platform manifest "macos" "aarch64" ".app" "darwin" && manifest+=$',\n'
+make_platform manifest "macos" "x86_64" ".app" "darwin" && manifest+=$'\n'
 
 manifest+="  }"$'\n'
 manifest+="}"
