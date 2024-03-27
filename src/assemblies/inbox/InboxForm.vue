@@ -842,8 +842,10 @@ export default {
       switch (keyCode) {
         // Up
         case keyCodes.up: {
-          // Request to edit last message
-          this.$emit("request", Request.EditLastMessage);
+          // Request to edit last message? (if no message was written)
+          if (!this.message) {
+            this.$emit("request", Request.EditLastMessage);
+          }
 
           break;
         }
