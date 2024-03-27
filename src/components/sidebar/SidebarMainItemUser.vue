@@ -13,6 +13,7 @@ sidebar-main-item-generic(
   :class=`[
     "c-sidebar-main-item-user",
     {
+      "c-sidebar-main-item-user--active": active,
       "c-sidebar-main-item-user--blocked": rosterBlockListBlocked
     }
   ]`
@@ -22,7 +23,15 @@ sidebar-main-item-generic(
   template(
     v-slot:icon
   )
+    .c-sidebar-main-item-user__composing(
+      v-if="hasComposing"
+    )
+      span.c-sidebar-main-item-user__composing-dot.u-animate.u-animate--fade-in-out(
+        v-for="_ in 3"
+      )
+
     base-avatar(
+      v-show="!hasComposing"
       :jid="jid"
       class="c-sidebar-main-item-user__avatar"
       size="22px"
@@ -102,6 +111,10 @@ export default {
   },
 
   computed: {
+    hasComposing(): boolean {
+      return this.states.composing.length > 0;
+    },
+
     statusActivity(): ReturnType<typeof Store.$activity.getActivity> {
       return Store.$activity.getActivity(this.jid);
     },
@@ -111,6 +124,10 @@ export default {
         Store.$roster.getBlockListStatus(this.jid) ===
         RosterBlockListStatus.Blocked
       );
+    },
+
+    states(): ReturnType<typeof Store.$inbox.getStates> {
+      return Store.$inbox.getStates(this.item.room.id);
     }
   }
 };
@@ -123,9 +140,36 @@ export default {
 <style lang="scss">
 $c: ".c-sidebar-main-item-user";
 
+// VARIABLES
+$composing-dot-size: 3px;
+
 #{$c} {
   #{$c}__avatar {
     display: block;
+  }
+
+  #{$c}__composing {
+    gap: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    #{$c}__composing-dot {
+      background-color: rgb(var(--color-base-blue-dark));
+      width: $composing-dot-size;
+      height: $composing-dot-size;
+      flex: 0 0 auto;
+      animation-duration: 2s;
+      animation-iteration-count: infinite;
+
+      &:nth-child(2) {
+        animation-delay: 0.4s;
+      }
+
+      &:nth-child(3) {
+        animation-delay: 0.8s;
+      }
+    }
   }
 
   #{$c}__presence {
@@ -144,6 +188,14 @@ $c: ".c-sidebar-main-item-user";
   }
 
   // --> BOOLEANS <--
+
+  &--active {
+    #{$c}__composing {
+      #{$c}__composing-dot {
+        background-color: rgb(var(--color-white));
+      }
+    }
+  }
 
   &--blocked {
     #{$c}__name {
