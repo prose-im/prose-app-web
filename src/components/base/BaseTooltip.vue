@@ -36,7 +36,7 @@ div(
       )
 
   .c-base-tooltip__wrapped(
-    @click="onClick"
+    @click="onWrappedClick"
   )
     slot
 </template>
@@ -76,6 +76,11 @@ export default {
       }
     },
 
+    clickable: {
+      type: Boolean,
+      default: false
+    },
+
     bypassed: {
       type: Boolean,
       default: false
@@ -108,15 +113,20 @@ export default {
 
     // --> EVENT LISTENERS <--
 
-    onClick(): void {
-      if (this.isVisible !== true) {
-        // Mark as visible? (only if not bypassed)
-        if (this.bypassed !== true) {
-          this.setVisible(true);
+    onWrappedClick(): void {
+      // Do not show/hide tooltip on click on wrapped content if this content \
+      //   is not marked as clickable (otherwise this handler may result in \
+      //   conflicting behavior).
+      if (this.clickable === true) {
+        if (this.isVisible !== true) {
+          // Mark as visible? (only if not bypassed)
+          if (this.bypassed !== true) {
+            this.setVisible(true);
+          }
+        } else {
+          // Mark as invisible
+          this.setVisible(false);
         }
-      } else {
-        // Mark as invisible
-        this.setVisible(false);
       }
     },
 
