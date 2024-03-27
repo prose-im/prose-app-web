@@ -260,8 +260,12 @@ export default {
     this.refreshAutogrow();
 
     // Apply auto-focus?
+    // Notice: delay focus, otherwise the focus might not work in certain \
+    //   circumstances.
     if (this.autofocus === true) {
-      this.focusField();
+      setTimeout(() => {
+        this.focusField();
+      });
     }
   },
 
