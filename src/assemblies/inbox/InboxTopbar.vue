@@ -28,7 +28,6 @@ layout-toolbar(
         :tooltip="identityNamePresenceTooltip"
         direction="bottom"
         class="a-inbox-topbar__identity-badge"
-        clickable
       )
         base-presence(
           v-if="isDirectMessage"
@@ -61,7 +60,6 @@ layout-toolbar(
       :bypassed="truncatedJID === originalJID"
       align="right"
       direction="bottom"
-      clickable
     )
       span.a-inbox-topbar__identity.a-inbox-topbar__identity--jid
         base-icon(

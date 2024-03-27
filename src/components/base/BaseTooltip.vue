@@ -49,6 +49,12 @@ div(
 // CONSTANTS
 const MOUSE_ENTER_APPLY_DELAY = 250; // 250 milliseconds
 
+const CLICK_DIRECTIONS = {
+  hide: "hide",
+  show: "show",
+  both: "both"
+};
+
 export default {
   name: "BaseTooltip",
 
@@ -76,9 +82,17 @@ export default {
       }
     },
 
-    clickable: {
-      type: Boolean,
-      default: false
+    click: {
+      type: String,
+      default: null,
+
+      validator(x: string): boolean {
+        return [
+          CLICK_DIRECTIONS.hide,
+          CLICK_DIRECTIONS.show,
+          CLICK_DIRECTIONS.both
+        ].includes(x);
+      }
     },
 
     bypassed: {
@@ -117,15 +131,26 @@ export default {
       // Do not show/hide tooltip on click on wrapped content if this content \
       //   is not marked as clickable (otherwise this handler may result in \
       //   conflicting behavior).
-      if (this.clickable === true) {
+      if (this.click != null) {
         if (this.isVisible !== true) {
-          // Mark as visible? (only if not bypassed)
-          if (this.bypassed !== true) {
+          // Mark as visible? (only if not bypassed, and click must result in \
+          //   a show or both directions)
+          if (
+            this.bypassed !== true &&
+            (this.click === CLICK_DIRECTIONS.show ||
+              this.click === CLICK_DIRECTIONS.both)
+          ) {
             this.setVisible(true);
           }
         } else {
-          // Mark as invisible
-          this.setVisible(false);
+          // Mark as invisible (only if click must result in a hide or both \
+          //   directions)
+          if (
+            this.click === CLICK_DIRECTIONS.hide ||
+            this.click === CLICK_DIRECTIONS.both
+          ) {
+            this.setVisible(false);
+          }
         }
       }
     },

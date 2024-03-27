@@ -13,6 +13,7 @@
   base-tooltip(
     :bypassed="isAvatarPopoverVisible"
     align="left"
+    click="hide"
     tooltip="Manage Account"
     class="c-sidebar-context__avatar-wrap"
   )
