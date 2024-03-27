@@ -21,6 +21,7 @@ div(
       :bypassed="isIdentityPopoverVisible"
       align="left"
       direction="bottom"
+      click="hide"
       tooltip="Manage Workspace"
     )
       base-server-logo(

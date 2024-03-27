@@ -75,6 +75,7 @@
   base-tooltip(
     :bypassed="isActionsPopoverVisible"
     align="right"
+    click="hide"
     tooltip="More Options"
     class="c-sidebar-context__actions-wrap"
   )
