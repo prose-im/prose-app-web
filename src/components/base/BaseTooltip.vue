@@ -10,7 +10,7 @@
 
 <template lang="pug">
 div(
-  @mouseover="onMouseOver"
+  @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
   :class=`[
     "c-base-tooltip",
@@ -47,7 +47,7 @@ div(
 
 <script lang="ts">
 // CONSTANTS
-const MOUSE_OVER_APPLY_DELAY = 150; // 150 milliseconds
+const MOUSE_ENTER_APPLY_DELAY = 250; // 250 milliseconds
 
 export default {
   name: "BaseTooltip",
@@ -86,7 +86,7 @@ export default {
     return {
       // --> STATE <--
 
-      mouseOverApplyTimeout: null as null | ReturnType<typeof setTimeout>,
+      mouseEnterApplyTimeout: null as null | ReturnType<typeof setTimeout>,
 
       isInserted: false,
       isVisible: false
@@ -109,35 +109,42 @@ export default {
     // --> EVENT LISTENERS <--
 
     onClick(): void {
-      if (!this.bypassed) {
-        // Toggle visibility
-        this.setVisible(!this.isVisible);
+      if (this.isVisible !== true) {
+        // Mark as visible? (only if not bypassed)
+        if (this.bypassed !== true) {
+          this.setVisible(true);
+        }
+      } else {
+        // Mark as invisible
+        this.setVisible(false);
       }
     },
 
-    onMouseOver(): void {
-      if (!this.bypassed) {
-        if (this.mouseOverApplyTimeout === null) {
-          this.mouseOverApplyTimeout = setTimeout(() => {
-            this.mouseOverApplyTimeout = null;
+    onMouseEnter(): void {
+      // Mark as visible after some time? (only if not bypassed and not \
+      //   already visible)
+      if (this.bypassed !== true && this.isVisible !== true) {
+        if (this.mouseEnterApplyTimeout === null) {
+          this.mouseEnterApplyTimeout = setTimeout(() => {
+            this.mouseEnterApplyTimeout = null;
 
             // Mark as visible
             this.setVisible(true);
-          }, MOUSE_OVER_APPLY_DELAY);
+          }, MOUSE_ENTER_APPLY_DELAY);
         }
       }
     },
 
     onMouseLeave(): void {
-      if (!this.bypassed) {
-        // Any over timeout set? Cancel it first?
-        if (this.mouseOverApplyTimeout !== null) {
-          clearTimeout(this.mouseOverApplyTimeout);
+      // Any mouse enter timeout set? (cancel it first)
+      if (this.mouseEnterApplyTimeout !== null) {
+        clearTimeout(this.mouseEnterApplyTimeout);
 
-          this.mouseOverApplyTimeout = null;
-        }
+        this.mouseEnterApplyTimeout = null;
+      }
 
-        // Mark as invisible
+      // Mark as invisible right away? (only if visible)
+      if (this.isVisible === true) {
         this.setVisible(false);
       }
     }
