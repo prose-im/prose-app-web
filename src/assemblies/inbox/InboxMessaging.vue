@@ -1793,7 +1793,7 @@ $heads-up-edge-offset: 12px;
 
   #{$c}__popover {
     position: absolute;
-    z-index: 1;
+    z-index: $index-foreground-quaternary;
   }
 }
 </style>
