@@ -34,7 +34,8 @@
     "test": "npm run lint"
   },
   "dependencies": {
-    "@prose-im/prose-sdk-js": "0.1.66",
+    "@privacyresearch/libsignal-protocol-typescript": "^0.0.16",
+    "@prose-im/prose-sdk-js": "0.1.68",
     "@prose-im/prose-core-views": "0.38.1",
     "@tauri-apps/api": "1.5.3",
     "lodash.camelcase": "4.3.0",

@@ -35,6 +35,7 @@ import {
   VERSION_SYSTEM
 } from "@/broker/context";
 import BrokerDelegate from "@/broker/delegate";
+import EncryptionService from "@/broker/encryption_service";
 
 /**************************************************************************
  * CONSTANTS
@@ -205,6 +206,7 @@ class BrokerClient {
       this.client = await ProseClient.init(
         new BrokerConnection(),
         this.__delegate,
+        new EncryptionService(),
         this.__configuration()
       );
     }
