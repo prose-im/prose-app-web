@@ -25,7 +25,7 @@ layout-toolbar(
         base-action(
           @click="onActionFormattingClick"
           :active="isActionFormattingPopoverVisible"
-          :disabled="isFormDisabled"
+          :disabled="isFormDisabled || true"
           :size="actionIconSize"
           class="a-inbox-form__action"
           icon="textformat.alt"
