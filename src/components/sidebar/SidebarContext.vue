@@ -407,6 +407,7 @@ export default {
         {
           type: PopoverItemType.Button,
           label: "Switch account",
+          disabled: true,
 
           children: [
             {
