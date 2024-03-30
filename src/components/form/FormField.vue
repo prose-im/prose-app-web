@@ -495,7 +495,7 @@ $c: ".c-form-field";
   &:before {
     content: "";
     border: $size-form-field-outline-width solid transparent;
-    inset: (-1 * $size-form-field-outline-width);
+    inset: -$size-form-field-outline-width;
     position: absolute;
     pointer-events: none;
     transition-property: border-color;
