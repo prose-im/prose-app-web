@@ -863,8 +863,8 @@ $current-status-define-padding-block: 2px;
 
       #{$c}__status-define {
         color: rgb(var(--color-base-purple-normal));
-        margin-inline: (-1 * $current-status-define-padding-inline);
-        margin-block: (-1 * $current-status-define-padding-block);
+        margin-inline: -$current-status-define-padding-inline;
+        margin-block: -$current-status-define-padding-block;
         padding: $current-status-define-padding-block
           $current-status-define-padding-inline;
         border-radius: 3px;
@@ -883,7 +883,7 @@ $current-status-define-padding-block: 2px;
 
   #{$c}__actions-wrap {
     flex: 0 0 auto;
-    margin-inline-end: (-1 * $size-base-action-padding-sides);
+    margin-inline-end: -$size-base-action-padding-sides;
 
     #{$c}__actions {
       #{$c}__actions-popover {

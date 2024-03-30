@@ -258,7 +258,7 @@ $entry-button-popover-edges-offset: (
     #{$c}__button-popover {
       position: absolute;
       inset-inline-start: calc(100% - #{$entry-button-popover-edges-offset});
-      inset-block-end: (-1 * $entry-button-popover-edges-offset);
+      inset-block-end: -$entry-button-popover-edges-offset;
       z-index: 1;
     }
 

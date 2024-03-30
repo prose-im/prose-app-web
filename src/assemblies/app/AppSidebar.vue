@@ -394,7 +394,7 @@ $sidebar-context-height: $size-inbox-form-height;
     z-index: 0;
 
     #{$c}__main-list {
-      margin-inline: (-1 * $sidebar-items-padding-sides);
+      margin-inline: -$sidebar-items-padding-sides;
 
       > * {
         padding-inline: (

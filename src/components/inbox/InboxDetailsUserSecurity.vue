@@ -326,7 +326,7 @@ $c: ".c-inbox-details-user-security";
       );
       padding: 0;
       position: absolute;
-      inset-inline-end: (-1 * $size-base-popover-list-inset-block-edge-offset);
+      inset-inline-end: -$size-base-popover-list-inset-block-edge-offset;
       inset-block-end: calc(
         100% + #{$size-base-popover-list-inset-block-edge-offset}
       );

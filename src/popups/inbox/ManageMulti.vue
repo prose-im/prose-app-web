@@ -204,7 +204,7 @@ $c: ".p-manage-multi";
 #{$c} {
   #{$c}__form {
     #{$c}__form-offset-sides {
-      margin-inline: (-1 * $size-layout-popup-navigate-padding-inline);
+      margin-inline: -$size-layout-popup-navigate-padding-inline;
     }
   }
 
