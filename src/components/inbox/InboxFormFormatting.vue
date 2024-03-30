@@ -21,6 +21,7 @@
       base-action(
         @click="onActionClick(action.action)"
         :icon="action.icon"
+        :disabled="disabled"
         class="c-inbox-form-formatting__action"
         size="12px"
         auto-width
@@ -55,6 +56,13 @@ export enum FormattingAction {
 
 export default {
   name: "InboxFormFormatting",
+
+  props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    }
+  },
 
   emits: ["action"],
 

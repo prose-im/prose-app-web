@@ -30,6 +30,10 @@ const $layout = defineStore("layout", {
       },
 
       inbox: {
+        form: {
+          formatting: false
+        },
+
         details: {
           visible: true,
 
@@ -72,6 +76,12 @@ const $layout = defineStore("layout", {
     toggleInboxDetailsVisible() {
       this.$patch(state => {
         state.inbox.details.visible = !state.inbox.details.visible;
+      });
+    },
+
+    setInboxFormFormatting(visible: boolean) {
+      this.$patch(state => {
+        state.inbox.form.formatting = visible;
       });
     },
 

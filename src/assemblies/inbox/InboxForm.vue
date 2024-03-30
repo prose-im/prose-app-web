@@ -67,6 +67,7 @@ layout-toolbar(
       inbox-form-formatting(
         v-if="isActionFormatFormattingVisible"
         @action="onFormattingAction"
+        :disabled="isFormDisabled"
         class="a-inbox-form__compose-formatting"
       )
 
@@ -257,7 +258,6 @@ export default {
 
       isMessageFieldFocused: false,
 
-      isActionFormatFormattingVisible: false,
       isActionRecordRecorderVisible: false,
       isActionEmojisPopoverVisible: false,
 
@@ -336,8 +336,16 @@ export default {
       return suggestions;
     },
 
+    isActionFormatFormattingVisible(): boolean {
+      return this.layout.inbox.form.formatting;
+    },
+
     isFormDisabled(): boolean {
       return !this.session.connected ? true : false;
+    },
+
+    layout(): typeof Store.$layout {
+      return Store.$layout;
     },
 
     session(): typeof Store.$session {
@@ -626,9 +634,10 @@ export default {
     // --> EVENT LISTENERS <--
 
     onActionFormatClick(): void {
-      // Toggle popover
-      this.isActionFormatFormattingVisible =
-        !this.isActionFormatFormattingVisible;
+      // Toggle formatting toolbar
+      Store.$layout.setInboxFormFormatting(
+        !this.isActionFormatFormattingVisible
+      );
     },
 
     onActionRecordClick(): void {
