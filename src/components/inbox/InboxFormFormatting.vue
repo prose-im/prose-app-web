@@ -157,6 +157,11 @@ $c: ".c-inbox-form-formatting";
       padding-inline-end: 0;
     }
 
+    &,
+    #{$c}__action {
+      flex: 0 0 auto;
+    }
+
     #{$c}__action {
       margin-inline-end: 3px;
 

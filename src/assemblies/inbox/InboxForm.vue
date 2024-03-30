@@ -647,9 +647,6 @@ export default {
     },
 
     onFormattingAction(action: FormattingAction): void {
-      // Close popover
-      this.isActionFormatFormattingVisible = false;
-
       // TODO: apply formatting to text
     },
 
