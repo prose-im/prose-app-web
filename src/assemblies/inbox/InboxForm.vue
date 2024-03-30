@@ -934,8 +934,8 @@ $form-compose-send-button-size: (
 
   #{$c}__actions {
     margin-block-end: (
-      $form-compose-padding-block + ($form-compose-field-height-minimum / 2) -
-        ($size-base-action-height / 2)
+      $form-compose-padding-block + calc($form-compose-field-height-minimum / 2) -
+        calc($size-base-action-height / 2)
     );
   }
 
