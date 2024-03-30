@@ -13,23 +13,19 @@
   .c-inbox-form-formatting__group(
     v-for="group in groups"
   )
-    .c-inbox-form-formatting__label
-      | {{ group.label }}
-
-    .c-inbox-form-formatting__actions
-      base-tooltip(
-        v-for="action in group.actions"
-        :tooltip="action.title"
-        align="left"
+    base-tooltip(
+      v-for="action in group"
+      :tooltip="action.title"
+      align="left"
+    )
+      base-action(
+        @click="onActionClick(action.action)"
+        :icon="action.icon"
+        class="c-inbox-form-formatting__action"
+        size="12px"
+        auto-width
+        auto-height
       )
-        base-action(
-          @click="onActionClick(action.action)"
-          :icon="action.icon"
-          class="c-inbox-form-formatting__action"
-          size="14px"
-          auto-width
-          auto-height
-        )
 </template>
 
 <!-- **********************************************************************
@@ -47,18 +43,14 @@ export enum FormattingAction {
   Underline = "underline",
   // Strikethrough formatting.
   Strikethrough = "strikethrough",
+  // Link formatting.
+  Link = "link",
   // List bullets formatting.
   ListBullets = "list-bullets",
   // List numbers formatting.
   ListNumbers = "list-numbers",
-  // Quote formatting.
-  Quote = "quote",
-  // Link formatting.
-  Link = "link",
-  // Code formatting.
-  Code = "code",
-  // Snippet formatting.
-  Snippet = "snippet"
+  // Code block formatting.
+  CodeBlock = "code-block"
 }
 
 export default {
@@ -71,83 +63,61 @@ export default {
       // --> DATA <--
 
       groups: [
-        {
-          label: "Font",
+        [
+          {
+            title: "Bold",
+            icon: "bold",
+            action: FormattingAction.Bold
+          },
 
-          actions: [
-            {
-              title: "Bold",
-              icon: "bold",
-              action: FormattingAction.Bold
-            },
+          {
+            title: "Italic",
+            icon: "italic",
+            action: FormattingAction.Italic
+          },
 
-            {
-              title: "Italic",
-              icon: "italic",
-              action: FormattingAction.Italic
-            },
+          {
+            title: "Underline",
+            icon: "underline",
+            action: FormattingAction.Underline
+          },
 
-            {
-              title: "Underline",
-              icon: "underline",
-              action: FormattingAction.Underline
-            },
+          {
+            title: "Strikethrough",
+            icon: "strikethrough",
+            action: FormattingAction.Strikethrough
+          }
+        ],
 
-            {
-              title: "Strikethrough",
-              icon: "strikethrough",
-              action: FormattingAction.Strikethrough
-            }
-          ]
-        },
+        [
+          {
+            title: "Link",
+            icon: "link",
+            action: FormattingAction.Link
+          }
+        ],
 
-        {
-          label: "Lists",
+        [
+          {
+            title: "List (Bullets)",
+            icon: "list.bullet",
+            action: FormattingAction.ListBullets
+          },
 
-          actions: [
-            {
-              title: "List (Bullets)",
-              icon: "list.bullet",
-              action: FormattingAction.ListBullets
-            },
+          {
+            title: "List (Numbers)",
+            icon: "list.number",
+            action: FormattingAction.ListNumbers
+          }
+        ],
 
-            {
-              title: "List (Numbers)",
-              icon: "list.number",
-              action: FormattingAction.ListNumbers
-            },
-
-            {
-              title: "Quote text",
-              icon: "text.quote",
-              action: FormattingAction.Quote
-            }
-          ]
-        },
-
-        {
-          label: "Inserts",
-
-          actions: [
-            {
-              title: "Link",
-              icon: "link",
-              action: FormattingAction.Link
-            },
-
-            {
-              title: "Code",
-              icon: "chevron.left.forwardslash.chevron.right",
-              action: FormattingAction.Code
-            },
-
-            {
-              title: "Snippet",
-              icon: "character.textbox",
-              action: FormattingAction.Snippet
-            }
-          ]
-        }
+        [
+          {
+            title: "Code (Block)",
+            icon: "chevron.left.forwardslash.chevron.right",
+            action: FormattingAction.CodeBlock
+          }
+        ]
       ]
     };
   },
@@ -170,36 +140,28 @@ export default {
 $c: ".c-inbox-form-formatting";
 
 #{$c} {
+  display: flex;
+  align-items: center;
+
   #{$c}__group {
-    border-block-end: 1px solid rgb(var(--color-border-tertiary));
+    border-inline-end: 1px solid rgb(var(--color-border-tertiary));
     font-size: 13px;
-    margin-block-end: 8px;
-    padding-block-end: 10px;
+    margin-inline-end: 8px;
+    padding-inline-end: 10px;
     display: flex;
     align-items: center;
 
     &:last-child {
-      border-block-end: 0 none;
-      margin-block-end: 0;
-      padding-block-end: 0;
+      border-inline-end: 0 none;
+      margin-inline-end: 0;
+      padding-inline-end: 0;
     }
 
-    #{$c}__label {
-      color: rgb(var(--color-text-primary));
-      min-width: 54px;
-      padding-inline-end: 4px;
-      flex: 0 0 auto;
-    }
+    #{$c}__action {
+      margin-inline-end: 3px;
 
-    #{$c}__actions {
-      flex: 1;
-
-      #{$c}__action {
-        margin-inline-end: 3px;
-
-        &:last-child {
-          margin-inline-end: 0;
-        }
+      &:last-child {
+        margin-inline-end: 0;
       }
     }
   }

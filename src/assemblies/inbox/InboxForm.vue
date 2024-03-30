@@ -16,29 +16,21 @@ layout-toolbar(
   template(
     v-slot:left
   )
-    layout-actions
+    layout-actions(
+      class="a-inbox-form__actions"
+    )
       base-tooltip(
-        :bypassed="isActionFormattingPopoverVisible"
+        :tooltip="formatTooltip"
         align="left"
-        tooltip="Text Formatting"
       )
         base-action(
-          @click="onActionFormattingClick"
-          :active="isActionFormattingPopoverVisible"
-          :disabled="isFormDisabled || true"
+          @click="onActionFormatClick"
+          :active="isActionFormatFormattingVisible"
+          :disabled="isFormDisabled"
           :size="actionIconSize"
           class="a-inbox-form__action"
           icon="textformat.alt"
         )
-          base-popover(
-            v-if="isActionFormattingPopoverVisible"
-            @close="onActionFormattingPopoverClose"
-            class="a-inbox-form__action-popover a-inbox-form__action-popover--left"
-          )
-            inbox-form-formatting(
-              @action="onFormattingAction"
-              class="a-inbox-form__action-formatting"
-            )
 
       base-tooltip(
         v-if="!isActionRecordRecorderVisible"
@@ -70,6 +62,12 @@ layout-toolbar(
         v-if="room"
         :room="room"
         class="a-inbox-form__compose-chatstate"
+      )
+
+      inbox-form-formatting(
+        v-if="isActionFormatFormattingVisible"
+        @action="onFormattingAction"
+        class="a-inbox-form__compose-formatting"
       )
 
       .a-inbox-form__compose-inner
@@ -114,7 +112,9 @@ layout-toolbar(
   template(
     v-slot:right
   )
-    layout-actions
+    layout-actions(
+      class="a-inbox-form__actions"
+    )
       base-tooltip(
         align="right"
         tooltip="Send Files"
@@ -257,7 +257,7 @@ export default {
 
       isMessageFieldFocused: false,
 
-      isActionFormattingPopoverVisible: false,
+      isActionFormatFormattingVisible: false,
       isActionRecordRecorderVisible: false,
       isActionEmojisPopoverVisible: false,
 
@@ -270,6 +270,12 @@ export default {
   },
 
   computed: {
+    formatTooltip(): string {
+      return this.isActionFormatFormattingVisible
+        ? "Hide Formatting"
+        : "Show Formatting";
+    },
+
     fieldComposePlaceholder(): string {
       // Acquire room prefix
       let roomPrefix;
@@ -619,15 +625,10 @@ export default {
 
     // --> EVENT LISTENERS <--
 
-    onActionFormattingClick(): void {
+    onActionFormatClick(): void {
       // Toggle popover
-      this.isActionFormattingPopoverVisible =
-        !this.isActionFormattingPopoverVisible;
-    },
-
-    onActionFormattingPopoverClose(): void {
-      // Close popover
-      this.isActionFormattingPopoverVisible = false;
+      this.isActionFormatFormattingVisible =
+        !this.isActionFormatFormattingVisible;
     },
 
     onActionRecordClick(): void {
@@ -647,7 +648,7 @@ export default {
 
     onFormattingAction(action: FormattingAction): void {
       // Close popover
-      this.isActionFormattingPopoverVisible = false;
+      this.isActionFormatFormattingVisible = false;
 
       // TODO: apply formatting to text
     },
@@ -905,6 +906,7 @@ $c: ".a-inbox-form";
 
 // VARIABLES
 $form-compose-padding-block: 10px;
+$form-compose-formatting-recess-block: 3px;
 $form-compose-field-height-minimum: (
   $size-inbox-form-height - (2 * $form-compose-padding-block)
 );
@@ -919,6 +921,17 @@ $form-compose-send-button-size: (
 
 #{$c} {
   position: relative;
+
+  &:has(#{$c}__actions) {
+    align-items: flex-end;
+  }
+
+  #{$c}__actions {
+    margin-block-end: (
+      $form-compose-padding-block + ($form-compose-field-height-minimum / 2) -
+        ($size-base-action-height / 2)
+    );
+  }
 
   #{$c}__action {
     #{$c}__action-popover {
@@ -935,12 +948,6 @@ $form-compose-send-button-size: (
       &--right {
         inset-inline-end: 0;
       }
-    }
-
-    #{$c}__action-formatting {
-      min-width: 210px;
-      padding-block: 4px;
-      padding-inline: 14px;
     }
   }
 
@@ -978,7 +985,7 @@ $form-compose-send-button-size: (
 
     #{$c}__compose-send {
       position: absolute;
-      inset-block-start: $form-compose-send-position-edges;
+      inset-block-end: $form-compose-send-position-edges;
       inset-inline-end: $form-compose-send-position-edges;
 
       #{$c}__compose-send-button {
@@ -1001,6 +1008,14 @@ $form-compose-send-button-size: (
       inset-inline-start: 0;
       inset-block-end: calc(100% - 5px);
       z-index: 1;
+    }
+
+    #{$c}__compose-formatting {
+      margin-inline: 10px;
+      margin-block-start: -$form-compose-formatting-recess-block;
+      margin-block-end: (
+        $form-compose-padding-block - $form-compose-formatting-recess-block
+      );
     }
   }
 
