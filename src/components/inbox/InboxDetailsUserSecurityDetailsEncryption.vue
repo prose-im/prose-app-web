@@ -30,7 +30,7 @@ div(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import { Detail as BadgeDetail } from "@/components/base/BaseBadgeDetails.vue";
@@ -45,6 +45,11 @@ export default {
   props: {
     jid: {
       type: Object as PropType<JID>,
+      required: true
+    },
+
+    room: {
+      type: Object as PropType<Room>,
       required: true
     },
 
