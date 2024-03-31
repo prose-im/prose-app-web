@@ -1,7 +1,7 @@
 {
   "name": "@prose-im/prose-app-web",
   "description": "Prose Web application",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "type": "module",
   "homepage": "https://github.com/prose-im/prose-app-web",
   "license": "MPL-2.0",
