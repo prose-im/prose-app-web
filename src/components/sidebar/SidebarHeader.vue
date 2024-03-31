@@ -44,18 +44,6 @@ div(
     base-tooltip(
       align="right"
       direction="bottom"
-      tooltip="Call Someone"
-    )
-      base-action(
-        class="c-sidebar-header__action"
-        icon="phone.bubble.left"
-        size="18px"
-        disabled
-      )
-
-    base-tooltip(
-      align="right"
-      direction="bottom"
       tooltip="Message Someone"
     )
       base-action(

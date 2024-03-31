@@ -81,18 +81,6 @@ layout-toolbar(
 
     layout-actions
       base-tooltip(
-        align="right"
-        direction="bottom"
-        tooltip="Start Video Call"
-      )
-        base-action(
-          icon="video"
-          context="grey"
-          size="20px"
-          disabled
-        )
-
-      base-tooltip(
         :tooltip="actionDetailsTooltip"
         align="right"
         direction="bottom"
