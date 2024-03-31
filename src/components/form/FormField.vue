@@ -293,6 +293,11 @@ export default {
       return this.acquireFieldSelection();
     },
 
+    selectFieldRangeFromParent(start: number, end: number): void {
+      // Alias field range method
+      return this.selectFieldRange(start, end);
+    },
+
     // --> HELPERS <--
 
     focusField(): void {
@@ -338,6 +343,14 @@ export default {
       }
 
       return undefined;
+    },
+
+    selectFieldRange(start: number, end: number): void {
+      const fieldElement = (this.$refs.field as HTMLInputElement) || null;
+
+      if (fieldElement !== null) {
+        fieldElement.setSelectionRange(start, end);
+      }
     },
 
     updateStateValue(value: string): void {

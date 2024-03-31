@@ -666,12 +666,16 @@ export default {
       action: FormattingAction,
       syntax: FormattingSyntax
     ): void {
+      this.$log.debug(`Apply formatting to message field: ${action}`);
+
+      const messageComponent = this.$refs.message as typeof FormField;
+
       // Acquire field selection
-      const selection = (
-        this.$refs.message as typeof FormField
-      )?.acquireFieldSelectionFromParent();
+      const selection = messageComponent?.acquireFieldSelectionFromParent();
 
       if (selection?.cursor !== undefined) {
+        const codeTagIndex = syntax.code.indexOf(FORMATTING_REPLACEMENT_TAG);
+
         // Format selected text
         const cursorFormattedText = syntax.code.replaceAll(
           FORMATTING_REPLACEMENT_TAG,
@@ -686,10 +690,20 @@ export default {
 
         // Update message in field
         this.message = formattedValue;
-      }
 
-      // Restore focus on the message field
-      this.focusMessageField();
+        // Restore focus and selection on the message field
+        // Notice: once updated message model has been applied to field.
+        this.$nextTick(() => {
+          // Restore selection (taking into account changed value)
+          messageComponent.selectFieldRangeFromParent(
+            selection.cursor.start + codeTagIndex,
+            selection.cursor.end + codeTagIndex
+          );
+
+          // Restore focus on the message field
+          this.focusMessageField();
+        });
+      }
     },
 
     onRecorderAudio(audio: RecorderAudio) {
