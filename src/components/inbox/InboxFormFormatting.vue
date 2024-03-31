@@ -16,7 +16,6 @@
     base-tooltip(
       v-for="action in group"
       :tooltip="action.title"
-      align="left"
     )
       base-action(
         @click="onActionClick(action.action)"
