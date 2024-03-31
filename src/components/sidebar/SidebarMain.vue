@@ -25,22 +25,6 @@
     )
 
     sidebar-main-section(
-      @click="onSectionRepliesClick"
-      :active="sectionActive.replies"
-      title="Replies"
-      icon="arrowshape.turn.up.left.2"
-      disabled
-    )
-
-    sidebar-main-section(
-      @click="onSectionConversationsClick"
-      :active="sectionActive.conversations"
-      title="Direct messages"
-      icon="message"
-      disabled
-    )
-
-    sidebar-main-section(
       @click="onSectionBrowseClick"
       :active="sectionActive.browse"
       :count="sectionCount.browse"
@@ -166,8 +150,6 @@ export default {
     sectionActive(): { [section: string]: boolean } {
       return {
         unread: this.routeName === "app.spotlight.unread",
-        replies: this.routeName === "app.spotlight.replies",
-        conversations: this.routeName === "app.spotlight.conversations",
         browse: this.routeName.startsWith("app.spotlight.browse")
       };
     },
@@ -356,18 +338,6 @@ export default {
     onSectionUnreadClick(): void {
       this.$router.push({
         name: "app.spotlight.unread"
-      });
-    },
-
-    onSectionRepliesClick(): void {
-      this.$router.push({
-        name: "app.spotlight.replies"
-      });
-    },
-
-    onSectionConversationsClick(): void {
-      this.$router.push({
-        name: "app.spotlight.conversations"
       });
     },
 

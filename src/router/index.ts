@@ -21,8 +21,6 @@ import { JID } from "@prose-im/prose-sdk-js";
 import AppBase from "@/views/app/AppBase.vue";
 import AppIndex from "@/views/app/AppIndex.vue";
 import AppSpotlightUnread from "@/views/app/spotlight/AppSpotlightUnread.vue";
-import AppSpotlightReplies from "@/views/app/spotlight/AppSpotlightReplies.vue";
-import AppSpotlightConversations from "@/views/app/spotlight/AppSpotlightConversations.vue";
 import AppSpotlightBrowseBase from "@/views/app/spotlight/AppSpotlightBrowseBase.vue";
 import AppSpotlightBrowsePeople from "@/views/app/spotlight/AppSpotlightBrowsePeople.vue";
 import AppSpotlightBrowseChannels from "@/views/app/spotlight/AppSpotlightBrowseChannels.vue";
@@ -124,18 +122,6 @@ class Router {
               path: "spotlight/unread/",
               name: "app.spotlight.unread",
               component: AppSpotlightUnread as object
-            },
-
-            {
-              path: "spotlight/replies/",
-              name: "app.spotlight.replies",
-              component: AppSpotlightReplies as object
-            },
-
-            {
-              path: "spotlight/conversations/",
-              name: "app.spotlight.conversations",
-              component: AppSpotlightConversations as object
             },
 
             {
