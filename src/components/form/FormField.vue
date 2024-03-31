@@ -98,6 +98,17 @@ import {
   Suggestion as FormFieldSuggestSuggestion
 } from "@/components/form/FormFieldSuggest.vue";
 
+// INTERFACES
+interface Selection {
+  value: string;
+
+  cursor?: {
+    text: string;
+    start: number;
+    end: number;
+  };
+}
+
 export default {
   name: "FormField",
 
@@ -277,6 +288,11 @@ export default {
       this.focusField();
     },
 
+    acquireFieldSelectionFromParent(): Selection | void {
+      // Alias field selection method
+      return this.acquireFieldSelection();
+    },
+
     // --> HELPERS <--
 
     focusField(): void {
@@ -288,6 +304,40 @@ export default {
           fieldElement.focus();
         }
       }
+    },
+
+    acquireFieldSelection(): Selection | void {
+      const fieldElement = (this.$refs.field as HTMLInputElement) || null;
+
+      if (fieldElement !== null) {
+        // Acquire value from field
+        const fieldValue = fieldElement.value;
+
+        // Populate selection object
+        const selection: Selection = {
+          value: fieldValue
+        };
+
+        // Obtain the indexes of the selected characters (start and end)
+        const cursorStart = fieldElement.selectionStart,
+          cursorEnd = fieldElement.selectionEnd;
+
+        if (cursorStart !== null) {
+          selection.cursor = {
+            text:
+              cursorEnd !== null
+                ? fieldElement.value.substring(cursorStart, cursorEnd)
+                : "",
+
+            start: cursorStart,
+            end: cursorEnd !== null ? cursorEnd : cursorStart
+          };
+        }
+
+        return selection;
+      }
+
+      return undefined;
     },
 
     updateStateValue(value: string): void {
