@@ -82,7 +82,7 @@ export default {
       default: "white",
 
       validator(x: string) {
-        return ["white", "grey", "dark"].includes(x);
+        return ["transparent", "white", "grey", "dark"].includes(x);
       }
     },
 
@@ -213,6 +213,12 @@ $inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
       }
     }
 
+    &#{$c}--transparent {
+      > #{$c}__inner {
+        background-color: rgba(var(--color-base-grey-light), 0.25);
+      }
+    }
+
     &#{$c}--white {
       > #{$c}__inner {
         background-color: rgb(var(--color-base-grey-light));
@@ -235,8 +241,10 @@ $inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
   &--bordered {
     &#{$c}:hover,
     &#{$c}:active {
-      > #{$c}__inner {
-        outline-color: transparent;
+      &:not(#{$c}--transparent) {
+        > #{$c}__inner {
+          outline-color: transparent;
+        }
       }
     }
 
@@ -251,6 +259,7 @@ $inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
       outline: 1px solid rgb(var(--color-border-primary));
     }
 
+    &#{$c}--transparent,
     &#{$c}--white {
       > #{$c}__inner {
         outline-color: rgb(var(--color-border-tertiary));
@@ -300,11 +309,21 @@ $inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
 
   // --> CONTEXTS <--
 
+  &--transparent,
   &--white,
   &--grey {
     #{$c}__icon,
     #{$c}__dropdown {
       fill: rgb(var(--color-base-grey-dark));
+    }
+  }
+
+  &--transparent {
+    > #{$c}__inner {
+      &:hover,
+      &:active {
+        background-color: rgba(var(--color-base-grey-light), 0.5);
+      }
     }
   }
 

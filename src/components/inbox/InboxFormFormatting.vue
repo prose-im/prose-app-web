@@ -22,6 +22,7 @@
         :icon="action.icon"
         :disabled="disabled"
         class="c-inbox-form-formatting__action"
+        context="transparent"
         size="12px"
         auto-width
         auto-height
