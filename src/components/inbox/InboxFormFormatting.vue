@@ -18,7 +18,7 @@
       :tooltip="action.title"
     )
       base-action(
-        @click="onActionClick(action.action)"
+        @click="onActionClick(action.action, action.syntax)"
         :icon="action.icon"
         :disabled="disabled"
         class="c-inbox-form-formatting__action"
@@ -40,8 +40,6 @@ export enum FormattingAction {
   Bold = "bold",
   // Italic formatting.
   Italic = "italic",
-  // Underline formatting.
-  Underline = "underline",
   // Strikethrough formatting.
   Strikethrough = "strikethrough",
   // Link formatting.
@@ -53,6 +51,22 @@ export enum FormattingAction {
   // Code block formatting.
   CodeBlock = "code-block"
 }
+
+export enum FormattingSyntaxMode {
+  // Prepend syntax mode.
+  Prepend = "prepend",
+  // Enclose syntax mode.
+  Enclose = "enclose"
+}
+
+// INTERFACES
+export interface FormattingSyntax {
+  mode: FormattingSyntaxMode;
+  code: string;
+}
+
+// CONSTANTS
+export const REPLACEMENT_TAG = "%s";
 
 export default {
   name: "InboxFormFormatting",
@@ -75,25 +89,34 @@ export default {
           {
             title: "Bold",
             icon: "bold",
-            action: FormattingAction.Bold
+            action: FormattingAction.Bold,
+
+            syntax: {
+              mode: FormattingSyntaxMode.Enclose,
+              code: `**${REPLACEMENT_TAG}**`
+            }
           },
 
           {
             title: "Italic",
             icon: "italic",
-            action: FormattingAction.Italic
-          },
+            action: FormattingAction.Italic,
 
-          {
-            title: "Underline",
-            icon: "underline",
-            action: FormattingAction.Underline
+            syntax: {
+              mode: FormattingSyntaxMode.Enclose,
+              code: `_${REPLACEMENT_TAG}_`
+            }
           },
 
           {
             title: "Strikethrough",
             icon: "strikethrough",
-            action: FormattingAction.Strikethrough
+            action: FormattingAction.Strikethrough,
+
+            syntax: {
+              mode: FormattingSyntaxMode.Enclose,
+              code: `~~${REPLACEMENT_TAG}~~`
+            }
           }
         ],
 
@@ -101,7 +124,12 @@ export default {
           {
             title: "Link",
             icon: "link",
-            action: FormattingAction.Link
+            action: FormattingAction.Link,
+
+            syntax: {
+              mode: FormattingSyntaxMode.Enclose,
+              code: `[](${REPLACEMENT_TAG})`
+            }
           }
         ],
 
@@ -109,13 +137,23 @@ export default {
           {
             title: "List (Bullets)",
             icon: "list.bullet",
-            action: FormattingAction.ListBullets
+            action: FormattingAction.ListBullets,
+
+            syntax: {
+              mode: FormattingSyntaxMode.Enclose,
+              code: `* ${REPLACEMENT_TAG}`
+            }
           },
 
           {
             title: "List (Numbers)",
             icon: "list.number",
-            action: FormattingAction.ListNumbers
+            action: FormattingAction.ListNumbers,
+
+            syntax: {
+              mode: FormattingSyntaxMode.Enclose,
+              code: `1. ${REPLACEMENT_TAG}`
+            }
           }
         ],
 
@@ -123,7 +161,12 @@ export default {
           {
             title: "Code (Block)",
             icon: "chevron.left.forwardslash.chevron.right",
-            action: FormattingAction.CodeBlock
+            action: FormattingAction.CodeBlock,
+
+            syntax: {
+              mode: FormattingSyntaxMode.Enclose,
+              code: `\`\`\`\n${REPLACEMENT_TAG}\n\`\`\``
+            }
           }
         ]
       ]
@@ -133,8 +176,8 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    onActionClick(action: FormattingAction): void {
-      this.$emit("action", action);
+    onActionClick(action: FormattingAction, syntax: FormattingSyntax): void {
+      this.$emit("action", action, syntax);
     }
   }
 };

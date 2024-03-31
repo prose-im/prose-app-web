@@ -55,13 +55,16 @@ layout-toolbar(
   template(
     v-slot:middle
   )
-    form.a-inbox-form__compose(
-      @submit.prevent="onSubmit"
-    )
+    .a-inbox-form__compose
       inbox-form-chatstate(
         v-if="room"
         :room="room"
-        class="a-inbox-form__compose-chatstate"
+        :class=`[
+          "a-inbox-form__compose-chatstate",
+          {
+            "a-inbox-form__compose-chatstate--with-formatting": isActionFormatFormattingVisible
+          }
+        ]`
       )
 
       inbox-form-formatting(
@@ -71,7 +74,9 @@ layout-toolbar(
         class="a-inbox-form__compose-formatting"
       )
 
-      .a-inbox-form__compose-inner
+      form.a-inbox-form__compose-form(
+        @submit.prevent="onSubmit"
+      )
         form-field(
           v-model="message"
           @keystroke="onKeyStroke"
@@ -191,7 +196,9 @@ import FormField from "@/components/form/FormField.vue";
 import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/FormFieldSuggest.vue";
 import {
   default as InboxFormFormatting,
-  FormattingAction
+  FormattingAction,
+  FormattingSyntax,
+  REPLACEMENT_TAG as FORMATTING_REPLACEMENT_TAG
 } from "@/components/inbox/InboxFormFormatting.vue";
 import {
   default as InboxFormRecorder,
@@ -655,8 +662,34 @@ export default {
       this.isActionEmojisPopoverVisible = false;
     },
 
-    onFormattingAction(action: FormattingAction): void {
-      // TODO: apply formatting to text
+    onFormattingAction(
+      action: FormattingAction,
+      syntax: FormattingSyntax
+    ): void {
+      // Acquire field selection
+      const selection = (
+        this.$refs.message as typeof FormField
+      )?.acquireFieldSelectionFromParent();
+
+      if (selection?.cursor !== undefined) {
+        // Format selected text
+        const cursorFormattedText = syntax.code.replaceAll(
+          FORMATTING_REPLACEMENT_TAG,
+          selection.cursor.text
+        );
+
+        // Generate new value with formatting
+        const formattedValue =
+          selection.value.substring(0, selection.cursor.start) +
+          cursorFormattedText +
+          selection.value.substring(selection.cursor.end);
+
+        // Update message in field
+        this.message = formattedValue;
+      }
+
+      // Restore focus on the message field
+      this.focusMessageField();
     },
 
     onRecorderAudio(audio: RecorderAudio) {
@@ -962,7 +995,7 @@ $form-compose-send-button-size: (
     padding-block: $form-compose-padding-block;
     position: relative;
 
-    #{$c}__compose-inner {
+    #{$c}__compose-form {
       position: relative;
     }
 
@@ -1014,6 +1047,10 @@ $form-compose-send-button-size: (
       inset-inline-start: 0;
       inset-block-end: calc(100% - 5px);
       z-index: 1;
+
+      &--with-formatting {
+        inset-block-end: calc(100% - 2px);
+      }
     }
 
     #{$c}__compose-formatting {
