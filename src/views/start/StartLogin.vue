@@ -73,7 +73,7 @@ export default {
 
           // Redirect to dashboard
           this.$router.push({
-            name: "app"
+            name: "app.index"
           });
         } catch (error) {
           // Show error alert
