@@ -120,12 +120,12 @@ class BrokerConnectionStrophe implements ProseConnection {
 
               // Pass disconnected event to caller client
               this.__eventHandler?.handleDisconnect();
-
-              // Destroy connection (permanently, we do not allow re-use here)
-              this.__destroyConnection();
             } else {
               logger.warn("Received disconnected (but was not connected)");
             }
+
+            // Destroy connection (permanently, we do not allow re-use here)
+            this.__destroyConnection();
 
             break;
           }
@@ -265,8 +265,13 @@ class BrokerConnectionStrophe implements ProseConnection {
   }
 
   private __destroyConnection(): void {
-    // Un-assign connection
-    delete this.__connection;
+    if (this.__connection !== undefined) {
+      // Reset connection
+      this.__connection.reset();
+
+      // Un-assign connection
+      delete this.__connection;
+    }
 
     // Clear registered event handler (if any)
     if (this.__eventHandler !== undefined) {
