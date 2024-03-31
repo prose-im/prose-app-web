@@ -15,6 +15,7 @@ div(
     "c-base-action--" + context,
     {
       "c-base-action--active": active,
+      "c-base-action--bordered": bordered,
       "c-base-action--disabled": disabled,
       "c-base-action--auto-width": autoWidth,
       "c-base-action--auto-height": autoHeight
@@ -109,6 +110,11 @@ export default {
       default: false
     },
 
+    bordered: {
+      type: Boolean,
+      default: false
+    },
+
     disabled: {
       type: Boolean,
       default: false
@@ -155,6 +161,9 @@ export default {
 <style lang="scss">
 $c: ".c-base-action";
 
+// VARIABLES
+$inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
+
 #{$c} {
   display: inline-block;
   position: relative;
@@ -176,7 +185,8 @@ $c: ".c-base-action";
     cursor: pointer;
     box-sizing: border-box;
     border-radius: 5px;
-    transition: background-color 100ms linear;
+    transition: all 100ms linear;
+    transition-property: background-color, box-shadow, transform;
 
     &:focus-visible {
       outline-color: rgba(var(--color-base-purple-normal), 0.3);
@@ -218,6 +228,50 @@ $c: ".c-base-action";
     &#{$c}--dark {
       > #{$c}__inner {
         background-color: rgba(var(--color-black), 0.06);
+      }
+    }
+  }
+
+  &--bordered {
+    &#{$c}:hover,
+    &#{$c}:active {
+      > #{$c}__inner {
+        outline-color: transparent;
+      }
+    }
+
+    &#{$c}:active {
+      > #{$c}__inner {
+        transform: translateY(1px);
+        box-shadow: none;
+      }
+    }
+
+    > #{$c}__inner {
+      outline: 1px solid rgb(var(--color-border-primary));
+    }
+
+    &#{$c}--white {
+      > #{$c}__inner {
+        outline-color: rgb(var(--color-border-tertiary));
+        box-shadow: $inner-bordered-box-shadow-sizes
+          rgb(var(--color-border-secondary));
+      }
+    }
+
+    &#{$c}--grey {
+      > #{$c}__inner {
+        outline-color: rgb(var(--color-border-secondary));
+        box-shadow: $inner-bordered-box-shadow-sizes
+          rgb(var(--color-border-primary));
+      }
+    }
+
+    &#{$c}--dark {
+      > #{$c}__inner {
+        outline-color: rgba(var(--color-black), 0.1);
+        box-shadow: $inner-bordered-box-shadow-sizes
+          rgba(var(--color-black), 0.2);
       }
     }
   }
