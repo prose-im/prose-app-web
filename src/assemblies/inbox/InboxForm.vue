@@ -192,13 +192,17 @@ import { useKeypress } from "vue3-keypress";
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import BaseAvatar from "@/components/base/BaseAvatar.vue";
-import FormField from "@/components/form/FormField.vue";
+import {
+  default as FormField,
+  SelectionCursor as FieldSelectionCursor
+} from "@/components/form/FormField.vue";
 import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/FormFieldSuggest.vue";
 import {
   default as InboxFormFormatting,
   FormattingAction,
   FormattingSyntax,
-  REPLACEMENT_TAG as FORMATTING_REPLACEMENT_TAG
+  TAG_TEXT as FORMATTING_TAG_TEXT,
+  TAG_INDEX as FORMATTING_TAG_INDEX
 } from "@/components/inbox/InboxFormFormatting.vue";
 import {
   default as InboxFormRecorder,
@@ -512,6 +516,70 @@ export default {
       this.mentionQuery = null;
     },
 
+    applyMessageFieldFormatting(
+      syntax: FormattingSyntax,
+      value: string,
+      cursor: FieldSelectionCursor
+    ): void {
+      // Format selected text
+      let codeTagIndexStart = 0,
+        codeTagIndexEnd = 0,
+        cursorFormattedText = "";
+
+      const cursorTextParts =
+        syntax.contiguous === true ? [cursor.text] : cursor.text.split("\n");
+
+      cursorTextParts.forEach((textLine: string, index: number) => {
+        let formattedPart = "";
+
+        // Populate formatted part basis
+        if (index > 0) {
+          formattedPart += "\n";
+        }
+
+        formattedPart += syntax.code.replaceAll(
+          FORMATTING_TAG_INDEX,
+          `${index + 1}`
+        );
+
+        // Initialize start index? (if none)
+        // Notice: this takes into account offset added by inserting a \
+        //   possible index.
+        if (index === 0) {
+          codeTagIndexStart = formattedPart.indexOf(FORMATTING_TAG_TEXT);
+        }
+
+        // Apply actual formatting to part
+        formattedPart = formattedPart.replaceAll(FORMATTING_TAG_TEXT, textLine);
+
+        // Append formatted part data
+        cursorFormattedText += formattedPart;
+        codeTagIndexEnd += codeTagIndexStart;
+      });
+
+      // Generate new value with formatting
+      const formattedValue =
+        value.substring(0, cursor.start) +
+        cursorFormattedText +
+        value.substring(cursor.end);
+
+      // Update message in field
+      this.message = formattedValue;
+
+      // Restore focus and selection on the message field
+      // Notice: once updated message model has been applied to field.
+      this.$nextTick(() => {
+        // Restore selection (taking into account changed value)
+        (this.$refs.message as typeof FormField)?.selectFieldRangeFromParent(
+          cursor.start + codeTagIndexStart,
+          cursor.end + codeTagIndexEnd
+        );
+
+        // Restore focus on the message field
+        this.focusMessageField();
+      });
+    },
+
     refreshMessageFieldMentions(message: string): void {
       // Look for mentions to suggest?
       // Notice: only check using the heavier regex if there is at least one \
@@ -668,41 +736,17 @@ export default {
     ): void {
       this.$log.debug(`Apply formatting to message field: ${action}`);
 
-      const messageComponent = this.$refs.message as typeof FormField;
-
       // Acquire field selection
-      const selection = messageComponent?.acquireFieldSelectionFromParent();
+      const selection = (
+        this.$refs.message as typeof FormField
+      )?.acquireFieldSelectionFromParent();
 
       if (selection?.cursor !== undefined) {
-        const codeTagIndex = syntax.code.indexOf(FORMATTING_REPLACEMENT_TAG);
-
-        // Format selected text
-        const cursorFormattedText = syntax.code.replaceAll(
-          FORMATTING_REPLACEMENT_TAG,
-          selection.cursor.text
+        this.applyMessageFieldFormatting(
+          syntax,
+          selection.value,
+          selection.cursor
         );
-
-        // Generate new value with formatting
-        const formattedValue =
-          selection.value.substring(0, selection.cursor.start) +
-          cursorFormattedText +
-          selection.value.substring(selection.cursor.end);
-
-        // Update message in field
-        this.message = formattedValue;
-
-        // Restore focus and selection on the message field
-        // Notice: once updated message model has been applied to field.
-        this.$nextTick(() => {
-          // Restore selection (taking into account changed value)
-          messageComponent.selectFieldRangeFromParent(
-            selection.cursor.start + codeTagIndex,
-            selection.cursor.end + codeTagIndex
-          );
-
-          // Restore focus on the message field
-          this.focusMessageField();
-        });
       }
     },
 

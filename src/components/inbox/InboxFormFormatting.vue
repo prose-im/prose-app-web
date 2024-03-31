@@ -53,21 +53,15 @@ export enum FormattingAction {
   CodeBlock = "code-block"
 }
 
-export enum FormattingSyntaxMode {
-  // Prepend syntax mode.
-  Prepend = "prepend",
-  // Enclose syntax mode.
-  Enclose = "enclose"
-}
-
 // INTERFACES
 export interface FormattingSyntax {
-  mode: FormattingSyntaxMode;
   code: string;
+  contiguous?: boolean;
 }
 
 // CONSTANTS
-export const REPLACEMENT_TAG = "%s";
+export const TAG_INDEX = "%i";
+export const TAG_TEXT = "%t";
 
 export default {
   name: "InboxFormFormatting",
@@ -93,8 +87,7 @@ export default {
             action: FormattingAction.Bold,
 
             syntax: {
-              mode: FormattingSyntaxMode.Enclose,
-              code: `**${REPLACEMENT_TAG}**`
+              code: `**${TAG_TEXT}**`
             }
           },
 
@@ -104,8 +97,7 @@ export default {
             action: FormattingAction.Italic,
 
             syntax: {
-              mode: FormattingSyntaxMode.Enclose,
-              code: `_${REPLACEMENT_TAG}_`
+              code: `_${TAG_TEXT}_`
             }
           },
 
@@ -115,8 +107,7 @@ export default {
             action: FormattingAction.Strikethrough,
 
             syntax: {
-              mode: FormattingSyntaxMode.Enclose,
-              code: `~~${REPLACEMENT_TAG}~~`
+              code: `~~${TAG_TEXT}~~`
             }
           }
         ],
@@ -128,8 +119,7 @@ export default {
             action: FormattingAction.Link,
 
             syntax: {
-              mode: FormattingSyntaxMode.Enclose,
-              code: `[](${REPLACEMENT_TAG})`
+              code: `[${TAG_TEXT}](${TAG_TEXT})`
             }
           }
         ],
@@ -141,8 +131,7 @@ export default {
             action: FormattingAction.ListBullets,
 
             syntax: {
-              mode: FormattingSyntaxMode.Enclose,
-              code: `* ${REPLACEMENT_TAG}`
+              code: `* ${TAG_TEXT}`
             }
           },
 
@@ -152,8 +141,7 @@ export default {
             action: FormattingAction.ListNumbers,
 
             syntax: {
-              mode: FormattingSyntaxMode.Enclose,
-              code: `1. ${REPLACEMENT_TAG}`
+              code: `${TAG_INDEX}. ${TAG_TEXT}`
             }
           }
         ],
@@ -165,8 +153,8 @@ export default {
             action: FormattingAction.CodeBlock,
 
             syntax: {
-              mode: FormattingSyntaxMode.Enclose,
-              code: `\`\`\`\n${REPLACEMENT_TAG}\n\`\`\``
+              code: `\`\`\`\n${TAG_TEXT}\n\`\`\``,
+              contiguous: true
             }
           }
         ]

@@ -101,12 +101,13 @@ import {
 // INTERFACES
 interface Selection {
   value: string;
+  cursor?: SelectionCursor;
+}
 
-  cursor?: {
-    text: string;
-    start: number;
-    end: number;
-  };
+export interface SelectionCursor {
+  text: string;
+  start: number;
+  end: number;
 }
 
 export default {
