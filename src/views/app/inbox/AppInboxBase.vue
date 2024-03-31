@@ -90,6 +90,9 @@ import InboxDetails from "@/assemblies/inbox/InboxDetails.vue";
 // PROJECT: UTILITIES
 import UtilitiesTitle from "@/utilities/title";
 
+// CONSTANTS
+const LAST_ROOM_UPDATE_DELAY = 3000; // 3 seconds
+
 export default {
   name: "AppInboxBase",
 
@@ -110,6 +113,8 @@ export default {
         collection: [] as FilePreviewCollection,
         index: 0
       },
+
+      lastRoomUpdateTimeout: null as null | ReturnType<typeof setTimeout>,
 
       isMessagesDragged: false,
 
@@ -145,9 +150,17 @@ export default {
         if (newValue && (!oldValue || newValue.id !== oldValue.id)) {
           // Update current title (to room name)
           UtilitiesTitle.update(newValue.name);
+
+          // Update stored last room
+          this.updateLastRoom(newValue.id);
         }
       }
     }
+  },
+
+  beforeUnmount() {
+    // Cancel any pending room update
+    this.updateLastRoom();
   },
 
   methods: {
@@ -194,6 +207,29 @@ export default {
 
     onDetailsFilePreview(collection: FilePreviewCollection, index = 0): void {
       this.onMessagesFilePreview(collection, index);
+    },
+
+    // --> HELPERS <--
+
+    updateLastRoom(roomId?: RoomID): void {
+      // Cancel existing timer? (if any)
+      if (this.lastRoomUpdateTimeout !== null) {
+        clearTimeout(this.lastRoomUpdateTimeout);
+
+        this.lastRoomUpdateTimeout = null;
+      }
+
+      // Save new room identifier? (if any, ie. not a schedule reset)
+      if (
+        roomId !== undefined &&
+        roomId !== Store.$navigation.inbox.lastRoomId
+      ) {
+        this.lastRoomUpdateTimeout = setTimeout(() => {
+          this.lastRoomUpdateTimeout = null;
+
+          Store.$navigation.setInboxLastRoomId(roomId);
+        }, LAST_ROOM_UPDATE_DELAY);
+      }
     }
   }
 };

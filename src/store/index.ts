@@ -21,6 +21,7 @@ import $channel from "@/store/tables/channel";
 import $history from "@/store/tables/history";
 import $inbox from "@/store/tables/inbox";
 import $layout from "@/store/tables/layout";
+import $navigation from "@/store/tables/navigation";
 import $room from "@/store/tables/room";
 import $presence from "@/store/tables/presence";
 import $profile from "@/store/tables/profile";
@@ -52,6 +53,7 @@ class Store {
 
   // Permanent stores
   $layout!: ReturnType<typeof $layout>;
+  $navigation!: ReturnType<typeof $navigation>;
   $account!: ReturnType<typeof $account>;
   $avatar!: ReturnType<typeof $avatar>;
   $channel!: ReturnType<typeof $channel>;
@@ -106,12 +108,10 @@ class Store {
   }
 
   private __loadTables(): void {
-    // #1. Transient stores
     this.$session = $session(this.__store);
     this.$history = $history(this.__store);
-
-    // #2. Permanent stores
     this.$layout = $layout(this.__store);
+    this.$navigation = $navigation(this.__store);
     this.$account = $account(this.__store);
     this.$avatar = $avatar(this.__store);
     this.$channel = $channel(this.__store);

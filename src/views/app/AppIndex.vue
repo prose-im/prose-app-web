@@ -25,8 +25,16 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
-  name: "AppIndex"
+  name: "AppIndex",
+
+  mounted() {
+    // Clear last inbox room from storage
+    Store.$navigation.setInboxLastRoomId(null);
+  }
 };
 </script>
 

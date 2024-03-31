@@ -75,7 +75,7 @@ class Router {
           name: "start.login",
           component: StartLogin as object,
 
-          beforeEnter: async (_to, _from, next) => {
+          beforeEnter: async () => {
             try {
               await this.__guardAnonymous();
             } catch (_) {
@@ -83,8 +83,6 @@ class Router {
                 "Cannot route to the start login, user already logged in"
               );
             }
-
-            next();
           }
         },
 
@@ -95,7 +93,7 @@ class Router {
           name: "app",
           component: AppBase as object,
 
-          beforeEnter: async (_to, _from, next) => {
+          beforeEnter: async () => {
             try {
               await this.__guardAuthenticated();
             } catch (_) {
@@ -107,15 +105,33 @@ class Router {
             //   to be done in the background while the app is already showing \
             //   on screen for the user.
             this.__setupBrokerClient();
-
-            next();
           },
 
           children: [
             {
               path: "",
               name: "app.index",
-              component: AppIndex as object
+              component: AppIndex as object,
+
+              beforeEnter: async (_to, from) => {
+                // Redirect to last used room?
+                // Notice: only do so when the application just loaded, ie. we \
+                //   are not navigating from anywhere.
+                const lastRoomId = Store.$navigation.inbox.lastRoomId;
+
+                if (!from.name && lastRoomId !== null) {
+                  logger.info(`Restoring last used room: ${lastRoomId}`);
+
+                  // Open last used room instead
+                  return {
+                    name: "app.inbox",
+
+                    params: {
+                      roomId: lastRoomId
+                    }
+                  };
+                }
+              }
             },
 
             {
@@ -194,7 +210,7 @@ class Router {
     // Ensure that user is not logged-in (redirect to app if so)
     if (Store.$account.credentials.jid) {
       this.__router.push({
-        name: "app"
+        name: "app.index"
       });
 
       return Promise.reject();
