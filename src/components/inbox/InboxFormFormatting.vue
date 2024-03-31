@@ -26,6 +26,7 @@
         size="12px"
         auto-width
         auto-height
+        bordered
       )
 </template>
 
@@ -147,6 +148,9 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-form-formatting";
 
+// VARIABLES
+$group-spacing-edges: 12px;
+
 #{$c} {
   display: flex;
   align-items: center;
@@ -154,8 +158,9 @@ $c: ".c-inbox-form-formatting";
   #{$c}__group {
     border-inline-end: 1px solid rgb(var(--color-border-tertiary));
     font-size: 13px;
-    margin-inline-end: 8px;
-    padding-inline-end: 10px;
+    margin-inline-end: $group-spacing-edges;
+    padding-inline-end: $group-spacing-edges;
+    column-gap: 5px;
     display: flex;
     align-items: center;
 
