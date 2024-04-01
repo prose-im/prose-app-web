@@ -18,6 +18,7 @@ mod notifications;
  * ************************************************************************* */
 
 use tauri::{Manager, WindowEvent};
+use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 
 /**************************************************************************
  * MAIN
@@ -33,6 +34,11 @@ fn main() {
         .on_menu_event(menu::handler)
         .setup(|app| {
             let handle = app.handle();
+            let window = app.get_window("main").unwrap();
+
+            // Apply vibrancy on window (macOS only)
+            #[cfg(target_os = "macos")]
+            apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None).unwrap();
 
             // Register URL opener on XMPP URIs
             tauri_plugin_deep_link::register("xmpp", move |request| {

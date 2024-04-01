@@ -9,7 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.a-app-sidebar
+div(
+  :class=`[
+    "a-app-sidebar",
+    "a-app-sidebar--platform-" + runtimePlatform
+  ]`
+)
   sidebar-header(
     @add-contact="onAddContact"
     :class=`[
@@ -78,6 +83,9 @@ import {
   EventAddOptions as AddChannelEventAddOptions
 } from "@/modals/sidebar/AddChannel.vue";
 
+// PROJECT: UTILITIES
+import { platform as runtimePlatform } from "@/utilities/runtime";
+
 // ENUMERATIONS
 export enum AddContactMode {
   // Member mode.
@@ -108,6 +116,10 @@ export default {
 
   data() {
     return {
+      // --> DATA <--
+
+      runtimePlatform,
+
       // --> STATES <--
 
       isHeaderFloating: false,
@@ -340,6 +352,10 @@ $sidebar-context-height: $size-inbox-form-height;
     background-color: rgba(var(--color-background-secondary), 0.9);
     position: absolute;
     inset-inline: 0;
+  }
+
+  #{$c}__header--floating,
+  #{$c}__context {
     backdrop-filter: blur(9px);
   }
 
@@ -357,7 +373,8 @@ $sidebar-context-height: $size-inbox-form-height;
     height: $sidebar-header-height;
     inset-block-start: 0;
     z-index: 1;
-    transition: border-color 100ms linear;
+    transition: all 100ms linear;
+    transition-property: background-color, border-color;
 
     &:after {
       background-image: linear-gradient(
@@ -418,6 +435,28 @@ $sidebar-context-height: $size-inbox-form-height;
         rgba(var(--color-black), 0.01) 100%
       );
       inset-block-end: calc(100% + 1px);
+    }
+  }
+
+  // --> PLATFORMS <--
+
+  &--platform-macos {
+    background-color: rgba(var(--color-background-secondary), 0.85);
+
+    #{$c}__header {
+      background-color: transparent;
+
+      &--floating {
+        background-color: rgba(var(--color-background-secondary), 0.75);
+      }
+    }
+
+    #{$c}__context {
+      background-color: rgba(var(--color-background-secondary), 0.5);
+
+      #{$c}__context-presence {
+        background-color: transparent;
+      }
     }
   }
 }

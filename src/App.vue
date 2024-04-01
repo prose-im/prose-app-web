@@ -16,6 +16,7 @@
   :class=`[
     "s-app",
     "u-appearance",
+    "s-app--platform-" + runtimePlatform,
     "u-appearance--" + session.appearance
   ]`
 )
@@ -37,13 +38,20 @@ import Store from "@/store";
 import { SessionAppearance } from "@/store/tables/session";
 
 // PROJECT: UTILITIES
-import UtilitiesRuntime from "@/utilities/runtime";
+import {
+  default as UtilitiesRuntime,
+  platform as runtimePlatform
+} from "@/utilities/runtime";
 
 export default {
   name: "App",
 
   data() {
     return {
+      // --> DATA <--
+
+      runtimePlatform,
+
       // --> STATE <--
 
       matchMediaDarkMode: null as MediaQueryList | null,
@@ -244,5 +252,11 @@ $c: ".s-app";
   display: flex;
   position: absolute;
   inset: 0;
+
+  // --> PLATFORMS <--
+
+  &--platform-macos {
+    background-color: transparent;
+  }
 }
 </style>

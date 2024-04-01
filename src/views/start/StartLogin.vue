@@ -101,6 +101,7 @@ export default {
 $c: ".v-start-login";
 
 #{$c} {
+  background-color: rgb(var(--color-background-primary));
   height: 100%;
   width: 100%;
   overflow: hidden;
