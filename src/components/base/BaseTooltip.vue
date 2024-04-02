@@ -47,6 +47,7 @@ div(
 
 <script lang="ts">
 // CONSTANTS
+const AUTO_HIDE_DELAY = 20000; // 20 seconds
 const MOUSE_ENTER_APPLY_DELAY = 250; // 250 milliseconds
 
 const CLICK_DIRECTIONS = {
@@ -105,6 +106,7 @@ export default {
     return {
       // --> STATE <--
 
+      autoHideTimeout: null as null | ReturnType<typeof setTimeout>,
       mouseEnterApplyTimeout: null as null | ReturnType<typeof setTimeout>,
 
       isInserted: false,
@@ -116,12 +118,34 @@ export default {
     // --> HELPERS <--
 
     setVisible(visible: boolean): void {
+      // Clear auto-hide? (if any)
+      if (this.autoHideTimeout !== null) {
+        clearTimeout(this.autoHideTimeout);
+
+        this.autoHideTimeout = null;
+      }
+
       // Update visibility
       this.isVisible = visible;
 
-      // Mark as inserted? (insert overlay on first mark-as-visible)
-      if (visible === true && this.isInserted !== true) {
-        this.isInserted = true;
+      // Now visible? Proceed more actions
+      if (visible === true) {
+        // Mark as inserted? (insert overlay on first mark-as-visible)
+        if (this.isInserted !== true) {
+          this.isInserted = true;
+        }
+
+        // Schedule auto-hide?
+        // Notice: this is done to auto-clear any dangling tooltip that did \
+        //   not hide on eg. mouse leave, due to eg. moving the mouse too fast \
+        //   from the tooltip to eg. a fixed-positioned element. This is \
+        //   unfortunately a limitation from certain browsers, which can only \
+        //   be fixed by applying a safety hide timeout.
+        this.autoHideTimeout = setTimeout(() => {
+          this.autoHideTimeout = null;
+
+          this.setVisible(false);
+        }, AUTO_HIDE_DELAY);
       }
     },
 
