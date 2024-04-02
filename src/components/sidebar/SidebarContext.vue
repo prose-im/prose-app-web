@@ -82,6 +82,7 @@
   )
     base-action(
       @click="onActionsClick"
+      :translucent="translucent"
       :active="isActionsPopoverVisible"
       icon="ellipsis"
       context="grey"

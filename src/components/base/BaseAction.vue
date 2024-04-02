@@ -16,6 +16,7 @@ div(
     {
       "c-base-action--active": active,
       "c-base-action--bordered": bordered,
+      "c-base-action--translucent": translucent,
       "c-base-action--disabled": disabled,
       "c-base-action--auto-width": autoWidth,
       "c-base-action--auto-height": autoHeight
@@ -101,6 +102,11 @@ export default {
     },
 
     dropdown: {
+      type: Boolean,
+      default: false
+    },
+
+    translucent: {
       type: Boolean,
       default: false
     },
@@ -213,6 +219,17 @@ $inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
       }
     }
 
+    &#{$c}--transparent,
+    &#{$c}--white,
+    &#{$c}--grey,
+    &#{$c}--dark {
+      &#{$c}--translucent {
+        > #{$c}__inner {
+          background-color: rgba(var(--color-background-primary), 0.45);
+        }
+      }
+    }
+
     &#{$c}--transparent {
       > #{$c}__inner {
         background-color: rgba(var(--color-base-grey-light), 0.25);
@@ -308,6 +325,23 @@ $inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
   }
 
   // --> CONTEXTS <--
+
+  &--transparent,
+  &--white,
+  &--grey,
+  &--dark {
+    &#{$c}--translucent {
+      > #{$c}__inner {
+        &:hover {
+          background-color: rgba(var(--color-background-primary), 0.5);
+        }
+
+        &:active {
+          background-color: rgba(var(--color-background-primary), 0.65);
+        }
+      }
+    }
+  }
 
   &--transparent,
   &--white,
