@@ -10,6 +10,7 @@
 
 <template lang="pug">
 list-button(
+  :translucent="translucent"
   :active="active"
   :disabled="disabled"
   :class=`[
@@ -66,6 +67,11 @@ export default {
     count: {
       type: Number,
       default: 0
+    },
+
+    translucent: {
+      type: Boolean,
+      default: false
     },
 
     active: {

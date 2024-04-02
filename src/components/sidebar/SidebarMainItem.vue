@@ -13,6 +13,7 @@ sidebar-main-item-user(
   v-if="item.room.type === roomType.DirectMessage"
   :jid="item.room.participants[0]?.jid"
   :item="item"
+  :translucent="translucent"
   :active="active"
   class="c-sidebar-main-item"
 )
@@ -20,6 +21,7 @@ sidebar-main-item-user(
 sidebar-main-item-multi(
   v-else-if="item.room.type === roomType.Group"
   :item="item"
+  :translucent="translucent"
   :active="active"
   type="group"
   class="c-sidebar-main-item"
@@ -28,6 +30,7 @@ sidebar-main-item-multi(
 sidebar-main-item-multi(
   v-else-if="item.room.type === roomType.PublicChannel || item.room.type === roomType.PrivateChannel"
   :item="item"
+  :translucent="translucent"
   :active="active"
   type="channel"
   class="c-sidebar-main-item"
@@ -36,6 +39,7 @@ sidebar-main-item-multi(
 sidebar-main-item-generic(
   v-else
   :item="item"
+  :translucent="translucent"
   :active="active"
 )
   | {{ item.name }}
@@ -73,6 +77,11 @@ export default {
     selection: {
       type: String as PropType<RoomID>,
       default: null
+    },
+
+    translucent: {
+      type: Boolean,
+      default: false
     }
   },
 

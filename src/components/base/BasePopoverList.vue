@@ -13,6 +13,7 @@ base-popover(
   @close="onClose"
   :focus="focus"
   :tabindex="tabindex"
+  :translucent="translucent"
   class="c-base-popover-list"
 )
   template(
@@ -81,6 +82,7 @@ base-popover(
           @close="onChildClose(index)"
           :items="item.children"
           :tabindex="tabindex - 1"
+          :translucent="translucent"
           class="c-base-popover-list__button-popover"
         )
 
@@ -161,6 +163,11 @@ export default {
     focus: {
       type: Boolean,
       default: true
+    },
+
+    translucent: {
+      type: Boolean,
+      default: false
     },
 
     tabindex: {

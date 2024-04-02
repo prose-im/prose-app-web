@@ -27,6 +27,7 @@ import UtilitiesTitle from "@/utilities/title";
  * ************************************************************************* */
 
 const platform = CONFIG.platform;
+const translucent = platform === "macos";
 
 const NOTIFICATION_PERMISSIONS = {
   granted: "granted",
@@ -348,5 +349,5 @@ class UtilitiesRuntime {
  * EXPORTS
  * ************************************************************************* */
 
-export { platform };
+export { platform, translucent };
 export default new UtilitiesRuntime();

@@ -19,7 +19,8 @@ div(
       "c-list-button--disabled": disabled,
       "c-list-button--actionable": actionable,
       "c-list-button--rounded": rounded,
-      "c-list-button--important": important
+      "c-list-button--important": important,
+      "c-list-button--translucent": translucent
     }
   ]`
 )
@@ -117,6 +118,11 @@ export default {
       default: false
     },
 
+    translucent: {
+      type: Boolean,
+      default: false
+    },
+
     ellipsis: {
       type: Boolean,
       default: false
@@ -137,6 +143,45 @@ export default {
 <style lang="scss">
 $c: ".c-list-button";
 
+// VARIABLES
+$list-button-colors: (
+  "blue": (
+    "background-color": (
+      "hover": rgb(var(--color-base-blue-normal)),
+      "active": darken-var(var(--color-base-blue-normal), 4%)
+    ),
+
+    "color": (
+      "default": rgb(var(--color-base-blue-normal)),
+      "hover": rgb(var(--color-white))
+    )
+  ),
+
+  "red": (
+    "background-color": (
+      "hover": rgb(var(--color-base-red-normal)),
+      "active": darken-var(var(--color-base-red-normal), 4%)
+    ),
+
+    "color": (
+      "default": rgb(var(--color-base-red-normal)),
+      "hover": rgb(var(--color-white))
+    )
+  ),
+
+  "green": (
+    "background-color": (
+      "hover": rgb(var(--color-base-green-normal)),
+      "active": darken-var(var(--color-base-green-normal), 3%)
+    ),
+
+    "color": (
+      "default": rgb(var(--color-base-green-normal)),
+      "hover": rgb(var(--color-white))
+    )
+  )
+);
+
 #{$c} {
   background-color: transparent;
   display: flex;
@@ -145,6 +190,10 @@ $c: ".c-list-button";
 
   &:hover {
     background-color: darken-var(var(--color-base-grey-light), 1%);
+
+    &#{$c}--translucent {
+      background-color: rgba(var(--color-background-primary), 0.5);
+    }
   }
 
   #{$c}__icon {
@@ -214,56 +263,38 @@ $c: ".c-list-button";
     }
   }
 
-  &--color-blue,
-  &--color-red,
-  &--color-green {
-    &:hover,
-    &#{$c}--actionable:active {
-      #{$c}__label {
-        color: rgb(var(--color-white));
+  @each $name, $colors in $list-button-colors {
+    &--color-#{$name} {
+      &:hover,
+      &#{$c}--actionable:active {
+        #{$c}__label {
+          color: map-get(map-get($colors, "color"), "hover");
+        }
       }
-    }
-  }
 
-  &--color-blue {
-    #{$c}__label {
-      color: rgb(var(--color-base-blue-normal));
-    }
+      #{$c}__label {
+        color: map-get(map-get($colors, "color"), "default");
+      }
 
-    &:hover {
-      background-color: rgb(var(--color-base-blue-normal));
-    }
+      &:hover {
+        &,
+        &#{$c}--translucent {
+          background-color: map-get(
+            map-get($colors, "background-color"),
+            "hover"
+          );
+        }
+      }
 
-    &#{$c}--actionable:active {
-      background-color: darken-var(var(--color-base-blue-normal), 4%);
-    }
-  }
-
-  &--color-red {
-    #{$c}__label {
-      color: rgb(var(--color-base-red-normal));
-    }
-
-    &:hover {
-      background-color: rgb(var(--color-base-red-normal));
-    }
-
-    &#{$c}--actionable:active {
-      background-color: darken-var(var(--color-base-red-normal), 4%);
-    }
-  }
-
-  &--color-green {
-    #{$c}__label {
-      color: rgb(var(--color-base-green-normal));
-    }
-
-    &:hover {
-      background-color: rgb(var(--color-base-green-normal));
-    }
-
-    &#{$c}--actionable:active {
-      background-color: darken-var(var(--color-base-green-normal), 3%);
+      &#{$c}--actionable:active {
+        &,
+        &#{$c}--translucent {
+          background-color: map-get(
+            map-get($colors, "background-color"),
+            "active"
+          );
+        }
+      }
     }
   }
 
@@ -279,6 +310,10 @@ $c: ".c-list-button";
 
     &:active {
       background-color: darken-var(var(--color-base-grey-light), 2.5%);
+
+      &#{$c}--translucent {
+        background-color: rgba(var(--color-background-primary), 0.65);
+      }
     }
   }
 
@@ -291,11 +326,17 @@ $c: ".c-list-button";
     background-color: rgb(var(--color-base-blue-normal));
 
     &:hover {
-      background-color: darken-var(var(--color-base-blue-normal), 4%);
+      &,
+      &#{$c}--translucent {
+        background-color: darken-var(var(--color-base-blue-normal), 4%);
+      }
     }
 
     &#{$c}--actionable:active {
-      background-color: darken-var(var(--color-base-blue-normal), 6%);
+      &,
+      &#{$c}--translucent {
+        background-color: darken-var(var(--color-base-blue-normal), 6%);
+      }
     }
 
     #{$c}__label {
@@ -306,19 +347,35 @@ $c: ".c-list-button";
   &--important {
     &:not(#{$c}--active) {
       &:nth-child(odd) {
-        background-color: darken-var(var(--color-base-grey-light), 0.75%);
+        background-color: lighten-var(var(--color-base-grey-light), 0.25%);
+
+        &#{$c}--translucent {
+          background-color: rgba(var(--color-background-primary), 0.5);
+        }
       }
 
       &:nth-child(even) {
-        background-color: lighten-var(var(--color-base-grey-light), 0.25%);
+        background-color: darken-var(var(--color-base-grey-light), 0.75%);
+
+        &#{$c}--translucent {
+          background-color: rgba(var(--color-background-primary), 0.3);
+        }
       }
 
       &:hover {
         background-color: darken-var(var(--color-base-grey-light), 2.5%);
+
+        &#{$c}--translucent {
+          background-color: rgba(var(--color-background-primary), 0.6);
+        }
       }
 
       &#{$c}--actionable:active {
         background-color: darken-var(var(--color-base-grey-light), 3.5%);
+
+        &#{$c}--translucent {
+          background-color: rgba(var(--color-background-primary), 0.7);
+        }
       }
     }
   }

@@ -12,11 +12,14 @@
 div(
   :class=`[
     "a-app-sidebar",
-    "a-app-sidebar--platform-" + runtimePlatform
+    {
+      "a-app-sidebar--translucent": runtimeTranslucent
+    }
   ]`
 )
   sidebar-header(
     @add-contact="onAddContact"
+    :translucent="runtimeTranslucent"
     :class=`[
       "a-app-sidebar__header",
       {
@@ -28,12 +31,14 @@ div(
   sidebar-main(
     @add-contact="onAddContact"
     @scroll="onMainScroll"
+    :translucent="runtimeTranslucent"
     class="a-app-sidebar__main"
     disclosure-list-class="a-app-sidebar__main-list"
   )
 
   sidebar-context(
     :jid="selfJID"
+    :translucent="runtimeTranslucent"
     class="a-app-sidebar__context"
     avatar-presence-class="a-app-sidebar__context-presence"
   )
@@ -84,7 +89,7 @@ import {
 } from "@/modals/sidebar/AddChannel.vue";
 
 // PROJECT: UTILITIES
-import { platform as runtimePlatform } from "@/utilities/runtime";
+import { translucent as runtimeTranslucent } from "@/utilities/runtime";
 
 // ENUMERATIONS
 export enum AddContactMode {
@@ -118,7 +123,7 @@ export default {
     return {
       // --> DATA <--
 
-      runtimePlatform,
+      runtimeTranslucent,
 
       // --> STATES <--
 
@@ -438,24 +443,27 @@ $sidebar-context-height: $size-inbox-form-height;
     }
   }
 
-  // --> PLATFORMS <--
+  // --> BOOLEANS <--
 
-  &--platform-macos {
-    background-color: rgba(var(--color-background-secondary), 0.85);
+  &--translucent {
+    background-color: rgba(var(--color-background-secondary), 0.8);
 
     #{$c}__header {
       background-color: transparent;
 
       &--floating {
         background-color: rgba(var(--color-background-secondary), 0.75);
+        border-block-end-color: rgba(var(--color-shadow-primary), 0.1);
       }
     }
 
     #{$c}__context {
-      background-color: rgba(var(--color-background-secondary), 0.5);
+      background-color: rgba(var(--color-background-secondary), 0.3);
+      border-block-start-color: rgba(var(--color-shadow-primary), 0.06);
 
       #{$c}__context-presence {
-        background-color: transparent;
+        background-color: rgba(var(--color-background-secondary), 0.8);
+        backdrop-filter: blur(6px);
       }
     }
   }

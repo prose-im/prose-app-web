@@ -11,6 +11,7 @@
 <template lang="pug">
 sidebar-main-item-generic(
   :item="item"
+  :translucent="translucent"
   :active="active"
   :class=`[
     "c-sidebar-main-item-multi",
@@ -65,6 +66,11 @@ export default {
       validator(x: string) {
         return ["channel", "group"].includes(x);
       }
+    },
+
+    translucent: {
+      type: Boolean,
+      default: false
     },
 
     active: {

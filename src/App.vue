@@ -16,8 +16,10 @@
   :class=`[
     "s-app",
     "u-appearance",
-    "s-app--platform-" + runtimePlatform,
-    "u-appearance--" + session.appearance
+    "u-appearance--" + session.appearance,
+    {
+      "s-app--translucent": runtimeTranslucent
+    }
   ]`
 )
   base-alert
@@ -40,7 +42,7 @@ import { SessionAppearance } from "@/store/tables/session";
 // PROJECT: UTILITIES
 import {
   default as UtilitiesRuntime,
-  platform as runtimePlatform
+  translucent as runtimeTranslucent
 } from "@/utilities/runtime";
 
 export default {
@@ -50,7 +52,7 @@ export default {
     return {
       // --> DATA <--
 
-      runtimePlatform,
+      runtimeTranslucent,
 
       // --> STATE <--
 
@@ -253,9 +255,9 @@ $c: ".s-app";
   position: absolute;
   inset: 0;
 
-  // --> PLATFORMS <--
+  // --> BOOLEANS <--
 
-  &--platform-macos {
+  &--translucent {
     background-color: transparent;
   }
 }

@@ -9,13 +9,19 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-base-popover(
+div(
   v-hotkey="hotkeys"
   v-click-away="onClickAway"
   :style=`{
     transform: offsetAdapt.transform
   }`
   :tabindex="tabindex"
+  :class=`[
+    "c-base-popover",
+    {
+      "c-base-popover--translucent": translucent
+    }
+  ]`
   ref="root"
 )
   slot
@@ -41,6 +47,11 @@ export default {
     focus: {
       type: Boolean,
       default: true
+    },
+
+    translucent: {
+      type: Boolean,
+      default: false
     },
 
     tabindex: {
@@ -183,6 +194,14 @@ $c: ".c-base-popover";
 
   &:focus {
     outline: 0 none;
+  }
+
+  // --> BOOLEANS <--
+
+  &--translucent {
+    background-color: rgba(var(--color-white), 0.94);
+    border-color: transparent;
+    backdrop-filter: blur(6px);
   }
 }
 </style>

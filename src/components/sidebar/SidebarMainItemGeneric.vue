@@ -11,6 +11,7 @@
 <template lang="pug">
 list-button(
   @click="onButtonClick"
+  :translucent="translucent"
   :active="active"
   :important="item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
   :class=`[
@@ -107,6 +108,11 @@ export default {
     item: {
       type: Object as PropType<SidebarItem>,
       required: true
+    },
+
+    translucent: {
+      type: Boolean,
+      default: false
     },
 
     active: {

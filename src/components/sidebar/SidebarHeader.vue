@@ -35,6 +35,7 @@ div(
       v-if="isIdentityPopoverVisible"
       @close="onIdentityPopoverClose"
       :items="identityPopoverItems"
+      :translucent="translucent"
       class="c-sidebar-header__identity-popover"
     )
 
@@ -73,6 +74,13 @@ import { platform as runtimePlatform } from "@/utilities/runtime";
 
 export default {
   name: "SidebarHeader",
+
+  props: {
+    translucent: {
+      type: Boolean,
+      default: false
+    }
+  },
 
   emits: ["addContact"],
 

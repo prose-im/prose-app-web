@@ -18,6 +18,7 @@
   )
     sidebar-main-section(
       @click="onSectionUnreadClick"
+      :translucent="translucent"
       :active="sectionActive.unread"
       title="Unread stack"
       icon="tray.2"
@@ -26,6 +27,7 @@
 
     sidebar-main-section(
       @click="onSectionBrowseClick"
+      :translucent="translucent"
       :active="sectionActive.browse"
       :count="sectionCount.browse"
       title="People & channels"
@@ -43,6 +45,7 @@
       v-for="item in itemFavorites"
       :item="item"
       :selection="selectedRoomID"
+      :translucent="translucent"
     )
 
   list-disclosure(
@@ -56,11 +59,13 @@
       v-for="item in itemDirectMessages"
       :item="item"
       :selection="selectedRoomID"
+      :translucent="translucent"
     )
 
     sidebar-main-action-add(
       @click="onDirectMessageAddClick"
       title="Open a direct message"
+      :translucent="translucent"
     )
 
   list-disclosure(
@@ -74,11 +79,13 @@
       v-for="item in itemChannels"
       :item="item"
       :selection="selectedRoomID"
+      :translucent="translucent"
     )
 
     sidebar-main-action-add(
       @click="onChannelsAddClick"
       title="Add a channel"
+      :translucent="translucent"
     )
 </template>
 
@@ -117,6 +124,11 @@ export default {
   },
 
   props: {
+    translucent: {
+      type: Boolean,
+      default: false
+    },
+
     disclosureListClass: {
       type: String,
       default: null

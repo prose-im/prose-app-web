@@ -18,6 +18,7 @@ sidebar-main-item-generic(
     }
   ]`
   :item="item"
+  :translucent="translucent"
   :active="active"
 )
   template(
@@ -102,6 +103,11 @@ export default {
     jid: {
       type: Object as PropType<JID>,
       required: true
+    },
+
+    translucent: {
+      type: Boolean,
+      default: false
     },
 
     active: {

@@ -36,6 +36,7 @@
           v-if="isAvatarPopoverVisible"
           @close="onAvatarPopoverClose"
           :items="avatarPopoverItems"
+          :translucent="translucent"
           class="c-sidebar-context__avatar-popover"
         )
 
@@ -93,6 +94,7 @@
         v-if="isActionsPopoverVisible"
         @close="onActionsPopoverClose"
         :items="actionsPopoverItems"
+        :translucent="translucent"
         class="c-sidebar-context__actions-popover"
       )
 
@@ -175,6 +177,11 @@ export default {
     jid: {
       type: Object as PropType<JID>,
       required: true
+    },
+
+    translucent: {
+      type: Boolean,
+      default: false
     },
 
     avatarPresenceClass: {

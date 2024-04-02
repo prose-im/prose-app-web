@@ -10,6 +10,7 @@
 
 <template lang="pug">
 list-button(
+  :translucent="translucent"
   :disabled="disabled"
   class="c-sidebar-main-action-add"
   emphasis
@@ -41,6 +42,11 @@ export default {
     title: {
       type: String,
       required: true
+    },
+
+    translucent: {
+      type: Boolean,
+      default: false
     },
 
     disabled: {
