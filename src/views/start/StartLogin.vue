@@ -9,7 +9,12 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.v-start-login
+div(
+  :class=`[
+    "v-start-login",
+    "v-start-login--context-" + runtimeContext
+  ]`
+)
   .v-start-login__box
     start-login-form(
       @submit="onFormSubmit"
@@ -39,6 +44,9 @@ import { useInterfaceTitle } from "@/composables/interface";
 // PROJECT: STORES
 import Store from "@/store";
 
+// PROJECT: UTILITIES
+import { context as runtimeContext } from "@/utilities/runtime";
+
 export default {
   name: "StartLogin",
 
@@ -50,6 +58,10 @@ export default {
 
   data() {
     return {
+      // --> DATA <--
+
+      runtimeContext,
+
       // --> STATES <--
 
       isFormLoading: false
@@ -136,6 +148,18 @@ $c: ".v-start-login";
     position: absolute;
     inset: 0;
     z-index: 0;
+  }
+
+  // --> CONTEXTS <--
+
+  &--context-application {
+    #{$c}__box {
+      border-block: 0 none;
+    }
+
+    #{$c}__background {
+      background-image: none;
+    }
   }
 }
 </style>
