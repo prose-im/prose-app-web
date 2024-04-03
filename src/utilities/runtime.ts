@@ -35,6 +35,19 @@ const NOTIFICATION_PERMISSIONS = {
 };
 
 /**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
+
+enum RuntimeNotificationAction {
+  // Click action.
+  Click = "click",
+  // Other action.
+  Other = "other",
+  // None action.
+  None = "none"
+}
+
+/**************************************************************************
  * TYPES
  * ************************************************************************* */
 
@@ -42,6 +55,11 @@ export type RuntimeProgressHandler = (progress: number, total: number) => void;
 export type RuntimeFocusHandler = (focused: boolean) => void;
 export type RuntimeOpenHandler = (protocol: string, path: string) => void;
 export type RuntimeMenuHandler = (menu: string) => Promise<void>;
+
+export type RuntimeRouteHandler = (
+  name: string,
+  params?: { [name: string]: string }
+) => Promise<void>;
 
 /**************************************************************************
  * INTERFACES
@@ -51,6 +69,11 @@ interface RuntimeProgressPayload {
   id: number;
   progress: number;
   total: number;
+}
+
+interface RuntimeNotificationRoute {
+  name: string;
+  params?: { [name: string]: string };
 }
 
 /**************************************************************************
@@ -67,6 +90,7 @@ class UtilitiesRuntime {
 
   private __handlers = {
     focus: null as RuntimeFocusHandler | null,
+    route: null as RuntimeRouteHandler | null,
     open: null as RuntimeOpenHandler | null,
     menu: null as RuntimeMenuHandler | null,
     download: new Map() as Map<number, RuntimeProgressHandler>
@@ -82,15 +106,18 @@ class UtilitiesRuntime {
   }
 
   registerHandlers({
+    route,
     open,
     focus,
     menu
   }: {
+    route: RuntimeRouteHandler;
     open: RuntimeOpenHandler;
     focus: RuntimeFocusHandler;
     menu: RuntimeMenuHandler;
   }): { focused: boolean } {
     // Register platform-agnostic handlers
+    this.__handlers.route = route;
     this.__handlers.open = open;
     this.__handlers.focus = focus;
     this.__handlers.menu = menu;
@@ -103,6 +130,7 @@ class UtilitiesRuntime {
 
   unregisterHandlers(): void {
     // Unregister platform-agnostic handlers
+    this.__handlers.route = null;
     this.__handlers.open = null;
     this.__handlers.focus = null;
     this.__handlers.menu = null;
@@ -160,21 +188,54 @@ class UtilitiesRuntime {
     }
   }
 
-  async requestNotificationSend(title: string, body: string): Promise<void> {
+  async requestNotificationSend(
+    title: string,
+    body: string,
+    route?: RuntimeNotificationRoute
+  ): Promise<void> {
     // Skip notification banners if window has focus
     if (this.__states.focused !== true) {
       const hasPermission = await this.requestNotificationPermission();
 
       if (hasPermission === true) {
+        // Build local click handler
+        const clickHandler = async () => {
+          if (route !== undefined && this.__handlers.route !== null) {
+            await this.__handlers.route(route.name, route.params);
+          }
+        };
+
         if (this.__isApp === true) {
           // Request to show notification via Tauri API (application build)
-          await tauriInvoke("plugin:notifications|send_notification", {
-            title,
-            body
-          });
+          const action: RuntimeNotificationAction = await tauriInvoke(
+            "plugin:notifications|send_notification",
+
+            {
+              title,
+              body,
+              route
+            }
+          );
+
+          // Handle action on notification
+          // TODO: actions do not really work, since we had to disable \
+          //   blocking notifications due to the way the underlying \
+          //   mac_notification_sys works. If we want to wait for user \
+          //   interaction, then we have to use send_notification from \
+          //   mac_notification_sys which blocks the whole Tauri thread. We \
+          //   have to find a fully async variant of mac_notification_sys.
+          switch (action) {
+            case RuntimeNotificationAction.Click: {
+              await clickHandler();
+
+              break;
+            }
+          }
         } else {
           // Request to show notification via browser APIs (Web build)
-          new Notification(title, { body });
+          const notification = new Notification(title, { body });
+
+          notification.addEventListener("click", clickHandler);
         }
       } else {
         logger.warn(

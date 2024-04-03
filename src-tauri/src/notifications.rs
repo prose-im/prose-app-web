@@ -6,7 +6,7 @@
  * IMPORTS
  * ************************************************************************* */
 
-use mac_notification_sys::Notification;
+use mac_notification_sys::{Notification, NotificationResponse};
 use tauri::plugin::{Builder, TauriPlugin};
 use tauri::Runtime;
 
@@ -16,12 +16,18 @@ use tauri::Runtime;
 
 #[cfg(not(target_os = "macos"))]
 #[tauri::command]
-fn send_notification(title: String, body: String) {}
+fn send_notification(title: String, body: String) -> &'static str {}
 
 #[cfg(target_os = "macos")]
 #[tauri::command]
-fn send_notification(title: String, body: String) {
-    let _ = Notification::default().title(&title).message(&body).send();
+fn send_notification(title: String, body: String) -> &'static str {
+    let response = Notification::default().title(&title).message(&body).send();
+
+    match response {
+        Ok(NotificationResponse::Click) => "click",
+        Ok(NotificationResponse::None) => "none",
+        _ => "other",
+    }
 }
 
 #[tauri::command]

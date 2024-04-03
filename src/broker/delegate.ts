@@ -171,7 +171,15 @@ class BrokerDelegate implements ProseClientDelegate {
           if (message.from !== selfJIDString) {
             UtilitiesRuntime.requestNotificationSend(
               message.user.name,
-              message.text
+              message.text,
+
+              {
+                name: "app.inbox",
+
+                params: {
+                  roomId: room.id
+                }
+              }
             );
           }
         });

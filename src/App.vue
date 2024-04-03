@@ -136,6 +136,7 @@ export default {
     setupListenersRuntime(): void {
       // Register platform-dependant handlers
       const { focused } = UtilitiesRuntime.registerHandlers({
+        route: this.onRoute,
         open: this.onUrlOpen,
         focus: this.onFocusChange,
         menu: this.onMenuSelect
@@ -170,6 +171,17 @@ export default {
     },
 
     // --> EVENT LISTENERS <--
+
+    async onRoute(
+      name: string,
+      params?: { [name: string]: string }
+    ): Promise<void> {
+      // Navigate to target route
+      await this.$router.push({
+        name,
+        params
+      });
+    },
 
     onUrlOpen(protocol: string, path: string): void {
       switch (protocol) {
