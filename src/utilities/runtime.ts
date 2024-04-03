@@ -12,7 +12,10 @@
 import { invoke as tauriInvoke } from "@tauri-apps/api";
 import { emit as tauriEmit, TauriEvent } from "@tauri-apps/api/event";
 import { open as tauriOpen } from "@tauri-apps/api/shell";
-import { appWindow as tauriAppWindow } from "@tauri-apps/api/window";
+import {
+  appWindow as tauriAppWindow,
+  LogicalSize as tauriLogicalSize
+} from "@tauri-apps/api/window";
 import FileDownloader from "js-file-downloader";
 
 // PROJECT: COMMONS
@@ -323,6 +326,49 @@ class UtilitiesRuntime {
     }
 
     return leftFullScreen;
+  }
+
+  async requestWindowCenter(): Promise<void> {
+    if (this.__isApplication === true) {
+      // Request to center window via Tauri API (application build)
+      await tauriAppWindow.center();
+    }
+  }
+
+  async requestWindowResizableChange(
+    resizable: boolean
+  ): Promise<boolean | void> {
+    if (this.__isApplication === true) {
+      const currentResizable = await tauriAppWindow.isResizable();
+
+      // Request to change resizable flag via Tauri API (application build)
+      await tauriAppWindow.setResizable(resizable);
+
+      // Return previous resizable flag value
+      return currentResizable;
+    }
+
+    return undefined;
+  }
+
+  async requestWindowSizeUpdate(
+    width: number,
+    height: number
+  ): Promise<{ width: number; height: number } | void> {
+    if (this.__isApplication === true) {
+      // Acquire current window size via Tauri API (application build)
+      const currentSize = (await tauriAppWindow.innerSize()).toLogical(
+        await tauriAppWindow.scaleFactor()
+      );
+
+      // Request to update window size via Tauri API (application build)
+      await tauriAppWindow.setSize(new tauriLogicalSize(width, height));
+
+      // Return previous window size
+      return { width: currentSize.width, height: currentSize.height };
+    }
+
+    return undefined;
   }
 
   async requestUpdateCheck(): Promise<void> {

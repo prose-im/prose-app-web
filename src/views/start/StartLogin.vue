@@ -12,8 +12,12 @@
 div(
   :class=`[
     "v-start-login",
-    "v-start-login--context-" + runtimeContext
+    "v-start-login--context-" + runtimeContext,
+    {
+      "v-start-login--translucent": runtimeTranslucent
+    }
   ]`
+  data-tauri-drag-region
 )
   .v-start-login__box
     start-login-form(
@@ -40,12 +44,20 @@ import BaseAlert from "@/components/base/BaseAlert.vue";
 
 // PROJECT: COMPOSABLES
 import { useInterfaceTitle } from "@/composables/interface";
+import { useInterfaceDownsize } from "@/composables/interface";
 
 // PROJECT: STORES
 import Store from "@/store";
 
 // PROJECT: UTILITIES
-import { context as runtimeContext } from "@/utilities/runtime";
+import {
+  context as runtimeContext,
+  translucent as runtimeTranslucent
+} from "@/utilities/runtime";
+
+// CONSTANTS
+const INTERFACE_WIDTH = 600;
+const INTERFACE_HEIGHT = 620;
 
 export default {
   name: "StartLogin",
@@ -54,6 +66,7 @@ export default {
 
   setup() {
     useInterfaceTitle("Login");
+    useInterfaceDownsize(INTERFACE_WIDTH, INTERFACE_HEIGHT);
   },
 
   data() {
@@ -61,6 +74,7 @@ export default {
       // --> DATA <--
 
       runtimeContext,
+      runtimeTranslucent,
 
       // --> STATES <--
 
@@ -120,8 +134,13 @@ $c: ".v-start-login";
   display: flex;
   align-items: center;
 
+  #{$c}__box,
+  #{$c}__background {
+    pointer-events: none;
+  }
+
   #{$c}__box {
-    background: rgba(var(--color-white), 0.8);
+    background-color: rgba(var(--color-white), 0.8);
     border-block: 1px solid rgba(var(--color-base-purple-light), 0.325);
     backdrop-filter: blur(20px);
     display: flex;
@@ -136,6 +155,10 @@ $c: ".v-start-login";
 
     #{$c}__form {
       flex: 0 0 auto;
+
+      > * {
+        pointer-events: initial;
+      }
     }
   }
 
@@ -154,12 +177,20 @@ $c: ".v-start-login";
 
   &--context-application {
     #{$c}__box {
+      background-color: transparent;
       border-block: 0 none;
+      backdrop-filter: none;
     }
 
     #{$c}__background {
       background-image: none;
     }
+  }
+
+  // --> BOOLEANS <--
+
+  &--translucent {
+    background-color: rgba(var(--color-background-primary), 0.94);
   }
 }
 </style>

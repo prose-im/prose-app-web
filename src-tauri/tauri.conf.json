@@ -56,7 +56,10 @@
     "allowlist": {
       "all": false,
       "window": {
+        "center": true,
         "startDragging": true,
+        "setSize": true,
+        "setResizable": true,
         "setFullscreen": true
       },
       "shell": {
