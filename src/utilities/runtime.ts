@@ -27,6 +27,7 @@ import UtilitiesTitle from "@/utilities/title";
  * ************************************************************************* */
 
 const platform = CONFIG.platform;
+const context = platform === "web" ? "browser" : "application";
 const translucent = platform === "macos";
 
 const NOTIFICATION_PERMISSIONS = {
@@ -81,8 +82,7 @@ interface RuntimeNotificationRoute {
  * ************************************************************************* */
 
 class UtilitiesRuntime {
-  private readonly __isBrowser: boolean;
-  private readonly __isApp: boolean;
+  private readonly __isApplication: boolean;
 
   private __states = {
     focused: false
@@ -98,8 +98,7 @@ class UtilitiesRuntime {
 
   constructor() {
     // Initialize markers
-    this.__isBrowser = platform === "web";
-    this.__isApp = !this.__isBrowser;
+    this.__isApplication = context === "application";
 
     // Bind listeners
     this.__bindListeners();
@@ -137,7 +136,7 @@ class UtilitiesRuntime {
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
-    if (this.__isApp === true) {
+    if (this.__isApplication === true) {
       // Request to open via Tauri API (application build)
       await tauriOpen(url);
     } else {
@@ -154,7 +153,7 @@ class UtilitiesRuntime {
     filename: string | null = null,
     progressHandler?: RuntimeProgressHandler
   ): Promise<void> {
-    if (this.__isApp === true) {
+    if (this.__isApplication === true) {
       // Request to download file via Tauri API (application build)
       const id = Date.now();
 
@@ -205,7 +204,7 @@ class UtilitiesRuntime {
           }
         };
 
-        if (this.__isApp === true) {
+        if (this.__isApplication === true) {
           // Request to show notification via Tauri API (application build)
           const action: RuntimeNotificationAction = await tauriInvoke(
             "plugin:notifications|send_notification",
@@ -249,7 +248,7 @@ class UtilitiesRuntime {
   async requestNotificationPermission(): Promise<boolean> {
     let hasPermission = false;
 
-    if (this.__isApp === true) {
+    if (this.__isApplication === true) {
       // Request to show notification via Tauri API (application build)
       // Notice: permission request is managed at a lower level, therefore \
       //   always consider we have permission here.
@@ -273,7 +272,7 @@ class UtilitiesRuntime {
   }
 
   async requestUnreadCountUpdate(count: number): Promise<void> {
-    if (this.__isApp === true) {
+    if (this.__isApplication === true) {
       // Request to update unread count via Tauri API (application build)
       await tauriInvoke("plugin:notifications|set_badge_count", {
         count
@@ -287,7 +286,7 @@ class UtilitiesRuntime {
   async requestFullscreenEnter(element: HTMLElement): Promise<boolean> {
     let enteredFullScreen = false;
 
-    if (this.__isApp === true) {
+    if (this.__isApplication === true) {
       // Request to enter full screen mode via Tauri API (application build)
       await tauriAppWindow.setFullscreen(true);
 
@@ -306,7 +305,7 @@ class UtilitiesRuntime {
   async requestFullscreenLeave(): Promise<boolean> {
     let leftFullScreen = false;
 
-    if (this.__isApp === true) {
+    if (this.__isApplication === true) {
       // Request to leave full screen mode via Tauri API (application build)
       await tauriAppWindow.setFullscreen(false);
 
@@ -327,7 +326,7 @@ class UtilitiesRuntime {
   }
 
   async requestUpdateCheck(): Promise<void> {
-    if (this.__isApp === true) {
+    if (this.__isApplication === true) {
       // Request to check for updates via Tauri API (application build)
       await tauriEmit(TauriEvent.CHECK_UPDATE);
     } else {
@@ -336,7 +335,7 @@ class UtilitiesRuntime {
   }
 
   private __bindListeners(): void {
-    if (this.__isApp === true) {
+    if (this.__isApplication === true) {
       // Register listeners via Tauri API (application build)
       this.__states.focused = true;
 
@@ -410,5 +409,5 @@ class UtilitiesRuntime {
  * EXPORTS
  * ************************************************************************* */
 
-export { platform, translucent };
+export { platform, context, translucent };
 export default new UtilitiesRuntime();
