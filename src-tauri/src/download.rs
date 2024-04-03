@@ -124,6 +124,7 @@ pub async fn download_file<R: Runtime>(
 
         if last_size_report.elapsed().as_millis() > 100 || downloaded_bytes == total_bytes {
             last_size_report = Instant::now();
+
             window
                 .emit(
                     "download:progress",
