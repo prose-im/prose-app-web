@@ -31,7 +31,7 @@ const $layout = defineStore("layout", {
 
       inbox: {
         form: {
-          formatting: false
+          formatting: true
         },
 
         details: {
