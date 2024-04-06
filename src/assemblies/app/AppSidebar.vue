@@ -359,11 +359,6 @@ $sidebar-context-height: $size-inbox-form-height;
     inset-inline: 0;
   }
 
-  #{$c}__header--floating,
-  #{$c}__context {
-    backdrop-filter: blur(9px);
-  }
-
   #{$c}__context:before,
   #{$c}__header:after {
     content: "";
@@ -393,6 +388,7 @@ $sidebar-context-height: $size-inbox-form-height;
 
     &--floating {
       border-block-end-color: rgb(var(--color-border-secondary));
+      backdrop-filter: blur(9px);
 
       &:after {
         display: block;
@@ -405,14 +401,12 @@ $sidebar-context-height: $size-inbox-form-height;
       $sidebar-main-padding-block + $sidebar-header-height +
         $sidebar-header-border-width
     );
-    padding-block-end: (
-      $sidebar-main-padding-block + $sidebar-context-height +
-        $sidebar-context-border-width
-    );
+    padding-block-end: $sidebar-main-padding-block;
     overflow-x: hidden;
     overflow-y: auto;
     position: absolute;
     inset: 0;
+    inset-block-end: $sidebar-context-height + $sidebar-context-border-width;
     z-index: 0;
 
     #{$c}__main-list {
