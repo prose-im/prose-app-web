@@ -155,7 +155,7 @@ export default {
       // Do not show/hide tooltip on click on wrapped content if this content \
       //   is not marked as clickable (otherwise this handler may result in \
       //   conflicting behavior).
-      if (this.click != null) {
+      if (this.click !== null) {
         if (this.isVisible !== true) {
           // Mark as visible? (only if not bypassed, and click must result in \
           //   a show or both directions)
