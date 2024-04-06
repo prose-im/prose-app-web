@@ -153,8 +153,8 @@ const fromCoreMessage = function (
 
     // Metas
     metas: {
-      secure: room.type === RoomType.PublicChannel,
-      encrypted: false,
+      secure: message.meta.isEncrypted || room.type === RoomType.PublicChannel,
+      encrypted: message.meta.isEncrypted,
       edited: message.meta.isEdited,
       transient: message.meta.isTransient
     },
