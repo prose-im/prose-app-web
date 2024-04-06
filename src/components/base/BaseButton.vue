@@ -243,7 +243,7 @@ $size-ultra-large-padding-sides: 44px;
     display: flex;
     align-items: center;
     cursor: pointer;
-    border-radius: 10px;
+    border-radius: $size-base-button-border-radius;
     transition: all 100ms linear;
     transition-property: transform, box-shadow, background-color, border-color;
 

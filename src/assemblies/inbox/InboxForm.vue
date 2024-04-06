@@ -1,4 +1,3 @@
-'
 <!--
  * This file is part of prose-app-web
  *
@@ -99,19 +98,18 @@ layout-toolbar(
         )
 
         base-button(
-          :disabled="isFormDisabled"
+          :disabled="isFormDisabled || !message"
           size="custom"
           type="submit"
           class="a-inbox-form__compose-send"
           button-class="a-inbox-form__compose-send-button"
-          round
         )
           template(
             v-slot:custom
           )
             base-icon(
               name="paperplane.fill"
-              size="18px"
+              size="17px"
               class="a-inbox-form__compose-send-icon"
             )
 
@@ -1007,11 +1005,9 @@ $form-compose-formatting-recess-block: 3px;
 $form-compose-field-height-minimum: (
   $size-inbox-form-height - (2 * $form-compose-padding-block)
 );
-$form-compose-field-border-radius: ceil(
-  calc($form-compose-field-height-minimum / 2)
-);
+$form-compose-field-border-radius: ($size-base-button-border-radius + 1px);
 
-$form-compose-send-position-edges: 5px;
+$form-compose-send-position-edges: 6px;
 $form-compose-send-button-size: (
   $form-compose-field-height-minimum - (2 * $form-compose-send-position-edges)
 );
