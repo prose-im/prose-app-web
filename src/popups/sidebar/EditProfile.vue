@@ -251,8 +251,8 @@ export default {
     },
 
     async syncVCard(): Promise<void> {
-      // Load profile vCard
-      const profile = await Store.$profile.loadUserProfile(this.selfJID);
+      // Load profile vCard (force a reload)
+      const profile = await Store.$profile.loadUserProfile(this.selfJID, true);
 
       // Apply new profile data to form
       this.vCardDataToForms(profile);

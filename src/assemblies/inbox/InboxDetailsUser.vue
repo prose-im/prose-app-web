@@ -105,7 +105,7 @@ layout-sidebar-details(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID, Room } from "@prose-im/prose-sdk-js";
+import { JID, Room, Availability } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
@@ -138,6 +138,9 @@ import UnblockUser from "@/modals/inbox/UnblockUser.vue";
 // PROJECT: POPUPS
 import SharedFiles from "@/popups/inbox/SharedFiles.vue";
 import EncryptionSettings from "@/popups/inbox/EncryptionSettings.vue";
+
+// CONSTANTS
+const PROFILE_METADATA_REFRESH_INTERVAL = 180000; // 3 minutes
 
 export default {
   name: "InboxDetailsUser",
@@ -189,7 +192,11 @@ export default {
     return {
       // --> STATE <--
 
-      isVCardSyncStale: true,
+      isProfileSyncStale: true,
+
+      profileMetadataRefreshTimeout: null as null | ReturnType<
+        typeof setTimeout
+      >,
 
       modals: {
         closeUser: {
@@ -318,6 +325,10 @@ export default {
       return Store.$roster;
     },
 
+    availability(): Availability {
+      return Store.$presence.getAvailability(this.jid);
+    },
+
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
     },
@@ -342,13 +353,13 @@ export default {
       immediate: true,
 
       handler(newValue: JID, oldValue: JID) {
-        // Make sure vCard data is loaded?
+        // Make sure profile data is loaded?
         if (newValue && (!oldValue || newValue.equals(oldValue) === false)) {
           // Mark as stale
-          this.isVCardSyncStale = true;
+          this.isProfileSyncStale = true;
 
-          // Synchronize vCard eagerly
-          this.syncVCardEager();
+          // Synchronize profile eagerly
+          this.syncProfileEager();
         }
       }
     }
@@ -359,23 +370,81 @@ export default {
     useEvents(Store.$session, {
       connected: this.onStoreConnected
     });
+  },
 
-    // Synchronize vCard eagerly
-    this.syncVCardEager();
+  async mounted() {
+    // Synchronize profile eagerly
+    await this.syncProfileEager();
+  },
+
+  beforeUnmount() {
+    // Clear any scheduled metadata refresh
+    this.unscheduleProfileMetadataRefresh();
   },
 
   methods: {
     // --> HELPERS <--
 
-    async syncVCardEager(): Promise<void> {
+    async syncProfileEager(): Promise<void> {
       // Can synchronize now? (connected)
-      if (this.isVCardSyncStale === true && Store.$session.connected === true) {
+      if (
+        this.isProfileSyncStale === true &&
+        Store.$session.connected === true
+      ) {
         // Mark synchronization as non-stale
-        this.isVCardSyncStale = false;
+        this.isProfileSyncStale = false;
 
-        // Load profile
-        // TODO: refresh transient values every now and then
-        await Store.$profile.load(this.jid);
+        // Cancel any scheduled metadata refresh (since we will reload \
+        //   everything right now)
+        this.unscheduleProfileMetadataRefresh();
+
+        try {
+          // Load profile
+          await Store.$profile.load(this.jid);
+        } catch (error) {
+          this.$log.error("Failed loading (or reloading) user profile", error);
+        }
+
+        // Schedule next metadata refresh
+        this.scheduleProfileMetadataRefresh();
+      }
+    },
+
+    scheduleProfileMetadataRefresh(): void {
+      // Ensure any previously-set timer has been unscheduled first
+      this.unscheduleProfileMetadataRefresh();
+
+      // Schedule next metadata refresh
+      // Notice: make sure not to refresh too often, since this may be quite \
+      //   spammy on the network over large servers, and involves JID-to-JID \
+      //   direct request/response exchanges.
+      this.profileMetadataRefreshTimeout = setTimeout(async () => {
+        this.profileMetadataRefreshTimeout = null;
+
+        try {
+          // Reload metadata? (force-refresh)
+          // Notice: only if connected, and user is not offline (since it is \
+          //   pointless to refresh in that case)
+          if (
+            Store.$session.connected === true &&
+            this.availability !== Availability.Unavailable
+          ) {
+            await Store.$profile.loadUserMetadata(this.jid, true);
+          }
+        } catch (error) {
+          this.$log.error("Failed reloading user profile metadata", error);
+        } finally {
+          // Schedule next refresh
+          this.scheduleProfileMetadataRefresh();
+        }
+      }, PROFILE_METADATA_REFRESH_INTERVAL);
+    },
+
+    unscheduleProfileMetadataRefresh(): void {
+      if (this.profileMetadataRefreshTimeout !== null) {
+        clearTimeout(this.profileMetadataRefreshTimeout);
+
+        this.profileMetadataRefreshTimeout = null;
       }
     },
 
@@ -383,8 +452,11 @@ export default {
 
     onStoreConnected(connected: boolean): void {
       if (connected === true) {
-        // Synchronize vCard eagerly (if stale)
-        this.syncVCardEager();
+        // Synchronize profile eagerly (if stale)
+        this.syncProfileEager();
+      } else {
+        // Cancel any scheduled refresh (since we are not connected)
+        this.unscheduleProfileMetadataRefresh();
       }
     },
 

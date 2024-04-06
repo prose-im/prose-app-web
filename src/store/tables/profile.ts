@@ -96,8 +96,11 @@ interface ProfileEntry {
  * CONSTANTS
  * ************************************************************************* */
 
+const PROFILE_METADATA_EXPIRE_AFTER = 90000; // 90 seconds
+
 const LOCAL_STATES = {
-  loaded: {} as { [jid: string]: boolean }
+  profileLoaded: {} as { [jid: string]: boolean },
+  metadataLoadedAt: {} as { [jid: string]: number }
 };
 
 /**************************************************************************
@@ -136,36 +139,58 @@ const $profile = defineStore("profile", {
 
     async load(jid: JID, reload = false): Promise<ProfileEntry> {
       // Assert profile data
+      const profile = this.assert(jid);
+
+      // Load all profile parts at once
+      await Promise.all([
+        this.loadUserProfile(jid, reload),
+        this.loadUserMetadata(jid, reload)
+      ]);
+
+      return profile;
+    },
+
+    async loadUserProfile(jid: JID, reload = false): Promise<ProfileEntry> {
+      // Assert profile data
       const profile = this.assert(jid),
         jidString = jid.toString();
 
       // Load profile? (or reload)
-      if (LOCAL_STATES.loaded[jidString] !== true || reload === true) {
-        // Load all profile parts at once
-        await Promise.all([
-          this.loadUserProfile(jid),
-          this.loadUserMetadata(jid)
-        ]);
+      if (LOCAL_STATES.profileLoaded[jidString] !== true || reload === true) {
+        // Load vCard data for JID
+        const profileResponse = await Broker.$profile.loadUserProfile(jid);
 
-        // Mark as loaded
-        LOCAL_STATES.loaded[jidString] = true;
+        // Mark profile as loaded
+        LOCAL_STATES.profileLoaded[jidString] = true;
+
+        // Set local profile vCard data
+        this.setUserProfile(jid, profileResponse);
       }
 
       return profile;
     },
 
-    async loadUserProfile(jid: JID): Promise<ProfileEntry> {
-      // Load vCard data for JID
-      const profileResponse = await Broker.$profile.loadUserProfile(jid);
+    async loadUserMetadata(jid: JID, reload = false): Promise<void> {
+      const jidString = jid.toString();
 
-      // Set local profile vCard data
-      return this.setUserProfile(jid, profileResponse);
-    },
+      // Check if should reload (never loaded, or expired)
+      const nowTime = Date.now(),
+        lastLoadedAt = LOCAL_STATES.metadataLoadedAt[jidString] || 0;
 
-    async loadUserMetadata(jid: JID): Promise<void> {
-      const metadata = await Broker.$profile.loadUserMetadata(jid);
+      const notLoadedOrExpired =
+        nowTime - lastLoadedAt > PROFILE_METADATA_EXPIRE_AFTER;
 
-      this.setUserMetadata(jid, metadata);
+      // Load metadata? (or reload)
+      if (notLoadedOrExpired === true || reload === true) {
+        // Load metadata for JID
+        const metadata = await Broker.$profile.loadUserMetadata(jid);
+
+        // Mark metadata as loaded
+        LOCAL_STATES.metadataLoadedAt[jidString] = nowTime;
+
+        // Set local metadata
+        this.setUserMetadata(jid, metadata);
+      }
     },
 
     setUserProfile(jid: JID, userProfile: UserProfile | void): ProfileEntry {
