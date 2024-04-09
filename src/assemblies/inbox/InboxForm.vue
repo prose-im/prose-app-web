@@ -1005,7 +1005,7 @@ $form-compose-formatting-recess-block: 3px;
 $form-compose-field-height-minimum: (
   $size-inbox-form-height - (2 * $form-compose-padding-block)
 );
-$form-compose-field-border-radius: ($size-base-button-border-radius + 1px);
+$form-compose-field-border-radius: ($size-base-button-border-radius + 2px);
 
 $form-compose-send-position-edges: 6px;
 $form-compose-send-button-size: (
@@ -1108,7 +1108,6 @@ $form-compose-send-button-size: (
     }
 
     #{$c}__compose-formatting {
-      margin-inline: 2px;
       margin-block-start: -$form-compose-formatting-recess-block;
       margin-block-end: (
         $form-compose-padding-block - $form-compose-formatting-recess-block
