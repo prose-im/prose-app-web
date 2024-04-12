@@ -12,13 +12,12 @@
 import { createLogger } from "vue-logger-plugin";
 
 // PROJECT: COMMONS
-import CONFIG from "@/commons/config";
 
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
-const enabled = CONFIG.environment !== "production";
+const enabled = true; //CONFIG.environment !== "production";
 const level = "debug";
 
 /**************************************************************************
