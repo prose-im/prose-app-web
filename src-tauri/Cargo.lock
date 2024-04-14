@@ -2832,6 +2832,7 @@ version = "0.0.0"
 dependencies = [
  "cocoa 0.25.0",
  "directories",
+ "log",
  "mac-notification-sys",
  "notifications",
  "objc",
