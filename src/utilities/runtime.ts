@@ -16,6 +16,12 @@ import {
   appWindow as tauriAppWindow,
   LogicalSize as tauriLogicalSize
 } from "@tauri-apps/api/window";
+import {
+  debug as tauriLogDebug,
+  error as tauriLogError,
+  info as tauriLogInfo,
+  warn as tauriLogWarn
+} from "tauri-plugin-log-api";
 import FileDownloader from "js-file-downloader";
 
 // PROJECT: COMMONS
@@ -24,19 +30,6 @@ import CONFIG from "@/commons/config";
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 import UtilitiesTitle from "@/utilities/title";
-
-/**************************************************************************
- * CONSTANTS
- * ************************************************************************* */
-
-const platform = CONFIG.platform;
-const context = platform === "web" ? "browser" : "application";
-const translucent = platform === "macos";
-
-const NOTIFICATION_PERMISSIONS = {
-  granted: "granted",
-  denied: "denied"
-};
 
 /**************************************************************************
  * ENUMERATIONS
@@ -51,16 +44,27 @@ enum RuntimeNotificationAction {
   None = "none"
 }
 
+enum RuntimeLogLevel {
+  // Debug level.
+  Debug = "debug",
+  // Info level.
+  Info = "info",
+  // Warn level.
+  Warn = "warn",
+  // Error level.
+  Error = "error"
+}
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
 
-export type RuntimeProgressHandler = (progress: number, total: number) => void;
-export type RuntimeFocusHandler = (focused: boolean) => void;
-export type RuntimeOpenHandler = (protocol: string, path: string) => void;
-export type RuntimeMenuHandler = (menu: string) => Promise<void>;
+type RuntimeProgressHandler = (progress: number, total: number) => void;
+type RuntimeFocusHandler = (focused: boolean) => void;
+type RuntimeOpenHandler = (protocol: string, path: string) => void;
+type RuntimeMenuHandler = (menu: string) => Promise<void>;
 
-export type RuntimeRouteHandler = (
+type RuntimeRouteHandler = (
   name: string,
   params?: { [name: string]: string }
 ) => Promise<void>;
@@ -79,6 +83,35 @@ interface RuntimeNotificationRoute {
   name: string;
   params?: { [name: string]: string };
 }
+
+/**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const platform = CONFIG.platform;
+const context = platform === "web" ? "browser" : "application";
+const translucent = platform === "macos";
+
+const NOTIFICATION_PERMISSIONS = {
+  granted: "granted",
+  denied: "denied"
+};
+
+const LOG_METHODS = {
+  browser: {
+    [RuntimeLogLevel.Debug]: console.debug,
+    [RuntimeLogLevel.Info]: console.info,
+    [RuntimeLogLevel.Warn]: console.warn,
+    [RuntimeLogLevel.Error]: console.error
+  },
+
+  application: {
+    [RuntimeLogLevel.Debug]: tauriLogDebug,
+    [RuntimeLogLevel.Info]: tauriLogInfo,
+    [RuntimeLogLevel.Warn]: tauriLogWarn,
+    [RuntimeLogLevel.Error]: tauriLogError
+  }
+};
 
 /**************************************************************************
  * RUNTIME
@@ -380,6 +413,32 @@ class UtilitiesRuntime {
     }
   }
 
+  async requestLog(
+    level: RuntimeLogLevel,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ...messages: Array<any>
+  ): Promise<void> {
+    if (this.__isApplication === true) {
+      // Request to log message via Tauri API (application build)
+      await LOG_METHODS.application[level](
+        messages
+          .map(message => {
+            // Stringify message for logging output (using the best available \
+            //   method for input type)
+            if (typeof message === "string") {
+              return message;
+            }
+
+            return JSON.stringify(message);
+          })
+          .join(" ")
+      );
+    } else {
+      // Request to log message via browser APIs (Web build)
+      LOG_METHODS.browser[level](`[${level.toUpperCase()}]`, ...messages);
+    }
+  }
+
   private __bindListeners(): void {
     if (this.__isApplication === true) {
       // Register listeners via Tauri API (application build)
@@ -455,5 +514,5 @@ class UtilitiesRuntime {
  * EXPORTS
  * ************************************************************************* */
 
-export { platform, context, translucent };
+export { RuntimeLogLevel, platform, context, translucent };
 export default new UtilitiesRuntime();

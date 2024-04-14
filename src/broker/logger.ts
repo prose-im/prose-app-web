@@ -10,27 +10,32 @@
 
 // NPM
 import { ProseLogger } from "@prose-im/prose-sdk-js";
-import { debug, error, info, warn } from "tauri-plugin-log-api";
+
+// PROJECT: UTILITIES
+import {
+  default as UtilitiesRuntime,
+  RuntimeLogLevel
+} from "@/utilities/runtime";
 
 /**************************************************************************
  * CLASS
  * ************************************************************************* */
 
 class BrokerLogger implements ProseLogger {
-  logDebug(message: string) {
-    debug(message);
+  logDebug(message: string): void {
+    UtilitiesRuntime.requestLog(RuntimeLogLevel.Debug, message);
   }
 
-  logInfo(message: string) {
-    info(message);
+  logInfo(message: string): void {
+    UtilitiesRuntime.requestLog(RuntimeLogLevel.Info, message);
   }
 
-  logWarn(message: string) {
-    warn(message);
+  logWarn(message: string): void {
+    UtilitiesRuntime.requestLog(RuntimeLogLevel.Warn, message);
   }
 
-  logError(message: string) {
-    error(message);
+  logError(message: string): void {
+    UtilitiesRuntime.requestLog(RuntimeLogLevel.Error, message);
   }
 }
 

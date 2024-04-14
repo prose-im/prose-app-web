@@ -15,7 +15,7 @@ use tauri_plugin_log::{LogTarget, RotationStrategy, TimezoneStrategy};
  * ************************************************************************* */
 
 pub fn provide<R: Runtime>() -> impl Plugin<R> {
-    let format =
+    let time_format =
         time::format_description::parse("[[[year]-[month]-[day]][[[hour]:[minute]:[second]]")
             .unwrap();
 
@@ -25,7 +25,10 @@ pub fn provide<R: Runtime>() -> impl Plugin<R> {
         .format(move |out, message, record| {
             out.finish(format_args!(
                 "{}[{}] {}",
-                TimezoneStrategy::UseUtc.get_now().format(&format).unwrap(),
+                TimezoneStrategy::UseUtc
+                    .get_now()
+                    .format(&time_format)
+                    .unwrap(),
                 record.level(),
                 message
             ))
