@@ -48,7 +48,7 @@ const RECONNECT_ATTEMPTS_COUNT_CAP = 15;
 const PING_INTERVAL_SECONDS = 60; // 1 minute
 
 const LOGGING_ENABLED = loggerEnabled;
-const LOGGING_LEVEL = "error";
+const LOGGING_LEVEL = "warn";
 const LOGGING_STANZAS = loggerEnabled;
 
 /**************************************************************************
