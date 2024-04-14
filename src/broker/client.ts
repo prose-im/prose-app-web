@@ -36,6 +36,7 @@ import {
 } from "@/broker/context";
 import BrokerDelegate from "@/broker/delegate";
 import BrokerEncryption from "@/broker/encryption";
+import BrokerLogger from "./logger";
 
 /**************************************************************************
  * CONSTANTS
@@ -47,7 +48,7 @@ const RECONNECT_ATTEMPTS_COUNT_CAP = 15;
 const PING_INTERVAL_SECONDS = 60; // 1 minute
 
 const LOGGING_ENABLED = loggerEnabled;
-const LOGGING_LEVEL = "warn";
+const LOGGING_LEVEL = "info";
 const LOGGING_STANZAS = loggerEnabled;
 
 /**************************************************************************
@@ -207,6 +208,7 @@ class BrokerClient {
         new BrokerConnection(),
         this.__delegate,
         new BrokerEncryption(),
+        new BrokerLogger(),
         this.__configuration()
       );
     }
