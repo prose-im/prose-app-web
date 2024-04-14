@@ -198,7 +198,7 @@ const fromCoreMessage = function (
     reactions: message.reactions.map(reaction => {
       return {
         reaction: reaction.reaction,
-        authors: reaction.authors.map(jid => jid.toString())
+        authors: reaction.authors.map(author => author.jid.toString())
       };
     })
   };
