@@ -36,7 +36,7 @@ import {
 } from "@/broker/context";
 import BrokerDelegate from "@/broker/delegate";
 import BrokerEncryption from "@/broker/encryption";
-import BrokerLogger from "./logger";
+import BrokerLogger from "@/broker/logger";
 
 /**************************************************************************
  * CONSTANTS

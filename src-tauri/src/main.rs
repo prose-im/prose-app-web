@@ -10,6 +10,7 @@
  * ************************************************************************* */
 
 mod download;
+mod logger;
 mod menu;
 mod notifications;
 
@@ -17,9 +18,7 @@ mod notifications;
  * IMPORTS
  * ************************************************************************* */
 
-use tauri::plugin::Plugin;
-use tauri::{Manager, Runtime, WindowEvent};
-use tauri_plugin_log::{LogTarget, RotationStrategy, TimezoneStrategy};
+use tauri::{Manager, WindowEvent};
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 
 /**************************************************************************
@@ -77,26 +76,7 @@ fn main() {
         })
         .plugin(download::provide())
         .plugin(notifications::provide())
-        .plugin(logger_plugin())
+        .plugin(logger::provide())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
-}
-
-fn logger_plugin<R: Runtime>() -> impl Plugin<R> {
-    let format =
-        time::format_description::parse("[[[year]-[month]-[day]][[[hour]:[minute]:[second]]")
-            .unwrap();
-
-    tauri_plugin_log::Builder::default()
-        .rotation_strategy(RotationStrategy::KeepAll)
-        .targets([LogTarget::LogDir, LogTarget::Stdout])
-        .format(move |out, message, record| {
-            out.finish(format_args!(
-                "{}[{}] {}",
-                TimezoneStrategy::UseUtc.get_now().format(&format).unwrap(),
-                record.level(),
-                message
-            ))
-        })
-        .build()
 }

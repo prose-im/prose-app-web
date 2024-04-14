@@ -11,8 +11,12 @@ tauri-build = { version = "1", features = [] }
 
 [dependencies]
 tauri = { version = "1", features = ["window-center", "window-set-size", "window-set-resizable", "macos-private-api", "updater", "window-set-fullscreen", "window-start-dragging", "shell-open", "notification-all"] }
+tauri-plugin-deep-link = "0.1.2"
+tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+log = "0.4.21"
+time = { version = "0.3", features = ["formatting", "local-offset"] }
 directories = "5.0.1"
 reqwest = "0.11.25"
 tokio = { version = "1.36.0", features = ["full"] }
@@ -21,12 +25,8 @@ cocoa = "0.25.0"
 objc = "0.2.7"
 percent-encoding = "2.3.1"
 mac-notification-sys = "0.6.1"
-tauri-plugin-deep-link = "0.1.2"
 window-vibrancy = "0.4.3"
 notifications = { path = "crates/notifications" }
-log = "^0.4"
-tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
-time = { version = "0.3", features = ["formatting", "local-offset"] }
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

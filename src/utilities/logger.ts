@@ -12,12 +12,20 @@
 import { createLogger } from "vue-logger-plugin";
 
 // PROJECT: COMMONS
+import CONFIG from "@/commons/config";
+
+// PROJECT: UTILITIES
+import { context as runtimeContext } from "@/utilities/runtime";
 
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
-const enabled = true; //CONFIG.environment !== "production";
+// Notice: always enable logs in application contexts, since we are outputing \
+//   logs to a filesystem-based log file there.
+const enabled =
+  CONFIG.environment !== "production" || runtimeContext === "application";
+
 const level = "debug";
 
 /**************************************************************************
