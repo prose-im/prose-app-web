@@ -30,6 +30,10 @@ import {
 const enabled =
   CONFIG.environment !== "production" || runtimeContext === "application";
 
+// Notice: make sure to synchronize this log level with the backend code for \
+//   Tauri application builds, since there is a log level filter in the Tauri \
+//   Rust code as well. Browser builds only use this log level, therefore \
+//   adjusting it here only suffices.
 const level = CONFIG.environment === "production" ? "warn" : "debug";
 
 /**************************************************************************
