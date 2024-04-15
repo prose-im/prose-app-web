@@ -105,7 +105,7 @@ $card-border-width: 1px;
   font-size: 12px;
   line-height: 15px;
   margin-inline-start: -$card-border-width;
-  margin-block-start: -($card-border-width + 2px);
+  margin-block-start: -($card-border-width + 3px);
   padding: 9px 11px;
   position: absolute;
   z-index: $index-foreground-quaternary;
