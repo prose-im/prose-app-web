@@ -85,6 +85,14 @@
     :room="room"
     :message-id="popups.messageDetails.messageId"
   )
+
+  message-reaction(
+    v-if="cards.messageReaction.visible"
+    :room="room"
+    :message-id="cards.messageReaction.messageId"
+    :reaction="cards.messageReaction.reaction"
+    :anchor="cards.messageReaction.anchor"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -136,6 +144,9 @@ import {
 } from "@/components/inbox/InboxFilePreview.vue";
 import InboxMessagingAlert from "@/components/inbox/InboxMessagingAlert.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
+
+// PROJECT: CARDS
+import MessageReaction from "@/cards/inbox/MessageReaction.vue";
 
 // PROJECT: MODALS
 import RemoveMessage from "@/modals/inbox/RemoveMessage.vue";
@@ -214,7 +225,8 @@ export default {
     InboxMessagingAlert,
     MessageDetails,
     EditMessage,
-    RemoveMessage
+    RemoveMessage,
+    MessageReaction
   },
 
   props: {
@@ -286,6 +298,16 @@ export default {
           visible: false,
 
           messageId: ""
+        }
+      },
+
+      cards: {
+        messageReaction: {
+          visible: false,
+
+          messageId: "",
+          reaction: "",
+          anchor: [0, 0]
         }
       },
 
@@ -1596,7 +1618,15 @@ export default {
     ): void {
       this.$log.debug("Got message reactions authors", event);
 
-      // TODO: show or hide special popover with reaction authors
+      // Acquire anchor
+      const anchor = event.origin.parent || event.origin.anchor;
+
+      // Show or hide message reaction card
+      this.cards.messageReaction.messageId = event.id;
+      this.cards.messageReaction.reaction = event.reaction;
+      this.cards.messageReaction.anchor = [anchor.x, anchor.y];
+
+      this.cards.messageReaction.visible = event.visible;
     },
 
     async onMessagingMessageReactionsReact(
