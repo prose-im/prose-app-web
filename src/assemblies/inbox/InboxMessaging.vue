@@ -100,7 +100,6 @@ import {
   EventMessageHistoryView,
   EventMessageHistorySeek,
   EventMessageReactionsReact,
-  EventMessageReactionsAuthors,
   EventMessageReactionsView,
   FileAction as MessagingFileAction,
   FileType as MessagingFileType,
@@ -245,7 +244,6 @@ export default {
       messagingEvents: {
         "message:actions:view": this.onMessagingMessageActionsView,
         "message:reactions:view": this.onMessagingMessageReactionsView,
-        "message:reactions:authors": this.onMessagingMessageReactionsAuthors,
         "message:reactions:react": this.onMessagingMessageReactionsReact,
         "message:file:view": this.onMessagingMessageFileView,
         "message:link:open": this.onMessagingMessageLinkOpen,
@@ -1589,14 +1587,6 @@ export default {
         // Trigger container click
         this.triggerContainerClick();
       }
-    },
-
-    onMessagingMessageReactionsAuthors(
-      event: EventMessageReactionsAuthors
-    ): void {
-      this.$log.debug("Got message reactions authors", event);
-
-      // TODO: show or hide special popover with reaction authors
     },
 
     async onMessagingMessageReactionsReact(
