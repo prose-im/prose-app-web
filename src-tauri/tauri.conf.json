@@ -64,9 +64,6 @@
       },
       "shell": {
         "open": true
-      },
-      "notification": {
-        "all": true
       }
     },
     "security": {

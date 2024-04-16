@@ -35,6 +35,12 @@ fn main() {
             .flag("-Wno-deprecated-declarations")
             .flag(&format!("-mmacos-version-min={}", min_version))
             .compile("helper");
+        cc::Build::new()
+            .file("objc/notification.m")
+            .flag("-fmodules")
+            .flag("-Wno-deprecated-declarations")
+            .flag(&format!("-mmacos-version-min={}", min_version))
+            .compile("notification");
 
         println!("cargo:rerun-if-env-changed={}", DEPLOYMENT_TARGET_VAR);
         println!("cargo:rerun-if-changed=build.rs");

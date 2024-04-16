@@ -6,7 +6,7 @@
  * IMPORTS
  * ************************************************************************* */
 
-use mac_notification_sys::{Notification, NotificationResponse};
+//use mac_notification_sys::{Notification, NotificationResponse};
 use tauri::plugin::{Builder, TauriPlugin};
 use tauri::Runtime;
 
@@ -21,13 +21,15 @@ fn send_notification(title: String, body: String) -> &'static str {}
 #[cfg(target_os = "macos")]
 #[tauri::command]
 fn send_notification(title: String, body: String) -> &'static str {
-    let response = Notification::default().title(&title).message(&body).send();
+    notifications::send_notification(&title, &body);
+   // let response = Notification::default().title(&title).message(&body).send();
 
-    match response {
-        Ok(NotificationResponse::Click) => "click",
-        Ok(NotificationResponse::None) => "none",
-        _ => "other",
-    }
+    //match response {
+     //   Ok(NotificationResponse::Click) => "click",
+     //   Ok(NotificationResponse::None) => "none",
+     //   _ => "other",
+    //}
+    "none"
 }
 
 #[tauri::command]
@@ -72,7 +74,10 @@ fn provide_notifications() {}
 
 #[cfg(target_os = "macos")]
 pub fn provide_notifications() {
-    let bundle = mac_notification_sys::get_bundle_identifier_or_default("prose");
+    //let bundle = mac_notification_sys::get_bundle_identifier_or_default("terminal");
+    //println!("bundle: {}", bundle);
+    //mac_notification_sys::set_application(&bundle).unwrap();
 
-    mac_notification_sys::set_application(&bundle).unwrap();
+    notifications::init("Prose");
+    
 }
