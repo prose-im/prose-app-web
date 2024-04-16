@@ -10,7 +10,7 @@
 
 <template lang="pug">
 .c-base-card(
-  v-show="isRevealed"
+  v-if="isRevealed"
   :style="cardStyle"
 )
   slot
