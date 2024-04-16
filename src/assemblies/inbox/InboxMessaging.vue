@@ -86,6 +86,13 @@
     :message-id="popups.messageDetails.messageId"
   )
 
+  message-author(
+    v-if="cards.messageAuthor.visible"
+    :room="room"
+    :message-id="cards.messageAuthor.messageId"
+    :anchor="cards.messageAuthor.anchor"
+  )
+
   message-reaction(
     v-if="cards.messageReaction.visible"
     :room="room"
@@ -102,6 +109,7 @@
 <script lang="ts">
 // NPM
 import {
+  EventMessageAuthorIdentity,
   EventMessageActionsView,
   EventMessageFileView,
   EventMessageLinkOpen,
@@ -146,6 +154,7 @@ import InboxMessagingAlert from "@/components/inbox/InboxMessagingAlert.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 
 // PROJECT: CARDS
+import MessageAuthor from "@/cards/inbox/MessageAuthor.vue";
 import MessageReaction from "@/cards/inbox/MessageReaction.vue";
 
 // PROJECT: MODALS
@@ -226,6 +235,7 @@ export default {
     MessageDetails,
     EditMessage,
     RemoveMessage,
+    MessageAuthor,
     MessageReaction
   },
 
@@ -255,6 +265,7 @@ export default {
       },
 
       messagingEvents: {
+        "message:author:identity": this.onMessagingMessageAuthorIdentity,
         "message:actions:view": this.onMessagingMessageActionsView,
         "message:reactions:view": this.onMessagingMessageReactionsView,
         "message:reactions:authors": this.onMessagingMessageReactionsAuthors,
@@ -302,6 +313,13 @@ export default {
       },
 
       cards: {
+        messageAuthor: {
+          visible: false,
+
+          messageId: "",
+          anchor: [0, 0]
+        },
+
         messageReaction: {
           visible: false,
 
@@ -1448,6 +1466,19 @@ export default {
           this.identifyParty(frameRuntime, name.from, name.name);
         }
       }
+    },
+
+    onMessagingMessageAuthorIdentity(event: EventMessageAuthorIdentity): void {
+      this.$log.debug("Got message author identity", event);
+
+      // Acquire anchor
+      const anchor = event.origin.parent || event.origin.anchor;
+
+      // Show or hide message author card
+      this.cards.messageAuthor.messageId = event.id;
+      this.cards.messageAuthor.anchor = [anchor.x, anchor.y];
+
+      this.cards.messageAuthor.visible = event.visible;
     },
 
     onMessagingMessageActionsView(event: EventMessageActionsView): void {
