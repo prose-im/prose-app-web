@@ -429,6 +429,10 @@ class UtilitiesRuntime {
               return message;
             }
 
+            if (typeof message === "object" && message instanceof Error) {
+              return message.toString();
+            }
+
             return JSON.stringify(message);
           })
           .join(" ")
