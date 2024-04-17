@@ -25,6 +25,7 @@ import {
 import Store from "@/store";
 
 // PROJECT: UTILITIES
+import logger from "@/utilities/logger";
 import UtilitiesFile from "@/utilities/file";
 
 /**************************************************************************
@@ -302,7 +303,8 @@ const $inbox = defineStore("inbox", {
       messages: CoreMessage[],
       mode = InboxInsertMode.Insert
     ): boolean {
-      let hasInserted = false;
+      let hasInserted = false,
+        lastInsertError: Error | null = null;
 
       // Insert or restore messages (forwards or backwards)
       // Notice: instead of allocating a new Array by using the simple \
@@ -310,14 +312,41 @@ const $inbox = defineStore("inbox", {
       //   backward loops, at the expense of more complex code.
       if (mode === InboxInsertMode.Restore) {
         for (let i = messages.length - 1; i >= 0; i--) {
-          hasInserted =
-            this.insertCoreMessage(room, messages[i], mode) || hasInserted;
+          try {
+            hasInserted =
+              this.insertCoreMessage(room, messages[i], mode) || hasInserted;
+          } catch (error) {
+            lastInsertError = (error || new Error("Restore error")) as Error;
+
+            logger.error(
+              `Failed restoring individual core message in room: ${room.id}`,
+              error
+            );
+          }
         }
       } else {
         for (let i = 0; i < messages.length; i++) {
-          hasInserted =
-            this.insertCoreMessage(room, messages[i], mode) || hasInserted;
+          try {
+            hasInserted =
+              this.insertCoreMessage(room, messages[i], mode) || hasInserted;
+          } catch (error) {
+            lastInsertError = (error || new Error("Insert error")) as Error;
+
+            logger.error(
+              `Failed inserting individual core message in room: ${room.id}`,
+              error
+            );
+          }
         }
+      }
+
+      // Nothing inserted, and caught an insertion error? Throw immediately.
+      // Notice: do not throw if there is at least 1 successful insertion, \
+      //   even if we caught an insertion error, since it might prevent \
+      //   inserting a whole list of valid messages — we want to be lenient \
+      //   here.
+      if (hasInserted !== true && lastInsertError !== null) {
+        throw lastInsertError;
       }
 
       return hasInserted;
