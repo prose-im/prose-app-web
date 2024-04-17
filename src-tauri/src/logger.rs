@@ -26,7 +26,7 @@ pub fn provide<R: Runtime>() -> impl Plugin<R> {
     let log_level = LevelFilter::Debug;
 
     #[cfg(not(dev))]
-    let log_level = LevelFilter::Warn;
+    let log_level = LevelFilter::Info;
 
     tauri_plugin_log::Builder::default()
         .rotation_strategy(RotationStrategy::KeepOne)
