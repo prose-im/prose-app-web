@@ -12,6 +12,9 @@
 import { JID, UserProfile, UserMetadata } from "@prose-im/prose-sdk-js";
 import { defineStore } from "pinia";
 
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: BROKER
 import Broker from "@/broker";
 
@@ -181,7 +184,13 @@ const $profile = defineStore("profile", {
         nowTime - lastLoadedAt > PROFILE_METADATA_EXPIRE_AFTER;
 
       // Load metadata? (or reload)
-      if (notLoadedOrExpired === true || reload === true) {
+      // Important: do not load metadata if this is our own JID, since it will \
+      //   most likely fail due to querying our own local resource, eg. to \
+      //   acquire local client time.
+      if (
+        jid.equals(Store.$account.getSelfJID()) !== true &&
+        (notLoadedOrExpired === true || reload === true)
+      ) {
         // Load metadata for JID
         const metadata = await Broker.$profile.loadUserMetadata(jid);
 
