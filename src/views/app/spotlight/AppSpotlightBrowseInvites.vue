@@ -18,7 +18,7 @@ list-browse(
   ]`
   :groups="groups"
   :loading="loading"
-  empty-illustration="invitations-empty"
+  empty-illustration="inbox-empty"
   empty-title="No pending invites."
   empty-description="People can invite you to channels and groups. Contact requests from other workspaces will also appear here."
 )
