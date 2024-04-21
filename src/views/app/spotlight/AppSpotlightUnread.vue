@@ -84,7 +84,22 @@ export default {
 
       topbarComponent: shallowRef(SpotlightTopbar),
 
-      topbarProperties: {
+      // --> STATE <--
+
+      unreadMessageExcerpts: {} as {
+        [roomId: RoomID]: Array<UnreadMessageExcerpt>;
+      },
+
+      pendingLoadUnreadRoomMessages: {} as { [roomId: RoomID]: boolean },
+
+      pendingMarkAllRead: false,
+      pendingMarkReads: {} as { [roomId: RoomID]: boolean }
+    };
+  },
+
+  computed: {
+    topbarProperties(): { actions: SpotlightTopbarActions } {
+      return {
         actions: [
           [
             {
@@ -94,24 +109,16 @@ export default {
               },
 
               tooltip: "Mark All as Read",
-              disabled: true // TODO: enable if there are unreads + show confirm modal
+              click: this.onTopbarActionMarkAllAsReadClick,
+
+              disabled:
+                this.pendingMarkAllRead === true || this.groups.length === 0
             }
           ]
-        ] as SpotlightTopbarActions
-      },
+        ]
+      };
+    },
 
-      // --> STATE <--
-
-      unreadMessageExcerpts: {} as {
-        [roomId: RoomID]: Array<UnreadMessageExcerpt>;
-      },
-
-      pendingLoadUnreadRoomMessages: {} as { [roomId: RoomID]: boolean },
-      pendingMarkReads: {} as { [roomId: RoomID]: boolean }
-    };
-  },
-
-  computed: {
     groups(): ListBrowseGroups {
       const groups: ListBrowseGroups = [];
 
@@ -349,6 +356,43 @@ export default {
     },
 
     // --> EVENT LISTENERS <--
+
+    async onTopbarActionMarkAllAsReadClick(): Promise<void> {
+      if (this.pendingMarkAllRead !== true) {
+        this.pendingMarkAllRead = true;
+
+        try {
+          // Mark all messages as read in all rooms
+          await Promise.all(
+            this.items
+              .filter(item => {
+                // Any unread messages for item? (mark as read)
+                return item.unreadCount > 0;
+              })
+              .map(item => {
+                // Mark room as read (for item)
+                return item.room.markAsRead();
+              })
+          );
+
+          // Show information alert
+          BaseAlert.info(
+            "Marked all as read",
+            "All messages have been marked as read"
+          );
+        } catch (error) {
+          this.$log.error("Could not mark all rooms as read", error);
+
+          // Show error alert
+          BaseAlert.error(
+            "Cannot mark all as read",
+            "Could not mark all messages as read"
+          );
+        } finally {
+          this.pendingMarkAllRead = false;
+        }
+      }
+    },
 
     async onUnreadActionMarkRead(room: Room): Promise<void> {
       if (this.pendingMarkReads[room.id] !== true) {
