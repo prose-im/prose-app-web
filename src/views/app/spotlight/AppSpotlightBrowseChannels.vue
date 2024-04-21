@@ -30,7 +30,7 @@ list-browse(
 
 <script lang="ts">
 // NPM
-import { JID, RoomID } from "@prose-im/prose-sdk-js";
+import { JID, RoomID, RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -95,7 +95,10 @@ export default {
                       component: BaseIcon,
 
                       properties: {
-                        name: "circle.grid.2x2",
+                        name: this.$filters.string.roomTypeIntoIcon(
+                          RoomType.PublicChannel
+                        ),
+
                         size: "12px",
                         fill: "rgb(var(--color-base-blue-dark)"
                       }

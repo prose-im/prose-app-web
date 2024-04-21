@@ -11,6 +11,7 @@
 // NPM
 import escapeHtml from "escape-html";
 import { checkText as textSmilesToEmojis } from "smile2emoji";
+import { RoomType } from "@prose-im/prose-sdk-js";
 
 /**************************************************************************
  * TYPES
@@ -44,6 +45,30 @@ class FilterString {
     // Important: escape HTML tags from text before processing, failure to do \
     //   so WILL lead to XSS injections.
     return this.textIntoHtml(text).replace(TEXT_TO_MULTI_LINE_REGEX, "<br>");
+  }
+
+  roomTypeIntoIcon(roomType: RoomType): string | void {
+    switch (roomType) {
+      case RoomType.DirectMessage: {
+        return "message";
+      }
+
+      case RoomType.Group: {
+        return "at";
+      }
+
+      case RoomType.PrivateChannel: {
+        return "lock";
+      }
+
+      case RoomType.PublicChannel: {
+        return "circle.grid.2x2";
+      }
+
+      default: {
+        return undefined;
+      }
+    }
   }
 
   replaceLastSmileyToEmoji(text: StringText): StringText | null {

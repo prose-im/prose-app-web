@@ -43,7 +43,7 @@ sidebar-main-item-generic(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { SidebarItem, RoomType } from "@prose-im/prose-sdk-js";
+import { SidebarItem } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import SidebarMainItemGeneric from "@/components/sidebar/SidebarMainItemGeneric.vue";
@@ -81,21 +81,7 @@ export default {
 
   computed: {
     icon(): string | null {
-      switch (this.type) {
-        case "group": {
-          return "at";
-        }
-
-        case "channel": {
-          return this.item.room.type === RoomType.PrivateChannel
-            ? "lock"
-            : "circle.grid.2x2";
-        }
-
-        default: {
-          return null;
-        }
-      }
+      return this.$filters.string.roomTypeIntoIcon(this.item.room.type) || null;
     }
   }
 };

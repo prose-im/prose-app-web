@@ -27,7 +27,7 @@
 
 <script lang="ts">
 // NPM
-import { Room, RoomType } from "@prose-im/prose-sdk-js";
+import { Room } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
 export default {
@@ -42,23 +42,10 @@ export default {
 
   computed: {
     nameIcon(): string {
-      switch (this.room.type) {
-        case RoomType.Group: {
-          return "at";
-        }
-
-        case RoomType.PrivateChannel: {
-          return "lock";
-        }
-
-        case RoomType.PublicChannel: {
-          return "circle.grid.2x2";
-        }
-
-        default: {
-          return "questionmark.square.dashed";
-        }
-      }
+      return (
+        this.$filters.string.roomTypeIntoIcon(this.room.type) ||
+        "questionmark.square.dashed"
+      );
     }
   }
 };

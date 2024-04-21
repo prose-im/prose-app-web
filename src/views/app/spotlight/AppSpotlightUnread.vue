@@ -36,13 +36,7 @@ layout-view(
 <script lang="ts">
 // NPM
 import { shallowRef } from "vue";
-import {
-  JID,
-  Room,
-  RoomID,
-  RoomType,
-  SidebarItem
-} from "@prose-im/prose-sdk-js";
+import { JID, Room, RoomID, SidebarItem } from "@prose-im/prose-sdk-js";
 
 // PROJECT: ASSEMBLIES
 import {
@@ -100,7 +94,7 @@ export default {
               },
 
               tooltip: "Mark All as Read",
-              disabled: true
+              disabled: true // TODO: enable if there are unreads + show confirm modal
             }
           ]
         ] as SpotlightTopbarActions
@@ -141,9 +135,12 @@ export default {
           groups.push({
             title: {
               name: item.room.name,
-              icon: this.roomToIcon(item.room) || undefined,
               count: item.unreadCount,
-              aside: entryTitleAside
+              aside: entryTitleAside,
+
+              icon:
+                this.$filters.string.roomTypeIntoIcon(item.room.type) ||
+                undefined
             },
 
             results: [
@@ -349,30 +346,6 @@ export default {
         preview: content,
         timeAgo: this.$filters.date.timeAgo(date.getTime(), true)
       };
-    },
-
-    roomToIcon(room: Room): string | void {
-      switch (room.type) {
-        case RoomType.DirectMessage: {
-          return "message";
-        }
-
-        case RoomType.Group: {
-          return "at";
-        }
-
-        case RoomType.PrivateChannel: {
-          return "lock";
-        }
-
-        case RoomType.PublicChannel: {
-          return "circle.grid.2x2";
-        }
-
-        default: {
-          return undefined;
-        }
-      }
     },
 
     // --> EVENT LISTENERS <--
