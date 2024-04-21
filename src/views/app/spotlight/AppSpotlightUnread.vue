@@ -102,19 +102,6 @@ export default {
               tooltip: "Mark All as Read",
               disabled: true
             }
-          ],
-
-          [
-            {
-              icon: {
-                name: "line.3.horizontal.decrease.circle",
-                size: "18px"
-              },
-
-              tooltip: "More Actions",
-              dropdown: [],
-              disabled: true
-            }
           ]
         ] as SpotlightTopbarActions
       },
