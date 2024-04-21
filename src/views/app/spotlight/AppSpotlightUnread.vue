@@ -290,6 +290,8 @@ export default {
 
     async loadUnreadRoomMessages(room: Room, unreadCount = 0): Promise<void> {
       try {
+        // TODO: only request the desired amount of messages here, see \
+        //   @ref: https://github.com/prose-im/prose-core-client/issues/75
         const result = await room.loadLatestMessages();
 
         // Only store the last Nth messages from the list of messages, and \
