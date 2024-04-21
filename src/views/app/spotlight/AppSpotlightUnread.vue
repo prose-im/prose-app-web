@@ -58,12 +58,15 @@ import { Groups as ListBrowseGroups } from "@/components/list/ListBrowse.vue";
 
 // PROJECT: COMPOSABLES
 import { useInterfaceTitle } from "@/composables/interface";
+import { useEvents } from "@/composables/events";
 
 // PROJECT: STORES
 import Store from "@/store";
+import { EventMessageGeneric } from "@/store/tables/inbox";
 
 // INTERFACES
 interface UnreadMessageExcerpt {
+  id: string;
   jid: JID;
   name: string;
   preview: string;
@@ -122,6 +125,7 @@ export default {
         [roomId: RoomID]: Array<UnreadMessageExcerpt>;
       },
 
+      pendingLoadUnreadRoomMessages: {} as { [roomId: RoomID]: boolean },
       pendingMarkReads: {} as { [roomId: RoomID]: boolean }
     };
   },
@@ -134,7 +138,9 @@ export default {
         // Any unread messages for item?
         if (item.unreadCount > 0) {
           const entryLoading = this.pendingMarkReads[item.room.id] || false,
-            entryMessageExcerpts = this.unreadMessageExcerpts[item.room.id];
+            entryMessageExcerpts = this.unreadMessageExcerpts[item.room.id],
+            entryMessageExcerptsLoading =
+              this.pendingLoadUnreadRoomMessages[item.room.id] || false;
 
           // Generate title aside value
           let entryTitleAside: string | undefined;
@@ -155,7 +161,9 @@ export default {
 
             results: [
               {
-                loading: entryMessageExcerpts === undefined,
+                loading:
+                  entryMessageExcerptsLoading === true ||
+                  entryMessageExcerpts === undefined,
 
                 entries: (entryMessageExcerpts || []).map(excerpt => {
                   return {
@@ -237,12 +245,149 @@ export default {
     }
   },
 
-  mounted() {
-    // Ensure that all unread room messages are loaded
-    this.ensureUnreadRoomMessagesLoaded();
+  watch: {
+    items: {
+      immediate: true,
+
+      handler(newValue: Array<SidebarItem>) {
+        if (newValue) {
+          // Ensure that all unread room messages are loaded
+          this.ensureUnreadRoomMessagesLoaded(newValue);
+        }
+      }
+    }
+  },
+
+  created() {
+    // Bind inbox event handlers
+    useEvents(Store.$inbox, {
+      "message:inserted": this.onStoreMessageInserted
+    });
   },
 
   methods: {
+    // --> HELPERS <--
+
+    async ensureUnreadRoomMessagesLoaded(
+      items: Array<SidebarItem>
+    ): Promise<void> {
+      await Promise.all(
+        items
+          .filter(item => {
+            // Any unread messages for item? (load those messages)
+            // Notice: also make sure that room was not already loaded
+            return (
+              item.unreadCount > 0 &&
+              !(item.room.id in this.unreadMessageExcerpts)
+            );
+          })
+          .map(item => {
+            // Load unread messages in room
+            return this.loadUnreadRoomMessages(item.room, item.unreadCount);
+          })
+      );
+    },
+
+    async loadUnreadRoomMessages(room: Room, unreadCount = 0): Promise<void> {
+      if (this.pendingLoadUnreadRoomMessages[room.id] !== true) {
+        this.pendingLoadUnreadRoomMessages[room.id] = true;
+
+        try {
+          // Compute the number of messages to acquire and store
+          const excerptsCount = Math.min(
+            Math.max(unreadCount, UNREAD_MESSAGES_DISPLAY_LAST_COUNT_MINIMUM),
+            UNREAD_MESSAGES_DISPLAY_LAST_COUNT_MAXIMUM
+          );
+
+          // TODO: only request the desired amount of messages here, see \
+          //   @ref: https://github.com/prose-im/prose-core-client/issues/75
+          const result = await room.loadLatestMessages();
+
+          // Append message excerpt from core message
+          // Notice: only store the last Nth messages from the list of \
+          //   messages, and only retain valuable information used for \
+          //   previewing unread messages. Also, make sure to limit the \
+          //   maximum number of messages that get shown to avoid cluttering \
+          //   the UI.
+          this.unreadMessageExcerpts[room.id] = result.messages
+            .filter(message => {
+              // Make sure messages all have identifiers
+              return message.id ? true : false;
+            })
+            .slice(-excerptsCount)
+            .map(message => {
+              // Generate message excerpt data
+              // Notice: message definitely has an identifier set there, since \
+              //   we filtered out messages with empty identifiers earlier on.
+              return this.makeUnreadMessageExcerpt({
+                id: message.id || "",
+                from: message.from,
+                name: message.user.name,
+                content: message.content,
+                date: message.date
+              });
+            });
+        } catch (error) {
+          this.$log.error(
+            `Could not load unread message excerpts for room: ${room.id}`,
+            error
+          );
+
+          // Important: fallback to empty list of message excerpts, so that it \
+          //   is considered as loaded but empty for room.
+          this.unreadMessageExcerpts[room.id] = [];
+        } finally {
+          delete this.pendingLoadUnreadRoomMessages[room.id];
+        }
+      }
+    },
+
+    makeUnreadMessageExcerpt({
+      id,
+      from,
+      name,
+      content,
+      date
+    }: {
+      id: string;
+      from: string;
+      name?: string;
+      content: string;
+      date: Date;
+    }): UnreadMessageExcerpt {
+      return {
+        id: id,
+        jid: new JID(from),
+        name: name || from,
+        preview: content,
+        timeAgo: this.$filters.date.timeAgo(date.getTime(), true)
+      };
+    },
+
+    roomToIcon(room: Room): string | void {
+      switch (room.type) {
+        case RoomType.DirectMessage: {
+          return "message";
+        }
+
+        case RoomType.Group: {
+          return "at";
+        }
+
+        case RoomType.PrivateChannel: {
+          return "lock";
+        }
+
+        case RoomType.PublicChannel: {
+          return "circle.grid.2x2";
+        }
+
+        default: {
+          return undefined;
+        }
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     async onUnreadActionMarkRead(room: Room): Promise<void> {
@@ -272,79 +417,48 @@ export default {
       }
     },
 
-    // --> HELPERS <--
+    onStoreMessageInserted(event: EventMessageGeneric): void {
+      // Room already loaded? Insert new message
+      if (event.roomId in this.unreadMessageExcerpts) {
+        const message = event.message,
+          roomNames = Store.$inbox.getNames(event.roomId);
 
-    async ensureUnreadRoomMessagesLoaded(): Promise<void> {
-      await Promise.all(
-        this.items
-          .filter(item => {
-            // Any unread messages for item? (load those messages)
-            return item.unreadCount > 0;
-          })
-          .map(item => {
-            // Load unread messages in room
-            return this.loadUnreadRoomMessages(item.room, item.unreadCount);
-          })
-      );
-    },
+        // Append message excerpt from store message? (if we have sufficient \
+        //   data, since this is a store message)
+        if (
+          message.id &&
+          message.from &&
+          message.content &&
+          message.date &&
+          roomNames[message.from]
+        ) {
+          const messageExcerpts = this.unreadMessageExcerpts[event.roomId];
 
-    async loadUnreadRoomMessages(room: Room, unreadCount = 0): Promise<void> {
-      try {
-        // TODO: only request the desired amount of messages here, see \
-        //   @ref: https://github.com/prose-im/prose-core-client/issues/75
-        const result = await room.loadLatestMessages();
-
-        // Only store the last Nth messages from the list of messages, and \
-        //   only retain valuable information used for previewing unread \
-        //   messages. Also, make sure to limit the maximum number of messages \
-        //   that get shown to avoid cluttering the UI.
-        this.unreadMessageExcerpts[room.id] = result.messages
-          .slice(
-            -Math.min(
-              Math.max(unreadCount, UNREAD_MESSAGES_DISPLAY_LAST_COUNT_MINIMUM),
-              UNREAD_MESSAGES_DISPLAY_LAST_COUNT_MAXIMUM
-            )
-          )
-          .map(message => {
-            return {
-              jid: new JID(message.from),
-              name: message.user.name,
-              preview: message.content,
-              timeAgo: this.$filters.date.timeAgo(message.date.getTime(), true)
-            };
+          // Acquire possibly existing message
+          const messageExcerpt = messageExcerpts.find(excerpt => {
+            return excerpt.id === message.id;
           });
-      } catch (error) {
-        this.$log.error(
-          `Could not load unread message excerpts for room: ${room.id}`,
-          error
-        );
 
-        // Important: fallback to empty list of message excerpts, so that it \
-        //   is considered as loaded but empty for room.
-        this.unreadMessageExcerpts[room.id] = [];
-      }
-    },
+          // Append inserted message? (if does not already exists)
+          if (messageExcerpt === undefined) {
+            messageExcerpts.push(
+              this.makeUnreadMessageExcerpt({
+                id: message.id,
+                from: message.from,
+                name: roomNames[message.from]?.name,
+                content: message.content,
+                date: new Date(message.date)
+              })
+            );
 
-    roomToIcon(room: Room): string | void {
-      switch (room.type) {
-        case RoomType.DirectMessage: {
-          return "message";
-        }
-
-        case RoomType.Group: {
-          return "at";
-        }
-
-        case RoomType.PrivateChannel: {
-          return "lock";
-        }
-
-        case RoomType.PublicChannel: {
-          return "circle.grid.2x2";
-        }
-
-        default: {
-          return undefined;
+            // Remove first message in list of excerpts? (limit reached)
+            if (
+              messageExcerpts.length >
+              UNREAD_MESSAGES_DISPLAY_LAST_COUNT_MAXIMUM
+            ) {
+              messageExcerpts.shift();
+            }
+          }
         }
       }
     }
