@@ -43,6 +43,12 @@
           class="c-list-browse__title-icon"
         )
 
+        base-count(
+          v-if="group.title.count && group.title.count > 0"
+          :count="group.title.count"
+          class="c-list-browse__title-count"
+        )
+
         span.c-list-browse__title-name.u-bold.u-ellipsis
           | {{ group.title.name }}
 
@@ -78,6 +84,7 @@ export interface Group {
   title?: {
     name: string;
     icon?: string;
+    count?: number;
     aside?: string;
   };
 
@@ -154,10 +161,18 @@ $c: ".c-list-browse";
       display: flex;
       align-items: center;
 
-      #{$c}__title-icon {
-        fill: rgb(var(--color-base-blue-dark));
+      #{$c}__title-icon,
+      #{$c}__title-count {
         margin-inline-end: 5px;
         flex: 0 0 auto;
+      }
+
+      #{$c}__title-icon {
+        fill: rgb(var(--color-base-blue-dark));
+      }
+
+      #{$c}__title-count {
+        margin-inline-start: 5px;
       }
 
       #{$c}__title-name {

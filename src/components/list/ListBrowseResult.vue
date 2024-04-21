@@ -10,43 +10,55 @@
 
 <template lang="pug">
 li.c-list-browse-result
-  .c-list-browse-result__entries
-    .c-list-browse-result__entry(
-      v-for="entry in result.entries"
-    )
-      .c-list-browse-result__icon(
-        v-if="entry.icon"
-      )
-        component(
-          v-bind="entry.icon.properties"
-          :is="entry.icon.component"
-        )
-
-      .c-list-browse-result__main
-        .c-list-browse-result__identity.u-ellipsis
-          span.c-list-browse-result__identity-primary.u-bold
-            | {{ entry.identity.primary }}
-
-          span.c-list-browse-result__identity-secondary(
-            v-if="entry.identity.secondary"
-          )
-            | {{ entry.identity.secondary }}
-
-        .c-list-browse-result__preview.u-ellipsis(
-          v-if="entry.preview"
-        )
-          | {{ entry.preview }}
-
-  .c-list-browse-result__actions(
-    v-if="result.actions && result.actions.length > 0"
+  template(
+    v-if="result.loading"
   )
-    component(
-      v-for="action in result.actions"
-      v-bind="action.properties"
-      v-on="action.listeners || {}"
-      :is="action.component"
+    base-spinner(
+      size="12px"
+      border-width="1.5px"
+      class="c-list-browse-result__loader"
     )
-      | {{ action.label }}
+
+  template(
+    v-else
+  )
+    .c-list-browse-result__entries
+      .c-list-browse-result__entry(
+        v-for="entry in result.entries"
+      )
+        .c-list-browse-result__icon(
+          v-if="entry.icon"
+        )
+          component(
+            v-bind="entry.icon.properties"
+            :is="entry.icon.component"
+          )
+
+        .c-list-browse-result__main
+          .c-list-browse-result__identity.u-ellipsis
+            span.c-list-browse-result__identity-primary.u-bold
+              | {{ entry.identity.primary }}
+
+            span.c-list-browse-result__identity-secondary(
+              v-if="entry.identity.secondary"
+            )
+              | {{ entry.identity.secondary }}
+
+          .c-list-browse-result__preview.u-ellipsis(
+            v-if="entry.preview"
+          )
+            | {{ entry.preview }}
+
+    .c-list-browse-result__actions(
+      v-if="result.actions && result.actions.length > 0"
+    )
+      component(
+        v-for="action in result.actions"
+        v-bind="action.properties"
+        v-on="action.listeners || {}"
+        :is="action.component"
+      )
+        | {{ action.label }}
 </template>
 
 <!-- **********************************************************************
@@ -61,6 +73,7 @@ import { PropType } from "vue";
 export interface Result {
   entries: Array<ResultEntry>;
   actions?: Array<ResultAction>;
+  loading?: boolean;
 }
 
 interface ResultEntry {
@@ -110,9 +123,14 @@ $c: ".c-list-browse-result";
   padding-block: 10px;
   display: flex;
   align-items: center;
+  justify-content: center;
   overflow: hidden;
   border-radius: 3px;
   box-shadow: 0 2px 6px 0 rgba(var(--color-shadow-primary), 0.02);
+
+  #{$c}__loader {
+    margin-block: 12px;
+  }
 
   #{$c}__entries {
     flex: 1;
