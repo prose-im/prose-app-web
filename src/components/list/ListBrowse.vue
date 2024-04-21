@@ -36,6 +36,13 @@
       .c-list-browse__title(
         v-if="group.title"
       )
+        base-icon(
+          v-if="group.title.icon"
+          :name="group.title.icon"
+          size="15px"
+          class="c-list-browse__title-icon"
+        )
+
         span.c-list-browse__title-name.u-bold.u-ellipsis
           | {{ group.title.name }}
 
@@ -70,6 +77,7 @@ export type Groups = Array<Group>;
 export interface Group {
   title?: {
     name: string;
+    icon?: string;
     aside?: string;
   };
 
@@ -145,6 +153,12 @@ $c: ".c-list-browse";
       padding-inline: 6px;
       display: flex;
       align-items: center;
+
+      #{$c}__title-icon {
+        fill: rgb(var(--color-base-blue-dark));
+        margin-inline-end: 5px;
+        flex: 0 0 auto;
+      }
 
       #{$c}__title-name {
         color: rgb(var(--color-text-primary));

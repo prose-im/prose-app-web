@@ -10,28 +10,32 @@
 
 <template lang="pug">
 li.c-list-browse-result
-  .c-list-browse-result__icon(
-    v-if="result.icon"
-  )
-    component(
-      v-bind="result.icon.properties"
-      :is="result.icon.component"
+  .c-list-browse-result__entries
+    .c-list-browse-result__entry(
+      v-for="entry in result.entries"
     )
-
-  .c-list-browse-result__main
-    .c-list-browse-result__identity.u-ellipsis
-      span.c-list-browse-result__identity-primary.u-bold
-        | {{ result.identity.primary }}
-
-      span.c-list-browse-result__identity-secondary(
-        v-if="result.identity.secondary"
+      .c-list-browse-result__icon(
+        v-if="entry.icon"
       )
-        | {{ result.identity.secondary }}
+        component(
+          v-bind="entry.icon.properties"
+          :is="entry.icon.component"
+        )
 
-    .c-list-browse-result__preview.u-ellipsis(
-      v-if="result.preview"
-    )
-      | {{ result.preview }}
+      .c-list-browse-result__main
+        .c-list-browse-result__identity.u-ellipsis
+          span.c-list-browse-result__identity-primary.u-bold
+            | {{ entry.identity.primary }}
+
+          span.c-list-browse-result__identity-secondary(
+            v-if="entry.identity.secondary"
+          )
+            | {{ entry.identity.secondary }}
+
+        .c-list-browse-result__preview.u-ellipsis(
+          v-if="entry.preview"
+        )
+          | {{ entry.preview }}
 
   .c-list-browse-result__actions(
     v-if="result.actions && result.actions.length > 0"
@@ -55,6 +59,11 @@ import { PropType } from "vue";
 
 // ENUMERATIONS
 export interface Result {
+  entries: Array<ResultEntry>;
+  actions?: Array<ResultAction>;
+}
+
+interface ResultEntry {
   icon?: {
     component: object;
     properties?: object;
@@ -66,7 +75,6 @@ export interface Result {
   };
 
   preview?: string;
-  actions?: Array<ResultAction>;
 }
 
 interface ResultAction {
@@ -106,14 +114,35 @@ $c: ".c-list-browse-result";
   border-radius: 3px;
   box-shadow: 0 2px 6px 0 rgba(var(--color-shadow-primary), 0.02);
 
+  #{$c}__entries {
+    flex: 1;
+    overflow: hidden;
+
+    #{$c}__entry {
+      margin-block-end: 14px;
+      display: flex;
+      align-items: center;
+
+      &:last-child {
+        margin-block-end: 0;
+      }
+
+      #{$c}__icon {
+        flex: 0 0 auto;
+      }
+
+      #{$c}__main {
+        flex: 1;
+      }
+    }
+  }
+
   #{$c}__icon {
     margin-inline-end: 16px;
-    flex: 0 0 auto;
   }
 
   #{$c}__main {
     overflow: hidden;
-    flex: 1;
 
     #{$c}__identity {
       line-height: 16px;

@@ -93,23 +93,27 @@ export default {
                   this.pendingResponds[requestRequestId] || false;
 
               return {
-                icon: {
-                  component: BaseAvatar,
+                entries: [
+                  {
+                    icon: {
+                      component: BaseAvatar,
 
-                  properties: {
-                    jid: new JID(request.jid),
-                    size: "32px",
-                    shadow: "none"
+                      properties: {
+                        jid: new JID(request.jid),
+                        size: "32px",
+                        shadow: "none"
+                      }
+                    },
+
+                    identity: {
+                      primary: request.name,
+                      secondary: request.jid
+                    },
+
+                    preview:
+                      "Would like to connect with you, and add each other to their contacts."
                   }
-                },
-
-                identity: {
-                  primary: request.name,
-                  secondary: request.jid
-                },
-
-                preview:
-                  "Would like to connect with you, and add each other to their contacts.",
+                ],
 
                 actions: [
                   {

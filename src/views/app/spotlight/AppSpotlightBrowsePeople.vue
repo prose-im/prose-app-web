@@ -153,26 +153,30 @@ export default {
                 }
 
                 return {
-                  icon: {
-                    component: BaseAvatar,
+                  entries: [
+                    {
+                      icon: {
+                        component: BaseAvatar,
 
-                    properties: {
-                      jid: entryJID,
-                      size: "32px",
-                      shadow: "none"
+                        properties: {
+                          jid: entryJID,
+                          size: "32px",
+                          shadow: "none"
+                        }
+                      },
+
+                      identity: {
+                        primary: entry.name,
+                        secondary: entry.jid
+                      },
+
+                      preview:
+                        rosterGroup === RosterGroup.Other
+                          ? "This contact is outside of your team. " +
+                            "Make sure you trust them."
+                          : undefined
                     }
-                  },
-
-                  identity: {
-                    primary: entry.name,
-                    secondary: entry.jid
-                  },
-
-                  preview:
-                    rosterGroup === RosterGroup.Other
-                      ? "This contact is outside of your team. " +
-                        "Make sure you trust them."
-                      : undefined,
+                  ],
 
                   actions: entryActions
                 };

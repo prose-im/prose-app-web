@@ -89,19 +89,23 @@ export default {
                 isRoomJoined = entryRoomMaybe !== undefined;
 
               return {
-                icon: {
-                  component: BaseIcon,
+                entries: [
+                  {
+                    icon: {
+                      component: BaseIcon,
 
-                  properties: {
-                    name: "circle.grid.2x2",
-                    size: "12px",
-                    fill: "rgb(var(--color-base-blue-dark)"
+                      properties: {
+                        name: "circle.grid.2x2",
+                        size: "12px",
+                        fill: "rgb(var(--color-base-blue-dark)"
+                      }
+                    },
+
+                    identity: {
+                      primary: entry.name
+                    }
                   }
-                },
-
-                identity: {
-                  primary: entry.name
-                },
+                ],
 
                 actions: [
                   {

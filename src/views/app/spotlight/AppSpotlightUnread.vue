@@ -14,18 +14,19 @@ layout-view(
   :topbar-properties="topbarProperties"
   class="v-app-spotlight-unread"
 )
-  list-browse(
-    :class=`[
-      "v-app-spotlight-unread__content",
-      {
-        "v-app-spotlight-unread__content--empty": groups.length === 0
-      }
-    ]`
-    :groups="groups"
-    empty-illustration="inbox-empty"
-    empty-title="Inbox Zero!"
-    empty-description="There are no pending messages to process. Unread messages will appear here."
-  )
+  .v-app-spotlight-unread__content
+    list-browse(
+      :class=`[
+        "v-app-spotlight-unread__content-inner",
+        {
+          "v-app-spotlight-unread__content-inner--empty": groups.length === 0
+        }
+      ]`
+      :groups="groups"
+      empty-illustration="inbox-empty"
+      empty-title="Inbox Zero!"
+      empty-description="There are no pending messages to process. Unread messages will appear here."
+    )
 </template>
 
 <!-- **********************************************************************
@@ -35,6 +36,7 @@ layout-view(
 <script lang="ts">
 // NPM
 import { shallowRef } from "vue";
+import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: ASSEMBLIES
 import {
@@ -43,6 +45,8 @@ import {
 } from "@/assemblies/spotlight/SpotlightTopbar.vue";
 
 // PROJECT: COMPONENTS
+import BaseAvatar from "@/components/base/BaseAvatar.vue";
+import BaseButton from "@/components/base/BaseButton.vue";
 import { Groups as ListBrowseGroups } from "@/components/list/ListBrowse.vue";
 
 // PROJECT: COMPOSABLES
@@ -115,11 +119,20 @@ $c: ".v-app-spotlight-unread";
   #{$c}__content {
     padding-block: $size-spotlight-browse-padding-block-start
       $size-spotlight-browse-padding-block-end;
+    padding-inline: $size-layout-view-content-padding-sides;
+    overflow-x: hidden;
+    overflow-y: auto;
+    flex: 1;
 
-    &--empty {
-      height: 100%;
-      width: 100%;
-      padding-block: 0;
+    #{$c}__content-inner {
+      max-width: 860px;
+      margin: 0 auto;
+
+      &--empty {
+        height: 100%;
+        width: 100%;
+        padding-block: 0;
+      }
     }
   }
 }
