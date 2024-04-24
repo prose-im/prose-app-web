@@ -104,31 +104,10 @@ void init(NSString* appName, NotificationCallback callback) {
     }
 }
 
-NSString* send_notification(NSString* title, NSString* message) {
-    @autoreleasepool {
-        NSUserNotification *notification = [[NSUserNotification alloc] init];
-
-        NSString* identifier =
-        [NSString stringWithFormat:@"%@:notificationation:%@",
-                                         [[NSBundle mainBundle] bundleIdentifier],
-                                         [[NSUUID UUID] UUIDString]];
-
-
-
-        [notification setInformativeText:message];
-        [notification setIdentifier:identifier];
-        [notification setTitle:title];
-        // set reply
-        [notification setHasReplyButton:YES];
-
-        [notification setSoundName:nil];
-        [NSUserNotificationCenter.defaultUserNotificationCenter deliverNotification:notification];
-        return identifier;
-    }
-}
-
 void run_main_loop_once() {
-    NSRunLoop *main_loop = [NSRunLoop mainRunLoop];
-    NSDate *limit_date = [NSDate dateWithTimeIntervalSinceNow:0.1];
-    [main_loop runMode:NSDefaultRunLoopMode beforeDate:limit_date];
+    @autoreleasepool {
+        NSRunLoop *main_loop = [NSRunLoop mainRunLoop];
+        NSDate *limit_date = [NSDate dateWithTimeIntervalSinceNow:0.1];
+        [main_loop runMode:NSDefaultRunLoopMode beforeDate:limit_date];
+    }
 }
