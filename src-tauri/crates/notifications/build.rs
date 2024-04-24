@@ -30,12 +30,6 @@ fn main() {
         });
 
         cc::Build::new()
-            .file("objc/helper.m")
-            .flag("-fmodules")
-            .flag("-Wno-deprecated-declarations")
-            .flag(&format!("-mmacos-version-min={}", min_version))
-            .compile("helper");
-        cc::Build::new()
             .file("objc/notification.m")
             .flag("-fmodules")
             .flag("-Wno-deprecated-declarations")

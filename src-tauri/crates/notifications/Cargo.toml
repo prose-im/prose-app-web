@@ -9,3 +9,5 @@ cc = "1.0.90"
 [dependencies]
 objc-foundation = "0.1.1"
 objc_id = "0.1.1"
+objc = "0.2.7"
+uuid = { version = "1.8.0", features = ["v4"] }

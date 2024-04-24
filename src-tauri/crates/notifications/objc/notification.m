@@ -126,3 +126,9 @@ NSString* send_notification(NSString* title, NSString* message) {
         return identifier;
     }
 }
+
+void run_main_loop_once() {
+    NSRunLoop *main_loop = [NSRunLoop mainRunLoop];
+    NSDate *limit_date = [NSDate dateWithTimeIntervalSinceNow:0.1];
+    [main_loop runMode:NSDefaultRunLoopMode beforeDate:limit_date];
+}

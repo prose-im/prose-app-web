@@ -22,12 +22,12 @@ fn send_notification(title: String, body: String) -> &'static str {}
 #[tauri::command]
 fn send_notification(title: String, body: String) -> &'static str {
     notifications::send_notification(&title, &body);
-   // let response = Notification::default().title(&title).message(&body).send();
+    // let response = Notification::default().title(&title).message(&body).send();
 
     //match response {
-     //   Ok(NotificationResponse::Click) => "click",
-     //   Ok(NotificationResponse::None) => "none",
-     //   _ => "other",
+    //   Ok(NotificationResponse::Click) => "click",
+    //   Ok(NotificationResponse::None) => "none",
+    //   _ => "other",
     //}
     "none"
 }
@@ -77,7 +77,11 @@ pub fn provide_notifications() {
     //let bundle = mac_notification_sys::get_bundle_identifier_or_default("terminal");
     //println!("bundle: {}", bundle);
     //mac_notification_sys::set_application(&bundle).unwrap();
-
     notifications::init("Prose");
-    
+
+    unsafe {
+        notifications::add_notification_callback(|identifier, event| {
+            println!("Notification event: {:?} {:?}", identifier, event);
+        });
+    }
 }
