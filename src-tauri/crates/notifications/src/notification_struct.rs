@@ -1,8 +1,8 @@
-use std::fmt::Debug;
 use objc2::__framework_prelude::Id;
-use objc2::{ClassType, msg_send};
+use objc2::{msg_send, ClassType};
 use objc2_app_kit::NSImage;
-use objc2_foundation::{NSError, NSString, NSURL, NSUserNotification, NSUserNotificationCenter};
+use objc2_foundation::{NSError, NSString, NSUserNotification, NSUserNotificationCenter, NSURL};
+use std::fmt::Debug;
 use uuid::Uuid;
 
 #[derive(Debug, Clone, Default)]
@@ -41,10 +41,9 @@ impl Notification {
                 notification.setSubtitle(Some(&ns_str));
             }
             if let Some(sound) = self.sound {
-               let ns_str = NSString::from_str(&sound);
+                let ns_str = NSString::from_str(&sound);
                 notification.setSoundName(Some(&ns_str));
             }
-
 
             if let Some(image) = self.image {
                 let ns_str = NSString::from_str(&image);
@@ -56,7 +55,6 @@ impl Notification {
             if self.reply {
                 notification.setHasReplyButton(self.reply);
             }
-
 
             let notification_center = NSUserNotificationCenter::defaultUserNotificationCenter();
             notification_center.deliverNotification(&notification);
@@ -94,7 +92,6 @@ impl Notification {
         self.reply = reply;
         self
     }
-
 }
 
 #[derive(Clone)]
@@ -114,16 +111,13 @@ impl From<Id<NSError>> for NotificationError {
 impl Debug for NotificationError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
-            NotificationError::NSError(ns_error) => {
-                f.debug_struct("NSError")
-                    .field("code", &ns_error.code())
-                    .field("domain", &ns_error.domain().to_string())
-                    .field("message", &ns_error.localizedDescription().to_string())
-                    .finish()
-            },
-            NotificationError::NotSupported => {
-                f.write_str("NotSupported")
-            }
+            NotificationError::NSError(ns_error) => f
+                .debug_struct("NSError")
+                .field("code", &ns_error.code())
+                .field("domain", &ns_error.domain().to_string())
+                .field("message", &ns_error.localizedDescription().to_string())
+                .finish(),
+            NotificationError::NotSupported => f.write_str("NotSupported"),
         }
     }
 }

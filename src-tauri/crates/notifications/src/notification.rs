@@ -1,6 +1,6 @@
+use objc2::rc::autoreleasepool;
 use objc2_foundation::{NSDictionary, NSString};
 use std::ops::Deref;
-use objc2::rc::autoreleasepool;
 
 /// Response from the Notification
 #[derive(Debug)]
@@ -25,14 +25,14 @@ impl NotificationResponse {
             let activation_type = NSString::from_str("activationType");
 
             let activation_value = unsafe {
-                    dictionary
-                        .objectForKey(activation_value.deref())
-                        .map(|str| str.as_str(pool).to_owned())
+                dictionary
+                    .objectForKey(activation_value.deref())
+                    .map(|str| str.as_str(pool).to_owned())
             };
             let activation_type = unsafe {
-                    dictionary
-                        .objectForKey(activation_type.deref())
-                        .map(|str| str.as_str(pool).to_owned())
+                dictionary
+                    .objectForKey(activation_type.deref())
+                    .map(|str| str.as_str(pool).to_owned())
             };
             (activation_type, activation_value)
         });
@@ -45,4 +45,3 @@ impl NotificationResponse {
         }
     }
 }
-

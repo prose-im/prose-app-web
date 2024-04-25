@@ -7,9 +7,9 @@
  * ************************************************************************* */
 
 //use mac_notification_sys::{Notification, NotificationResponse};
+use notifications::misc::set_badge;
 use tauri::plugin::{Builder, TauriPlugin};
 use tauri::Runtime;
-use notifications::misc::set_badge;
 
 /**************************************************************************
  * COMMANDS
@@ -23,10 +23,7 @@ fn send_notification(title: String, body: String) -> &'static str {}
 #[tauri::command]
 fn send_notification(title: String, body: String) -> &'static str {
     use notifications::Notification;
-    let _ = Notification::new()
-        .title(&title)
-        .subtitle(&body)
-        .send();
+    let _ = Notification::new().title(&title).subtitle(&body).send();
     "none"
 }
 

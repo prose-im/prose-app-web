@@ -148,7 +148,6 @@ pub async fn download_file<R: Runtime>(
     {
         notifications::misc::make_download_bounce(download_path.to_string_lossy().as_ref());
     }
-    
 
     Ok(download_path.to_string_lossy().to_string())
 }

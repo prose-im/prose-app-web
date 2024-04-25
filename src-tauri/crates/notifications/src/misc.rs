@@ -1,7 +1,7 @@
-use std::ops::Deref;
 use objc2_app_kit::NSApplication;
-use objc2_foundation::{MainThreadMarker, NSDistributedNotificationCenter, NSNotificationName};
 use objc2_foundation::NSString;
+use objc2_foundation::{MainThreadMarker, NSDistributedNotificationCenter, NSNotificationName};
+use std::ops::Deref;
 
 pub fn make_download_bounce(filename: &str) {
     unsafe {
@@ -18,7 +18,7 @@ pub fn set_badge(content: Option<&str>) {
     unsafe {
         match content {
             Some(s) => app.dockTile().setBadgeLabel(Some(s.deref())),
-            None => app.dockTile().setBadgeLabel(None)
+            None => app.dockTile().setBadgeLabel(None),
         }
     }
 }
