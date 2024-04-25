@@ -9,6 +9,7 @@
 //use mac_notification_sys::{Notification, NotificationResponse};
 use tauri::plugin::{Builder, TauriPlugin};
 use tauri::Runtime;
+use notifications::misc::set_badge;
 
 /**************************************************************************
  * COMMANDS
@@ -21,14 +22,11 @@ fn send_notification(title: String, body: String) -> &'static str {}
 #[cfg(target_os = "macos")]
 #[tauri::command]
 fn send_notification(title: String, body: String) -> &'static str {
-    notifications::send_notification(&title, &body);
-    // let response = Notification::default().title(&title).message(&body).send();
-
-    //match response {
-    //   Ok(NotificationResponse::Click) => "click",
-    //   Ok(NotificationResponse::None) => "none",
-    //   _ => "other",
-    //}
+    use notifications::Notification;
+    let _ = Notification::new()
+        .title(&title)
+        .subtitle(&body)
+        .send();
     "none"
 }
 
@@ -41,19 +39,10 @@ fn set_badge_count(count: u32) {
 #[cfg(target_os = "macos")]
 #[tauri::command]
 fn set_badge_count(count: u32) {
-    // Reference: https://github.com/tauri-apps/tauri/issues/4489
-    use cocoa::{appkit::NSApp, foundation::NSString};
-    use objc::{msg_send, sel, sel_impl};
-
-    unsafe {
-        let label = if count == 0 {
-            cocoa::base::nil
-        } else {
-            NSString::alloc(cocoa::base::nil).init_str(&format!("{}", count))
-        };
-
-        let dock_tile: cocoa::base::id = msg_send![NSApp(), dockTile];
-        let _: cocoa::base::id = msg_send![dock_tile, setBadgeLabel: label];
+    if count > 0 {
+        set_badge(Some(&count.to_string()));
+    } else {
+        set_badge(None);
     }
 }
 

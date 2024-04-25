@@ -72,13 +72,6 @@ BOOL installNSBundleHook()
 	return NO;
 }
 
-NSString* getBundleIdentifier(NSString* appName) {
-    NSString* findString = [NSString stringWithFormat:@"get id of application \"%@\"", appName];
-    NSAppleScript* findScript = [[NSAppleScript alloc] initWithSource:findString];
-    NSAppleEventDescriptor* resultDescriptor = [findScript executeAndReturnError:nil];
-    return [resultDescriptor stringValue];
-}
-
 
 
 void init(NSString* appName, NotificationCallback callback) {
@@ -88,10 +81,17 @@ void init(NSString* appName, NotificationCallback callback) {
             return;
         }
         notificationCallback = callback;
-        NSString *newbundleIdentifier = getBundleIdentifier(appName);
+
+        NSString* findString = [NSString stringWithFormat:@"get id of application \"%@\"", appName];
+        NSAppleScript* findScript = [[NSAppleScript alloc] initWithSource:findString];
+        NSAppleEventDescriptor* resultDescriptor = [findScript executeAndReturnError:nil];
+
+        NSString *newbundleIdentifier = [resultDescriptor stringValue];
 
         if (installNSBundleHook()) {
+            NSLog(@"Hooked NSBundle.bundleIdentifier");
             if (LSCopyApplicationURLsForBundleIdentifier((CFStringRef)newbundleIdentifier, NULL) != NULL) {
+                NSLog(@"LSCopyApplicationURLsForBundleIdentifier returned a valid URL for %@", newbundleIdentifier);
                 [fakeBundleIdentifier release]; // Release old value - nil is ok
                 fakeBundleIdentifier = newbundleIdentifier;
                 [newbundleIdentifier retain]; // Retain new value - it outlives this scope

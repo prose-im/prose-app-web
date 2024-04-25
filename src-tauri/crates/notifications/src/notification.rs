@@ -1,5 +1,6 @@
-use objc_foundation::{INSDictionary, INSString, NSDictionary, NSString};
+use objc2_foundation::{NSDictionary, NSString};
 use std::ops::Deref;
+use objc2::rc::autoreleasepool;
 
 /// Response from the Notification
 #[derive(Debug)]
@@ -19,31 +20,29 @@ pub enum NotificationResponse {
 impl NotificationResponse {
     /// Create a NotificationResponse from the given Objective C NSDictionary
     pub(crate) fn from_dictionary(dictionary: &NSDictionary<NSString, NSString>) -> Self {
-        let activation_type = dictionary
-            .object_for(NSString::from_str("activationType").deref())
-            .map(|str| str.as_str().to_owned());
+        let (action, value) = autoreleasepool(|pool| {
+            let activation_value = NSString::from_str("activationValue");
+            let activation_type = NSString::from_str("activationType");
 
-        match activation_type.as_deref() {
-            Some("actionClicked") => NotificationResponse::ActionButton(
-                match dictionary.object_for(NSString::from_str("activationValue").deref()) {
-                    Some(str) => str.as_str().to_owned(),
-                    None => String::from(""),
-                },
-            ),
-            Some("closeClicked") => NotificationResponse::CloseButton(
-                match dictionary.object_for(NSString::from_str("activationValue").deref()) {
-                    Some(str) => str.as_str().to_owned(),
-                    None => String::from(""),
-                },
-            ),
-            Some("replied") => NotificationResponse::Reply(
-                match dictionary.object_for(NSString::from_str("activationValue").deref()) {
-                    Some(str) => str.as_str().to_owned(),
-                    None => String::from(""),
-                },
-            ),
-            Some("contentsClicked") => NotificationResponse::Click,
-            _ => NotificationResponse::None,
+            let activation_value = unsafe {
+                    dictionary
+                        .objectForKey(activation_value.deref())
+                        .map(|str| str.as_str(pool).to_owned())
+            };
+            let activation_type = unsafe {
+                    dictionary
+                        .objectForKey(activation_type.deref())
+                        .map(|str| str.as_str(pool).to_owned())
+            };
+            (activation_type, activation_value)
+        });
+        match action.as_deref() {
+            Some("actionClicked") => Self::ActionButton(value.unwrap_or_else(|| "".to_string())),
+            Some("replied") => Self::Reply(value.unwrap_or_else(|| "".to_string())),
+            Some("contentsClicked") => Self::Click,
+
+            _ => unreachable!("Unknown notification response: {:?}", dictionary),
         }
     }
 }
+
