@@ -13,6 +13,7 @@ NotificationCallback notificationCallback = nil;
 
 // Implement the delegate method to handle the user's response to the notification
 - (void)userNotificationCenter:(NSUserNotificationCenter *)center didActivateNotification:(NSUserNotification *)notification {
+    NSLog(@"Notification activated");
     NSDictionary* actionData;
     // Handle the user's response to the notification here
     switch (notification.activationType) {
@@ -29,9 +30,7 @@ NotificationCallback notificationCallback = nil;
             break;
         }
     }
-    if (notificationCallback != nil) {
-        notificationCallback(notification.identifier, actionData);
-    }
+
 
     [center removeDeliveredNotification:notification];
 }
@@ -74,14 +73,8 @@ BOOL installNSBundleHook()
 
 
 
-void init(NSString* appName, NotificationCallback callback) {
+void init(NSString* appName) {
     @autoreleasepool {
-        if (notificationHandler != nil) {
-            NSLog(@"Notification handler already initialized");
-            return;
-        }
-        notificationCallback = callback;
-
         NSString* findString = [NSString stringWithFormat:@"get id of application \"%@\"", appName];
         NSAppleScript* findScript = [[NSAppleScript alloc] initWithSource:findString];
         NSAppleEventDescriptor* resultDescriptor = [findScript executeAndReturnError:nil];
@@ -89,25 +82,11 @@ void init(NSString* appName, NotificationCallback callback) {
         NSString *newbundleIdentifier = [resultDescriptor stringValue];
 
         if (installNSBundleHook()) {
-            NSLog(@"Hooked NSBundle.bundleIdentifier");
             if (LSCopyApplicationURLsForBundleIdentifier((CFStringRef)newbundleIdentifier, NULL) != NULL) {
-                NSLog(@"LSCopyApplicationURLsForBundleIdentifier returned a valid URL for %@", newbundleIdentifier);
                 [fakeBundleIdentifier release]; // Release old value - nil is ok
                 fakeBundleIdentifier = newbundleIdentifier;
                 [newbundleIdentifier retain]; // Retain new value - it outlives this scope
             }
         }
-        if (callback != nil) {
-            notificationHandler = [[NotificationCenterDelegate alloc] init];
-            NSUserNotificationCenter.defaultUserNotificationCenter.delegate = notificationHandler;
-        }
-    }
-}
-
-void run_main_loop_once() {
-    @autoreleasepool {
-        NSRunLoop *main_loop = [NSRunLoop mainRunLoop];
-        NSDate *limit_date = [NSDate dateWithTimeIntervalSinceNow:0.1];
-        [main_loop runMode:NSDefaultRunLoopMode beforeDate:limit_date];
     }
 }
