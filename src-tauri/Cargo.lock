@@ -1815,7 +1815,7 @@ checksum = "72ef4a56884ca558e5ddb05a1d1e7e1bfd9a68d9ed024c21704cc98872dae1bb"
 [[package]]
 name = "notifications"
 version = "0.0.0"
-source = "git+https://github.com/dscso/mac-notifications.git?rev=665766b49245ee7b94310eb6714cc5f823c7cbd2#665766b49245ee7b94310eb6714cc5f823c7cbd2"
+source = "git+https://github.com/dscso/mac-notifications.git?rev=5343538#53435384a1e79f184e3b4087ea4e52ace85acfe1"
 dependencies = [
  "cc",
  "objc2 0.5.1",
@@ -2381,12 +2381,11 @@ dependencies = [
 name = "prose-app-web"
 version = "0.0.0"
 dependencies = [
- "cocoa 0.25.0",
  "directories",
  "notifications",
- "objc",
  "percent-encoding",
  "reqwest",
+ "send_wrapper",
  "serde",
  "serde_json",
  "tauri",
@@ -2771,6 +2770,12 @@ checksum = "92d43fe69e652f3df9bdc2b85b2854a0825b86e4fb76bc44d945137d053639ca"
 dependencies = [
  "serde",
 ]
+
+[[package]]
+name = "send_wrapper"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cd0b0ec5f1c1ca621c432a25813d8d60c88abe6d3e08a3eb9cf37d97a0fe3d73"
 
 [[package]]
 name = "serde"

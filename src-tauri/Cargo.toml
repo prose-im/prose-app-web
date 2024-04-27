@@ -16,12 +16,11 @@ directories = "5.0.1"
 reqwest = "0.11.25"
 tokio = { version = "1.36.0", features = ["full"] }
 thiserror = "1.0.58"
-cocoa = "0.25.0"
-objc = "0.2.7"
 percent-encoding = "2.3.1"
 tauri-plugin-deep-link = "0.1.2"
 window-vibrancy = "0.4.3"
-notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = "665766b49245ee7b94310eb6714cc5f823c7cbd2" }
+notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = "5343538" }
+send_wrapper = "0.6.0"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

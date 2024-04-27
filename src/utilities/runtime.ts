@@ -209,7 +209,7 @@ class UtilitiesRuntime {
 
         if (this.__isApplication === true) {
           // Request to show notification via Tauri API (application build)
-          const action: RuntimeNotificationAction = await tauriInvoke(
+          const id: RuntimeNotificationAction = await tauriInvoke(
             "plugin:notifications|send_notification",
 
             {
@@ -218,21 +218,7 @@ class UtilitiesRuntime {
               route
             }
           );
-
-          // Handle action on notification
-          // TODO: actions do not really work, since we had to disable \
-          //   blocking notifications due to the way the underlying \
-          //   mac_notification_sys works. If we want to wait for user \
-          //   interaction, then we have to use send_notification from \
-          //   mac_notification_sys which blocks the whole Tauri thread. We \
-          //   have to find a fully async variant of mac_notification_sys.
-          switch (action) {
-            case RuntimeNotificationAction.Click: {
-              await clickHandler();
-
-              break;
-            }
-          }
+          console.log(`notification sent with id: ${id}`);
         } else {
           // Request to show notification via browser APIs (Web build)
           const notification = new Notification(title, { body });
@@ -428,6 +414,13 @@ class UtilitiesRuntime {
       tauriAppWindow.listen<boolean>("window:focus", ({ payload }) => {
         this.__changeFocusState(payload);
       });
+
+      tauriAppWindow.listen<String>(
+        "notifications:notification-event",
+        ({ payload }) => {
+          console.log(payload);
+        }
+      );
     } else {
       // Register listeners via browser Document API (Web build)
       this.__states.focused =

@@ -1,45 +1,67 @@
-// This file is part of prose-app-web
-//
-// Copyright 2024, Prose Foundation
-
-/**************************************************************************
- * IMPORTS
- * ************************************************************************* */
-
-
-use notifications::NotificationProvider;
+use notifications::{Notification, NotificationProvider};
+use send_wrapper::SendWrapper;
+use serde::Serialize;
 use tauri::plugin::{Builder, TauriPlugin};
-use tauri::Runtime;
+use tauri::{AppHandle, Manager, Runtime, State};
 
-static mut NOTIFICATION_PROVIDER: Option<NotificationProvider> = None;
+pub(crate) struct NotificationsState {
+    provider: SendWrapper<NotificationProvider>,
+}
 
-/**************************************************************************
- * COMMANDS
- * ************************************************************************* */
+#[derive(Debug, Clone, Serialize)]
+struct NotificationInteraction {
+    id: String,
+    interaction: String,
+}
 
-#[cfg(not(target_os = "macos"))]
+pub fn provide<R: Runtime>() -> TauriPlugin<R> {
+    Builder::new("notifications")
+        .invoke_handler(tauri::generate_handler![send_notification, set_badge_count])
+        .setup(|app_handle| {
+            let name = match app_handle.config().package.product_name.as_ref() {
+                Some(name) => name.clone(),
+                None => {
+                    println!("No product name found in tauri.conf.json, using default");
+                    "Terminal".to_string()
+                }
+            };
+            let mut provider = NotificationProvider::new(name.as_str());
+            let app = app_handle.clone();
+            provider.set_callback(move |id, resp| {
+                println!("Notification {} clicked: {:?}", id, resp);
+                app.emit_all(
+                    "notifications:notification-event",
+                    NotificationInteraction {
+                        id,
+                        interaction: format!("{:?}", resp),
+                    },
+                )
+                .unwrap();
+            });
+            let state = NotificationsState {
+                provider: SendWrapper::new(provider),
+            };
+            app_handle.manage(state);
+            Ok(())
+        })
+        .build()
+}
+
 #[tauri::command]
-fn send_notification(title: String, body: String) -> &'static str {}
-
-#[cfg(target_os = "macos")]
-#[tauri::command]
-fn send_notification(title: String, body: String) -> &'static str {
-    use notifications::Notification;
+fn send_notification<R: Runtime>(
+    _app: AppHandle<R>,
+    state: State<'_, NotificationsState>,
+    title: String,
+    body: String,
+) -> String {
     Notification::new()
-        .title(&title)
-        .subtitle(&body)
+        .title(title.as_str())
+        .subtitle(body.as_str())
         .reply(true)
-        .send().unwrap();
-    "none"
+        .send()
+        .unwrap()
 }
 
-#[tauri::command]
-#[cfg(not(target_os = "macos"))]
-fn set_badge_count(count: u32) {
-    println!("set_badge_count is not implemented for this platform");
-}
-
-#[cfg(target_os = "macos")]
 #[tauri::command]
 fn set_badge_count(count: u32) {
     use notifications::misc::set_badge;
@@ -47,35 +69,5 @@ fn set_badge_count(count: u32) {
         set_badge(Some(&count.to_string()));
     } else {
         set_badge(None);
-    }
-}
-
-/**************************************************************************
- * PROVIDERS
- * ************************************************************************* */
-
-pub fn provide<R: Runtime>() -> TauriPlugin<R> {
-    provide_notifications();
-
-    Builder::new("notifications")
-        .invoke_handler(tauri::generate_handler![send_notification, set_badge_count])
-        .build()
-}
-
-#[cfg(not(target_os = "macos"))]
-fn provide_notifications() {}
-
-#[cfg(target_os = "macos")]
-pub fn provide_notifications() {
-    //let bundle = mac_notification_sys::get_bundle_identifier_or_default("terminal");
-    //println!("bundle: {}", bundle);
-    //mac_notification_sys::set_application(&bundle).unwrap();
-    println!("provide_notifications");
-    let mut provider = NotificationProvider::new("Prose");
-    provider.set_callback(|id, response| {
-        println!("notification activated {}: {:?}", id, response);
-    });
-    unsafe {
-        NOTIFICATION_PROVIDER = Some(provider);
     }
 }
