@@ -6,10 +6,12 @@
  * IMPORTS
  * ************************************************************************* */
 
-//use mac_notification_sys::{Notification, NotificationResponse};
-use notifications::misc::set_badge;
+
+use notifications::NotificationProvider;
 use tauri::plugin::{Builder, TauriPlugin};
 use tauri::Runtime;
+
+static mut NOTIFICATION_PROVIDER: Option<NotificationProvider> = None;
 
 /**************************************************************************
  * COMMANDS
@@ -23,7 +25,11 @@ fn send_notification(title: String, body: String) -> &'static str {}
 #[tauri::command]
 fn send_notification(title: String, body: String) -> &'static str {
     use notifications::Notification;
-    let _ = Notification::new().title(&title).subtitle(&body).send();
+    Notification::new()
+        .title(&title)
+        .subtitle(&body)
+        .reply(true)
+        .send().unwrap();
     "none"
 }
 
@@ -36,6 +42,7 @@ fn set_badge_count(count: u32) {
 #[cfg(target_os = "macos")]
 #[tauri::command]
 fn set_badge_count(count: u32) {
+    use notifications::misc::set_badge;
     if count > 0 {
         set_badge(Some(&count.to_string()));
     } else {
@@ -63,11 +70,12 @@ pub fn provide_notifications() {
     //let bundle = mac_notification_sys::get_bundle_identifier_or_default("terminal");
     //println!("bundle: {}", bundle);
     //mac_notification_sys::set_application(&bundle).unwrap();
-    notifications::init("Prose");
-
+    println!("provide_notifications");
+    let mut provider = NotificationProvider::new("Prose");
+    provider.set_callback(|id, response| {
+        println!("notification activated {}: {:?}", id, response);
+    });
     unsafe {
-        notifications::add_notification_callback(|identifier, event| {
-            println!("Notification event: {:?} {:?}", identifier, event);
-        });
+        NOTIFICATION_PROVIDER = Some(provider);
     }
 }
