@@ -167,6 +167,12 @@ class BrokerDelegate implements ProseClientDelegate {
         hasNotifications === true &&
         Store.$settings.notifications.action.notify.banner === true
       ) {
+        // Check if should force notification, since currently open room, \
+        //   if any, does not match message room identifier.
+        const shouldForce =
+          Store.$history.current.name !== "app.inbox" ||
+          Store.$history.current.params.roomId !== room.id;
+
         messages.forEach(message => {
           if (message.from !== selfJIDString) {
             UtilitiesRuntime.requestNotificationSend(
@@ -174,10 +180,14 @@ class BrokerDelegate implements ProseClientDelegate {
               message.text,
 
               {
-                name: "app.inbox",
+                force: shouldForce,
 
-                params: {
-                  roomId: room.id
+                route: {
+                  name: "app.inbox",
+
+                  params: {
+                    roomId: room.id
+                  }
                 }
               }
             );

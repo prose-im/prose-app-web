@@ -241,10 +241,13 @@ class UtilitiesRuntime {
   async requestNotificationSend(
     title: string,
     body: string,
-    route?: RuntimeNotificationRoute
+    {
+      force = false,
+      route
+    }: { force?: boolean; route?: RuntimeNotificationRoute } = {}
   ): Promise<void> {
-    // Skip notification banners if window has focus
-    if (this.__states.focused !== true) {
+    // Skip notification banners if window has focus (or forced)
+    if (this.__states.focused !== true || force === true) {
       const hasPermission = await this.requestNotificationPermission();
 
       if (hasPermission === true) {
