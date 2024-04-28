@@ -1,8 +1,20 @@
+// This file is part of prose-app-web
+//
+// Copyright 2024, Prose Foundation
+
+/**************************************************************************
+ * IMPORTS
+ * ************************************************************************* */
+
 use notifications::{Notification, NotificationProvider};
 use send_wrapper::SendWrapper;
 use serde::Serialize;
 use tauri::plugin::{Builder, TauriPlugin};
 use tauri::{AppHandle, Manager, Runtime, State};
+
+/**************************************************************************
+ * STRUCTURES
+ * ************************************************************************* */
 
 pub(crate) struct NotificationsState {
     provider: SendWrapper<NotificationProvider>,
@@ -13,6 +25,10 @@ struct NotificationInteraction {
     id: String,
     interaction: String,
 }
+
+/**************************************************************************
+ * PROVIDERS
+ * ************************************************************************* */
 
 pub fn provide<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("notifications")
@@ -46,6 +62,10 @@ pub fn provide<R: Runtime>() -> TauriPlugin<R> {
         })
         .build()
 }
+
+/**************************************************************************
+ * COMMANDS
+ * ************************************************************************* */
 
 #[tauri::command]
 fn send_notification<R: Runtime>(
