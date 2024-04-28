@@ -6,7 +6,7 @@
  * IMPORTS
  * ************************************************************************* */
 
-use notifications::{Notification, NotificationProvider};
+use notifications::{Notification, NotificationProvider, NotificationResponse};
 use send_wrapper::SendWrapper;
 use serde::Serialize;
 use tauri::plugin::{Builder, TauriPlugin};
@@ -23,7 +23,7 @@ pub(crate) struct NotificationsState {
 #[derive(Debug, Clone, Serialize)]
 struct NotificationInteraction {
     id: String,
-    interaction: String,
+    action: String,
 }
 
 /**************************************************************************
@@ -34,30 +34,44 @@ pub fn provide<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("notifications")
         .invoke_handler(tauri::generate_handler![send_notification, set_badge_count])
         .setup(|app_handle| {
-            let name = match app_handle.config().package.product_name.as_ref() {
-                Some(name) => name.clone(),
-                None => {
-                    println!("No product name found in tauri.conf.json, using default");
-                    "Terminal".to_string()
-                }
-            };
-            let mut provider = NotificationProvider::new(name.as_str());
+            let name = app_handle
+                .config()
+                .package
+                .product_name
+                .as_ref()
+                .map(|value| value.to_string())
+                .unwrap_or("Prose".to_string());
+
+            let mut provider = NotificationProvider::new(&name);
+
             let app = app_handle.clone();
-            provider.set_callback(move |id, resp| {
-                println!("Notification {} clicked: {:?}", id, resp);
+
+            provider.set_callback(move |id, response| {
+                // Map response to known action
+                let action = match response {
+                    NotificationResponse::Click => "click",
+                    NotificationResponse::Reply(_) => "reply",
+                    NotificationResponse::CloseButton(_) => "close",
+                    NotificationResponse::ActionButton(_) => "other",
+                    NotificationResponse::None => "none",
+                };
+
                 app.emit_all(
-                    "notifications:notification-event",
+                    "notification:interaction",
                     NotificationInteraction {
                         id,
-                        interaction: format!("{:?}", resp),
+                        action: action.to_string(),
                     },
                 )
                 .unwrap();
             });
+
             let state = NotificationsState {
                 provider: SendWrapper::new(provider),
             };
+
             app_handle.manage(state);
+
             Ok(())
         })
         .build()
@@ -70,14 +84,13 @@ pub fn provide<R: Runtime>() -> TauriPlugin<R> {
 #[tauri::command]
 fn send_notification<R: Runtime>(
     _app: AppHandle<R>,
-    state: State<'_, NotificationsState>,
+    _state: State<'_, NotificationsState>,
     title: String,
     body: String,
 ) -> String {
     Notification::new()
         .title(title.as_str())
         .subtitle(body.as_str())
-        .reply(true)
         .send()
         .unwrap()
 }

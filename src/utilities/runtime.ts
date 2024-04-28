@@ -46,10 +46,24 @@ enum RuntimeLogLevel {
   Error = "error"
 }
 
+enum RuntimeNotificationInteractionAction {
+  // Click action.
+  Click = "click",
+  // Reply action.
+  Reply = "reply",
+  // Close action.
+  Close = "close",
+  // Other action.
+  Other = "other",
+  // None action.
+  None = "none"
+}
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
 
+type RuntimeNotificationClickHandler = () => void;
 type RuntimeProgressHandler = (progress: number, total: number) => void;
 type RuntimeFocusHandler = (focused: boolean) => void;
 type RuntimeOpenHandler = (protocol: string, path: string) => void;
@@ -64,15 +78,24 @@ type RuntimeRouteHandler = (
  * INTERFACES
  * ************************************************************************* */
 
-interface RuntimeProgressPayload {
+interface RuntimeDownloadProgressPayload {
   id: number;
   progress: number;
   total: number;
 }
 
+interface RuntimeNotificationInteractionPayload {
+  id: string;
+  action: RuntimeNotificationInteractionAction;
+}
+
 interface RuntimeNotificationRoute {
   name: string;
   params?: { [name: string]: string };
+}
+
+interface RuntimeNotificationHandlers {
+  click: RuntimeNotificationClickHandler;
 }
 
 /**************************************************************************
@@ -120,7 +143,8 @@ class UtilitiesRuntime {
     route: null as RuntimeRouteHandler | null,
     open: null as RuntimeOpenHandler | null,
     menu: null as RuntimeMenuHandler | null,
-    download: new Map() as Map<number, RuntimeProgressHandler>
+    download: new Map() as Map<number, RuntimeProgressHandler>,
+    notification: new Map() as Map<string, RuntimeNotificationHandlers>
   };
 
   constructor() {
@@ -243,9 +267,10 @@ class UtilitiesRuntime {
             }
           );
 
-          // TODO: stack click handler somewhere + clear stacked handler when \
-          //   it was dismissed.
-          console.error(`TODO: Notification sent with ID: ${notificationId}`);
+          // Store notification handlers (for later use)
+          this.__handlers.notification.set(notificationId, {
+            click: clickHandler
+          });
         } else {
           // Request to show notification via browser APIs (Web build)
           const notification = new Notification(title, { body });
@@ -428,7 +453,7 @@ class UtilitiesRuntime {
       // Register listeners via Tauri API (application build)
       this.__states.focused = true;
 
-      tauriAppWindow.listen<RuntimeProgressPayload>(
+      tauriAppWindow.listen<RuntimeDownloadProgressPayload>(
         "download:progress",
 
         ({ payload }) => {
@@ -472,15 +497,33 @@ class UtilitiesRuntime {
         this.__changeFocusState(payload);
       });
 
-      tauriAppWindow.listen<string>(
-        "notifications:notification-event",
+      tauriAppWindow.listen<RuntimeNotificationInteractionPayload>(
+        "notification:interaction",
 
         ({ payload }) => {
-          // TODO: trigger registered handler for notification identifier?
-          console.error(
-            "TODO: Notification event/interaction received",
-            payload
-          );
+          const handlers = this.__handlers.notification.get(payload.id);
+
+          if (handlers !== undefined) {
+            switch (payload.action) {
+              case RuntimeNotificationInteractionAction.Click: {
+                // Trigger click handler
+                handlers.click();
+
+                break;
+              }
+
+              case RuntimeNotificationInteractionAction.Close: {
+                // Delete registered handlers
+                this.__handlers.notification.delete(payload.id);
+
+                break;
+              }
+
+              default: {
+                // Do nothing (ignore)
+              }
+            }
+          }
         }
       );
     } else {
