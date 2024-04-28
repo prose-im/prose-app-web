@@ -35,15 +35,6 @@ import UtilitiesTitle from "@/utilities/title";
  * ENUMERATIONS
  * ************************************************************************* */
 
-enum RuntimeNotificationAction {
-  // Click action.
-  Click = "click",
-  // Other action.
-  Other = "other",
-  // None action.
-  None = "none"
-}
-
 enum RuntimeLogLevel {
   // Debug level.
   Debug = "debug",
@@ -242,7 +233,7 @@ class UtilitiesRuntime {
 
         if (this.__isApplication === true) {
           // Request to show notification via Tauri API (application build)
-          const action: RuntimeNotificationAction = await tauriInvoke(
+          const notificationId: string = await tauriInvoke(
             "plugin:notifications|send_notification",
 
             {
@@ -252,20 +243,9 @@ class UtilitiesRuntime {
             }
           );
 
-          // Handle action on notification
-          // TODO: actions do not really work, since we had to disable \
-          //   blocking notifications due to the way the underlying \
-          //   mac_notification_sys works. If we want to wait for user \
-          //   interaction, then we have to use send_notification from \
-          //   mac_notification_sys which blocks the whole Tauri thread. We \
-          //   have to find a fully async variant of mac_notification_sys.
-          switch (action) {
-            case RuntimeNotificationAction.Click: {
-              await clickHandler();
-
-              break;
-            }
-          }
+          // TODO: stack click handler somewhere + clear stacked handler when \
+          //   it was dismissed.
+          console.error(`TODO: Notification sent with ID: ${notificationId}`);
         } else {
           // Request to show notification via browser APIs (Web build)
           const notification = new Notification(title, { body });
@@ -491,6 +471,18 @@ class UtilitiesRuntime {
       tauriAppWindow.listen<boolean>("window:focus", ({ payload }) => {
         this.__changeFocusState(payload);
       });
+
+      tauriAppWindow.listen<string>(
+        "notifications:notification-event",
+
+        ({ payload }) => {
+          // TODO: trigger registered handler for notification identifier?
+          console.error(
+            "TODO: Notification event/interaction received",
+            payload
+          );
+        }
+      );
     } else {
       // Register listeners via browser Document API (Web build)
       this.__states.focused =
