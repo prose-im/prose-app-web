@@ -64,7 +64,7 @@ export default {
       default: "grey",
 
       validator(x: string) {
-        return ["grey", "blue", "red", "orange"].includes(x);
+        return ["white", "grey", "blue", "red", "orange"].includes(x);
       }
     }
   }
@@ -124,6 +124,14 @@ $c: ".c-base-banner";
   }
 
   // --> COLORS <--
+
+  &--white {
+    background-color: rgb(var(--color-base-grey-normal));
+
+    #{$c}__description {
+      opacity: 0.85;
+    }
+  }
 
   &--grey {
     background-color: rgb(var(--color-base-grey-dark));
