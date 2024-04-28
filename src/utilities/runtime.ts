@@ -478,7 +478,7 @@ class UtilitiesRuntime {
         this.__changeFocusState(payload);
       });
 
-      tauriAppWindow.listen<String>(
+      tauriAppWindow.listen<string>(
         "notifications:notification-event",
         ({ payload }) => {
           console.log(payload);
