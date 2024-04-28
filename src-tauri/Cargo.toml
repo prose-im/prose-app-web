@@ -26,6 +26,10 @@ objc = "0.2.7"
 percent-encoding = "2.3.1"
 mac-notification-sys = "0.6.1"
 window-vibrancy = "0.4.3"
+# this 3 crates are for macOS only to set quarantine flag
+extattr = "1.0.0"
+uuid = { version = "1.8.0", features = ["v4"] }
+libc = "0.2.153"
 notifications = { path = "crates/notifications" }
 
 [features]
