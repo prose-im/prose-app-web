@@ -51,7 +51,7 @@ export default {
           "conversation-empty",
           "file-not-found",
           "file-upload",
-          "invitations-empty",
+          "inbox-empty",
           "goodbye",
           "welcome"
         ].includes(x);
@@ -95,7 +95,7 @@ $illustration-images: (
   "conversation-empty": 550px,
   "file-not-found": 499px,
   "file-upload": 506px,
-  "invitations-empty": 590px,
+  "inbox-empty": 590px,
   "goodbye": 437px,
   "welcome": 477px
 );

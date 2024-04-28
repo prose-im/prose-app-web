@@ -85,6 +85,21 @@
     :room="room"
     :message-id="popups.messageDetails.messageId"
   )
+
+  message-author(
+    v-if="cards.messageAuthor.visible"
+    :room="room"
+    :message-id="cards.messageAuthor.messageId"
+    :anchor="cards.messageAuthor.anchor"
+  )
+
+  message-reaction(
+    v-if="cards.messageReaction.visible"
+    :room="room"
+    :message-id="cards.messageReaction.messageId"
+    :reaction="cards.messageReaction.reaction"
+    :anchor="cards.messageReaction.anchor"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -94,12 +109,14 @@
 <script lang="ts">
 // NPM
 import {
+  EventMessageAuthorIdentity,
   EventMessageActionsView,
   EventMessageFileView,
   EventMessageLinkOpen,
   EventMessageHistoryView,
   EventMessageHistorySeek,
   EventMessageReactionsReact,
+  EventMessageReactionsAuthors,
   EventMessageReactionsView,
   FileAction as MessagingFileAction,
   FileType as MessagingFileType,
@@ -135,6 +152,10 @@ import {
 } from "@/components/inbox/InboxFilePreview.vue";
 import InboxMessagingAlert from "@/components/inbox/InboxMessagingAlert.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
+
+// PROJECT: CARDS
+import MessageAuthor from "@/cards/inbox/MessageAuthor.vue";
+import MessageReaction from "@/cards/inbox/MessageReaction.vue";
 
 // PROJECT: MODALS
 import RemoveMessage from "@/modals/inbox/RemoveMessage.vue";
@@ -213,7 +234,9 @@ export default {
     InboxMessagingAlert,
     MessageDetails,
     EditMessage,
-    RemoveMessage
+    RemoveMessage,
+    MessageAuthor,
+    MessageReaction
   },
 
   props: {
@@ -242,8 +265,10 @@ export default {
       },
 
       messagingEvents: {
+        "message:author:identity": this.onMessagingMessageAuthorIdentity,
         "message:actions:view": this.onMessagingMessageActionsView,
         "message:reactions:view": this.onMessagingMessageReactionsView,
+        "message:reactions:authors": this.onMessagingMessageReactionsAuthors,
         "message:reactions:react": this.onMessagingMessageReactionsReact,
         "message:file:view": this.onMessagingMessageFileView,
         "message:link:open": this.onMessagingMessageLinkOpen,
@@ -284,6 +309,23 @@ export default {
           visible: false,
 
           messageId: ""
+        }
+      },
+
+      cards: {
+        messageAuthor: {
+          visible: false,
+
+          messageId: "",
+          anchor: [0, 0]
+        },
+
+        messageReaction: {
+          visible: false,
+
+          messageId: "",
+          reaction: "",
+          anchor: [0, 0]
         }
       },
 
@@ -1426,6 +1468,19 @@ export default {
       }
     },
 
+    onMessagingMessageAuthorIdentity(event: EventMessageAuthorIdentity): void {
+      this.$log.debug("Got message author identity", event);
+
+      // Acquire anchor
+      const anchor = event.origin.parent || event.origin.anchor;
+
+      // Show or hide message author card
+      this.cards.messageAuthor.messageId = event.id;
+      this.cards.messageAuthor.anchor = [anchor.x, anchor.y];
+
+      this.cards.messageAuthor.visible = event.visible;
+    },
+
     onMessagingMessageActionsView(event: EventMessageActionsView): void {
       this.$log.debug("Got message actions view", event);
 
@@ -1587,6 +1642,22 @@ export default {
         // Trigger container click
         this.triggerContainerClick();
       }
+    },
+
+    onMessagingMessageReactionsAuthors(
+      event: EventMessageReactionsAuthors
+    ): void {
+      this.$log.debug("Got message reactions authors", event);
+
+      // Acquire anchor
+      const anchor = event.origin.parent || event.origin.anchor;
+
+      // Show or hide message reaction card
+      this.cards.messageReaction.messageId = event.id;
+      this.cards.messageReaction.reaction = event.reaction;
+      this.cards.messageReaction.anchor = [anchor.x, anchor.y];
+
+      this.cards.messageReaction.visible = event.visible;
     },
 
     async onMessagingMessageReactionsReact(

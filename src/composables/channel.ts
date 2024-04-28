@@ -10,6 +10,7 @@
 
 // NPM
 import { Ref, ComputedRef, ref, computed } from "vue";
+import { RoomType } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/FormFieldSuggest.vue";
@@ -18,6 +19,9 @@ import BaseIcon from "@/components/base/BaseIcon.vue";
 // PROJECT: STORES
 import Store from "@/store";
 import { ChannelEntry } from "@/store/tables/channel";
+
+// PROJECT: FILTERS
+import stringFilters from "@/filters/string";
 
 /**************************************************************************
  * INTERFACES
@@ -71,7 +75,7 @@ function useChannelSuggestor(): {
             component: BaseIcon,
 
             properties: {
-              name: "circle.grid.2x2",
+              name: stringFilters.roomTypeIntoIcon(RoomType.PublicChannel),
               size: "11px"
             }
           }

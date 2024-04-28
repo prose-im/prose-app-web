@@ -10,6 +10,7 @@
  * ************************************************************************* */
 
 mod download;
+mod logger;
 mod menu;
 mod notifications;
 
@@ -75,6 +76,7 @@ fn main() {
         })
         .plugin(download::provide())
         .plugin(notifications::provide())
+        .plugin(logger::provide())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

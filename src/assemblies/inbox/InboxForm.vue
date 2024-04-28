@@ -1108,6 +1108,7 @@ $form-compose-send-button-size: (
     }
 
     #{$c}__compose-formatting {
+      margin-inline: 1px;
       margin-block-start: -$form-compose-formatting-recess-block;
       margin-block-end: (
         $form-compose-padding-block - $form-compose-formatting-recess-block

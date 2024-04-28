@@ -18,7 +18,7 @@ list-browse(
   ]`
   :groups="groups"
   :loading="loading"
-  empty-illustration="invitations-empty"
+  empty-illustration="inbox-empty"
   empty-title="No pending invites."
   empty-description="People can invite you to channels and groups. Contact requests from other workspaces will also appear here."
 )
@@ -93,23 +93,27 @@ export default {
                   this.pendingResponds[requestRequestId] || false;
 
               return {
-                icon: {
-                  component: BaseAvatar,
+                entries: [
+                  {
+                    icon: {
+                      component: BaseAvatar,
 
-                  properties: {
-                    jid: new JID(request.jid),
-                    size: "32px",
-                    shadow: "none"
+                      properties: {
+                        jid: new JID(request.jid),
+                        size: "32px",
+                        shadow: "none"
+                      }
+                    },
+
+                    identity: {
+                      primary: request.name,
+                      secondary: request.jid
+                    },
+
+                    preview:
+                      "Would like to connect with you, and add each other to their contacts."
                   }
-                },
-
-                identity: {
-                  primary: request.name,
-                  secondary: request.jid
-                },
-
-                preview:
-                  "Would like to connect with you, and add each other to their contacts.",
+                ],
 
                 actions: [
                   {

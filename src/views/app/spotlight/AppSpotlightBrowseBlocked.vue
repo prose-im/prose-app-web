@@ -92,20 +92,24 @@ export default {
                   entryLoading = this.pendingUnblocks[entry.jid] || false;
 
                 return {
-                  icon: {
-                    component: BaseAvatar,
+                  entries: [
+                    {
+                      icon: {
+                        component: BaseAvatar,
 
-                    properties: {
-                      jid: entryJID,
-                      size: "32px",
-                      shadow: "none"
+                        properties: {
+                          jid: entryJID,
+                          size: "32px",
+                          shadow: "none"
+                        }
+                      },
+
+                      identity: {
+                        primary: entry.name,
+                        secondary: entry.jid
+                      }
                     }
-                  },
-
-                  identity: {
-                    primary: entry.name,
-                    secondary: entry.jid
-                  },
+                  ],
 
                   actions: [
                     {

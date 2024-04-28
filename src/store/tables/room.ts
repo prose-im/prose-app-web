@@ -35,6 +35,7 @@ import Broker from "@/broker";
 
 interface Room {
   items: {
+    all: SidebarItem[];
     favorites: SidebarItem[];
     directMessages: SidebarItem[];
     channels: SidebarItem[];
@@ -101,6 +102,7 @@ const $room = defineStore("room", {
   state: (): Room => {
     return {
       items: {
+        all: [],
         favorites: [],
         directMessages: [],
         channels: [],
@@ -112,6 +114,12 @@ const $room = defineStore("room", {
   },
 
   getters: {
+    getItems: function () {
+      return (): Array<SidebarItem> => {
+        return this.items.all;
+      };
+    },
+
     getItemFavorites: function () {
       return (): Array<SidebarItem> => {
         return this.items.favorites;
@@ -153,7 +161,8 @@ const $room = defineStore("room", {
       // Load room list? (or reload)
       if (LOCAL_STATES.loaded !== true || reload === true) {
         // Initialize entries
-        const favorites: Array<SidebarItem> = [],
+        const all: Array<SidebarItem> = [],
+          favorites: Array<SidebarItem> = [],
           directMessages: Array<SidebarItem> = [],
           channels: Array<SidebarItem> = [],
           itemsByRoomId = new Map<RoomID, SidebarItem>(),
@@ -166,6 +175,9 @@ const $room = defineStore("room", {
         const sidebarItems = await Broker.$room.sidebarItems();
 
         sidebarItems.forEach(item => {
+          // Append item to list of all items
+          all.push(item);
+
           // Append item in its section
           switch (item.section) {
             case SidebarSection.Favorites: {
@@ -197,7 +209,10 @@ const $room = defineStore("room", {
 
         // Append all rooms
         this.$patch(state => {
-          // Store items
+          // Store all items
+          state.items.all = all.sort(makeSidebarItemSorter());
+
+          // Store categorized items
           state.items.favorites = favorites.sort(makeSidebarItemSorter());
           state.items.directMessages = directMessages.sort(
             makeSidebarItemSorter()

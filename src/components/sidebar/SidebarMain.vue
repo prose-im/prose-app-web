@@ -22,7 +22,6 @@
       :active="sectionActive.unread"
       title="Unread stack"
       icon="tray.2"
-      disabled
     )
 
     sidebar-main-section(
