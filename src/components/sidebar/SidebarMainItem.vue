@@ -21,6 +21,7 @@ sidebar-main-item-user(
 sidebar-main-item-multi(
   v-else-if="item.room.type === roomType.Group"
   :item="item"
+  :jid="jid"
   :translucent="translucent"
   :active="active"
   type="group"
@@ -30,6 +31,7 @@ sidebar-main-item-multi(
 sidebar-main-item-multi(
   v-else-if="item.room.type === roomType.PublicChannel || item.room.type === roomType.PrivateChannel"
   :item="item"
+  :jid="jid"
   :translucent="translucent"
   :active="active"
   type="channel"
@@ -51,7 +53,7 @@ sidebar-main-item-generic(
 
 <script lang="ts">
 // NPM
-import { RoomID, RoomType, SidebarItem } from "@prose-im/prose-sdk-js";
+import { JID, RoomID, RoomType, SidebarItem } from "@prose-im/prose-sdk-js";
 import { PropType } from "vue";
 
 // PROJECT: COMPONENTS
@@ -71,6 +73,11 @@ export default {
   props: {
     item: {
       type: Object as PropType<SidebarItem>,
+      required: true
+    },
+
+    jid: {
+      type: Object as PropType<JID>,
       required: true
     },
 

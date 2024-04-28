@@ -43,6 +43,7 @@
     sidebar-main-item(
       v-for="item in itemFavorites"
       :item="item"
+      :jid="jid"
       :selection="selectedRoomID"
       :translucent="translucent"
     )
@@ -57,6 +58,7 @@
     sidebar-main-item(
       v-for="item in itemDirectMessages"
       :item="item"
+      :jid="jid"
       :selection="selectedRoomID"
       :translucent="translucent"
     )
@@ -77,6 +79,7 @@
     sidebar-main-item(
       v-for="item in itemChannels"
       :item="item"
+      :jid="jid"
       :selection="selectedRoomID"
       :translucent="translucent"
     )
@@ -94,6 +97,7 @@
 
 <script lang="ts">
 // NPM
+import { PropType } from "vue";
 import { JID, SidebarItem } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPOSABLES
@@ -123,6 +127,11 @@ export default {
   },
 
   props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    },
+
     translucent: {
       type: Boolean,
       default: false

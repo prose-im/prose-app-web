@@ -31,6 +31,7 @@ div(
   sidebar-main(
     @add-contact="onAddContact"
     @scroll="onMainScroll"
+    :jid="selfJID"
     :translucent="runtimeTranslucent"
     class="a-app-sidebar__main"
     disclosure-list-class="a-app-sidebar__main-list"

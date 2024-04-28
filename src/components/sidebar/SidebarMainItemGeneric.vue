@@ -13,6 +13,7 @@ list-button(
   @click="onButtonClick"
   :translucent="translucent"
   :active="active"
+  :ellipsis="ellipsis"
   :important="item.hasDraft || item.unreadCount > 0 || item.mentionsCount > 0"
   :class=`[
     "c-sidebar-main-item-generic",
@@ -116,6 +117,11 @@ export default {
     },
 
     active: {
+      type: Boolean,
+      default: false
+    },
+
+    ellipsis: {
       type: Boolean,
       default: false
     }
