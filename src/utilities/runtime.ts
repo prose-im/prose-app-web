@@ -35,15 +35,6 @@ import UtilitiesTitle from "@/utilities/title";
  * ENUMERATIONS
  * ************************************************************************* */
 
-enum RuntimeNotificationAction {
-  // Click action.
-  Click = "click",
-  // Other action.
-  Other = "other",
-  // None action.
-  None = "none"
-}
-
 enum RuntimeLogLevel {
   // Debug level.
   Debug = "debug",
@@ -242,7 +233,7 @@ class UtilitiesRuntime {
 
         if (this.__isApplication === true) {
           // Request to show notification via Tauri API (application build)
-          const id: RuntimeNotificationAction = await tauriInvoke(
+          const notificationId: string = await tauriInvoke(
             "plugin:notifications|send_notification",
 
             {
@@ -251,7 +242,10 @@ class UtilitiesRuntime {
               route
             }
           );
-          console.log(`notification sent with id: ${id}`);
+
+          // TODO: stack click handler somewhere + clear stacked handler when \
+          //   it was dismissed.
+          console.error(`TODO: Notification sent with ID: ${notificationId}`);
         } else {
           // Request to show notification via browser APIs (Web build)
           const notification = new Notification(title, { body });
@@ -480,8 +474,13 @@ class UtilitiesRuntime {
 
       tauriAppWindow.listen<string>(
         "notifications:notification-event",
+
         ({ payload }) => {
-          console.log(payload);
+          // TODO: trigger registered handler for notification identifier?
+          console.error(
+            "TODO: Notification event/interaction received",
+            payload
+          );
         }
       );
     } else {
