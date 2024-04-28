@@ -26,7 +26,7 @@ window-vibrancy = "0.4.3"
 extattr = "1.0.0"
 uuid = { version = "1.8.0", features = ["v4"] }
 libc = "0.2.153"
-notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = "5343538" }
+notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = "2fef701" }
 send_wrapper = "0.6.0"
 
 [features]
