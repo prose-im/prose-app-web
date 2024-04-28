@@ -16,6 +16,10 @@ import {
   ProseConnectionError,
   ProseConnectionErrorType
 } from "@prose-im/prose-sdk-js";
+import {
+  clearTimeout as clearWorkerTimeout,
+  setTimeout as setWorkerTimeout
+} from "worker-timers";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -64,7 +68,7 @@ class BrokerClient {
   private __credentials?: { jid: JID; password: string };
 
   private __reconnectAttempts = 0;
-  private __reconnectTimeout?: ReturnType<typeof setTimeout>;
+  private __reconnectTimeout?: ReturnType<typeof setWorkerTimeout>;
 
   constructor() {
     // Initialize delegate
@@ -141,7 +145,11 @@ class BrokerClient {
     const afterActualDelay = afterBaseDelay * this.__reconnectAttempts;
 
     // Schedule reconnect
-    this.__reconnectTimeout = setTimeout(async () => {
+    // Important: use a reliable timeout scheduler, that will definitely fire \
+    //   whenever the event loop is put into background mode due to user \
+    //   inactivity. This uses a Web Worker, which manages timeout away from \
+    //   the main thread and therefore is not subject to pauses.
+    this.__reconnectTimeout = setWorkerTimeout(async () => {
       delete this.__reconnectTimeout;
 
       try {
@@ -283,7 +291,7 @@ class BrokerClient {
 
   private __cancelScheduledReconnectTimer(): void {
     if (this.__reconnectTimeout !== undefined) {
-      clearTimeout(this.__reconnectTimeout);
+      clearWorkerTimeout(this.__reconnectTimeout);
 
       delete this.__reconnectTimeout;
     }
