@@ -23,10 +23,11 @@ thiserror = "1.0.58"
 percent-encoding = "2.3.1"
 mac-notification-sys = "0.6.1"
 window-vibrancy = "0.4.3"
+# next 3 crates to set xattr when downloading (mac only)
 extattr = "1.0.0"
 uuid = { version = "1.8.0", features = ["v4"] }
 libc = "0.2.153"
-notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = "2fef701" }
+notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = "c7788fc" }
 send_wrapper = "0.6.0"
 
 [features]
