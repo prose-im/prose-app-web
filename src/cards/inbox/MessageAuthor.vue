@@ -158,7 +158,7 @@ export default {
         return `${this.$filters.date.localTime(
           nowDate,
           profileTimezone.offset
-        )} (${profileTimezone.name})`;
+        )} local time`;
       }
 
       return null;
