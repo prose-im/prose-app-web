@@ -13,6 +13,7 @@
   v-if="hasBanner"
 )
   base-banner(
+    :color="banner.color"
     :icon="banner.icon"
     :title="banner.title"
     :description="banner.description"
@@ -37,6 +38,10 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID, Room } from "@prose-im/prose-sdk-js";
+
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
 
@@ -47,11 +52,17 @@ import Store from "@/store";
 import Broker from "@/broker";
 
 // CONSTANTS
+const MINUTE_TO_MILLISECONDS = 60000; // 1 minute
+
 const CONSIDER_DISCONNECTED_DEBOUNCE_DELAY_DEFAULT = 1000; // 1 second
 const CONSIDER_DISCONNECTED_DEBOUNCE_DELAY_INITIAL = 8000; // 8 seconds
 
+const CONSIDER_TIME_ASLEEP_AFTER = 20; // 8pm
+const CONSIDER_TIME_ASLEEP_BEFORE = 8; // 8am
+
 // INTERFACES
 interface Banner {
+  color: string;
   icon: string;
   title: string;
   description: string;
@@ -66,6 +77,18 @@ interface BannerAction {
 
 export default {
   name: "InboxBanner",
+
+  props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    },
+
+    room: {
+      type: Object as PropType<Room>,
+      default: undefined
+    }
+  },
 
   data() {
     return {
@@ -87,6 +110,7 @@ export default {
       // Disconnected?
       if (this.isDisconnected) {
         return {
+          color: "grey",
           icon: "exclamationmark.triangle.fill",
           title: "You are offline",
           description:
@@ -106,11 +130,69 @@ export default {
         };
       }
 
+      // User is on a sleep time? (that's different from ours)
+      if (this.userSleepTime) {
+        return {
+          color: "white",
+          icon: "clock",
+          title: `It is ${this.userSleepTime} for ${this.room?.name || "them"}`,
+          description: "Your messages might get read a bit later."
+        };
+      }
+
       return null;
+    },
+
+    userSleepTime(): string | null {
+      const userTimezone =
+        this.profile?.information?.location?.timezone || null;
+
+      // Return user time only when user TZO is different from our local TZO, \
+      //   and user is possibly currently in sleeping hours.
+      if (
+        userTimezone !== null &&
+        userTimezone.offset !== this.localTimezoneOffset
+      ) {
+        // Apply offset to date (in minutes)
+        // Notice: create new date object, as not to mutate the provided one.
+        const userDate = new Date(
+          this.localDate.getTime() +
+            userTimezone.offset * MINUTE_TO_MILLISECONDS
+        );
+
+        const userTimeHour = userDate.getUTCHours();
+
+        if (
+          userTimeHour >= CONSIDER_TIME_ASLEEP_AFTER ||
+          userTimeHour < CONSIDER_TIME_ASLEEP_BEFORE
+        ) {
+          return this.$filters.date.localTime(
+            this.localDate,
+            userTimezone.offset
+          );
+        }
+      }
+
+      return null;
+    },
+
+    localDate(): Date {
+      // Return current local date (for local environment)
+      return new Date();
+    },
+
+    localTimezoneOffset(): number {
+      // Return current local TZO (for local environment)
+      // Important: negate result since JS returns inverted TZOs.
+      return -this.localDate.getTimezoneOffset();
     },
 
     session(): typeof Store.$session {
       return Store.$session;
+    },
+
+    profile(): ReturnType<typeof Store.$profile.getProfile> {
+      return Store.$profile.getProfile(this.jid);
     }
   },
 

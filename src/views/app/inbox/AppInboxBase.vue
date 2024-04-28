@@ -32,7 +32,10 @@ layout-view(
       class="v-app-inbox-base__dropzone"
     )
 
-    inbox-banner
+    inbox-banner(
+      :jid="jid"
+      :room="room"
+    )
 
     inbox-messaging(
       @file-preview="onMessagesFilePreview"
