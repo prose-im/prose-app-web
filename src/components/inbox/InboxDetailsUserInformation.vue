@@ -153,10 +153,7 @@ export default {
 
             entries.push({
               id: "timezone",
-              title: `${this.$filters.date.localTime(
-                nowDate,
-                userTimezone.offset
-              )} (${userTimezone.name})`,
+              title: this.$filters.date.localTime(nowDate, userTimezone.offset),
               icon: "clock.fill"
             });
           }
