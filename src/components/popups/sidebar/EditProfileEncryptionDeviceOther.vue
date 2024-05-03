@@ -103,7 +103,7 @@ export default {
           }
         ] as Array<DataTableRow>,
 
-        sizes: { name: "40%", device: "25%", hash: "35%" } as DataTableSizes,
+        sizes: { name: "40%", device: "20%", hash: "40%" } as DataTableSizes,
 
         controls: [
           {
