@@ -61,13 +61,20 @@ layout-toolbar(
       align="right"
       direction="bottom"
     )
-      span.a-inbox-topbar__identity.a-inbox-topbar__identity--jid
-        base-icon(
-          :name="identityBadge.icon"
-          :class=`[
-            "a-inbox-topbar__identity-badge",
-            "a-inbox-topbar__identity-badge--" + identityBadge.status
-          ]`
+      span(
+        :class=`[
+          "a-inbox-topbar__identity",
+          "a-inbox-topbar__identity--jid",
+          {
+            "a-inbox-topbar__identity--has-jid": truncatedJID
+          }
+        ]`
+      )
+        base-action(
+          @click="onIdentityBadgeVerificationClick"
+          :icon="identityBadgeVerification.icon"
+          :icon-class="'a-inbox-topbar__identity-badge-icon a-inbox-topbar__identity-badge-icon--' + identityBadgeVerification.status"
+          class="a-inbox-topbar__identity-badge"
           size="16px"
         )
 
@@ -185,7 +192,7 @@ export default {
       return null;
     },
 
-    identityBadge(): IdentityBadge {
+    identityBadgeVerification(): IdentityBadge {
       // Identity verified?
       if (this.profile.security && this.profile.security.verification) {
         return {
@@ -324,6 +331,10 @@ export default {
           );
         }
       }
+    },
+
+    onIdentityBadgeVerificationClick(): void {
+      // TODO
     }
   }
 };
@@ -360,17 +371,27 @@ $c: ".a-inbox-topbar";
       font-size: 15px;
 
       #{$c}__identity-badge {
-        &--verified {
-          fill: rgb(var(--color-base-green-normal));
-        }
+        margin-inline-end: -($size-base-action-padding-sides + 2px);
 
-        &--unknown {
-          fill: rgb(var(--color-base-grey-normal));
+        #{$c}__identity-badge-icon {
+          &--verified {
+            fill: rgb(var(--color-base-green-normal));
+          }
+
+          &--unknown {
+            fill: rgb(var(--color-base-grey-normal));
+          }
         }
       }
 
       #{$c}__identity-value {
         margin-block-start: -2px;
+      }
+
+      &#{$c}--has-jid {
+        #{$c}__identity-badge {
+          margin-inline-end: -($size-base-action-padding-sides - 3px);
+        }
       }
     }
 
