@@ -42,7 +42,12 @@ div(
       :style=`{
         transform: iconTransform
       }`
-      class="c-base-action__icon"
+      :class=`[
+        "c-base-action__icon",
+        {
+          [iconClass]: iconClass
+        }
+      ]`
     )
 
     base-icon(
@@ -134,6 +139,11 @@ export default {
     autoHeight: {
       type: Boolean,
       default: false
+    },
+
+    iconClass: {
+      type: String,
+      default: null
     }
   },
 
