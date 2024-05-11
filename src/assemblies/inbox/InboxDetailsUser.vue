@@ -60,6 +60,7 @@ layout-sidebar-details(
     encryption-settings(
       v-if="popups.encryptionSettings.visible"
       @close="onPopupEncryptionSettingsClose"
+      section-initial="preferences"
     )
 
     close-user(

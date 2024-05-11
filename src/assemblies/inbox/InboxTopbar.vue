@@ -103,6 +103,12 @@ layout-toolbar(
     base-separator
 
     topbar-actions-search
+
+  encryption-settings(
+    v-if="popups.encryptionSettings.visible"
+    @close="onPopupEncryptionSettingsClose"
+    section-initial="identities"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -122,6 +128,9 @@ import BaseAlert from "@/components/base/BaseAlert.vue";
 import TopbarActionsHistory from "@/components/topbar/TopbarActionsHistory.vue";
 import TopbarActionsSearch from "@/components/topbar/TopbarActionsSearch.vue";
 
+// PROJECT: POPUPS
+import EncryptionSettings from "@/popups/inbox/EncryptionSettings.vue";
+
 // PROJECT: COMPOSABLES
 import { useInterfaceMounted } from "@/composables/interface";
 
@@ -137,7 +146,7 @@ const JID_TRUNCATE_LENGTH = 15;
 export default {
   name: "InboxTopbar",
 
-  components: { TopbarActionsHistory, TopbarActionsSearch },
+  components: { TopbarActionsHistory, TopbarActionsSearch, EncryptionSettings },
 
   props: {
     jid: {
@@ -155,6 +164,16 @@ export default {
     useInterfaceMounted((mounted: boolean) => {
       Store.$session.setInterfaceToolbarMounted(mounted);
     });
+  },
+
+  data() {
+    return {
+      popups: {
+        encryptionSettings: {
+          visible: false
+        }
+      }
+    };
   },
 
   computed: {
@@ -334,7 +353,11 @@ export default {
     },
 
     onIdentityBadgeVerificationClick(): void {
-      // TODO: open fingerprints modal
+      this.popups.encryptionSettings.visible = true;
+    },
+
+    onPopupEncryptionSettingsClose(): void {
+      this.popups.encryptionSettings.visible = false;
     }
   }
 };
