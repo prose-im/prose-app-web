@@ -29,7 +29,7 @@ import {
 } from "@/components/form/FormSettingsEditor.vue";
 
 export default {
-  name: "AccountSettingsPreferences",
+  name: "EncryptionSettingsPreferences",
 
   components: { FormSettingsEditor },
 

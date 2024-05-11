@@ -34,7 +34,7 @@
 
 <script lang="ts">
 export default {
-  name: "AccountSettingsIdentities",
+  name: "EncryptionSettingsIdentities",
 
   data() {
     return {

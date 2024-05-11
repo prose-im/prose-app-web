@@ -53,13 +53,13 @@ import { shallowRef } from "vue";
 
 // PROJECT: COMPONENTS
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
-import AccountSettingsIdentities from "@/components/popups/inbox/AccountSettingsIdentities.vue";
-import AccountSettingsPreferences from "@/components/popups/inbox/AccountSettingsPreferences.vue";
+import EncryptionSettingsIdentities from "@/components/popups/inbox/EncryptionSettingsIdentities.vue";
+import EncryptionSettingsPreferences from "@/components/popups/inbox/EncryptionSettingsPreferences.vue";
 
 export default {
   name: "EncryptionSettings",
 
-  components: { AccountSettingsIdentities, AccountSettingsPreferences },
+  components: { EncryptionSettingsIdentities, EncryptionSettingsPreferences },
 
   props: {
     sectionInitial: {
@@ -94,11 +94,11 @@ export default {
 
       contentSections: {
         identities: {
-          component: shallowRef(AccountSettingsIdentities)
+          component: shallowRef(EncryptionSettingsIdentities)
         },
 
         preferences: {
-          component: shallowRef(AccountSettingsPreferences)
+          component: shallowRef(EncryptionSettingsPreferences)
         }
       }
     };
