@@ -9,23 +9,10 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.p-encryption-settings-identities
-  ul.p-encryption-settings-identities__devices
-    li.p-encryption-settings-identities__device(
-      v-for="device in devices"
-      :key="'device_' + device.fingerprint"
-    )
-      .p-encryption-settings-identities__device-details
-        span.p-encryption-settings-identities__device-emoji
-          | {{ device.emoji }}
-
-        span.p-encryption-settings-identities__device-fingerprint
-          | {{ device.fingerprint }}
-
-        span.p-encryption-settings-identities__device-name
-          | {{ device.name }}
-
-      .p-encryption-settings-identities__device-options
+form-settings-editor(
+  :fieldsets="fieldsets"
+  class="p-encryption-settings-identities"
+)
 </template>
 
 <!-- **********************************************************************
@@ -33,44 +20,38 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { shallowRef } from "vue";
+
+// PROJECT: COMPONENTS
+import EncryptionSettingsIdentitiesDevices from "@/components/popups/inbox/EncryptionSettingsIdentitiesDevices.vue";
+
 export default {
   name: "EncryptionSettingsIdentities",
+
+  components: { EncryptionSettingsIdentitiesDevices },
 
   data() {
     return {
       // --> DATA <--
 
-      devices: [
+      fieldsets: [
         {
-          name: "MacBook Valerian",
-          emoji: "🦹🚶‍♂️🍖🥪🧀",
+          id: "identities",
+          title: "User identities (devices used to send messages)",
 
-          fingerprint: [
-            "45a37f26",
-            "5d7da857",
-            "07848791",
-            "6e1e10e6",
-            "23debc0e",
-            "8d173327",
-            "2e4185a3",
-            "d3d6bd3a"
-          ].join(" ")
-        },
+          parts: [
+            {
+              id: "devices",
+              component: shallowRef(EncryptionSettingsIdentitiesDevices)
+            }
+          ],
 
-        {
-          name: "iPhone Valerian",
-          emoji: "🦹🚶‍♂️🍖🥪🧀",
-
-          fingerprint: [
-            "15a37f26",
-            "5d7da857",
-            "07848791",
-            "3e1e10e6",
-            "23debc0e",
-            "8d173327",
-            "1e4185a3",
-            "d3d6bd3a"
-          ].join(" ")
+          notes: [
+            "Each device that this user uses carries an identity that is unique. Those identities are published publicly so that Prose can encrypt the messages that you send, in a way that only the user recipient devices can decrypt the messages.",
+            "Make sure to verify with the user that each user device security emojis match, and mark the ones you verified as such.",
+            "If you do not recognize a device, mark it as untrusted so that messages cannot be decrypted by such devices."
+          ]
         }
       ]
     };
