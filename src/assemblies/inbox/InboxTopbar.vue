@@ -334,7 +334,7 @@ export default {
     },
 
     onIdentityBadgeVerificationClick(): void {
-      // TODO
+      // TODO: open fingerprints modal
     }
   }
 };
