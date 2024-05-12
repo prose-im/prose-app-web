@@ -119,12 +119,17 @@ $c: ".p-encryption-settings-identities-devices";
     padding: 11px 18px;
     display: flex;
     align-items: center;
+    transition: border-color 75ms linear;
     border-radius: 5px;
 
     &:last-child {
       #{$c}__device {
         margin-block-end: 0;
       }
+    }
+
+    &:hover {
+      border-color: darken-var(var(--color-border-primary), 5%);
     }
 
     #{$c}__device-options {
@@ -181,8 +186,12 @@ $c: ".p-encryption-settings-identities-devices";
     }
 
     &--trusted {
-      border-color: rgb(var(--color-base-green-normal));
       outline: 2.5px solid rgba(var(--color-base-green-normal), 0.15);
+
+      &,
+      &:hover {
+        border-color: rgb(var(--color-base-green-normal));
+      }
 
       #{$c}__device-identity {
         #{$c}__device-icon {
