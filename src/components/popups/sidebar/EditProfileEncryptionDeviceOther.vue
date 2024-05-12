@@ -14,6 +14,7 @@ base-data-table(
   :columns="table.columns"
   :rows="table.rows"
   :sizes="table.sizes"
+  :styles="table.styles"
   :controls="table.controls"
   :class=`[
     "p-edit-profile-encryption-device-other",
@@ -33,6 +34,7 @@ import {
   Column as DataTableColumn,
   Row as DataTableRow,
   Sizes as DataTableSizes,
+  Styles as DataTableStyles,
   Control as DataTableControl,
   ControlType as DataTableControlType
 } from "@/components/base/BaseDataTable.vue";
@@ -65,7 +67,7 @@ export default {
 
           {
             id: "hash",
-            label: "Security Hash"
+            label: "Security Code"
           }
         ] as Array<DataTableColumn>,
 
@@ -78,7 +80,7 @@ export default {
             columns: {
               name: "Unknown Device #1",
               device: "(none)",
-              hash: "(none)"
+              hash: "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣"
             }
           },
 
@@ -88,7 +90,7 @@ export default {
             columns: {
               name: "Unknown Device #2",
               device: "(none)",
-              hash: "(none)"
+              hash: "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣"
             }
           },
 
@@ -98,12 +100,16 @@ export default {
             columns: {
               name: "Unknown Device #3",
               device: "(none)",
-              hash: "(none)"
+              hash: "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣"
             }
           }
         ] as Array<DataTableRow>,
 
         sizes: { name: "40%", device: "20%", hash: "40%" } as DataTableSizes,
+
+        styles: {
+          hash: { fontSize: "18px", cursor: "text" }
+        } as DataTableStyles,
 
         controls: [
           {
