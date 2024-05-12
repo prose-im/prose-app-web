@@ -69,9 +69,12 @@ div(
 
       span(
         v-for="column in columns"
-        :style=`{
-          width: sizes[column.id]
-        }`
+        :style=`[
+          styles[column.id],
+          {
+            width: sizes[column.id]
+          }
+        ]`
         :class=`[
           "c-base-data-table__column",
           "u-select"
@@ -155,6 +158,10 @@ export interface Sizes {
   [id: string]: string;
 }
 
+export interface Styles {
+  [id: string]: { [property: string]: string };
+}
+
 export interface Control {
   type: ControlType;
   tooltip?: string;
@@ -198,6 +205,14 @@ export default {
 
       validator(x: Sizes): boolean {
         return Object.keys(x).length > 0;
+      }
+    },
+
+    styles: {
+      type: Object,
+
+      default(): Styles {
+        return {};
       }
     },
 
