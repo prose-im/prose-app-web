@@ -36,7 +36,7 @@
   "dependencies": {
     "@privacyresearch/libsignal-protocol-typescript": "0.0.16",
     "@prose-im/prose-core-views": "0.42.1",
-    "@prose-im/prose-sdk-js": "0.1.75",
+    "@prose-im/prose-sdk-js": "0.1.76",
     "@tauri-apps/api": "1.5.3",
     "browser-image-resizer": "2.4.1",
     "crisp-countries-languages": "0.8.0",
