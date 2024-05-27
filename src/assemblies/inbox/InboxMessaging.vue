@@ -462,6 +462,13 @@ export default {
   methods: {
     // --> EXTERNALS <--
 
+    preserveScrollFromParent(): void {
+      // Scroll to last message (attempt)
+      // Important: do not force, meaning the scroll will not go through if \
+      //   messaging view is not scrolled down.
+      this.scrollToLastMessage(false);
+    },
+
     editLastFromParent(): void {
       let lastSelfMessageId = null,
         selfJIDString = this.selfJID.toString();
@@ -1073,6 +1080,26 @@ export default {
       }
     },
 
+    scrollToLastMessage(force = true): void {
+      // Acquire last message identifier? (if any)
+      if (this.messages.length > 0) {
+        let lastMessageId = this.messages[this.messages.length - 1].id || null;
+
+        // Dispatch scroll to last message?
+        if (lastMessageId !== null) {
+          let hasScrolled = this.frame()?.MessagingStore.scroll(
+            lastMessageId,
+            force
+          );
+
+          // Mark last unread message as visible straight away? (if scrolled)
+          if (hasScrolled === true) {
+            this.isLastUnreadMessageVisible = true;
+          }
+        }
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onFrameLoad(): void {
@@ -1125,20 +1152,8 @@ export default {
     },
 
     onAlertUnreadClick(): void {
-      // Acquire last message identifier? (if any)
-      if (this.messages.length > 0) {
-        let lastMessageId = this.messages[this.messages.length - 1].id || null;
-
-        // Dispatch scroll to last message?
-        if (lastMessageId !== null) {
-          let hasScrolled = this.frame()?.MessagingStore.scroll(lastMessageId);
-
-          // Mark last unread message as visible straight away? (if scrolled)
-          if (hasScrolled === true) {
-            this.isLastUnreadMessageVisible = true;
-          }
-        }
-      }
+      // Scroll to last message
+      this.scrollToLastMessage();
     },
 
     async onModalEditMessageEdit(

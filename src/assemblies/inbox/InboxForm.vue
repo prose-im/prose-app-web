@@ -82,6 +82,7 @@ layout-toolbar(
           @keyup="onKeyUp"
           @focus="onFocus"
           @submit="onSubmit"
+          @resize="onResize"
           :suggestions="fieldSuggestions"
           :disabled="isFormDisabled"
           :rows="1"
@@ -221,6 +222,8 @@ import { default as UtilitiesUpload, UploadOptions } from "@/utilities/upload";
 
 // ENUMERATIONS
 export enum Request {
+  // Preserve Scroll Position request.
+  PreserveScrollPosition = "preserve-scroll-position",
   // Edit Last Message request.
   EditLastMessage = "edit-last-message"
 }
@@ -987,6 +990,11 @@ export default {
         // Fire draft auto-save (to new empty message)
         this.fireDraftAutoSave(true);
       }
+    },
+
+    onResize(): void {
+      // Request to preserve scroll position
+      this.$emit("request", Request.PreserveScrollPosition);
     }
   }
 };

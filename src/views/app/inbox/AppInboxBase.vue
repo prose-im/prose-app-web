@@ -189,10 +189,18 @@ export default {
     },
 
     onMessagesFormRequest(request: FormRequest): void {
+      const messagingComponent = this.$refs.messaging as typeof InboxMessaging;
+
       // Handle request, and propagate to receiver child
       switch (request) {
+        case FormRequest.PreserveScrollPosition: {
+          messagingComponent.preserveScrollFromParent();
+
+          break;
+        }
+
         case FormRequest.EditLastMessage: {
-          (this.$refs.messaging as typeof InboxMessaging).editLastFromParent();
+          messagingComponent.editLastFromParent();
 
           break;
         }
