@@ -232,7 +232,7 @@ export default {
     "focus",
     "change",
     "submit",
-    "resize"
+    "refresh"
   ],
 
   data() {
@@ -372,9 +372,6 @@ export default {
         const fieldElement = (this.$refs.field as HTMLElement) || null;
 
         if (fieldElement !== null) {
-          // Acquire previous field height
-          const fieldHeight = fieldElement.style.height;
-
           // Reset height to default (so that later measured scroll height \
           //   reports its real value)
           fieldElement.style.height = "auto";
@@ -383,9 +380,7 @@ export default {
           fieldElement.style.height = `${fieldElement.scrollHeight}px`;
 
           // Trigger resize event? (height changed)
-          if (fieldHeight && fieldHeight !== fieldElement.style.height) {
-            this.$emit("resize");
-          }
+          this.$emit("refresh");
         }
       }
     },

@@ -82,7 +82,7 @@ layout-toolbar(
           @keyup="onKeyUp"
           @focus="onFocus"
           @submit="onSubmit"
-          @resize="onResize"
+          @refresh="onRefresh"
           :suggestions="fieldSuggestions"
           :disabled="isFormDisabled"
           :rows="1"
@@ -992,7 +992,7 @@ export default {
       }
     },
 
-    onResize(): void {
+    onRefresh(): void {
       // Request to preserve scroll position
       this.$emit("request", Request.PreserveScrollPosition);
     }
