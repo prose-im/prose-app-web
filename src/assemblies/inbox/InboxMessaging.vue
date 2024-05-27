@@ -1487,11 +1487,11 @@ export default {
       this.$log.debug("Got message author identity", event);
 
       // Acquire anchor
-      const anchor = event.origin.parent || event.origin.anchor;
+      const anchor = event.origin?.parent || event.origin?.anchor || null;
 
       // Show or hide message author card
       this.cards.messageAuthor.messageId = event.id;
-      this.cards.messageAuthor.anchor = [anchor.x, anchor.y];
+      this.cards.messageAuthor.anchor = [anchor?.x || 0, anchor?.y || 0];
 
       this.cards.messageAuthor.visible = event.visible;
     },
@@ -1665,12 +1665,12 @@ export default {
       this.$log.debug("Got message reactions authors", event);
 
       // Acquire anchor
-      const anchor = event.origin.parent || event.origin.anchor;
+      const anchor = event.origin?.parent || event.origin?.anchor || null;
 
       // Show or hide message reaction card
       this.cards.messageReaction.messageId = event.id;
       this.cards.messageReaction.reaction = event.reaction;
-      this.cards.messageReaction.anchor = [anchor.x, anchor.y];
+      this.cards.messageReaction.anchor = [anchor?.x || 0, anchor?.y || 0];
 
       this.cards.messageReaction.visible = event.visible;
     },
