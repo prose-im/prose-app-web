@@ -6,15 +6,18 @@
  * IMPORTS
  * ************************************************************************* */
 
-use futures::stream::StreamExt;
+use futures::stream::{SplitSink, SplitStream, StreamExt};
+use futures::SinkExt;
 use jid::FullJid;
 use serde::Serialize;
-use std::sync::RwLock;
+use std::sync::{Arc, RwLock};
 use tauri::plugin::{Builder, TauriPlugin};
 use tauri::{Manager, Runtime, State, Window};
+use tokio::sync::mpsc::{self, UnboundedReceiver, UnboundedSender};
+use tokio::{task, time};
 use tokio_xmpp::connect::ServerConnector;
 use tokio_xmpp::starttls::ServerConfig;
-use tokio_xmpp::{AsyncClient as Client, Error, Event};
+use tokio_xmpp::{AsyncClient as Client, Error, Event, Packet};
 
 /**************************************************************************
  * CONSTANTS
@@ -41,32 +44,21 @@ pub enum EventConnectionState {
  * ************************************************************************* */
 
 #[derive(Default)]
-struct ConnectionState {
-    client: RwLock<Option<Client<ServerConfig>>>,
+pub struct ConnectionState {
+    sender: Arc<RwLock<Option<UnboundedSender<Packet>>>>,
 }
 
 /**************************************************************************
  * HELPERS
  * ************************************************************************* */
 
-// TODO
-// async fn handle_event(client: Client, event: Event) -> Result<(), ()> {
-//     // TODO
-//     println!("got xmpp event = {:?}", event);
-
-//     Ok(())
-// }
-
-async fn poll_events<R: Runtime, C: ServerConnector>(
-    window: Window<R>,
-    mut client: Client<C>,
+async fn poll_input_events<R: Runtime, C: ServerConnector>(
+    window: &Window<R>,
+    mut client_reader: SplitStream<Client<C>>,
 ) -> Result<(), ()> {
-    while let Some(event) = client.next().await {
+    while let Some(event) = client_reader.next().await {
         match event {
             Event::Disconnected(Error::Disconnected) => {
-                // TODO
-                print!("event : disconnected(disconnected).\n");
-
                 window
                     .emit(EVENT_STATE, EventConnectionState::Disconnected)
                     .unwrap();
@@ -75,9 +67,6 @@ async fn poll_events<R: Runtime, C: ServerConnector>(
                 return Ok(());
             }
             Event::Disconnected(Error::Auth(_)) => {
-                // TODO
-                print!("event : disconnected(auth).\n");
-
                 window
                     .emit(EVENT_STATE, EventConnectionState::AuthenticationFailure)
                     .unwrap();
@@ -86,9 +75,6 @@ async fn poll_events<R: Runtime, C: ServerConnector>(
                 return Err(());
             }
             Event::Disconnected(e) => {
-                // TODO
-                println!("event : disconnected(other). --> {:?}\n", e);
-
                 window
                     .emit(EVENT_STATE, EventConnectionState::ConnectionError)
                     .unwrap();
@@ -97,9 +83,6 @@ async fn poll_events<R: Runtime, C: ServerConnector>(
                 return Err(());
             }
             Event::Online { .. } => {
-                // TODO
-                print!("event : online.\n");
-
                 window
                     .emit(EVENT_STATE, EventConnectionState::Connected)
                     .unwrap();
@@ -108,14 +91,27 @@ async fn poll_events<R: Runtime, C: ServerConnector>(
                 continue;
             }
             Event::Stanza(stanza) => {
-                // TODO
-                print!("event : stanza ==> {:?}\n", stanza);
-
-                window.emit(EVENT_RECEIVE, format!("{:?}", stanza)).unwrap();
+                window.emit(EVENT_RECEIVE, String::from(&stanza)).unwrap();
 
                 // Continue
                 continue;
             }
+        }
+    }
+
+    Ok(())
+}
+
+async fn poll_output_events<C: ServerConnector>(
+    mut client_writer: SplitSink<Client<C>, Packet>,
+    mut rx: UnboundedReceiver<Packet>,
+) -> Result<(), ()> {
+    while let Some(packet) = rx.recv().await {
+        if let Err(err) = client_writer.send(packet).await {
+            // TODO: log error
+            println!("failed sending packet: {}", err);
+
+            return Err(());
         }
     }
 
@@ -129,15 +125,24 @@ async fn poll_events<R: Runtime, C: ServerConnector>(
 #[tauri::command]
 pub async fn connect<R: Runtime>(
     window: Window<R>,
-    mut state: State<'_, ConnectionState>,
+    state: State<'_, ConnectionState>,
     jid: &str,
     password: &str,
 ) -> Result<(), ()> {
+    // TODO: raise proper errors (from enum)
+
     // TODO
     print!("connection.connect() requested...\n");
 
     // Assert that no other client is managed by state
-    // TODO
+    let has_existing_sender = { state.sender.read().unwrap().is_some() };
+
+    if has_existing_sender {
+        // TODO
+        print!("connection.connect() already have a sender set, aborting.\n");
+
+        return Err(());
+    }
 
     // Parse JID
     // TODO: do not mute errors?
@@ -149,32 +154,72 @@ pub async fn connect<R: Runtime>(
     // Connections are single-use only
     client.set_reconnect(false);
 
-    // Store client in state
-    // TODO: figure out how to share between state and poll loop
-    // {
-    //     let mut state_client = state.client.write().unwrap();
+    // Split client into RX (for writer) and TX (for reader)
+    let (tx, rx) = mpsc::unbounded_channel();
+    let (writer, reader) = client.split();
 
-    //     *state_client = Some(client);
-    // }
+    // Store TX in state (as sender)
+    {
+        *state.sender.write().unwrap() = Some(tx);
+    }
 
-    // Poll for events
-    poll_events(window, client).await
+    // Spawn all tasks
+    let _read_handle = {
+        task::spawn(async move {
+            // Poll for input events
+            poll_input_events(&window, reader).await
+
+            // TODO: clear tx from state when done here
+        })
+    };
+
+    let _write_handle = task::spawn(async move {
+        // Poll for output events
+        poll_output_events(writer, rx).await
+    });
+
+    // TODO: add timeout handle
+    // TODO: add ping handle
+
+    Ok(())
 }
 
 #[tauri::command]
-pub fn disconnect() {
+pub fn disconnect(state: State<'_, ConnectionState>) -> Result<(), ()> {
+    // TODO: raise proper errors (from enum)
+
     // TODO
     print!("connection.disconnect() requested...\n");
 
-    // TODO: client.send_end()
+    let state_sender = state.sender.read().unwrap();
+
+    if let Some(ref client_writer) = *state_sender {
+        client_writer.send(Packet::StreamEnd).or(Err(()))
+    } else {
+        // TODO: log error here
+
+        Err(())
+    }
 }
 
 #[tauri::command]
-pub fn send() {
+pub fn send(state: State<'_, ConnectionState>, stanza: String) -> Result<(), ()> {
+    // TODO: raise proper errors (from enum)
+
     // TODO
     print!("connection.send() requested...\n");
 
-    // TODO: client.send_stanza()
+    let state_sender = state.sender.read().unwrap();
+
+    if let Some(ref client_writer) = *state_sender {
+        let stanza_root = stanza.parse().or(Err(()))?;
+
+        client_writer.send(Packet::Stanza(stanza_root)).or(Err(()))
+    } else {
+        // TODO: log error here
+
+        Err(())
+    }
 }
 
 /**************************************************************************
