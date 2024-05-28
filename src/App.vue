@@ -135,7 +135,7 @@ export default {
 
     setupListenersRuntime(): void {
       // Register platform-dependant handlers
-      const { focused } = UtilitiesRuntime.registerHandlers({
+      const { focused } = UtilitiesRuntime.registerGlobalHandlers({
         route: this.onRoute,
         open: this.onUrlOpen,
         focus: this.onFocusChange,
@@ -149,7 +149,7 @@ export default {
     },
 
     unsetupListenersRuntime(): void {
-      UtilitiesRuntime.unregisterHandlers();
+      UtilitiesRuntime.unregisterGlobalHandlers();
     },
 
     setupListenerSystemDarkMode(): void {

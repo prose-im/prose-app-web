@@ -30,10 +30,10 @@ import {
   enabled as loggerEnabled,
   level as loggerLevel
 } from "@/utilities/logger";
+import UtilitiesRuntime from "@/utilities/runtime";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
-import BrokerConnection from "@/broker/connection";
 import {
   VERSION_NAME,
   VERSION_REVISION,
@@ -214,7 +214,7 @@ class BrokerClient {
     // Initialize client? (or re-use existing client)
     if (this.client === undefined) {
       this.client = await ProseClient.init(
-        new BrokerConnection(),
+        UtilitiesRuntime.acquireConnectionInstance(),
         this.__delegate,
         new BrokerEncryption(),
         new BrokerLogger(),
