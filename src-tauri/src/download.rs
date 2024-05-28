@@ -45,6 +45,100 @@ struct DownloadProgress {
 }
 
 /**************************************************************************
+ * HELPERS
+ * ************************************************************************* */
+
+fn split_filename(filename: &str) -> (String, String) {
+    // Splits file into pure filename and extension while conserving double \
+    //   file extensions (.tar.gz, .tar.bz2, .tar.xz)
+    const DOUBLE_FILE_EXTENSION: [&str; 3] = [".tar.gz", ".tar.bz2", ".tar.xz"];
+
+    for extension in DOUBLE_FILE_EXTENSION.iter() {
+        if filename.ends_with(extension) {
+            let pure_filename = filename.strip_suffix(extension).unwrap_or(filename);
+
+            return (pure_filename.to_string(), extension.to_string());
+        }
+    }
+
+    let extension = if filename.contains('.') {
+        filename
+            .split('.')
+            .last()
+            .map(|ext| format!(".{}", ext))
+            .unwrap_or("".to_string())
+    } else {
+        "".to_string()
+    };
+
+    let pure_filename = filename.strip_suffix(&extension).unwrap_or(filename);
+
+    (pure_filename.to_string(), extension)
+}
+
+fn remove_path_traversal(filename: &str) -> String {
+    // TODO: path traversal not secure yet
+    // TODO: can't use fs::canonicalize because it doesn't work with \
+    //   non-existing files; many path traversal crates are based on \
+    //   fs::canonicalize, therefore they also can't be used.
+    // 1. Remove control characters
+    // 2. Remove all path separators
+    // 3. Remove path traversal
+    filename
+        .replace(|c| c < ' ', "")
+        .replace(['/', '\\', ':', '~', '@', '?', '[', ']'], "")
+        .replace("..", "")
+}
+
+#[cfg(target_os = "macos")]
+fn mac_set_quarantine(file: &File, application: &str) -> Result<(), std::io::Error> {
+    // This method sets the quarantine flag so that the user cannot just open \
+    //   downloaded file if it is an application
+    // @ref: https://apple.stackexchange.com/questions/256625/\
+    //   how-to-set-restore-the-com-apple-quarantine-attribute
+    use std::ffi::{c_void, CString};
+    use std::os::fd::AsRawFd;
+    use std::time::SystemTime;
+    use uuid::Uuid;
+
+    // Acquire current timestamp
+    let now_timestamp = SystemTime::now()
+        .duration_since(SystemTime::UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+
+    let value = format!(
+        "0081;{:x};{};{}",
+        now_timestamp,
+        application,
+        Uuid::new_v4()
+    );
+
+    let name = CString::new("com.apple.quarantine").unwrap();
+    let value = value.as_bytes();
+    let len = value.len();
+    let value = value.as_ptr() as *const c_void;
+
+    // Set quarantine flag on file
+    let return_value = unsafe {
+        libc::fsetxattr(
+            file.as_raw_fd(),
+            name.as_ptr(),
+            value,
+            len,
+            0,
+            libc::XATTR_CREATE,
+        )
+    };
+
+    if return_value != 0 {
+        return Err(std::io::Error::last_os_error());
+    }
+
+    Ok(())
+}
+
+/**************************************************************************
  * COMMANDS
  * ************************************************************************* */
 
@@ -158,100 +252,6 @@ pub async fn download_file<R: Runtime>(
     }
 
     Ok(download_path.to_string_lossy().to_string())
-}
-
-/**************************************************************************
- * HELPERS
- * ************************************************************************* */
-
-fn split_filename(filename: &str) -> (String, String) {
-    // Splits file into pure filename and extension while conserving double \
-    //   file extensions (.tar.gz, .tar.bz2, .tar.xz)
-    const DOUBLE_FILE_EXTENSION: [&str; 3] = [".tar.gz", ".tar.bz2", ".tar.xz"];
-
-    for extension in DOUBLE_FILE_EXTENSION.iter() {
-        if filename.ends_with(extension) {
-            let pure_filename = filename.strip_suffix(extension).unwrap_or(filename);
-
-            return (pure_filename.to_string(), extension.to_string());
-        }
-    }
-
-    let extension = if filename.contains('.') {
-        filename
-            .split('.')
-            .last()
-            .map(|ext| format!(".{}", ext))
-            .unwrap_or("".to_string())
-    } else {
-        "".to_string()
-    };
-
-    let pure_filename = filename.strip_suffix(&extension).unwrap_or(filename);
-
-    (pure_filename.to_string(), extension)
-}
-
-fn remove_path_traversal(filename: &str) -> String {
-    // TODO: path traversal not secure yet
-    // TODO: can't use fs::canonicalize because it doesn't work with \
-    //   non-existing files; many path traversal crates are based on \
-    //   fs::canonicalize, therefore they also can't be used.
-    // 1. Remove control characters
-    // 2. Remove all path separators
-    // 3. Remove path traversal
-    filename
-        .replace(|c| c < ' ', "")
-        .replace(['/', '\\', ':', '~', '@', '?', '[', ']'], "")
-        .replace("..", "")
-}
-
-#[cfg(target_os = "macos")]
-fn mac_set_quarantine(file: &File, application: &str) -> Result<(), std::io::Error> {
-    // This method sets the quarantine flag so that the user cannot just open \
-    //   downloaded file if it is an application
-    // @ref: https://apple.stackexchange.com/questions/256625/\
-    //   how-to-set-restore-the-com-apple-quarantine-attribute
-    use std::ffi::{c_void, CString};
-    use std::os::fd::AsRawFd;
-    use std::time::SystemTime;
-    use uuid::Uuid;
-
-    // Acquire current timestamp
-    let now_timestamp = SystemTime::now()
-        .duration_since(SystemTime::UNIX_EPOCH)
-        .unwrap()
-        .as_secs();
-
-    let value = format!(
-        "0081;{:x};{};{}",
-        now_timestamp,
-        application,
-        Uuid::new_v4()
-    );
-
-    let name = CString::new("com.apple.quarantine").unwrap();
-    let value = value.as_bytes();
-    let len = value.len();
-    let value = value.as_ptr() as *const c_void;
-
-    // Set quarantine flag on file
-    let return_value = unsafe {
-        libc::fsetxattr(
-            file.as_raw_fd(),
-            name.as_ptr(),
-            value,
-            len,
-            0,
-            libc::XATTR_CREATE,
-        )
-    };
-
-    if return_value != 0 {
-        return Err(std::io::Error::last_os_error());
-    }
-
-    Ok(())
 }
 
 /**************************************************************************

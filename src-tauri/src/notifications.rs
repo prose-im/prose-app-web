@@ -27,6 +27,34 @@ struct NotificationInteraction {
 }
 
 /**************************************************************************
+ * COMMANDS
+ * ************************************************************************* */
+
+#[tauri::command]
+fn send_notification<R: Runtime>(
+    _app: AppHandle<R>,
+    _state: State<'_, NotificationsState>,
+    title: String,
+    body: String,
+) -> String {
+    Notification::new()
+        .title(title.as_str())
+        .subtitle(body.as_str())
+        .send()
+        .unwrap()
+}
+
+#[tauri::command]
+fn set_badge_count(count: u32) {
+    use notifications::misc::set_badge;
+    if count > 0 {
+        set_badge(Some(&count.to_string()));
+    } else {
+        set_badge(None);
+    }
+}
+
+/**************************************************************************
  * PROVIDERS
  * ************************************************************************* */
 
@@ -75,32 +103,4 @@ pub fn provide<R: Runtime>() -> TauriPlugin<R> {
             Ok(())
         })
         .build()
-}
-
-/**************************************************************************
- * COMMANDS
- * ************************************************************************* */
-
-#[tauri::command]
-fn send_notification<R: Runtime>(
-    _app: AppHandle<R>,
-    _state: State<'_, NotificationsState>,
-    title: String,
-    body: String,
-) -> String {
-    Notification::new()
-        .title(title.as_str())
-        .subtitle(body.as_str())
-        .send()
-        .unwrap()
-}
-
-#[tauri::command]
-fn set_badge_count(count: u32) {
-    use notifications::misc::set_badge;
-    if count > 0 {
-        set_badge(Some(&count.to_string()));
-    } else {
-        set_badge(None);
-    }
 }
