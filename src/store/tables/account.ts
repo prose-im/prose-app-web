@@ -131,7 +131,9 @@ const $account = defineStore("account", {
       }
 
       // Connect and authenticate to server
-      await Broker.client.authenticate(jid, password);
+      // Important: disable reconnect retries on failure by marking as \
+      //   'attempt once only' here.
+      await Broker.client.authenticate(jid, password, true);
 
       // Store credentials? (if success)
       if (remember === true) {

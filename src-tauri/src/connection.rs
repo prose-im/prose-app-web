@@ -108,23 +108,18 @@ struct EventConnectionReceive<'a> {
  * HELPERS
  * ************************************************************************* */
 
-fn emit_connection_abort<R: Runtime>(
-    window: &Window<R>,
-    id: &str,
-    state: ConnectionState,
-    connected: bool,
-) {
+fn emit_connection_abort<R: Runtime>(window: &Window<R>, id: &str, state: ConnectionState) {
     // Emit connection abort state
     window
         .emit(EVENT_STATE, EventConnectionState { id, state })
         .unwrap();
 
-    // Were we connected? Then also emit a disconnected event
+    // Also emit a disconnected event
     // Notice: this informs the client that the connection is effectively \
     //   disconnected, whether we encountered an error or not. Do not \
     //   re-emit the disconnected state twice if current state already \
     //   was 'disconnected'.
-    if connected && state != ConnectionState::Disconnected {
+    if state != ConnectionState::Disconnected {
         window
             .emit(
                 EVENT_STATE,
@@ -142,12 +137,10 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
     id: &str,
     mut client_reader: SplitStream<Client<C>>,
 ) -> Result<(), PollInputError> {
-    let mut connected = false;
-
     while let Some(event) = client_reader.next().await {
         match event {
             Event::Disconnected(Error::Disconnected) => {
-                emit_connection_abort(window, id, ConnectionState::Disconnected, connected);
+                emit_connection_abort(window, id, ConnectionState::Disconnected);
 
                 // Abort here (success)
                 return Ok(());
@@ -158,12 +151,7 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
                     id, err
                 );
 
-                emit_connection_abort(
-                    window,
-                    id,
-                    ConnectionState::AuthenticationFailure,
-                    connected,
-                );
+                emit_connection_abort(window, id, ConnectionState::AuthenticationFailure);
 
                 // Abort here (error)
                 return Err(PollInputError::AuthenticationError);
@@ -175,7 +163,7 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
                 );
 
                 // Notice: consider as timeout here.
-                emit_connection_abort(window, id, ConnectionState::ConnectionTimeout, connected);
+                emit_connection_abort(window, id, ConnectionState::ConnectionTimeout);
 
                 // Abort here (error)
                 return Err(PollInputError::ConnectionError);
@@ -183,14 +171,12 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
             Event::Disconnected(err) => {
                 warn!("Received disconnected event: #{}, with error: {}", id, err);
 
-                emit_connection_abort(window, id, ConnectionState::ConnectionError, connected);
+                emit_connection_abort(window, id, ConnectionState::ConnectionError);
 
                 // Abort here (error)
                 return Err(PollInputError::OtherError);
             }
             Event::Online { .. } => {
-                connected = true;
-
                 window
                     .emit(
                         EVENT_STATE,

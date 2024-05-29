@@ -76,7 +76,11 @@ class BrokerClient {
     this.__bindDelegateEvents(this.__delegate);
   }
 
-  async authenticate(jid: JID, password: string): Promise<void> {
+  async authenticate(
+    jid: JID,
+    password: string,
+    attemptOnceOnly = false
+  ): Promise<void> {
     // Incomplete parameters?
     if (!password) {
       throw new Error("Please provide a password");
@@ -90,16 +94,30 @@ class BrokerClient {
       throw new Error("Another connection already exists");
     }
 
-    // Store credentials
-    this.__credentials = {
-      jid,
-      password
+    // Make credentials store handler
+    const doStoreCredentials = () => {
+      // Store credentials
+      this.__credentials = {
+        jid,
+        password
+      };
+
+      // Store authentication JID
+      this.authenticationJID = this.__credentials?.jid;
     };
 
-    // Store authentication JID
-    this.authenticationJID = this.__credentials?.jid;
+    // Store credentials BEFORE attempting to connect? (this allows retries)
+    if (attemptOnceOnly !== true) {
+      doStoreCredentials();
+    }
 
+    // Attempt connecting (this might fail, eg. wrong credentials)
     await this.__connect(jid, password);
+
+    // Store credentials AFTER connection attempt succeeded
+    if (attemptOnceOnly === true) {
+      doStoreCredentials();
+    }
   }
 
   reconnect(afterBaseDelay = 0): void {
