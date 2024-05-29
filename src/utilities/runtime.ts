@@ -23,6 +23,7 @@ import {
   warn as tauriLogWarn
 } from "tauri-plugin-log-api";
 import FileDownloader from "js-file-downloader";
+import { ProseConnectionProvider } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
@@ -30,6 +31,10 @@ import CONFIG from "@/commons/config";
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 import UtilitiesTitle from "@/utilities/title";
+
+// PROJECT: BROKER
+import BrokerConnectionRelayed from "@/broker/connection/relayed";
+import BrokerConnectionNative from "@/broker/connection/native";
 
 /**************************************************************************
  * ENUMERATIONS
@@ -59,6 +64,19 @@ enum RuntimeNotificationInteractionAction {
   None = "none"
 }
 
+enum RuntimeConnectionState {
+  // Connected state.
+  Connected = "connected",
+  // Disconnected state.
+  Disconnected = "disconnected",
+  // Authentication failure state.
+  AuthenticationFailure = "authentication-failure",
+  // Connection timeout state.
+  ConnectionTimeout = "connection-timeout",
+  // Connection error state.
+  ConnectionError = "connection-error"
+}
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
@@ -73,6 +91,9 @@ type RuntimeRouteHandler = (
   name: string,
   params?: { [name: string]: string }
 ) => Promise<void>;
+
+type RuntimeConnectionStateHandler = (state: RuntimeConnectionState) => void;
+type RuntimeConnectionReceiveHandler = (stanza: string) => void;
 
 /**************************************************************************
  * INTERFACES
@@ -139,12 +160,19 @@ class UtilitiesRuntime {
   };
 
   private __handlers = {
-    focus: null as RuntimeFocusHandler | null,
-    route: null as RuntimeRouteHandler | null,
-    open: null as RuntimeOpenHandler | null,
-    menu: null as RuntimeMenuHandler | null,
-    download: new Map() as Map<number, RuntimeProgressHandler>,
-    notification: new Map() as Map<string, RuntimeNotificationHandlers>
+    global: {
+      focus: null as RuntimeFocusHandler | null,
+      route: null as RuntimeRouteHandler | null,
+      open: null as RuntimeOpenHandler | null,
+      menu: null as RuntimeMenuHandler | null,
+      download: new Map() as Map<number, RuntimeProgressHandler>,
+      notification: new Map() as Map<string, RuntimeNotificationHandlers>
+    },
+
+    connection: {
+      state: null as RuntimeConnectionStateHandler | null,
+      receive: null as RuntimeConnectionReceiveHandler | null
+    }
   };
 
   constructor() {
@@ -155,7 +183,7 @@ class UtilitiesRuntime {
     this.__bindListeners();
   }
 
-  registerHandlers({
+  registerGlobalHandlers({
     route,
     open,
     focus,
@@ -166,11 +194,11 @@ class UtilitiesRuntime {
     focus: RuntimeFocusHandler;
     menu: RuntimeMenuHandler;
   }): { focused: boolean } {
-    // Register platform-agnostic handlers
-    this.__handlers.route = route;
-    this.__handlers.open = open;
-    this.__handlers.focus = focus;
-    this.__handlers.menu = menu;
+    // Register platform-agnostic global handlers
+    this.__handlers.global.route = route;
+    this.__handlers.global.open = open;
+    this.__handlers.global.focus = focus;
+    this.__handlers.global.menu = menu;
 
     // Return current values (can be used to synchronize external states)
     return {
@@ -178,12 +206,30 @@ class UtilitiesRuntime {
     };
   }
 
-  unregisterHandlers(): void {
-    // Unregister platform-agnostic handlers
-    this.__handlers.route = null;
-    this.__handlers.open = null;
-    this.__handlers.focus = null;
-    this.__handlers.menu = null;
+  unregisterGlobalHandlers(): void {
+    // Unregister platform-agnostic global handlers
+    this.__handlers.global.route = null;
+    this.__handlers.global.open = null;
+    this.__handlers.global.focus = null;
+    this.__handlers.global.menu = null;
+  }
+
+  registerConnectionHandlers({
+    state,
+    receive
+  }: {
+    state: RuntimeConnectionStateHandler;
+    receive: RuntimeConnectionReceiveHandler;
+  }): void {
+    // Register platform-agnostic connection handlers
+    this.__handlers.connection.state = state;
+    this.__handlers.connection.receive = receive;
+  }
+
+  unregisterConnectionHandlers(): void {
+    // Unregister platform-agnostic connection handlers
+    this.__handlers.connection.state = null;
+    this.__handlers.connection.receive = null;
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
@@ -209,7 +255,7 @@ class UtilitiesRuntime {
       const id = Date.now();
 
       if (progressHandler !== undefined) {
-        this.__handlers.download.set(id, progressHandler);
+        this.__handlers.global.download.set(id, progressHandler);
       }
 
       await tauriInvoke("plugin:downloader|download_file", {
@@ -218,7 +264,7 @@ class UtilitiesRuntime {
         filename
       });
 
-      this.__handlers.download.delete(id);
+      this.__handlers.global.download.delete(id);
     } else {
       // Request to download file via browser APIs (Web build)
       await new FileDownloader({
@@ -253,8 +299,8 @@ class UtilitiesRuntime {
       if (hasPermission === true) {
         // Build local click handler
         const clickHandler = async () => {
-          if (route !== undefined && this.__handlers.route !== null) {
-            await this.__handlers.route(route.name, route.params);
+          if (route !== undefined && this.__handlers.global.route !== null) {
+            await this.__handlers.global.route(route.name, route.params);
           }
         };
 
@@ -271,7 +317,7 @@ class UtilitiesRuntime {
           );
 
           // Store notification handlers (for later use)
-          this.__handlers.notification.set(notificationId, {
+          this.__handlers.global.notification.set(notificationId, {
             click: clickHandler
           });
         } else {
@@ -451,6 +497,61 @@ class UtilitiesRuntime {
     }
   }
 
+  async requestConnectionConnect(
+    jidString: string,
+    password: string
+  ): Promise<void> {
+    if (this.__isApplication === true) {
+      // Request to connect via Tauri API (application build)
+      await tauriInvoke("plugin:connection|connect", {
+        jid: jidString,
+        password
+      });
+    } else {
+      // This method should NEVER be used on other platforms
+      throw new Error(
+        "Attempted to request connection connect on unsupported platform"
+      );
+    }
+  }
+
+  async requestConnectionDisconnect(): Promise<void> {
+    if (this.__isApplication === true) {
+      // Request to disconnect via Tauri API (application build)
+      await tauriInvoke("plugin:connection|disconnect");
+    } else {
+      // This method should NEVER be used on other platforms
+      throw new Error(
+        "Attempted to request connection disconnect on unsupported platform"
+      );
+    }
+  }
+
+  async requestConnectionSend(stanza: string): Promise<void> {
+    if (this.__isApplication === true) {
+      // Request to send via Tauri API (application build)
+      await tauriInvoke("plugin:connection|send", {
+        stanza
+      });
+    } else {
+      // This method should NEVER be used on other platforms
+      throw new Error(
+        "Attempted to request connection send on unsupported platform"
+      );
+    }
+  }
+
+  acquireConnectionInstance(): ProseConnectionProvider {
+    if (this.__isApplication === true) {
+      // Acquire a native connection via Tauri backend (application build)
+      return new BrokerConnectionNative();
+    }
+
+    // Acquire a relayed connection via Web frontend (Web build)
+    // Notice: could be either WebSocket or more rarely, BOSH.
+    return new BrokerConnectionRelayed();
+  }
+
   private __bindListeners(): void {
     if (this.__isApplication === true) {
       // Register listeners via Tauri API (application build)
@@ -460,7 +561,9 @@ class UtilitiesRuntime {
         "download:progress",
 
         ({ payload }) => {
-          const progressHandler = this.__handlers.download.get(payload.id);
+          const progressHandler = this.__handlers.global.download.get(
+            payload.id
+          );
 
           if (progressHandler !== undefined) {
             progressHandler(payload.progress, payload.total);
@@ -480,8 +583,8 @@ class UtilitiesRuntime {
             }
 
             // Trigger open handler? (if any)
-            if (this.__handlers.open !== null) {
-              this.__handlers.open(urlParts[0], urlParts[1]);
+            if (this.__handlers.global.open !== null) {
+              this.__handlers.global.open(urlParts[0], urlParts[1]);
             }
           } catch (error) {
             logger.error(`Not opening URL as it is invalid: ${payload}`, error);
@@ -491,8 +594,8 @@ class UtilitiesRuntime {
 
       tauriAppWindow.listen<string>("menu:select", async ({ payload }) => {
         // Trigger menu handler? (if any)
-        if (this.__handlers.menu !== null) {
-          await this.__handlers.menu(payload);
+        if (this.__handlers.global.menu !== null) {
+          await this.__handlers.global.menu(payload);
         }
       });
 
@@ -504,7 +607,7 @@ class UtilitiesRuntime {
         "notification:interaction",
 
         ({ payload }) => {
-          const handlers = this.__handlers.notification.get(payload.id);
+          const handlers = this.__handlers.global.notification.get(payload.id);
 
           if (handlers !== undefined) {
             switch (payload.action) {
@@ -517,7 +620,7 @@ class UtilitiesRuntime {
 
               case RuntimeNotificationInteractionAction.Close: {
                 // Delete registered handlers
-                this.__handlers.notification.delete(payload.id);
+                this.__handlers.global.notification.delete(payload.id);
 
                 break;
               }
@@ -526,6 +629,28 @@ class UtilitiesRuntime {
                 // Do nothing (ignore)
               }
             }
+          }
+        }
+      );
+
+      tauriAppWindow.listen<RuntimeConnectionState>(
+        "connection:state",
+
+        ({ payload }) => {
+          // Trigger connection state handler? (if any)
+          if (this.__handlers.connection.state !== null) {
+            this.__handlers.connection.state(payload);
+          }
+        }
+      );
+
+      tauriAppWindow.listen<string>(
+        "connection:receive",
+
+        ({ payload }) => {
+          // Trigger connection receive handler? (if any)
+          if (this.__handlers.connection.receive !== null) {
+            this.__handlers.connection.receive(payload);
           }
         }
       );
@@ -546,8 +671,8 @@ class UtilitiesRuntime {
     this.__states.focused = focused;
 
     // Trigger focus handler? (if any)
-    if (this.__handlers.focus !== null) {
-      this.__handlers.focus(focused);
+    if (this.__handlers.global.focus !== null) {
+      this.__handlers.global.focus(focused);
     }
   }
 }
@@ -556,5 +681,11 @@ class UtilitiesRuntime {
  * EXPORTS
  * ************************************************************************* */
 
-export { RuntimeLogLevel, platform, context, translucent };
+export {
+  RuntimeLogLevel,
+  RuntimeConnectionState,
+  platform,
+  context,
+  translucent
+};
 export default new UtilitiesRuntime();

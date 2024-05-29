@@ -9,7 +9,16 @@ edition = "2021"
 tauri-build = { version = "1", features = [] }
 
 [dependencies]
-tauri = { version = "1.6.1", features = ["window-center", "window-set-size", "window-set-resizable", "macos-private-api", "updater", "window-set-fullscreen", "window-start-dragging", "shell-open"] }
+tauri = { version = "1.6.1", features = [
+    "window-center",
+    "window-set-size",
+    "window-set-resizable",
+    "macos-private-api",
+    "updater",
+    "window-set-fullscreen",
+    "window-start-dragging",
+    "shell-open",
+] }
 tauri-plugin-deep-link = "0.1.2"
 tauri-plugin-log = { git = "https://github.com/tauri-apps/plugins-workspace", branch = "v1" }
 serde = { version = "1.0.197", features = ["derive"] }
@@ -29,6 +38,9 @@ uuid = { version = "1.8.0", features = ["v4"] }
 libc = "0.2.153"
 notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = "c7788fc" }
 send_wrapper = "0.6.0"
+futures = "0.3"
+tokio-xmpp = { git = "https://gitlab.com/nesium/xmpp-rs", rev = "743ac1d" }
+jid = { git = "https://gitlab.com/nesium/xmpp-rs", rev = "743ac1d", default-features = false }
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

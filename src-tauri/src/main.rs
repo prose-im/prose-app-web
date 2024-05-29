@@ -9,6 +9,7 @@
  * MODULES
  * ************************************************************************* */
 
+mod connection;
 mod download;
 mod logger;
 mod menu;
@@ -74,6 +75,7 @@ fn main() {
             WindowEvent::Focused(focused) => event.window().emit("window:focus", focused).unwrap(),
             _ => {}
         })
+        .plugin(connection::provide())
         .plugin(download::provide())
         .plugin(notifications::provide())
         .plugin(logger::provide())

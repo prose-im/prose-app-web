@@ -14,13 +14,15 @@ import {
   ProseClientConfig,
   ProseConnection,
   ProseConnectionErrorType,
-  ProseConnectionEventHandler,
   ProseConnectionProvider
 } from "@prose-im/prose-sdk-js";
 import { Strophe } from "strophe.js";
 
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
+
+// PROJECT: BROKER
+import BrokerConnection from "@/broker/connection/index";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -29,7 +31,7 @@ import logger from "@/utilities/logger";
  * INTERFACES
  * ************************************************************************* */
 
-interface ConnectionRelayHost {
+interface RelayHost {
   url: string;
   protocol?: string;
 }
@@ -54,18 +56,14 @@ const RELAY_HOST_METADATA_PARSE = [
  * CLASS
  * ************************************************************************* */
 
-class BrokerConnectionStrophe implements ProseConnection {
-  private readonly __config: ProseClientConfig;
-
+class BrokerConnectionRelayedStrophe
+  extends BrokerConnection
+  implements ProseConnection
+{
   private __connection?: Strophe.Connection;
-  private __eventHandler?: ProseConnectionEventHandler;
+  private __relayHost?: RelayHost;
 
   private __connectIntent = false;
-
-  constructor(config: ProseClientConfig) {
-    // Assign configuration
-    this.__config = config;
-  }
 
   async connect(jidString: string, password: string): Promise<void> {
     // Acquire bare JID
@@ -119,7 +117,7 @@ class BrokerConnectionStrophe implements ProseConnection {
               this.__connectIntent = false;
 
               // Pass disconnected event to caller client
-              this.__eventHandler?.handleDisconnect();
+              this._eventHandler?.handleDisconnect();
             } else {
               logger.warn("Received disconnected (but was not connected)");
             }
@@ -230,8 +228,8 @@ class BrokerConnectionStrophe implements ProseConnection {
     this.__connection.send(element);
   }
 
-  setEventHandler(handler: ProseConnectionEventHandler): void {
-    this.__eventHandler = handler;
+  protected _protocol(fallback = "bosh"): string {
+    return `XMPP/${this.__relayHost?.protocol?.toUpperCase() || fallback}`;
   }
 
   private async __createConnection(
@@ -253,12 +251,13 @@ class BrokerConnectionStrophe implements ProseConnection {
     connection.maxRetries = 0;
 
     // Bind handlers
-    connection.rawInput = this.__onInput.bind(this);
-    connection.rawOutput = this.__onOutput.bind(this);
+    connection.rawInput = this._onInput.bind(this);
+    connection.rawOutput = this._onOutput.bind(this);
 
     this.__bindDummyHandler(connection);
 
-    // Assign connection
+    // Assign connection and its relay host
+    this.__relayHost = relayHost;
     this.__connection = connection;
 
     return connection;
@@ -273,15 +272,18 @@ class BrokerConnectionStrophe implements ProseConnection {
       delete this.__connection;
     }
 
+    if (this.__relayHost !== undefined) {
+      // Un-assign relay host
+      delete this.__relayHost;
+    }
+
     // Clear registered event handler (if any)
-    if (this.__eventHandler !== undefined) {
-      delete this.__eventHandler;
+    if (this._eventHandler !== undefined) {
+      delete this._eventHandler;
     }
   }
 
-  private async __acquireRelayHost(
-    domain: string
-  ): Promise<ConnectionRelayHost> {
+  private async __acquireRelayHost(domain: string): Promise<RelayHost> {
     // XEP-0156: Discovering Alternative XMPP Connection Methods
     // https://xmpp.org/extensions/xep-0156.html
 
@@ -346,25 +348,6 @@ class BrokerConnectionStrophe implements ProseConnection {
     };
   }
 
-  private __onInput(data: string): void {
-    // Trace raw input?
-    if (this.__config.logReceivedStanzas === true) {
-      logger.debug("🔵 XMPP IN", data);
-    }
-
-    // Pass to event handler?
-    if (this.__eventHandler !== undefined) {
-      this.__eventHandler.handleStanza(data);
-    }
-  }
-
-  private __onOutput(data: string): void {
-    // Trace raw output?
-    if (this.__config.logSentStanzas === true) {
-      logger.debug("🔴 XMPP OUT", data);
-    }
-  }
-
   private __bindDummyHandler(connection: Strophe.Connection): void {
     // Bind dummy handler function on '*' stanza types
     // Notice: this is required so that Strophe.js thinks that all received \
@@ -379,9 +362,9 @@ class BrokerConnectionStrophe implements ProseConnection {
   }
 }
 
-class BrokerConnection implements ProseConnectionProvider {
+class BrokerConnectionRelayed implements ProseConnectionProvider {
   provideConnection(config: ProseClientConfig): ProseConnection {
-    return new BrokerConnectionStrophe(config);
+    return new BrokerConnectionRelayedStrophe(config);
   }
 }
 
@@ -389,4 +372,4 @@ class BrokerConnection implements ProseConnectionProvider {
  * EXPORTS
  * ************************************************************************* */
 
-export default BrokerConnection;
+export default BrokerConnectionRelayed;
