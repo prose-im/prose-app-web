@@ -108,6 +108,14 @@ class BrokerConnectionNativeTauri
             break;
           }
 
+          case RuntimeConnectionState.ConnectionTimeout: {
+            logger.error("Connection timeout");
+
+            handlers.fail(ProseConnectionErrorType.TimedOut);
+
+            break;
+          }
+
           case RuntimeConnectionState.ConnectionError: {
             logger.error("Connection error");
 

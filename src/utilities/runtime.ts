@@ -71,6 +71,8 @@ enum RuntimeConnectionState {
   Disconnected = "disconnected",
   // Authentication failure state.
   AuthenticationFailure = "authentication-failure",
+  // Connection timeout state.
+  ConnectionTimeout = "connection-timeout",
   // Connection error state.
   ConnectionError = "connection-error"
 }
