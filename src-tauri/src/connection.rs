@@ -49,8 +49,6 @@ pub enum ConnectionState {
 
 #[derive(Serialize, Debug, Error)]
 pub enum ConnectError {
-    #[error("Failure to close other sender running")]
-    CannotCloseOtherSender,
     #[error("Invalid JID, cannot connect")]
     InvalidJid,
 }
@@ -61,8 +59,6 @@ pub enum SendError {
     CannotWrite,
     #[error("Failure to parse stanza to send")]
     CannotParse,
-    #[error("Connection sender is closed")]
-    SenderClosed,
     #[error("Connection has no sender set")]
     SenderDoesNotExist,
 }
@@ -248,17 +244,6 @@ pub async fn connect<R: Runtime>(
     // Parse JID
     let jid = FullJid::new(jid).or(Err(ConnectError::InvalidJid))?;
 
-    // Another sender running? (this should never happen)
-    if let Some(ref sender) = *state.sender.read().unwrap() {
-        if !sender.is_closed() {
-            warn!("Connection already has an unclosed sender running, forcibly ending it!");
-
-            sender
-                .send(Packet::StreamEnd)
-                .or(Err(ConnectError::CannotCloseOtherSender))?;
-        }
-    }
-
     // Create new client
     let mut client = Client::new(jid, password);
 
@@ -352,15 +337,11 @@ pub fn send(
     debug!("Connection #{} send requested (will send XMPP stanza)", id);
 
     if let Some(ref sender) = *state.sender.read().unwrap() {
-        if sender.is_closed() {
-            Err(SendError::SenderClosed)
-        } else {
-            let stanza_root = stanza.parse().or(Err(SendError::CannotParse))?;
+        let stanza_root = stanza.parse().or(Err(SendError::CannotParse))?;
 
-            sender
-                .send(Packet::Stanza(stanza_root))
-                .or(Err(SendError::CannotWrite))
-        }
+        sender
+            .send(Packet::Stanza(stanza_root))
+            .or(Err(SendError::CannotWrite))
     } else {
         Err(SendError::SenderDoesNotExist)
     }
