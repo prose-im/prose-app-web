@@ -61,6 +61,8 @@ pub enum SendError {
     CannotWrite,
     #[error("Failure to parse stanza to send")]
     CannotParse,
+    #[error("Connection sender is closed")]
+    SenderClosed,
     #[error("Connection has no sender set")]
     SenderDoesNotExist,
 }
@@ -240,9 +242,6 @@ pub async fn connect<R: Runtime>(
     // Make sender
     let sender = Arc::new(tx);
 
-    // Store new sender in state
-    *state.sender.write().unwrap() = Some(sender.clone());
-
     // Spawn all tasks
     let write_handle = {
         task::spawn(async move {
@@ -268,6 +267,9 @@ pub async fn connect<R: Runtime>(
             write_handle.abort();
         })
     };
+
+    // Store new sender in state
+    *state.sender.write().unwrap() = Some(sender.clone());
 
     debug!("Connection connect request complete");
 
@@ -301,11 +303,15 @@ pub fn disconnect(state: State<'_, ConnectionState>) -> Result<(), DisconnectErr
 #[tauri::command]
 pub fn send(state: State<'_, ConnectionState>, stanza: String) -> Result<(), SendError> {
     if let Some(ref sender) = *state.sender.read().unwrap() {
-        let stanza_root = stanza.parse().or(Err(SendError::CannotParse))?;
+        if sender.is_closed() {
+            Err(SendError::SenderClosed)
+        } else {
+            let stanza_root = stanza.parse().or(Err(SendError::CannotParse))?;
 
-        sender
-            .send(Packet::Stanza(stanza_root))
-            .or(Err(SendError::CannotWrite))
+            sender
+                .send(Packet::Stanza(stanza_root))
+                .or(Err(SendError::CannotWrite))
+        }
     } else {
         Err(SendError::SenderDoesNotExist)
     }
