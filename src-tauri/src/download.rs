@@ -38,7 +38,7 @@ pub enum DownloadError {
  * ************************************************************************* */
 
 #[derive(Debug, Clone, serde::Serialize)]
-struct DownloadProgress {
+struct EventDownloadProgress {
     id: u64,
     progress: usize,
     total: usize,
@@ -230,7 +230,7 @@ pub async fn download_file<R: Runtime>(
             window
                 .emit(
                     "download:progress",
-                    DownloadProgress {
+                    EventDownloadProgress {
                         id,
                         progress: downloaded_bytes,
                         total: total_bytes,

@@ -21,7 +21,7 @@ pub(crate) struct NotificationsState {
 }
 
 #[derive(Debug, Clone, Serialize)]
-struct NotificationInteraction {
+struct EventNotificationInteraction {
     id: String,
     action: String,
 }
@@ -86,7 +86,7 @@ pub fn provide<R: Runtime>() -> TauriPlugin<R> {
 
                 app.emit_all(
                     "notification:interaction",
-                    NotificationInteraction {
+                    EventNotificationInteraction {
                         id,
                         action: action.to_string(),
                     },
