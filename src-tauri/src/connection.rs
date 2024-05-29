@@ -269,9 +269,6 @@ pub async fn connect<R: Runtime>(
         })
     };
 
-    // TODO: add timeout handle
-    // TODO: add ping handle
-
     debug!("Connection connect request complete");
 
     Ok(())
