@@ -13,9 +13,11 @@ import {
   ProseClientConfig,
   ProseConnection,
   ProseConnectionErrorType,
-  ProseConnectionEventHandler,
   ProseConnectionProvider
 } from "@prose-im/prose-sdk-js";
+
+// PROJECT: BROKER
+import BrokerConnection from "@/broker/connection/index";
 
 // PROJECT: UTILITIES
 import {
@@ -28,16 +30,11 @@ import logger from "@/utilities/logger";
  * CLASS
  * ************************************************************************* */
 
-class BrokerConnectionNativeTauri implements ProseConnection {
-  private readonly __config: ProseClientConfig;
-
+class BrokerConnectionNativeTauri
+  extends BrokerConnection
+  implements ProseConnection
+{
   private __initiated?: boolean;
-  private __eventHandler?: ProseConnectionEventHandler;
-
-  constructor(config: ProseClientConfig) {
-    // Assign configuration
-    this.__config = config;
-  }
 
   async connect(jidString: string, password: string): Promise<void> {
     // Wait for connection status to change
@@ -68,11 +65,11 @@ class BrokerConnectionNativeTauri implements ProseConnection {
     await UtilitiesRuntime.requestConnectionSend(stanza);
 
     // Trigger output event handler
-    this.__onOutput(stanza);
+    this._onOutput(stanza);
   }
 
-  setEventHandler(handler: ProseConnectionEventHandler): void {
-    this.__eventHandler = handler;
+  protected _protocol(): string {
+    return "XMPP/TCP";
   }
 
   private __initiateConnection(handlers: {
@@ -95,7 +92,7 @@ class BrokerConnectionNativeTauri implements ProseConnection {
             logger.warn("Disconnected");
 
             // Pass disconnected event to caller client
-            this.__eventHandler?.handleDisconnect();
+            this._eventHandler?.handleDisconnect();
 
             // Revoke connection
             this.__revokeConnection();
@@ -123,7 +120,7 @@ class BrokerConnectionNativeTauri implements ProseConnection {
 
       receive: (stanza: string) => {
         // Trigger input event handler
-        this.__onInput(stanza);
+        this._onInput(stanza);
       }
     });
 
@@ -138,31 +135,12 @@ class BrokerConnectionNativeTauri implements ProseConnection {
     }
 
     // Clear registered event handler (if any)
-    if (this.__eventHandler !== undefined) {
-      delete this.__eventHandler;
+    if (this._eventHandler !== undefined) {
+      delete this._eventHandler;
     }
 
     // Unregister all runtime connection handlers
     UtilitiesRuntime.unregisterConnectionHandlers();
-  }
-
-  private __onInput(data: string): void {
-    // Trace raw input?
-    if (this.__config.logReceivedStanzas === true) {
-      logger.debug("🔵 XMPP/TCP IN", data);
-    }
-
-    // Pass to event handler?
-    if (this.__eventHandler !== undefined) {
-      this.__eventHandler.handleStanza(data);
-    }
-  }
-
-  private __onOutput(data: string): void {
-    // Trace raw output?
-    if (this.__config.logSentStanzas === true) {
-      logger.debug("🔴 XMPP/TCP OUT", data);
-    }
   }
 }
 

@@ -23,7 +23,7 @@ import {
   warn as tauriLogWarn
 } from "tauri-plugin-log-api";
 import FileDownloader from "js-file-downloader";
-import { JID, ProseConnectionProvider } from "@prose-im/prose-sdk-js";
+import { ProseConnectionProvider } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
@@ -33,7 +33,7 @@ import logger from "@/utilities/logger";
 import UtilitiesTitle from "@/utilities/title";
 
 // PROJECT: BROKER
-import BrokerConnectionWebSocket from "@/broker/connection/websocket";
+import BrokerConnectionRelayed from "@/broker/connection/relayed";
 import BrokerConnectionNative from "@/broker/connection/native";
 
 /**************************************************************************
@@ -545,8 +545,9 @@ class UtilitiesRuntime {
       return new BrokerConnectionNative();
     }
 
-    // Acquire a WebSocket connection via Web frontend (Web build)
-    return new BrokerConnectionWebSocket();
+    // Acquire a relayed connection via Web frontend (Web build)
+    // Notice: could be either WebSocket or more rarely, BOSH.
+    return new BrokerConnectionRelayed();
   }
 
   private __bindListeners(): void {
