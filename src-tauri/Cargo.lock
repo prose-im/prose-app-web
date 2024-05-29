@@ -1825,7 +1825,7 @@ dependencies = [
 [[package]]
 name = "jid"
 version = "0.10.0"
-source = "git+https://gitlab.com/nesium/xmpp-rs?branch=main#743ac1dc153967c45de4803712389f454a116ea9"
+source = "git+https://gitlab.com/nesium/xmpp-rs?rev=743ac1d#743ac1dc153967c45de4803712389f454a116ea9"
 dependencies = [
  "memchr",
  "minidom",
@@ -2065,7 +2065,7 @@ checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 [[package]]
 name = "minidom"
 version = "0.15.2"
-source = "git+https://gitlab.com/nesium/xmpp-rs?branch=main#743ac1dc153967c45de4803712389f454a116ea9"
+source = "git+https://gitlab.com/nesium/xmpp-rs?rev=743ac1d#743ac1dc153967c45de4803712389f454a116ea9"
 dependencies = [
  "rxml",
 ]
@@ -3224,7 +3224,7 @@ dependencies = [
 [[package]]
 name = "sasl"
 version = "0.5.1"
-source = "git+https://gitlab.com/nesium/xmpp-rs?branch=main#743ac1dc153967c45de4803712389f454a116ea9"
+source = "git+https://gitlab.com/nesium/xmpp-rs?rev=743ac1d#743ac1dc153967c45de4803712389f454a116ea9"
 dependencies = [
  "base64 0.21.7",
  "getrandom 0.2.14",
@@ -4260,7 +4260,7 @@ dependencies = [
 [[package]]
 name = "tokio-xmpp"
 version = "3.5.0"
-source = "git+https://gitlab.com/nesium/xmpp-rs?branch=main#743ac1dc153967c45de4803712389f454a116ea9"
+source = "git+https://gitlab.com/nesium/xmpp-rs?rev=743ac1d#743ac1dc153967c45de4803712389f454a116ea9"
 dependencies = [
  "bytes",
  "futures",
@@ -5297,7 +5297,7 @@ dependencies = [
 [[package]]
 name = "xmpp-parsers"
 version = "0.20.0"
-source = "git+https://gitlab.com/nesium/xmpp-rs?branch=main#743ac1dc153967c45de4803712389f454a116ea9"
+source = "git+https://gitlab.com/nesium/xmpp-rs?rev=743ac1d#743ac1dc153967c45de4803712389f454a116ea9"
 dependencies = [
  "base64 0.21.7",
  "blake2",
