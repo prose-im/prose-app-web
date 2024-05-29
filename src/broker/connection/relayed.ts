@@ -73,6 +73,9 @@ class BrokerConnectionRelayedStrophe
     // Create connection (on domain)
     const connection = await this.__createConnection(jid.domain);
 
+    // Start timers (for connection management)
+    this._startTimers();
+
     // Connect (using just bound connection)
     return new Promise((resolve, reject) => {
       connection.connect(jidString, password, status => {
@@ -115,6 +118,9 @@ class BrokerConnectionRelayedStrophe
 
               // Disable connect intent marker
               this.__connectIntent = false;
+
+              // Stop timers (for connection management)
+              this._stopTimers();
 
               // Pass disconnected event to caller client
               this._eventHandler?.handleDisconnect();

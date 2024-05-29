@@ -50,8 +50,6 @@ import BrokerLogger from "@/broker/logger";
 const RECONNECT_INTERVAL = 4000; // 4 seconds
 const RECONNECT_ATTEMPTS_COUNT_CAP = 15;
 
-const PING_INTERVAL_SECONDS = 30; // 30 seconds
-
 const LOGGING_ENABLED = loggerEnabled;
 const LOGGING_LEVEL = loggerLevel;
 const LOGGING_STANZAS = loggerEnabled;
@@ -266,9 +264,6 @@ class BrokerClient {
     config.loggingMinLevel = LOGGING_LEVEL;
     config.logReceivedStanzas = LOGGING_STANZAS;
     config.logSentStanzas = LOGGING_STANZAS;
-
-    // Configure connection
-    config.pingInterval = PING_INTERVAL_SECONDS;
 
     // Configure client identity
     config.clientName = VERSION_NAME;

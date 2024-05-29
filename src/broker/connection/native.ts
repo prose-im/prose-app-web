@@ -47,6 +47,9 @@ class BrokerConnectionNativeTauri
         fail: reject
       });
 
+      // Start timers (for connection management)
+      this._startTimers();
+
       // Request connection to connect
       // Important: trigger reject handler if runtime request failed
       UtilitiesRuntime.requestConnectionConnect(id, jidString, password).catch(
@@ -100,6 +103,9 @@ class BrokerConnectionNativeTauri
 
           case RuntimeConnectionState.Disconnected: {
             logger.warn("Disconnected");
+
+            // Stop timers (for connection management)
+            this._stopTimers();
 
             // Pass disconnected event to caller client
             this._eventHandler?.handleDisconnect();
