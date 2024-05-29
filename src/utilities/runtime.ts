@@ -95,6 +95,8 @@ type RuntimeRouteHandler = (
 type RuntimeConnectionStateHandler = (state: RuntimeConnectionState) => void;
 type RuntimeConnectionReceiveHandler = (stanza: string) => void;
 
+type RuntimeConnectionID = string;
+
 /**************************************************************************
  * INTERFACES
  * ************************************************************************* */
@@ -110,6 +112,16 @@ interface RuntimeNotificationInteractionPayload {
   action: RuntimeNotificationInteractionAction;
 }
 
+interface RuntimeConnectionReceivePayload {
+  id: RuntimeConnectionID;
+  stanza: string;
+}
+
+interface RuntimeConnectionStatePayload {
+  id: RuntimeConnectionID;
+  state: RuntimeConnectionState;
+}
+
 interface RuntimeNotificationRoute {
   name: string;
   params?: { [name: string]: string };
@@ -117,6 +129,11 @@ interface RuntimeNotificationRoute {
 
 interface RuntimeNotificationHandlers {
   click: RuntimeNotificationClickHandler;
+}
+
+interface RuntimeConnectionHandlers {
+  state: RuntimeConnectionStateHandler;
+  receive: RuntimeConnectionReceiveHandler;
 }
 
 /**************************************************************************
@@ -169,9 +186,8 @@ class UtilitiesRuntime {
       notification: new Map() as Map<string, RuntimeNotificationHandlers>
     },
 
-    connection: {
-      state: null as RuntimeConnectionStateHandler | null,
-      receive: null as RuntimeConnectionReceiveHandler | null
+    connection: {} as {
+      [id: RuntimeConnectionID]: RuntimeConnectionHandlers;
     }
   };
 
@@ -214,22 +230,26 @@ class UtilitiesRuntime {
     this.__handlers.global.menu = null;
   }
 
-  registerConnectionHandlers({
-    state,
-    receive
-  }: {
-    state: RuntimeConnectionStateHandler;
-    receive: RuntimeConnectionReceiveHandler;
-  }): void {
+  registerConnectionHandlers(
+    id: RuntimeConnectionID,
+    {
+      state,
+      receive
+    }: {
+      state: RuntimeConnectionStateHandler;
+      receive: RuntimeConnectionReceiveHandler;
+    }
+  ): void {
     // Register platform-agnostic connection handlers
-    this.__handlers.connection.state = state;
-    this.__handlers.connection.receive = receive;
+    this.__handlers.connection[id] = {
+      state: state,
+      receive: receive
+    };
   }
 
-  unregisterConnectionHandlers(): void {
+  unregisterConnectionHandlers(id: RuntimeConnectionID): void {
     // Unregister platform-agnostic connection handlers
-    this.__handlers.connection.state = null;
-    this.__handlers.connection.receive = null;
+    delete this.__handlers.connection[id];
   }
 
   async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
@@ -498,6 +518,7 @@ class UtilitiesRuntime {
   }
 
   async requestConnectionConnect(
+    id: RuntimeConnectionID,
     jidString: string,
     password: string
   ): Promise<void> {
@@ -505,7 +526,8 @@ class UtilitiesRuntime {
       // Request to connect via Tauri API (application build)
       await tauriInvoke("plugin:connection|connect", {
         jid: jidString,
-        password
+        password,
+        id
       });
     } else {
       // This method should NEVER be used on other platforms
@@ -515,10 +537,10 @@ class UtilitiesRuntime {
     }
   }
 
-  async requestConnectionDisconnect(): Promise<void> {
+  async requestConnectionDisconnect(id: RuntimeConnectionID): Promise<void> {
     if (this.__isApplication === true) {
       // Request to disconnect via Tauri API (application build)
-      await tauriInvoke("plugin:connection|disconnect");
+      await tauriInvoke("plugin:connection|disconnect", { id });
     } else {
       // This method should NEVER be used on other platforms
       throw new Error(
@@ -527,10 +549,14 @@ class UtilitiesRuntime {
     }
   }
 
-  async requestConnectionSend(stanza: string): Promise<void> {
+  async requestConnectionSend(
+    id: RuntimeConnectionID,
+    stanza: string
+  ): Promise<void> {
     if (this.__isApplication === true) {
       // Request to send via Tauri API (application build)
       await tauriInvoke("plugin:connection|send", {
+        id,
         stanza
       });
     } else {
@@ -633,25 +659,21 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<RuntimeConnectionState>(
+      tauriAppWindow.listen<RuntimeConnectionStatePayload>(
         "connection:state",
 
         ({ payload }) => {
-          // Trigger connection state handler? (if any)
-          if (this.__handlers.connection.state !== null) {
-            this.__handlers.connection.state(payload);
-          }
+          // Trigger connection state handler (if any)
+          this.__handlers.connection[payload.id]?.state(payload.state);
         }
       );
 
-      tauriAppWindow.listen<string>(
+      tauriAppWindow.listen<RuntimeConnectionReceivePayload>(
         "connection:receive",
 
         ({ payload }) => {
-          // Trigger connection receive handler? (if any)
-          if (this.__handlers.connection.receive !== null) {
-            this.__handlers.connection.receive(payload);
-          }
+          // Trigger connection receive handler (if any)
+          this.__handlers.connection[payload.id]?.receive(payload.stanza);
         }
       );
     } else {
@@ -688,4 +710,5 @@ export {
   context,
   translucent
 };
+export type { RuntimeConnectionID };
 export default new UtilitiesRuntime();

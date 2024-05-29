@@ -37,9 +37,9 @@ type DisconnectError = SendError;
  * ENUMERATIONS
  * ************************************************************************* */
 
-#[derive(Serialize, Clone, Copy, Eq, PartialEq)]
+#[derive(Serialize, Debug, Clone, Copy, Eq, PartialEq)]
 #[serde(rename_all = "kebab-case")]
-pub enum EventConnectionState {
+pub enum ConnectionState {
     Connected,
     Disconnected,
     AuthenticationFailure,
@@ -88,8 +88,20 @@ pub enum PollOutputError {
  * ************************************************************************* */
 
 #[derive(Default)]
-pub struct ConnectionState {
+pub struct ConnectionClientState {
     sender: RwLock<Option<Arc<UnboundedSender<Packet>>>>,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct EventConnectionState<'a> {
+    id: &'a str,
+    state: ConnectionState,
+}
+
+#[derive(Debug, Clone, Serialize)]
+struct EventConnectionReceive<'a> {
+    id: &'a str,
+    stanza: &'a str,
 }
 
 /**************************************************************************
@@ -98,26 +110,36 @@ pub struct ConnectionState {
 
 fn emit_connection_abort<R: Runtime>(
     window: &Window<R>,
-    state: EventConnectionState,
+    id: &str,
+    state: ConnectionState,
     connected: bool,
 ) {
     // Emit connection abort state
-    window.emit(EVENT_STATE, state).unwrap();
+    window
+        .emit(EVENT_STATE, EventConnectionState { id, state })
+        .unwrap();
 
     // Were we connected? Then also emit a disconnected event
     // Notice: this informs the client that the connection is effectively \
     //   disconnected, whether we encountered an error or not. Do not \
     //   re-emit the disconnected state twice if current state already \
     //   was 'disconnected'.
-    if connected && state != EventConnectionState::Disconnected {
+    if connected && state != ConnectionState::Disconnected {
         window
-            .emit(EVENT_STATE, EventConnectionState::Disconnected)
+            .emit(
+                EVENT_STATE,
+                EventConnectionState {
+                    id,
+                    state: ConnectionState::Disconnected,
+                },
+            )
             .unwrap();
     }
 }
 
 async fn poll_input_events<R: Runtime, C: ServerConnector>(
     window: &Window<R>,
+    id: &str,
     mut client_reader: SplitStream<Client<C>>,
 ) -> Result<(), PollInputError> {
     let mut connected = false;
@@ -125,20 +147,21 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
     while let Some(event) = client_reader.next().await {
         match event {
             Event::Disconnected(Error::Disconnected) => {
-                emit_connection_abort(window, EventConnectionState::Disconnected, connected);
+                emit_connection_abort(window, id, ConnectionState::Disconnected, connected);
 
                 // Abort here (success)
                 return Ok(());
             }
             Event::Disconnected(Error::Auth(err)) => {
                 warn!(
-                    "Received disconnected event, with authentication error: {}",
-                    err
+                    "Received disconnected event on: #{}, with authentication error: {}",
+                    id, err
                 );
 
                 emit_connection_abort(
                     window,
-                    EventConnectionState::AuthenticationFailure,
+                    id,
+                    ConnectionState::AuthenticationFailure,
                     connected,
                 );
 
@@ -147,20 +170,20 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
             }
             Event::Disconnected(Error::Connection(err)) => {
                 warn!(
-                    "Received disconnected event, with connection error: {}",
-                    err
+                    "Received disconnected event: #{}, with connection error: {}",
+                    id, err
                 );
 
                 // Notice: consider as timeout here.
-                emit_connection_abort(window, EventConnectionState::ConnectionTimeout, connected);
+                emit_connection_abort(window, id, ConnectionState::ConnectionTimeout, connected);
 
                 // Abort here (error)
                 return Err(PollInputError::ConnectionError);
             }
             Event::Disconnected(err) => {
-                warn!("Received disconnected event, with error: {}", err);
+                warn!("Received disconnected event: #{}, with error: {}", id, err);
 
-                emit_connection_abort(window, EventConnectionState::ConnectionError, connected);
+                emit_connection_abort(window, id, ConnectionState::ConnectionError, connected);
 
                 // Abort here (error)
                 return Err(PollInputError::OtherError);
@@ -169,14 +192,30 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
                 connected = true;
 
                 window
-                    .emit(EVENT_STATE, EventConnectionState::Connected)
+                    .emit(
+                        EVENT_STATE,
+                        EventConnectionState {
+                            id,
+                            state: ConnectionState::Connected,
+                        },
+                    )
                     .unwrap();
 
                 // Continue
                 continue;
             }
             Event::Stanza(stanza) => {
-                window.emit(EVENT_RECEIVE, String::from(&stanza)).unwrap();
+                let stanza_xml = String::from(&stanza);
+
+                window
+                    .emit(
+                        EVENT_RECEIVE,
+                        EventConnectionReceive {
+                            id,
+                            stanza: &stanza_xml,
+                        },
+                    )
+                    .unwrap();
 
                 // Continue
                 continue;
@@ -188,12 +227,16 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
 }
 
 async fn poll_output_events<C: ServerConnector>(
+    id: &str,
     mut client_writer: SplitSink<Client<C>, Packet>,
     mut rx: UnboundedReceiver<Packet>,
 ) -> Result<(), PollOutputError> {
     while let Some(packet) = rx.recv().await {
         if let Err(err) = client_writer.send(packet).await {
-            error!("Failed sending packet over connection: {}", err);
+            error!(
+                "Failed sending packet over connection: #{} because: {}",
+                id, err
+            );
 
             return Err(PollOutputError::PacketSendError);
         }
@@ -209,11 +252,12 @@ async fn poll_output_events<C: ServerConnector>(
 #[tauri::command]
 pub async fn connect<R: Runtime>(
     window: Window<R>,
-    state: State<'_, ConnectionState>,
+    state: State<'_, ConnectionClientState>,
+    id: &str,
     jid: &str,
     password: &str,
 ) -> Result<(), ConnectError> {
-    info!("Connection connect requested on JID: {}", jid);
+    info!("Connection #{} connect requested on JID: {}", id, jid);
 
     // Parse JID
     let jid = FullJid::new(jid).or(Err(ConnectError::InvalidJid))?;
@@ -244,23 +288,33 @@ pub async fn connect<R: Runtime>(
 
     // Spawn all tasks
     let write_handle = {
+        let id = id.to_owned();
+
         task::spawn(async move {
             // Poll for output events
-            if let Err(err) = poll_output_events(writer, rx).await {
-                warn!("Connection write poller terminated with error: {}", err);
+            if let Err(err) = poll_output_events(&id, writer, rx).await {
+                warn!(
+                    "Connection #{} write poller terminated with error: {}",
+                    id, err
+                );
             } else {
-                debug!("Connection write poller was stopped");
+                debug!("Connection #{} write poller was stopped", id);
             }
         })
     };
 
     let _read_handle = {
+        let id = id.to_owned();
+
         task::spawn(async move {
             // Poll for input events
-            if let Err(err) = poll_input_events(&window, reader).await {
-                warn!("Connection read poller terminated with error: {}", err);
+            if let Err(err) = poll_input_events(&window, &id, reader).await {
+                warn!(
+                    "Connection #{} read poller terminated with error: {}",
+                    id, err
+                );
             } else {
-                debug!("Connection read poller was stopped");
+                debug!("Connection #{} read poller was stopped", id);
             }
 
             // Abort other handles
@@ -271,14 +325,17 @@ pub async fn connect<R: Runtime>(
     // Store new sender in state
     *state.sender.write().unwrap() = Some(sender.clone());
 
-    debug!("Connection connect request complete");
+    debug!("Connection #{} connect request complete", id);
 
     Ok(())
 }
 
 #[tauri::command]
-pub fn disconnect(state: State<'_, ConnectionState>) -> Result<(), DisconnectError> {
-    info!("Connection disconnect requested");
+pub fn disconnect(
+    id: &str,
+    state: State<'_, ConnectionClientState>,
+) -> Result<(), DisconnectError> {
+    info!("Connection #{} disconnect requested", id);
 
     // Send stream end?
     let end_result = if let Some(ref sender) = *state.sender.read().unwrap() {
@@ -295,13 +352,19 @@ pub fn disconnect(state: State<'_, ConnectionState>) -> Result<(), DisconnectErr
     // Un-assign sender
     *state.sender.write().unwrap() = None;
 
-    debug!("Connection disconnect request complete");
+    debug!("Connection #{} disconnect request complete", id);
 
     Ok(())
 }
 
 #[tauri::command]
-pub fn send(state: State<'_, ConnectionState>, stanza: String) -> Result<(), SendError> {
+pub fn send(
+    id: &str,
+    state: State<'_, ConnectionClientState>,
+    stanza: String,
+) -> Result<(), SendError> {
+    debug!("Connection #{} send requested (will send XMPP stanza)", id);
+
     if let Some(ref sender) = *state.sender.read().unwrap() {
         if sender.is_closed() {
             Err(SendError::SenderClosed)
@@ -325,7 +388,7 @@ pub fn provide<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("connection")
         .invoke_handler(tauri::generate_handler![connect, disconnect, send])
         .setup(|app_handle| {
-            app_handle.manage(ConnectionState::default());
+            app_handle.manage(ConnectionClientState::default());
 
             Ok(())
         })
