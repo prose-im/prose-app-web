@@ -19,9 +19,12 @@ type InlineData = string;
  * ************************************************************************* */
 
 class BuilderInline {
-  scripts(): InlineDataItems {
+  scripts(isApplication = false): InlineDataItems {
+    // Notice: enable loader video only if not a Tauri application build, \
+    //   meaning only for Web browser targets where resources are being pulled \
+    //   from a remote server and therefore some wait is induced.
     return {
-      loader: this.__scriptLoader()
+      loader: this.__scriptLoader(!isApplication)
     };
   }
 
@@ -31,7 +34,7 @@ class BuilderInline {
     };
   }
 
-  private __scriptLoader(): InlineData {
+  private __scriptLoader(withVideo = true): InlineData {
     return this.__wrapScriptClosure(`
       let theme;
 
@@ -66,40 +69,42 @@ class BuilderInline {
         // Apply detected theme to loader
         loaderElement.classList.add(\`loader--\${theme}\`);
 
-        // Create loader video
-        const videoElement = document.createElement("video");
+        // Create loader video?
+        if (${withVideo}) {
+          const videoElement = document.createElement("video");
 
-        videoElement.height = 80;
-        videoElement.width = 200;
-        videoElement.autoplay = true;
-        videoElement.loop = true;
-        videoElement.muted = true;
+          videoElement.height = 80;
+          videoElement.width = 200;
+          videoElement.autoplay = true;
+          videoElement.loop = true;
+          videoElement.muted = true;
 
-        // Append video sources (in priority order, most efficient first)
-        const videoSources = [
-          ["av1", "webm"],
-          ["vp9", "webm"],
-          ["hvc1", "mp4"]
-        ];
+          // Append video sources (in priority order, most efficient first)
+          const videoSources = [
+            ["av1", "webm"],
+            ["vp9", "webm"],
+            ["hvc1", "mp4"]
+          ];
 
-        videoSources.forEach(videoSource => {
-          const sourceElement = document.createElement("source");
+          videoSources.forEach(videoSource => {
+            const sourceElement = document.createElement("source");
 
-          sourceElement.src = [
-            \`/videos/loader/\${theme}\`,
-            \`logo-\${videoSource[0]}.\${videoSource[1]}\`
-          ].join("/");
+            sourceElement.src = [
+              \`/videos/loader/\${theme}\`,
+              \`logo-\${videoSource[0]}.\${videoSource[1]}\`
+            ].join("/");
 
-          sourceElement.type = [
-            \`video/\${videoSource[1]}\`,
-            \`codecs=\${videoSource[0]}\`
-          ].join("; ");
+            sourceElement.type = [
+              \`video/\${videoSource[1]}\`,
+              \`codecs=\${videoSource[0]}\`
+            ].join("; ");
 
-          videoElement.appendChild(sourceElement);
-        });
+            videoElement.appendChild(sourceElement);
+          });
 
-        // Append loader video
-        loaderElement.appendChild(videoElement);
+          // Append loader video
+          loaderElement.appendChild(videoElement);
+        }
       };
 
       // Polls for loader readiness (every 10ms)

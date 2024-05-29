@@ -30,6 +30,8 @@ import productionConfig from "./config/production";
  * CONSTANTS
  * ************************************************************************* */
 
+const PLATFORM_APPLICATION_OVERRIDE = process.env.TAURI_PLATFORM || null;
+
 const PROSE_CORE_VIEWS_LOCAL_PATH = getInstalledPathSync(
   "@prose-im/prose-core-views",
 
@@ -53,7 +55,7 @@ const PROSE_SDK_JS_OVERRIDE_PATH = process.env.PROSE_CORE_CLIENT_PATH
 const ASSETS_ICONS_PATH = path.join(__dirname, "src/assets/images/icons/");
 
 const INLINE_DATA_ITEMS = {
-  scripts: BuilderInline.scripts(),
+  scripts: BuilderInline.scripts(PLATFORM_APPLICATION_OVERRIDE ? true : false),
   styles: BuilderInline.styles()
 };
 
@@ -210,8 +212,8 @@ export default {
 
       // Replace platform with custom platform? (if any)
       // Notice: this only applies to Tauri builds (eg. macOS bundle)
-      if (process.env.TAURI_PLATFORM) {
-        merge(config, { platform: process.env.TAURI_PLATFORM });
+      if (PLATFORM_APPLICATION_OVERRIDE) {
+        merge(config, { platform: PLATFORM_APPLICATION_OVERRIDE });
       }
 
       return config;
