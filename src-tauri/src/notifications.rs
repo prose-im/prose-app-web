@@ -17,7 +17,7 @@ use tauri::{AppHandle, Manager, Runtime, State};
  * ************************************************************************* */
 
 pub(crate) struct NotificationsState {
-    provider: SendWrapper<NotificationProvider>,
+    _provider: SendWrapper<NotificationProvider>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -95,7 +95,7 @@ pub fn provide<R: Runtime>() -> TauriPlugin<R> {
             });
 
             let state = NotificationsState {
-                provider: SendWrapper::new(provider),
+                _provider: SendWrapper::new(provider),
             };
 
             app_handle.manage(state);
