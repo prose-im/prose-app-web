@@ -47,9 +47,6 @@ class BrokerConnectionNativeTauri
         fail: reject
       });
 
-      // Start timers (for connection management)
-      this._startTimers();
-
       // Request connection to connect
       // Important: trigger reject handler if runtime request failed
       UtilitiesRuntime.requestConnectionConnect(id, jidString, password).catch(
@@ -104,9 +101,6 @@ class BrokerConnectionNativeTauri
           case RuntimeConnectionState.Disconnected: {
             logger.warn("Disconnected");
 
-            // Stop timers (for connection management)
-            this._stopTimers();
-
             // Pass disconnected event to caller client
             this._eventHandler?.handleDisconnect();
 
@@ -151,11 +145,17 @@ class BrokerConnectionNativeTauri
     // Assign connection identifier
     this.__connectionId = connectionId;
 
+    // Start timers (for connection management)
+    this._startTimers();
+
     return connectionId;
   }
 
   private __revokeConnection(): void {
     const connectionIdMaybe = this.__connectionId;
+
+    // Stop timers (for connection management)
+    this._stopTimers();
 
     if (this.__connectionId !== undefined) {
       // Revoke connection identifier

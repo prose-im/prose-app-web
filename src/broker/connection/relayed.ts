@@ -73,9 +73,6 @@ class BrokerConnectionRelayedStrophe
     // Create connection (on domain)
     const connection = await this.__createConnection(jid.domain);
 
-    // Start timers (for connection management)
-    this._startTimers();
-
     // Connect (using just bound connection)
     return new Promise((resolve, reject) => {
       connection.connect(jidString, password, status => {
@@ -118,9 +115,6 @@ class BrokerConnectionRelayedStrophe
 
               // Disable connect intent marker
               this.__connectIntent = false;
-
-              // Stop timers (for connection management)
-              this._stopTimers();
 
               // Pass disconnected event to caller client
               this._eventHandler?.handleDisconnect();
@@ -266,10 +260,16 @@ class BrokerConnectionRelayedStrophe
     this.__relayHost = relayHost;
     this.__connection = connection;
 
+    // Start timers (for connection management)
+    this._startTimers();
+
     return connection;
   }
 
   private __destroyConnection(): void {
+    // Stop timers (for connection management)
+    this._stopTimers();
+
     if (this.__connection !== undefined) {
       // Reset connection
       this.__connection.reset();
