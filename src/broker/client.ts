@@ -192,9 +192,9 @@ class BrokerClient {
     // Void stored credentials
     this.__credentials = undefined;
 
-    // Disconnect client and flush its cache
-    await this.client?.disconnect();
+    // Flush client cached data and disconnect
     await this.client?.deleteCachedData();
+    await this.client?.disconnect();
 
     // Void client
     delete this.client;
