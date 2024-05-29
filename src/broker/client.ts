@@ -50,7 +50,7 @@ import BrokerLogger from "@/broker/logger";
 const RECONNECT_INTERVAL = 4000; // 4 seconds
 const RECONNECT_ATTEMPTS_COUNT_CAP = 15;
 
-const PING_INTERVAL_SECONDS = 60; // 1 minute
+const PING_INTERVAL_SECONDS = 30; // 30 seconds
 
 const LOGGING_ENABLED = loggerEnabled;
 const LOGGING_LEVEL = loggerLevel;
