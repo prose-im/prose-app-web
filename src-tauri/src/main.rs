@@ -26,7 +26,11 @@ use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
  * MAIN
  * ************************************************************************* */
 
-fn main() {
+#[tokio::main]
+async fn main() {
+    // Important: start a Tokio reactor from there, which is needed for things \
+    //   like connection management.
+
     // Prepare Prose for deep-linking
     tauri_plugin_deep_link::prepare("prose");
 

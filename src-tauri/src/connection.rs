@@ -11,12 +11,13 @@ use futures::SinkExt;
 use jid::FullJid;
 use log::{debug, error, info, warn};
 use serde::Serialize;
-use std::sync::{Arc, RwLock};
+use std::collections::HashMap;
+use std::sync::RwLock;
 use tauri::plugin::{Builder, TauriPlugin};
 use tauri::{Manager, Runtime, State, Window};
 use thiserror::Error;
 use tokio::sync::mpsc::{self, UnboundedReceiver, UnboundedSender};
-use tokio::task;
+use tokio::task::{self, JoinHandle};
 use tokio_xmpp::connect::ServerConnector;
 use tokio_xmpp::{AsyncClient as Client, Error, Event, Packet};
 
@@ -51,6 +52,8 @@ pub enum ConnectionState {
 pub enum ConnectError {
     #[error("Invalid JID, cannot connect")]
     InvalidJid,
+    #[error("Connection identifier already exists")]
+    ConnectionAlreadyExists,
 }
 
 #[derive(Serialize, Debug, Error)]
@@ -59,8 +62,8 @@ pub enum SendError {
     CannotWrite,
     #[error("Failure to parse stanza to send")]
     CannotParse,
-    #[error("Connection has no sender set")]
-    SenderDoesNotExist,
+    #[error("Connection does not exist")]
+    ConnectionDoesNotExist,
 }
 
 #[derive(Serialize, Debug, Error)]
@@ -83,9 +86,15 @@ pub enum PollOutputError {
  * STRUCTURES
  * ************************************************************************* */
 
+struct ConnectionClient {
+    sender: UnboundedSender<Packet>,
+    read_handle: JoinHandle<()>,
+    write_handle: JoinHandle<()>,
+}
+
 #[derive(Default)]
 pub struct ConnectionClientState {
-    sender: RwLock<Option<Arc<UnboundedSender<Packet>>>>,
+    connections: RwLock<HashMap<String, ConnectionClient>>,
 }
 
 #[derive(Debug, Clone, Serialize)]
@@ -232,7 +241,7 @@ async fn poll_output_events<C: ServerConnector>(
  * ************************************************************************* */
 
 #[tauri::command]
-pub async fn connect<R: Runtime>(
+pub fn connect<R: Runtime>(
     window: Window<R>,
     state: State<'_, ConnectionClientState>,
     id: &str,
@@ -240,6 +249,11 @@ pub async fn connect<R: Runtime>(
     password: &str,
 ) -> Result<(), ConnectError> {
     info!("Connection #{} connect requested on JID: {}", id, jid);
+
+    // Assert that connection identifier does not already exist
+    if state.connections.read().unwrap().contains_key(id) {
+        return Err(ConnectError::ConnectionAlreadyExists);
+    }
 
     // Parse JID
     let jid = FullJid::new(jid).or(Err(ConnectError::InvalidJid))?;
@@ -253,9 +267,6 @@ pub async fn connect<R: Runtime>(
     // Split client into RX (for writer) and TX (for reader)
     let (tx, rx) = mpsc::unbounded_channel();
     let (writer, reader) = client.split();
-
-    // Make sender
-    let sender = Arc::new(tx);
 
     // Spawn all tasks
     let write_handle = {
@@ -274,7 +285,7 @@ pub async fn connect<R: Runtime>(
         })
     };
 
-    let _read_handle = {
+    let read_handle = {
         let id = id.to_owned();
 
         task::spawn(async move {
@@ -287,14 +298,32 @@ pub async fn connect<R: Runtime>(
             } else {
                 debug!("Connection #{} read poller was stopped", id);
             }
-
-            // Abort other handles
-            write_handle.abort();
         })
     };
 
-    // Store new sender in state
-    *state.sender.write().unwrap() = Some(sender.clone());
+    // Add new connection in state
+    {
+        let mut state_connections = state.connections.write().unwrap();
+
+        state_connections.insert(
+            id.to_string(),
+            ConnectionClient {
+                sender: tx,
+                read_handle,
+                write_handle,
+            },
+        );
+
+        info!(
+            "There are now {} connections in the global state: {}",
+            state_connections.len(),
+            state_connections
+                .keys()
+                .map(|id| format!("#{}", id))
+                .collect::<Vec<_>>()
+                .join(", ")
+        );
+    }
 
     debug!("Connection #{} connect request complete", id);
 
@@ -309,21 +338,48 @@ pub fn disconnect(
     info!("Connection #{} disconnect requested", id);
 
     // Send stream end?
-    let end_result = if let Some(ref sender) = *state.sender.read().unwrap() {
-        sender
+    let end_result = if let Some(ref connection) = state.connections.read().unwrap().get(id) {
+        connection
+            .sender
             .send(Packet::StreamEnd)
             .or(Err(DisconnectError::CannotWrite))
     } else {
-        Err(DisconnectError::SenderDoesNotExist)
+        Err(DisconnectError::ConnectionDoesNotExist)
     };
 
     // Abort early if failure
     end_result?;
 
-    // Un-assign sender
-    *state.sender.write().unwrap() = None;
-
     debug!("Connection #{} disconnect request complete", id);
+
+    Ok(())
+}
+
+#[tauri::command]
+pub fn destroy(id: &str, state: State<'_, ConnectionClientState>) -> Result<(), ()> {
+    info!("Connection #{} destroy requested", id);
+
+    // Remove existing connection?
+    // Important: this does not disconnect the XMPP stream! Please make sure to call \
+    //   the destroy command whenever the frontend is certain that the connection \
+    //   has been disconnected, that is, following an explicit or implicit \
+    //   disconnection connection state event. The destroy command is solely \
+    //   used for garbage collection purposes (ie. stopping background tasks).
+    if let Some(connection) = state.connections.write().unwrap().remove(id) {
+        // Abort both task handles
+        connection.write_handle.abort();
+        connection.read_handle.abort();
+
+        // Drop connection sender
+        drop(connection.sender);
+
+        debug!("Connection #{} destroy request complete", id);
+    } else {
+        warn!(
+            "Connection #{} destroy request complete, but was already destroyed",
+            id
+        );
+    }
 
     Ok(())
 }
@@ -336,14 +392,15 @@ pub fn send(
 ) -> Result<(), SendError> {
     debug!("Connection #{} send requested (will send XMPP stanza)", id);
 
-    if let Some(ref sender) = *state.sender.read().unwrap() {
+    if let Some(ref connection) = state.connections.read().unwrap().get(id) {
         let stanza_root = stanza.parse().or(Err(SendError::CannotParse))?;
 
-        sender
+        connection
+            .sender
             .send(Packet::Stanza(stanza_root))
             .or(Err(SendError::CannotWrite))
     } else {
-        Err(SendError::SenderDoesNotExist)
+        Err(SendError::ConnectionDoesNotExist)
     }
 }
 
@@ -353,7 +410,7 @@ pub fn send(
 
 pub fn provide<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("connection")
-        .invoke_handler(tauri::generate_handler![connect, disconnect, send])
+        .invoke_handler(tauri::generate_handler![connect, disconnect, destroy, send])
         .setup(|app_handle| {
             app_handle.manage(ConnectionClientState::default());
 

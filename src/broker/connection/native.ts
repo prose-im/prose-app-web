@@ -151,7 +151,7 @@ class BrokerConnectionNativeTauri
     return connectionId;
   }
 
-  private __revokeConnection(): void {
+  private async __revokeConnection(): Promise<void> {
     const connectionIdMaybe = this.__connectionId;
 
     // Stop timers (for connection management)
@@ -167,9 +167,17 @@ class BrokerConnectionNativeTauri
       delete this._eventHandler;
     }
 
-    // Unregister all runtime connection handlers?
+    // Handle further cleanup work?
     if (connectionIdMaybe !== undefined) {
+      // Unregister all runtime connection handlers
       UtilitiesRuntime.unregisterConnectionHandlers(connectionIdMaybe);
+
+      // Request to fully destroy connection (forced destroy)
+      try {
+        await UtilitiesRuntime.requestConnectionDestroy(connectionIdMaybe);
+      } catch (error) {
+        logger.error("Failed to request a connection destroy");
+      }
     }
   }
 }

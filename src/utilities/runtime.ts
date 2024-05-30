@@ -549,6 +549,18 @@ class UtilitiesRuntime {
     }
   }
 
+  async requestConnectionDestroy(id: RuntimeConnectionID): Promise<void> {
+    if (this.__isApplication === true) {
+      // Request to destroy via Tauri API (application build)
+      await tauriInvoke("plugin:connection|destroy", { id });
+    } else {
+      // This method should NEVER be used on other platforms
+      throw new Error(
+        "Attempted to request connection destroy on unsupported platform"
+      );
+    }
+  }
+
   async requestConnectionSend(
     id: RuntimeConnectionID,
     stanza: string
