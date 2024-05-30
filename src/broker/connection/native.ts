@@ -50,7 +50,12 @@ class BrokerConnectionNativeTauri
       // Request connection to connect
       // Important: trigger reject handler if runtime request failed
       UtilitiesRuntime.requestConnectionConnect(id, jidString, password).catch(
-        reject
+        error => {
+          // Intercept error for logging purposes
+          logger.error("Failed to request a connection connect", error);
+
+          reject(error);
+        }
       );
     });
   }
@@ -176,7 +181,7 @@ class BrokerConnectionNativeTauri
       try {
         await UtilitiesRuntime.requestConnectionDestroy(connectionIdMaybe);
       } catch (error) {
-        logger.error("Failed to request a connection destroy");
+        logger.error("Failed to request a connection destroy", error);
       }
     }
   }
