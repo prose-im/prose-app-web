@@ -47,7 +47,7 @@ import BrokerLogger from "@/broker/logger";
  * CONSTANTS
  * ************************************************************************* */
 
-const RECONNECT_INTERVAL = 4000; // 4 seconds
+const RECONNECT_INTERVAL = 2000; // 2 seconds
 const RECONNECT_ATTEMPTS_COUNT_CAP = 15;
 
 const LOGGING_ENABLED = loggerEnabled;
