@@ -157,8 +157,8 @@ fn recover_closed_sender_channel<R: Runtime>(
     // Abort both task handles (so that no other IPC gets sent)
     kill_event_handlers(connection);
 
-    // Emit regular disconnected event
-    emit_connection_abort(window, id, ConnectionState::Disconnected);
+    // Emit connection error event
+    emit_connection_abort(window, id, ConnectionState::ConnectionError);
 }
 
 async fn poll_input_events<R: Runtime, C: ServerConnector>(
