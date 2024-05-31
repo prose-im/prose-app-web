@@ -255,6 +255,8 @@ async fn poll_output_events<C: ServerConnector>(
 
             return Err(PollOutputError::PacketSendError);
         }
+
+        debug!("Sent packet over connection: #{}", id);
     }
 
     Ok(())
@@ -364,9 +366,19 @@ pub fn disconnect<R: Runtime>(
 
     // Send stream end?
     if let Some(ref connection) = state.connections.read().unwrap().get(id) {
+        // Abort read task handle (so that no other IPC gets sent)
+        connection.read_handle.abort();
+
+        // Emit end-of-stream packet (requesting a clean disconnection)
         match connection.sender.send(Packet::StreamEnd) {
             Ok(_) => {
                 info!("Connection #{} disconnect request complete", id);
+
+                // Consider as disconnected immediately
+                // Notice: this saves some time, instead of waiting for stream end \
+                //   acknowledgement from server which may never come in case of a \
+                //   disconnect request following network issues.
+                emit_connection_abort(&window, id, ConnectionState::Disconnected);
 
                 Ok(())
             }
