@@ -377,7 +377,8 @@ pub fn disconnect<R: Runtime>(
                 // Consider as disconnected immediately
                 // Notice: this saves some time, instead of waiting for stream end \
                 //   acknowledgement from server which may never come in case of a \
-                //   disconnect request following network issues.
+                //   disconnect request following network issues (thus we would be \
+                //   waiting a long time for the TCP timeout to trigger).
                 emit_connection_abort(&window, id, ConnectionState::Disconnected);
 
                 Ok(())
