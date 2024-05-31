@@ -137,6 +137,30 @@ fn emit_connection_abort<R: Runtime>(window: &Window<R>, id: &str, state: Connec
     }
 }
 
+fn kill_event_handlers(connection: &ConnectionClient) {
+    connection.write_handle.abort();
+    connection.read_handle.abort();
+}
+
+fn recover_closed_sender_channel<R: Runtime>(
+    window: &Window<R>,
+    id: &str,
+    connection: &ConnectionClient,
+) {
+    // Recover from dangling state: emit an implicit disconnected event
+    // Notice: this will prompt the implementor to destroy the client.
+    info!(
+        "Recovering: raising an implicit disconnected event for connection #{}",
+        id
+    );
+
+    // Abort both task handles (so that no other IPC gets sent)
+    kill_event_handlers(connection);
+
+    // Emit regular disconnected event
+    emit_connection_abort(window, id, ConnectionState::Disconnected);
+}
+
 async fn poll_input_events<R: Runtime, C: ServerConnector>(
     window: &Window<R>,
     id: &str,
@@ -280,7 +304,7 @@ pub fn connect<R: Runtime>(
                     id, err
                 );
             } else {
-                debug!("Connection #{} write poller was stopped", id);
+                info!("Connection #{} write poller was stopped", id);
             }
         })
     };
@@ -296,7 +320,7 @@ pub fn connect<R: Runtime>(
                     id, err
                 );
             } else {
-                debug!("Connection #{} read poller was stopped", id);
+                info!("Connection #{} read poller was stopped", id);
             }
         })
     };
@@ -325,34 +349,47 @@ pub fn connect<R: Runtime>(
         );
     }
 
-    debug!("Connection #{} connect request complete", id);
+    info!("Connection #{} connect request complete", id);
 
     Ok(())
 }
 
 #[tauri::command]
-pub fn disconnect(
+pub fn disconnect<R: Runtime>(
+    window: Window<R>,
     id: &str,
     state: State<'_, ConnectionClientState>,
 ) -> Result<(), DisconnectError> {
     info!("Connection #{} disconnect requested", id);
 
     // Send stream end?
-    let end_result = if let Some(ref connection) = state.connections.read().unwrap().get(id) {
-        connection
-            .sender
-            .send(Packet::StreamEnd)
-            .or(Err(DisconnectError::CannotWrite))
+    if let Some(ref connection) = state.connections.read().unwrap().get(id) {
+        match connection.sender.send(Packet::StreamEnd) {
+            Ok(_) => {
+                info!("Connection #{} disconnect request complete", id);
+
+                Ok(())
+            }
+            Err(err) => {
+                error!(
+                    "Connection #{} disconnect request failed, because: {}",
+                    id, err
+                );
+
+                // Recover from closed sender channel state (implicitly disconnect)
+                recover_closed_sender_channel(&window, id, connection);
+
+                Err(DisconnectError::CannotWrite)
+            }
+        }
     } else {
+        error!(
+            "Connection #{} disconnect request failed, as connection does not exist",
+            id
+        );
+
         Err(DisconnectError::ConnectionDoesNotExist)
-    };
-
-    // Abort early if failure
-    end_result?;
-
-    debug!("Connection #{} disconnect request complete", id);
-
-    Ok(())
+    }
 }
 
 #[tauri::command]
@@ -367,13 +404,12 @@ pub fn destroy(id: &str, state: State<'_, ConnectionClientState>) -> Result<(), 
     //   used for garbage collection purposes (ie. stopping background tasks).
     if let Some(connection) = state.connections.write().unwrap().remove(id) {
         // Abort both task handles
-        connection.write_handle.abort();
-        connection.read_handle.abort();
+        kill_event_handlers(&connection);
 
         // Drop connection sender
         drop(connection.sender);
 
-        debug!("Connection #{} destroy request complete", id);
+        info!("Connection #{} destroy request complete", id);
     } else {
         warn!(
             "Connection #{} destroy request complete, but was already destroyed",
@@ -385,7 +421,8 @@ pub fn destroy(id: &str, state: State<'_, ConnectionClientState>) -> Result<(), 
 }
 
 #[tauri::command]
-pub fn send(
+pub fn send<R: Runtime>(
+    window: Window<R>,
     id: &str,
     state: State<'_, ConnectionClientState>,
     stanza: String,
@@ -395,11 +432,30 @@ pub fn send(
     if let Some(ref connection) = state.connections.read().unwrap().get(id) {
         let stanza_root = stanza.parse().or(Err(SendError::CannotParse))?;
 
-        connection
-            .sender
-            .send(Packet::Stanza(stanza_root))
-            .or(Err(SendError::CannotWrite))
+        match connection.sender.send(Packet::Stanza(stanza_root)) {
+            Ok(_) => {
+                debug!(
+                    "Connection #{} send request complete (XMPP stanza was sent)",
+                    id
+                );
+
+                Ok(())
+            }
+            Err(err) => {
+                error!("Connection #{} send request failed, because: {}", id, err);
+
+                // Recover from closed sender channel state (implicitly disconnect)
+                recover_closed_sender_channel(&window, id, connection);
+
+                Err(SendError::CannotWrite)
+            }
+        }
     } else {
+        error!(
+            "Connection #{} send request failed, as connection does not exist",
+            id
+        );
+
         Err(SendError::ConnectionDoesNotExist)
     }
 }
