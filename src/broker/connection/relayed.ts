@@ -66,6 +66,10 @@ class BrokerConnectionRelayedStrophe
   private __connectIntent = false;
 
   async connect(jidString: string, password: string): Promise<void> {
+    logger.info(
+      `Broker will connect via a relayed connection to: ${jidString}`
+    );
+
     // Acquire bare JID
     // Important: strip resource from JID so that it can be parsed
     const jid = new JID(jidString.split("/")[0]);

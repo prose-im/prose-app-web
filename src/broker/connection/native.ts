@@ -39,6 +39,8 @@ class BrokerConnectionNativeTauri
   private __connectionId?: RuntimeConnectionID;
 
   async connect(jidString: string, password: string): Promise<void> {
+    logger.info(`Broker will connect via a native connection to: ${jidString}`);
+
     // Wait for connection status to change
     return new Promise((resolve, reject) => {
       // Initiate connection
