@@ -32,6 +32,15 @@ import {
 // PROJECT: STORES
 import Store from "@/store";
 
+// PROJECT: UTILITIES
+import {
+  default as UtilitiesRuntime,
+  RuntimeConnectionMethod
+} from "@/utilities/runtime";
+
+// CONSTANTS
+const RUNTIME_CONNECTION_METHODS = UtilitiesRuntime.acquireConnectionMethods();
+
 export default {
   name: "AccountSettingsAdvanced",
 
@@ -113,6 +122,71 @@ export default {
 
                 label: "Automatically send crash reports"
               } as FormFieldsetFieldDataCheckbox
+            }
+          ]
+        },
+
+        {
+          id: "network",
+          title: "Network",
+
+          fields: [
+            {
+              id: "connection",
+              type: FormFieldsetFieldType.Select,
+              label: "Connection:",
+
+              data: {
+                value: {
+                  inner: Store.$settings.network.connection,
+                  change: Store.$settings.setNetworkConnection
+                },
+
+                placeholder: "Pick a connection method…",
+
+                options: [
+                  {
+                    value: "auto",
+                    label: "Automatic (recommended)"
+                  },
+
+                  {
+                    value: "native",
+
+                    label:
+                      "Native XMPP " +
+                      (RUNTIME_CONNECTION_METHODS.includes(
+                        RuntimeConnectionMethod.Native
+                      ) !== true
+                        ? "(unavailable)"
+                        : "(more reliable)"),
+
+                    disabled:
+                      RUNTIME_CONNECTION_METHODS.includes(
+                        RuntimeConnectionMethod.Native
+                      ) !== true
+                  },
+
+                  {
+                    value: "relayed",
+
+                    label:
+                      "WebSocket " +
+                      (RUNTIME_CONNECTION_METHODS.includes(
+                        RuntimeConnectionMethod.Relayed
+                      ) !== true
+                        ? "(unavailable)"
+                        : "(works on more networks)"),
+
+                    disabled:
+                      RUNTIME_CONNECTION_METHODS.includes(
+                        RuntimeConnectionMethod.Relayed
+                      ) !== true
+                  }
+                ],
+
+                position: "bottom"
+              } as FormFieldsetFieldDataSelect
             }
           ]
         }

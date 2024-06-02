@@ -23,7 +23,6 @@ import {
   warn as tauriLogWarn
 } from "tauri-plugin-log-api";
 import FileDownloader from "js-file-downloader";
-import { ProseConnectionProvider } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMMONS
 import CONFIG from "@/commons/config";
@@ -31,10 +30,6 @@ import CONFIG from "@/commons/config";
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 import UtilitiesTitle from "@/utilities/title";
-
-// PROJECT: BROKER
-import BrokerConnectionRelayed from "@/broker/connection/relayed";
-import BrokerConnectionNative from "@/broker/connection/native";
 
 /**************************************************************************
  * ENUMERATIONS
@@ -75,6 +70,13 @@ enum RuntimeConnectionState {
   ConnectionTimeout = "connection-timeout",
   // Connection error state.
   ConnectionError = "connection-error"
+}
+
+enum RuntimeConnectionMethod {
+  // Native method.
+  Native = "native",
+  // Relayed method.
+  Relayed = "relayed"
 }
 
 /**************************************************************************
@@ -579,15 +581,17 @@ class UtilitiesRuntime {
     }
   }
 
-  acquireConnectionInstance(): ProseConnectionProvider {
+  acquireConnectionMethods(): Array<RuntimeConnectionMethod> {
+    // Allow relayed connection method via Web frontend (Web build or \
+    //   application build)
+    const methods = [RuntimeConnectionMethod.Relayed];
+
     if (this.__isApplication === true) {
-      // Acquire a native connection via Tauri backend (application build)
-      return new BrokerConnectionNative();
+      // Allow native connection method via Tauri backend (application build)
+      methods.push(RuntimeConnectionMethod.Native);
     }
 
-    // Acquire a relayed connection via Web frontend (Web build)
-    // Notice: could be either WebSocket or more rarely, BOSH.
-    return new BrokerConnectionRelayed();
+    return methods;
   }
 
   private __bindListeners(): void {
@@ -718,6 +722,7 @@ class UtilitiesRuntime {
 export {
   RuntimeLogLevel,
   RuntimeConnectionState,
+  RuntimeConnectionMethod,
   platform,
   context,
   translucent

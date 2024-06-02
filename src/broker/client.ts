@@ -13,6 +13,7 @@ import {
   JID,
   ProseClient,
   ProseClientConfig,
+  ProseConnectionProvider,
   ProseConnectionError,
   ProseConnectionErrorType
 } from "@prose-im/prose-sdk-js";
@@ -30,7 +31,10 @@ import {
   enabled as loggerEnabled,
   level as loggerLevel
 } from "@/utilities/logger";
-import UtilitiesRuntime from "@/utilities/runtime";
+import {
+  default as UtilitiesRuntime,
+  RuntimeConnectionMethod
+} from "@/utilities/runtime";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -39,6 +43,8 @@ import {
   VERSION_REVISION,
   VERSION_SYSTEM
 } from "@/broker/context";
+import BrokerConnectionRelayed from "@/broker/connection/relayed";
+import BrokerConnectionNative from "@/broker/connection/native";
 import BrokerDelegate from "@/broker/delegate";
 import BrokerEncryption from "@/broker/encryption";
 import BrokerLogger from "@/broker/logger";
@@ -230,7 +236,7 @@ class BrokerClient {
     // Initialize client? (or re-use existing client)
     if (this.client === undefined) {
       this.client = await ProseClient.init(
-        UtilitiesRuntime.acquireConnectionInstance(),
+        this.__acquireConnector(),
         this.__delegate,
         new BrokerEncryption(),
         new BrokerLogger(),
@@ -289,6 +295,33 @@ class BrokerClient {
     config.clientOS = VERSION_SYSTEM;
 
     return config;
+  }
+
+  private __acquireConnector(): ProseConnectionProvider {
+    const methods = UtilitiesRuntime.acquireConnectionMethods();
+
+    // Acquire preferred connection
+    const preferConnection = Store.$settings.network.connection || "auto",
+      preferAutomatic = preferConnection === "auto";
+
+    // Native method available? (preferred if automatic)
+    if (
+      methods.includes(RuntimeConnectionMethod.Native) === true &&
+      (preferAutomatic === true || preferConnection === "native")
+    ) {
+      return new BrokerConnectionNative();
+    }
+
+    // Relayed method available? (fallback if automatic)
+    if (
+      methods.includes(RuntimeConnectionMethod.Relayed) === true &&
+      (preferAutomatic === true || preferConnection === "relayed")
+    ) {
+      return new BrokerConnectionRelayed();
+    }
+
+    // No method available
+    throw new Error("No connection method available");
   }
 
   private __bindDelegateEvents(delegate: BrokerDelegate): void {

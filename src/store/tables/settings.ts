@@ -120,6 +120,10 @@ const $settings = defineStore("settings", {
           analytics: false,
           crashes: true
         }
+      },
+
+      network: {
+        connection: "auto"
       }
     };
   },
@@ -253,6 +257,12 @@ const $settings = defineStore("settings", {
 
     setPrivacyReportCrashes(value: boolean): void {
       this.setGeneric(this.privacy.report, "crashes", value);
+    },
+
+    setNetworkConnection(value: string): void {
+      this.setGeneric(this.network, "connection", value);
+
+      // TODO: signal to reconnect (if disconnected)
     },
 
     setGeneric<ValueType>(
