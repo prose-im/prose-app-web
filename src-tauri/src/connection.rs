@@ -169,6 +169,8 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
     while let Some(event) = client_reader.next().await {
         match event {
             Event::Disconnected(Error::Disconnected) => {
+                info!("Received disconnected event on: #{}", id);
+
                 emit_connection_abort(window, id, ConnectionState::Disconnected);
 
                 // Abort here (success)
@@ -206,6 +208,8 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
                 return Err(PollInputError::OtherError);
             }
             Event::Online { .. } => {
+                info!("Received connected event on: #{}", id);
+
                 window
                     .emit(
                         EVENT_STATE,
@@ -220,6 +224,8 @@ async fn poll_input_events<R: Runtime, C: ServerConnector>(
                 continue;
             }
             Event::Stanza(stanza) => {
+                debug!("Received stanza event on: #{}", id);
+
                 let stanza_xml = String::from(&stanza);
 
                 window
