@@ -102,7 +102,8 @@ div(
           {
             "u-medium": (value === option.value),
             "c-form-select__option--selected": (value === option.value),
-            "c-form-select__option--hovered": (hoveredIndex === index)
+            "c-form-select__option--hovered": (hoveredIndex === index),
+            "c-form-select__option--disabled": option.disabled
           }
         ]`
       )
@@ -133,6 +134,7 @@ import { names as keyNames } from "keycode";
 export interface Option {
   value: string;
   label: string;
+  disabled?: boolean;
 }
 
 // CONSTANTS
@@ -359,15 +361,17 @@ export default {
     // --> HELPERS <--
 
     selectOption(option: Option): void {
-      const inputElement = this.$refs.input as HTMLInputElement;
+      if (option.disabled !== true) {
+        const inputElement = this.$refs.input as HTMLInputElement;
 
-      // Assign new value, and dispatch change event
-      inputElement.value = option.value;
+        // Assign new value, and dispatch change event
+        inputElement.value = option.value;
 
-      inputElement.dispatchEvent(new Event("change"));
+        inputElement.dispatchEvent(new Event("change"));
 
-      // Hide dropdown selector
-      this.hideDropdown();
+        // Hide dropdown selector
+        this.hideDropdown();
+      }
     },
 
     hideDropdown(): void {
@@ -723,6 +727,24 @@ $sizes: (
                 10%
               );
             }
+          }
+        }
+      }
+
+      &--disabled {
+        cursor: not-allowed;
+
+        a {
+          pointer-events: none;
+
+          #{$c}__value {
+            color: rgb(var(--color-text-tertiary));
+          }
+        }
+
+        &#{$c}__option--hovered {
+          a {
+            background-color: darken-var(var(--color-background-secondary), 1%);
           }
         }
       }
