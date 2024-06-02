@@ -68,7 +68,6 @@ interface UnreadMessageExcerpt {
 }
 
 // CONSTANTS
-const UNREAD_MESSAGES_DISPLAY_LAST_COUNT_MINIMUM = 3;
 const UNREAD_MESSAGES_DISPLAY_LAST_COUNT_MAXIMUM = 10;
 
 export default {
@@ -286,13 +285,12 @@ export default {
         try {
           // Compute the number of messages to acquire and store
           const excerptsCount = Math.min(
-            Math.max(unreadCount, UNREAD_MESSAGES_DISPLAY_LAST_COUNT_MINIMUM),
+            unreadCount,
             UNREAD_MESSAGES_DISPLAY_LAST_COUNT_MAXIMUM
           );
 
-          // TODO: only request the desired amount of messages here, see \
-          //   @ref: https://github.com/prose-im/prose-core-client/issues/75
-          const result = await room.loadLatestMessages();
+          // Load all unread messages
+          const result = await room.loadUnreadMessages();
 
           // Append message excerpt from core message
           // Notice: only store the last Nth messages from the list of \
