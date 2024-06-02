@@ -79,7 +79,7 @@ class BrokerConnectionRelayedStrophe
         switch (status) {
           // [CONNECTING] The connection is currently being made
           case Strophe.Status.CONNECTING: {
-            logger.info("Connecting…");
+            logger.info("Broker connecting…");
 
             // Enable connect intent marker
             this.__connectIntent = true;
@@ -95,9 +95,11 @@ class BrokerConnectionRelayedStrophe
             //   which we do not expect and (may) cause side-effects with the \
             //   core client connection management system.
             if (this.__connectIntent === true) {
-              logger.info("Disconnecting…");
+              logger.info("Broker disconnecting…");
             } else {
-              logger.warn("Received disconnecting (but was not connected)");
+              logger.warn(
+                "Broker received disconnecting (but was not connected)"
+              );
             }
 
             break;
@@ -111,7 +113,7 @@ class BrokerConnectionRelayedStrophe
             //   which we do not expect and (will) cause side-effects with the \
             //   core client connection management system.
             if (this.__connectIntent === true) {
-              logger.warn("Disconnected");
+              logger.warn("Broker disconnected");
 
               // Disable connect intent marker
               this.__connectIntent = false;
@@ -119,7 +121,9 @@ class BrokerConnectionRelayedStrophe
               // Pass disconnected event to caller client
               this._eventHandler?.handleDisconnect();
             } else {
-              logger.warn("Received disconnected (but was not connected)");
+              logger.warn(
+                "Broker received disconnected (but was not connected)"
+              );
             }
 
             // Destroy connection (permanently, we do not allow re-use here)
@@ -130,7 +134,7 @@ class BrokerConnectionRelayedStrophe
 
           // [CONNECTED] The connection has succeeded
           case Strophe.Status.CONNECTED: {
-            logger.info("Connected");
+            logger.info("Broker connected");
 
             resolve();
 
@@ -139,7 +143,7 @@ class BrokerConnectionRelayedStrophe
 
           // [AUTHFAIL] The authentication attempt failed
           case Strophe.Status.AUTHFAIL: {
-            logger.error("Authentication failure");
+            logger.error("Broker authentication failure");
 
             reject(ProseConnectionErrorType.InvalidCredentials);
 
@@ -148,7 +152,7 @@ class BrokerConnectionRelayedStrophe
 
           // [CONNFAIL] The connection attempt failed
           case Strophe.Status.CONNFAIL: {
-            logger.error("Connection failure");
+            logger.error("Broker connection failure");
 
             reject(ProseConnectionErrorType.Generic);
 
@@ -157,7 +161,7 @@ class BrokerConnectionRelayedStrophe
 
           // [CONNTIMEOUT] The connection has timed out
           case Strophe.Status.CONNTIMEOUT: {
-            logger.error("Connection timed out");
+            logger.error("Broker connection timed out");
 
             reject(ProseConnectionErrorType.TimedOut);
 
@@ -166,7 +170,7 @@ class BrokerConnectionRelayedStrophe
 
           // [ERROR] An error has occurred
           case Strophe.Status.ERROR: {
-            logger.error("Connection error");
+            logger.error("Broker connection error");
 
             reject(ProseConnectionErrorType.Generic);
 
@@ -175,28 +179,28 @@ class BrokerConnectionRelayedStrophe
 
           // [AUTHENTICATING] The connection is authenticating
           case Strophe.Status.AUTHENTICATING: {
-            logger.info("Authenticating…");
+            logger.info("Broker authenticating…");
 
             break;
           }
 
           // [ATTACHED] The connection has been attached
           case Strophe.Status.ATTACHED: {
-            logger.info("Connection has been attached to");
+            logger.info("Broker connection has been attached to");
 
             break;
           }
 
           // [REDIRECT] The connection has been redirected
           case Strophe.Status.REDIRECT: {
-            logger.info("Connection has been redirected");
+            logger.info("Broker connection has been redirected");
 
             break;
           }
 
           // [OTHER] Unhandled connection event received
           default: {
-            logger.warn("Received unhandled connection event");
+            logger.warn("Broker received unhandled connection event");
           }
         }
       });
@@ -215,7 +219,7 @@ class BrokerConnectionRelayedStrophe
     ).firstElementChild;
 
     if (!element) {
-      logger.error("Cannot parse stanza to send:", stanza);
+      logger.error("Broker cannot parse stanza to send:", stanza);
 
       throw new Error("Failed to send stanza");
     }
@@ -342,11 +346,14 @@ class BrokerConnectionRelayedStrophe
         }
       }
     } catch (error) {
-      logger.error(`Error loading relay host from domain: ${domain}`, error);
+      logger.error(
+        `Broker error loading relay host from domain: ${domain}`,
+        error
+      );
     }
 
     // Generate default URL (fallback)
-    logger.warn(`Using fallback relay host for domain: ${domain}`);
+    logger.warn(`Broker using fallback relay host for domain: ${domain}`);
 
     return {
       url: `wss://${domain}/websocket/`,

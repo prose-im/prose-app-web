@@ -52,7 +52,7 @@ class BrokerConnectionNativeTauri
       UtilitiesRuntime.requestConnectionConnect(id, jidString, password).catch(
         error => {
           // Intercept error for logging purposes
-          logger.error("Failed to request a connection connect", error);
+          logger.error("Broker failed to request a connection connect", error);
 
           reject(error);
         }
@@ -96,7 +96,7 @@ class BrokerConnectionNativeTauri
       state: (state: RuntimeConnectionState) => {
         switch (state) {
           case RuntimeConnectionState.Connected: {
-            logger.info("Connected");
+            logger.info("Broker connected");
 
             handlers.succeed();
 
@@ -104,7 +104,7 @@ class BrokerConnectionNativeTauri
           }
 
           case RuntimeConnectionState.Disconnected: {
-            logger.warn("Disconnected");
+            logger.warn("Broker disconnected");
 
             // Pass disconnected event to caller client
             this._eventHandler?.handleDisconnect();
@@ -116,7 +116,7 @@ class BrokerConnectionNativeTauri
           }
 
           case RuntimeConnectionState.AuthenticationFailure: {
-            logger.error("Authentication failure");
+            logger.error("Broker authentication failure");
 
             handlers.fail(ProseConnectionErrorType.InvalidCredentials);
 
@@ -124,7 +124,7 @@ class BrokerConnectionNativeTauri
           }
 
           case RuntimeConnectionState.ConnectionTimeout: {
-            logger.error("Connection timeout");
+            logger.error("Broker connection timeout");
 
             handlers.fail(ProseConnectionErrorType.TimedOut);
 
@@ -132,7 +132,7 @@ class BrokerConnectionNativeTauri
           }
 
           case RuntimeConnectionState.ConnectionError: {
-            logger.error("Connection error");
+            logger.error("Broker connection error");
 
             handlers.fail(ProseConnectionErrorType.Generic);
 
@@ -181,7 +181,7 @@ class BrokerConnectionNativeTauri
       try {
         await UtilitiesRuntime.requestConnectionDestroy(connectionIdMaybe);
       } catch (error) {
-        logger.error("Failed to request a connection destroy", error);
+        logger.error("Broker failed to request a connection destroy", error);
       }
     }
   }
