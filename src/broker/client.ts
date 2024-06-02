@@ -127,10 +127,15 @@ class BrokerClient {
   }
 
   async refresh(): Promise<void> {
-    // Forcibly disconnect client (which will reconnect to a new connection, \
-    //   if it was authenticated - this essentially 'refreshes' the client \
-    //   connection)
-    await this.client?.disconnect();
+    if (this.client !== undefined) {
+      // Forcibly disconnect client (which will reconnect to a new connection, \
+      //   if it was authenticated - this essentially 'refreshes' the client \
+      //   connection)
+      await this.client?.disconnect();
+
+      // Void client (will be rebuilt)
+      delete this.client;
+    }
   }
 
   reconnect(afterBaseDelay = 0): void {
