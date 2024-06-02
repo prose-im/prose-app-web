@@ -126,6 +126,13 @@ class BrokerClient {
     }
   }
 
+  async refresh(): Promise<void> {
+    // Forcibly disconnect client (which will reconnect to a new connection, \
+    //   if it was authenticated - this essentially 'refreshes' the client \
+    //   connection)
+    await this.client?.disconnect();
+  }
+
   reconnect(afterBaseDelay = 0): void {
     const credentials = this.__credentials;
 

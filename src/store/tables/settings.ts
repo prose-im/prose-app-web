@@ -15,6 +15,9 @@ import mitt from "mitt";
 // PROJECT: STORES
 import { STORE_PERSIST_PREFIX, STORE_PERSIST_BOOT } from "@/store";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 /**************************************************************************
  * INSTANCES
  * ************************************************************************* */
@@ -260,9 +263,12 @@ const $settings = defineStore("settings", {
     },
 
     setNetworkConnection(value: string): void {
-      this.setGeneric(this.network, "connection", value);
+      const hasChanged = this.setGeneric(this.network, "connection", value);
 
-      // TODO: signal to reconnect (if disconnected)
+      // Request to refresh the broker client connection?
+      if (hasChanged === true) {
+        Broker.client.refresh();
+      }
     },
 
     setGeneric<ValueType>(
