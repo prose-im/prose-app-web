@@ -157,7 +157,8 @@ const fromCoreMessage = function (
       secure: message.meta.isEncrypted || room.type === RoomType.PublicChannel,
       encrypted: message.meta.isEncrypted,
       edited: message.meta.isEdited,
-      transient: message.meta.isTransient
+      transient: message.meta.isTransient,
+      lastRead: message.meta.isLastRead
     },
 
     // File attachments (if any)
