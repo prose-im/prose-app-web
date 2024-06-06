@@ -230,7 +230,7 @@ export enum Request {
 
 // INSTANCES
 const MESSAGE_TEXT_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
-const MESSAGE_CODE_MENTION_REGEX = /(@\[[^[\]]+\]\(xmpp:([^()]+)\))/g;
+const MESSAGE_CODE_MENTION_REGEX = /(\[@[^[\]]+\]\(xmpp:([^()]+)\))/g;
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 10000; // 10 seconds
