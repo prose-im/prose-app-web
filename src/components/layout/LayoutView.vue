@@ -21,11 +21,7 @@ div(
     class="c-layout-view__topbar"
   )
 
-  .c-layout-view__content(
-    :style=`{
-      overflow
-    }`
-  )
+  .c-layout-view__content
     slot
 
   slot(
@@ -62,15 +58,6 @@ export default {
       validator(x: string) {
         return ["row", "column"].includes(x);
       }
-    },
-
-    overflow: {
-      type: String,
-      default: "hidden",
-
-      validator(x: string) {
-        return ["visible", "hidden"].includes(x);
-      }
     }
   }
 };
@@ -100,6 +87,7 @@ $c: ".c-layout-view";
   #{$c}__content {
     flex: 1;
     display: flex;
+    overflow: hidden;
   }
 
   // --> DIRECTIONS <--

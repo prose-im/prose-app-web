@@ -12,7 +12,6 @@
 layout-view(
   :topbar-component="topbarComponent"
   :topbar-properties="{ jid, room }"
-  overflow="visible"
   class="v-app-inbox-base"
 )
   .v-app-inbox-base__messages(
