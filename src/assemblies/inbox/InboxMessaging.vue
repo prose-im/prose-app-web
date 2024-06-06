@@ -91,6 +91,7 @@
     :room="room"
     :message-id="cards.messageAuthor.messageId"
     :anchor="cards.messageAuthor.anchor"
+    :bounds="cards.messageAuthor.bounds"
     :origin="cards.messageAuthor.origin"
   )
 
@@ -100,6 +101,7 @@
     :message-id="cards.messageReaction.messageId"
     :reaction="cards.messageReaction.reaction"
     :anchor="cards.messageReaction.anchor"
+    :bounds="cards.messageReaction.bounds"
     :origin="cards.messageReaction.origin"
   )
 </template>
@@ -321,6 +323,7 @@ export default {
           messageId: "",
           anchor: [0, 0],
 
+          bounds: null as null | Array<number>,
           origin: null as null | Array<number>
         },
 
@@ -331,6 +334,7 @@ export default {
           reaction: "",
           anchor: [0, 0],
 
+          bounds: null as null | Array<number>,
           origin: null as null | Array<number>
         }
       },
@@ -1492,20 +1496,27 @@ export default {
     onMessagingMessageAuthorIdentity(event: EventMessageAuthorIdentity): void {
       this.$log.debug("Got message author identity", event);
 
-      // Acquire parent & anchor
-      const parent = event.origin?.parent || null,
-        anchor = parent || event.origin?.anchor || null;
+      // Acquire container element
+      const containerElement = (this.$refs.container as HTMLElement) || null;
 
-      // Show or hide message author card
-      this.cards.messageAuthor.messageId = event.id;
-      this.cards.messageAuthor.anchor = [anchor?.x || 0, anchor?.y || 0];
+      if (containerElement !== null) {
+        // Acquire parent & anchor
+        const parent = event.origin?.parent || null,
+          anchor = parent || event.origin?.anchor || null,
+          bounds = containerElement.getBoundingClientRect();
 
-      this.cards.messageAuthor.origin =
-        parent?.width && parent?.height
-          ? [parent?.width, parent?.height]
-          : null;
+        // Show or hide message author card
+        this.cards.messageAuthor.messageId = event.id;
+        this.cards.messageAuthor.anchor = [anchor?.x || 0, anchor?.y || 0];
+        this.cards.messageAuthor.bounds = [bounds.x || 0, bounds.y || 0];
 
-      this.cards.messageAuthor.visible = event.visible;
+        this.cards.messageAuthor.origin =
+          parent?.width && parent?.height
+            ? [parent?.width, parent?.height]
+            : null;
+
+        this.cards.messageAuthor.visible = event.visible;
+      }
     },
 
     onMessagingMessageActionsView(event: EventMessageActionsView): void {
@@ -1676,21 +1687,28 @@ export default {
     ): void {
       this.$log.debug("Got message reactions authors", event);
 
-      // Acquire parent & anchor
-      const parent = event.origin?.parent || null,
-        anchor = parent || event.origin?.anchor || null;
+      // Acquire container element
+      const containerElement = (this.$refs.container as HTMLElement) || null;
 
-      // Show or hide message reaction card
-      this.cards.messageReaction.messageId = event.id;
-      this.cards.messageReaction.reaction = event.reaction;
-      this.cards.messageReaction.anchor = [anchor?.x || 0, anchor?.y || 0];
+      if (containerElement !== null) {
+        // Acquire parent & anchor
+        const parent = event.origin?.parent || null,
+          anchor = parent || event.origin?.anchor || null,
+          bounds = containerElement.getBoundingClientRect();
 
-      this.cards.messageReaction.origin =
-        parent?.width && parent?.height
-          ? [parent?.width, parent?.height]
-          : null;
+        // Show or hide message reaction card
+        this.cards.messageReaction.messageId = event.id;
+        this.cards.messageReaction.reaction = event.reaction;
+        this.cards.messageReaction.anchor = [anchor?.x || 0, anchor?.y || 0];
+        this.cards.messageReaction.bounds = [bounds.x || 0, bounds.y || 0];
 
-      this.cards.messageReaction.visible = event.visible;
+        this.cards.messageReaction.origin =
+          parent?.width && parent?.height
+            ? [parent?.width, parent?.height]
+            : null;
+
+        this.cards.messageReaction.visible = event.visible;
+      }
     },
 
     async onMessagingMessageReactionsReact(

@@ -11,6 +11,7 @@
 <template lang="pug">
 base-card(
   :anchor="anchor"
+  :bounds="bounds"
   :origin="origin"
   class="c-message-author"
 )
@@ -95,6 +96,11 @@ export default {
     anchor: {
       type: Array<number>,
       required: true
+    },
+
+    bounds: {
+      type: Array<number>,
+      default: null
     },
 
     origin: {

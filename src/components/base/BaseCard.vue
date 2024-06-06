@@ -46,6 +46,15 @@ export default {
       }
     },
 
+    bounds: {
+      type: Array<number>,
+      default: null,
+
+      validator(x: Array<number>): boolean {
+        return x.length === 2;
+      }
+    },
+
     origin: {
       type: Array<number>,
       default: null,
@@ -125,13 +134,16 @@ export default {
         const offsets = this.acquireOffsetAdapt();
 
         // Compute offsets from there
-        const bounds = cardElement.getBoundingClientRect();
+        const cardBounds = cardElement.getBoundingClientRect();
 
-        if (bounds.top < 0 && this.origin !== null) {
+        if (
+          cardBounds.top <= this.bounds[1] + ADAPT_EDGE_BLOCK_OFFSET &&
+          this.origin !== null
+        ) {
           // Card goes out of view (at top corner, correct offsets)
           offsets[0] +=
             this.origin[1] +
-            bounds.height +
+            cardBounds.height +
             ADAPT_EDGE_BLOCK_OFFSET +
             ADAPT_EDGE_BORDER_OFFSET;
         } else {
