@@ -11,6 +11,7 @@
 <template lang="pug">
 base-card(
   :anchor="anchor"
+  :origin="origin"
   class="c-message-reaction"
 )
   .c-message-reaction__emoji
@@ -71,6 +72,11 @@ export default {
     anchor: {
       type: Array<number>,
       required: true
+    },
+
+    origin: {
+      type: Array<number>,
+      default: null
     }
   },
 

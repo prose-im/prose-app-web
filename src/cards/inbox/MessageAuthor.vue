@@ -11,6 +11,7 @@
 <template lang="pug">
 base-card(
   :anchor="anchor"
+  :origin="origin"
   class="c-message-author"
 )
   .c-message-author__profile(
@@ -94,6 +95,11 @@ export default {
     anchor: {
       type: Array<number>,
       required: true
+    },
+
+    origin: {
+      type: Array<number>,
+      default: null
     }
   },
 

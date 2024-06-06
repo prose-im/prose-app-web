@@ -12,6 +12,7 @@
 .c-base-card(
   v-if="isRevealed"
   :style="cardStyle"
+  ref="root"
 )
   slot
 </template>
@@ -22,15 +23,32 @@
 
 <script lang="ts">
 // CONSTANTS
-const REVEAL_DELAY = 250; // 1/4 second
+const REVEAL_DELAY = 350; // 350 milliseconds
+
+const ADAPT_EDGE_BORDER_OFFSET = 1;
+const ADAPT_EDGE_TOP_OFFSET = 3;
 
 export default {
   name: "BaseCard",
 
   props: {
+    adapt: {
+      type: Boolean,
+      default: true
+    },
+
     anchor: {
       type: Array<number>,
       required: true,
+
+      validator(x: Array<number>): boolean {
+        return x.length === 2;
+      }
+    },
+
+    origin: {
+      type: Array<number>,
+      default: null,
 
       validator(x: Array<number>): boolean {
         return x.length === 2;
@@ -44,15 +62,22 @@ export default {
 
       isRevealed: false,
 
+      offsetAdapt: {
+        block: 0,
+        inline: 0
+      },
+
       revealTimeout: null as null | ReturnType<typeof setTimeout>
     };
   },
 
   computed: {
     cardStyle(): { [property: string]: string } {
+      const offsets = this.acquireOffsetAdapt();
+
       return {
-        insetInlineStart: `${this.anchor[0]}px`,
-        insetBlockStart: `${this.anchor[1]}px`
+        insetInlineStart: `${this.anchor[0] + offsets[1]}px`,
+        insetBlockStart: `${this.anchor[1] + offsets[0]}px`
       };
     }
   },
@@ -74,6 +99,11 @@ export default {
           this.revealTimeout = null;
 
           this.isRevealed = true;
+
+          // Automatically adapt card offset?
+          if (this.adapt === true) {
+            this.$nextTick(this.autoAdaptOffset);
+          }
         }, REVEAL_DELAY);
       }
     },
@@ -84,6 +114,43 @@ export default {
 
         this.revealTimeout = null;
       }
+    },
+
+    autoAdaptOffset(): void {
+      // Compute offset to apply (so that card does not go off of screen)
+      const cardElement = (this.$refs.root as HTMLElement) || null;
+
+      if (cardElement !== null) {
+        // Acquire previous offsets
+        const offsets = this.acquireOffsetAdapt();
+
+        // Compute offsets from there
+        const bounds = cardElement.getBoundingClientRect();
+
+        if (bounds.top < 0 && this.origin !== null) {
+          // Card goes out of view (at top corner, correct offsets)
+          offsets[0] += bounds.height - ADAPT_EDGE_BORDER_OFFSET;
+
+          offsets[1] +=
+            this.origin[0] + ADAPT_EDGE_TOP_OFFSET + ADAPT_EDGE_BORDER_OFFSET;
+        } else {
+          // Card does not get out of view (add regular edge offsets)
+          offsets[0] -= ADAPT_EDGE_TOP_OFFSET + ADAPT_EDGE_BORDER_OFFSET;
+          offsets[1] -= ADAPT_EDGE_BORDER_OFFSET;
+        }
+
+        // Update with new offsets
+        this.updateOffsetAdapt(offsets);
+      }
+    },
+
+    acquireOffsetAdapt(): [number, number] {
+      return [this.offsetAdapt.block, this.offsetAdapt.inline];
+    },
+
+    updateOffsetAdapt(offsets: [number, number]): void {
+      this.offsetAdapt.block = offsets[0];
+      this.offsetAdapt.inline = offsets[1];
     }
   }
 };
@@ -96,16 +163,11 @@ export default {
 <style lang="scss">
 $c: ".c-base-card";
 
-// VARIABLES
-$card-border-width: 1px;
-
 #{$c} {
   background-color: rgb(var(--color-white));
-  border: $card-border-width solid rgb(var(--color-border-secondary));
+  border: 1px solid rgb(var(--color-border-secondary));
   font-size: 12px;
   line-height: 15px;
-  margin-inline-start: -$card-border-width;
-  margin-block-start: -($card-border-width + 3px);
   padding: 9px 11px;
   position: absolute;
   z-index: $index-foreground-quaternary;
