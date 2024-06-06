@@ -26,7 +26,7 @@
 const REVEAL_DELAY = 350; // 350 milliseconds
 
 const ADAPT_EDGE_BORDER_OFFSET = 1;
-const ADAPT_EDGE_TOP_OFFSET = 3;
+const ADAPT_EDGE_BLOCK_OFFSET = 3;
 
 export default {
   name: "BaseCard",
@@ -129,15 +129,17 @@ export default {
 
         if (bounds.top < 0 && this.origin !== null) {
           // Card goes out of view (at top corner, correct offsets)
-          offsets[0] += bounds.height - ADAPT_EDGE_BORDER_OFFSET;
-
-          offsets[1] +=
-            this.origin[0] + ADAPT_EDGE_TOP_OFFSET + ADAPT_EDGE_BORDER_OFFSET;
+          offsets[0] +=
+            this.origin[1] +
+            bounds.height +
+            ADAPT_EDGE_BLOCK_OFFSET +
+            ADAPT_EDGE_BORDER_OFFSET;
         } else {
           // Card does not get out of view (add regular edge offsets)
-          offsets[0] -= ADAPT_EDGE_TOP_OFFSET + ADAPT_EDGE_BORDER_OFFSET;
-          offsets[1] -= ADAPT_EDGE_BORDER_OFFSET;
+          offsets[0] -= ADAPT_EDGE_BLOCK_OFFSET + ADAPT_EDGE_BORDER_OFFSET;
         }
+
+        offsets[1] -= ADAPT_EDGE_BORDER_OFFSET;
 
         // Update with new offsets
         this.updateOffsetAdapt(offsets);
