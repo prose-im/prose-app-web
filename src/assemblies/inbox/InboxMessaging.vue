@@ -195,6 +195,8 @@ type StatePopoverAnchor = { x: number; y: number; height?: number };
 type StatePopoverListeners = { [name: string]: (_: any) => void };
 type StatePopoverInteraction = { id: string; action: string };
 
+type StateCardMessageAuthor = StateCard;
+
 // INTERFACES
 interface StatePopover {
   style: {
@@ -210,6 +212,18 @@ interface StatePopover {
   context: null | object;
   listeners: null | StatePopoverListeners;
   interaction: null | StatePopoverInteraction;
+}
+
+interface StateCard {
+  messageId: string;
+  visible: boolean;
+  anchor: Array<number>;
+  bounds: null | Array<number>;
+  origin: null | Array<number>;
+}
+
+interface StateCardMessageReaction extends StateCard {
+  reaction: string;
 }
 
 // CONSTANTS
@@ -323,9 +337,9 @@ export default {
           messageId: "",
           anchor: [0, 0],
 
-          bounds: null as null | Array<number>,
-          origin: null as null | Array<number>
-        },
+          bounds: null,
+          origin: null
+        } as StateCardMessageAuthor,
 
         messageReaction: {
           visible: false,
@@ -334,9 +348,9 @@ export default {
           reaction: "",
           anchor: [0, 0],
 
-          bounds: null as null | Array<number>,
-          origin: null as null | Array<number>
-        }
+          bounds: null,
+          origin: null
+        } as StateCardMessageReaction
       },
 
       popover: {
@@ -872,6 +886,39 @@ export default {
           true
         );
       }
+    },
+
+    showCard(
+      cardModel: StateCard,
+      sourceEvent: EventMessageAuthorIdentity | EventMessageReactionsAuthors
+    ): boolean {
+      // Acquire container element
+      const containerElement = (this.$refs.container as HTMLElement) || null;
+
+      if (containerElement !== null) {
+        // Acquire parent & anchor
+        const parent = sourceEvent.origin?.parent || null,
+          anchor = parent || sourceEvent.origin?.anchor || null,
+          bounds = containerElement.getBoundingClientRect();
+
+        // Show or hide message reaction card
+        cardModel.messageId = sourceEvent.id;
+        cardModel.anchor = [anchor?.x || 0, anchor?.y || 0];
+        cardModel.bounds = [bounds.x || 0, bounds.y || 0];
+
+        cardModel.origin =
+          parent?.width && parent?.height
+            ? [parent?.width, parent?.height]
+            : null;
+
+        cardModel.visible = sourceEvent.visible;
+
+        // Card has been shown
+        return true;
+      }
+
+      // Card has not been shown
+      return false;
     },
 
     triggerContainerClick(): void {
@@ -1496,27 +1543,7 @@ export default {
     onMessagingMessageAuthorIdentity(event: EventMessageAuthorIdentity): void {
       this.$log.debug("Got message author identity", event);
 
-      // Acquire container element
-      const containerElement = (this.$refs.container as HTMLElement) || null;
-
-      if (containerElement !== null) {
-        // Acquire parent & anchor
-        const parent = event.origin?.parent || null,
-          anchor = parent || event.origin?.anchor || null,
-          bounds = containerElement.getBoundingClientRect();
-
-        // Show or hide message author card
-        this.cards.messageAuthor.messageId = event.id;
-        this.cards.messageAuthor.anchor = [anchor?.x || 0, anchor?.y || 0];
-        this.cards.messageAuthor.bounds = [bounds.x || 0, bounds.y || 0];
-
-        this.cards.messageAuthor.origin =
-          parent?.width && parent?.height
-            ? [parent?.width, parent?.height]
-            : null;
-
-        this.cards.messageAuthor.visible = event.visible;
-      }
+      this.showCard(this.cards.messageAuthor, event);
     },
 
     onMessagingMessageActionsView(event: EventMessageActionsView): void {
@@ -1687,27 +1714,8 @@ export default {
     ): void {
       this.$log.debug("Got message reactions authors", event);
 
-      // Acquire container element
-      const containerElement = (this.$refs.container as HTMLElement) || null;
-
-      if (containerElement !== null) {
-        // Acquire parent & anchor
-        const parent = event.origin?.parent || null,
-          anchor = parent || event.origin?.anchor || null,
-          bounds = containerElement.getBoundingClientRect();
-
-        // Show or hide message reaction card
-        this.cards.messageReaction.messageId = event.id;
+      if (this.showCard(this.cards.messageReaction, event) === true) {
         this.cards.messageReaction.reaction = event.reaction;
-        this.cards.messageReaction.anchor = [anchor?.x || 0, anchor?.y || 0];
-        this.cards.messageReaction.bounds = [bounds.x || 0, bounds.y || 0];
-
-        this.cards.messageReaction.origin =
-          parent?.width && parent?.height
-            ? [parent?.width, parent?.height]
-            : null;
-
-        this.cards.messageReaction.visible = event.visible;
       }
     },
 
