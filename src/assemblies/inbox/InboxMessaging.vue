@@ -186,6 +186,9 @@ import {
 } from "@/store/tables/inbox";
 import { SessionAppearance } from "@/store/tables/session";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 // PROJECT: UTILITIES
 import UtilitiesRuntime from "@/utilities/runtime";
 
@@ -1111,18 +1114,24 @@ export default {
       };
     },
 
-    openInlineChat(jidString: string): void {
+    async openInlineChat(jidString: string): Promise<void> {
       try {
         const jid = new JID(jidString);
 
         if (jid.equals(this.selfJID) === false) {
-          this.$router.push({
-            name: "app.inbox",
+          // Start conversation
+          const roomJID = await Broker.$room.startConversation([jid]);
 
-            params: {
-              roomId: jidString
-            }
-          });
+          // Navigate to conversation?
+          if (roomJID !== undefined) {
+            this.$router.push({
+              name: "app.inbox",
+
+              params: {
+                roomId: roomJID.toString()
+              }
+            });
+          }
         } else {
           BaseAlert.warning(
             "This is you",
@@ -1811,7 +1820,7 @@ export default {
           const jidString = event.link.url.split(":")[1] || null;
 
           if (jidString !== null && jidString !== this.room?.id) {
-            this.openInlineChat(jidString);
+            await this.openInlineChat(jidString);
           }
 
           break;

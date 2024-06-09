@@ -95,6 +95,9 @@ import BaseAlert from "@/components/base/BaseAlert.vue";
 // PROJECT: STORES
 import Store from "@/store";
 
+// PROJECT: BROKER
+import Broker from "@/broker";
+
 // CONSTANTS
 const MEMBER_AVAILABILITY_PRIORITIES = {
   [Availability.Available]: 0,
@@ -167,16 +170,29 @@ export default {
       Store.$layout.setInboxDetailsSectionMembers(visible);
     },
 
-    onMemberClick(member: ParticipantInfo): void {
-      if (member.isSelf === true) {
-        BaseAlert.warning("This is you", "Cannot start a chat with yourself!");
-      } else if (!member.jid) {
-        BaseAlert.warning("Anonymous member", "Member is not open for DMs");
-      } else {
-        this.$router.push({
-          name: "app.inbox",
-          params: { roomId: member.jid.toString() }
-        });
+    async onMemberClick(member: ParticipantInfo): Promise<void> {
+      try {
+        if (member.isSelf === true) {
+          BaseAlert.warning(
+            "This is you",
+            "Cannot start a chat with yourself!"
+          );
+        } else if (!member.jid) {
+          BaseAlert.warning("Anonymous member", "Member is not open for DMs");
+        } else {
+          // Start conversation
+          const roomJID = await Broker.$room.startConversation([member.jid]);
+
+          // Navigate to conversation?
+          if (roomJID !== undefined) {
+            this.$router.push({
+              name: "app.inbox",
+              params: { roomId: roomJID.toString() }
+            });
+          }
+        }
+      } catch (error) {
+        this.$log.error("Could not open conversation with room member", error);
       }
     },
 

@@ -32,12 +32,18 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { JID } from "@prose-im/prose-sdk-js";
+
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
 import { SessionAppearance } from "@/store/tables/session";
+
+// PROJECT: BROKER
+import Broker from "@/broker";
 
 // PROJECT: UTILITIES
 import {
@@ -183,29 +189,42 @@ export default {
       });
     },
 
-    onUrlOpen(protocol: string, path: string): void {
-      switch (protocol) {
-        case "xmpp": {
-          BaseAlert.info("Opened XMPP URL", path);
+    async onUrlOpen(protocol: string, path: string): Promise<void> {
+      try {
+        switch (protocol) {
+          case "xmpp": {
+            BaseAlert.info("Opened XMPP URL", path);
 
-          this.$router.push({
-            name: "app.inbox",
+            // Start conversation
+            const roomJID = await Broker.$room.startConversation([
+              new JID(path)
+            ]);
 
-            params: {
-              roomId: path
+            // Navigate to conversation?
+            if (roomJID !== undefined) {
+              this.$router.push({
+                name: "app.inbox",
+
+                params: {
+                  roomId: roomJID.toString()
+                }
+              });
             }
-          });
 
-          break;
+            break;
+          }
+
+          default: {
+            throw new Error("No URL open handler");
+          }
         }
+      } catch (error) {
+        this.$log.warn(
+          `Could not open URL with protocol: ${protocol} and path: ${path}`,
+          error
+        );
 
-        default: {
-          BaseAlert.warn(`Cannot open ${protocol.toUpperCase()} URL`, path);
-
-          this.$log.warn(
-            `No URL open handler for protocol: ${protocol} and path: ${path}`
-          );
-        }
+        BaseAlert.warn(`Cannot open ${protocol.toUpperCase()} URL`, path);
       }
     },
 
