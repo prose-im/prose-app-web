@@ -16,6 +16,7 @@ import BrokerModule from "@/broker/modules";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
+import { MIME_DEFAULT as FILE_MIME_DEFAULT } from "@/utilities/file";
 
 /**************************************************************************
  * CLASS
@@ -27,12 +28,15 @@ class BrokerModuleData extends BrokerModule {
     fileSize: number,
     fileType?: string
   ): Promise<UploadSlot | void> {
-    logger.info(`Will request upload slot for file name: '${fileName}'`);
+    logger.info(
+      `Will request upload slot for file name: '${fileName}' ` +
+        `(size: ${fileSize} bytes, type: ${fileType || "?"})`
+    );
 
     return await this._client.client?.requestUploadSlot(
       fileName,
       BigInt(fileSize),
-      fileType
+      fileType || FILE_MIME_DEFAULT
     );
   }
 }

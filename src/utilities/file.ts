@@ -506,6 +506,6 @@ class UtilitiesFile {
  * EXPORTS
  * ************************************************************************* */
 
-export { FileUploadMethod, FileThumbnailTarget };
+export { MIME_DEFAULT, FileUploadMethod, FileThumbnailTarget };
 export type { FileUploadHeaders };
 export default new UtilitiesFile();
