@@ -14,6 +14,9 @@ import { JID, SidebarItem } from "@prose-im/prose-sdk-js";
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
 
+// PROJECT: ROUTER
+import Router from "@/router";
+
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
 
@@ -54,6 +57,28 @@ class BrokerModuleRoom extends BrokerModule {
     return this._client.client?.startConversation(
       participants.map(jid => jid.toString())
     );
+  }
+
+  async openConversation(participants: Array<JID>): Promise<JID | undefined> {
+    logger.info(
+      `Will open conversation with ${participants.length} participants`
+    );
+
+    // Ensure conversation is started (room is open)
+    const roomJID = await this.startConversation(participants);
+
+    // Navigate to conversation?
+    // Notice: router navigation should typically not be done in the broker \
+    //   although 'startConversation()' is called so often before navigating \
+    //   that we would better put them together.
+    if (roomJID !== undefined) {
+      await Router.instance().push({
+        name: "app.inbox",
+        params: { roomId: roomJID.toString() }
+      });
+    }
+
+    return roomJID;
   }
 }
 

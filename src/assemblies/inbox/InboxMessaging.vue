@@ -1119,19 +1119,8 @@ export default {
         const jid = new JID(jidString);
 
         if (jid.equals(this.selfJID) === false) {
-          // Start conversation
-          const roomJID = await Broker.$room.startConversation([jid]);
-
-          // Navigate to conversation?
-          if (roomJID !== undefined) {
-            this.$router.push({
-              name: "app.inbox",
-
-              params: {
-                roomId: roomJID.toString()
-              }
-            });
-          }
+          // Open conversation
+          await Broker.$room.openConversation([jid]);
         } else {
           BaseAlert.warning(
             "This is you",

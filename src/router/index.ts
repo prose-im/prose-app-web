@@ -195,6 +195,10 @@ class Router {
     app.use(this.__router);
   }
 
+  instance(): VueRouter {
+    return this.__router;
+  }
+
   private async __guardAuthenticated(): Promise<void> {
     // Ensure that user is logged in (redirect to base if not)
     if (!Store.$account.credentials.jid) {

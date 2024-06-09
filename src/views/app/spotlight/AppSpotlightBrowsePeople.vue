@@ -227,19 +227,8 @@ export default {
         this.pendingMessages[jidString] = true;
 
         try {
-          // Start conversation
-          const roomJID = await Broker.$room.startConversation([jid]);
-
-          // Navigate to conversation?
-          if (roomJID !== undefined) {
-            this.$router.push({
-              name: "app.inbox",
-
-              params: {
-                roomId: roomJID.toString()
-              }
-            });
-          }
+          // Open conversation
+          await Broker.$room.openConversation([jid]);
         } catch (error) {
           this.$log.error("Could not start conversation", error);
 

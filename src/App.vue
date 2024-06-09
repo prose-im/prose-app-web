@@ -195,21 +195,8 @@ export default {
           case "xmpp": {
             BaseAlert.info("Opened XMPP URL", path);
 
-            // Start conversation
-            const roomJID = await Broker.$room.startConversation([
-              new JID(path)
-            ]);
-
-            // Navigate to conversation?
-            if (roomJID !== undefined) {
-              this.$router.push({
-                name: "app.inbox",
-
-                params: {
-                  roomId: roomJID.toString()
-                }
-              });
-            }
+            // Open conversation
+            await Broker.$room.openConversation([new JID(path)]);
 
             break;
           }

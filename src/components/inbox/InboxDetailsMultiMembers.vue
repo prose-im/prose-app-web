@@ -180,16 +180,8 @@ export default {
         } else if (!member.jid) {
           BaseAlert.warning("Anonymous member", "Member is not open for DMs");
         } else {
-          // Start conversation
-          const roomJID = await Broker.$room.startConversation([member.jid]);
-
-          // Navigate to conversation?
-          if (roomJID !== undefined) {
-            this.$router.push({
-              name: "app.inbox",
-              params: { roomId: roomJID.toString() }
-            });
-          }
+          // Open conversation
+          await Broker.$room.openConversation([member.jid]);
         }
       } catch (error) {
         this.$log.error("Could not open conversation with room member", error);
