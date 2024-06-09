@@ -28,12 +28,24 @@ import BrokerConnection from "@/broker/connection/index";
 import logger from "@/utilities/logger";
 
 /**************************************************************************
+ * TYPES
+ * ************************************************************************* */
+
+type RelayHostProtocol = "wss" | undefined;
+
+// @ts-expect-error Strophe type exports are borked
+type StropheConnection = Strophe.Connection;
+
+// @ts-expect-error Strophe type exports are borked
+type StropheStatus = Strophe.Status;
+
+/**************************************************************************
  * INTERFACES
  * ************************************************************************* */
 
 interface RelayHost {
   url: string;
-  protocol?: string;
+  protocol?: RelayHostProtocol;
 }
 
 /**************************************************************************
@@ -43,12 +55,12 @@ interface RelayHost {
 const RELAY_HOST_METADATA_PARSE = [
   {
     xmlns: "urn:xmpp:alt-connections:websocket",
-    protocol: "wss"
+    protocol: "wss" as RelayHostProtocol
   },
 
   {
     xmlns: "urn:xmpp:alt-connections:xbosh",
-    protocol: undefined
+    protocol: undefined as RelayHostProtocol
   }
 ];
 
@@ -60,7 +72,7 @@ class BrokerConnectionRelayedStrophe
   extends BrokerConnection
   implements ProseConnection
 {
-  private __connection?: Strophe.Connection;
+  private __connection?: StropheConnection;
   private __relayHost?: RelayHost;
 
   private __connectIntent = false;
@@ -79,7 +91,7 @@ class BrokerConnectionRelayedStrophe
 
     // Connect (using just bound connection)
     return new Promise((resolve, reject) => {
-      connection.connect(jidString, password, status => {
+      connection.connect(jidString, password, (status: StropheStatus) => {
         switch (status) {
           // [CONNECTING] The connection is currently being made
           case Strophe.Status.CONNECTING: {
@@ -240,9 +252,7 @@ class BrokerConnectionRelayedStrophe
     return `XMPP/${this.__relayHost?.protocol?.toUpperCase() || fallback}`;
   }
 
-  private async __createConnection(
-    domain: string
-  ): Promise<Strophe.Connection> {
+  private async __createConnection(domain: string): Promise<StropheConnection> {
     // Acquire relay host from domain
     if (!domain) {
       throw new Error("No domain to acquire relay host from");
@@ -365,7 +375,7 @@ class BrokerConnectionRelayedStrophe
     };
   }
 
-  private __bindDummyHandler(connection: Strophe.Connection): void {
+  private __bindDummyHandler(connection: StropheConnection): void {
     // Bind dummy handler function on '*' stanza types
     // Notice: this is required so that Strophe.js thinks that all received \
     //   stanza types are handled and processed. If a stanza does not get \
