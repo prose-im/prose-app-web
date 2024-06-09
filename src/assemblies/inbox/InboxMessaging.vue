@@ -764,7 +764,7 @@ export default {
 
         // Update last message visible marker
         this.isLastUnreadMessageVisible =
-          lastNonSelfMessageId !== null &&
+          lastNonSelfMessageId === null ||
           this.visibleMessageIds.has(lastNonSelfMessageId) === true
             ? true
             : false;
