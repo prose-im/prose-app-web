@@ -39,8 +39,8 @@ libc = "0.2.153"
 notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = "c7788fc" }
 send_wrapper = "0.6.0"
 futures = "0.3"
-tokio-xmpp = { git = "https://gitlab.com/nesium/xmpp-rs", rev = "743ac1d" }
-jid = { git = "https://gitlab.com/nesium/xmpp-rs", rev = "743ac1d", default-features = false }
+tokio-xmpp = { git = "https://gitlab.com/xmpp-rs/xmpp-rs", rev = "2097b968" }
+jid = { git = "https://gitlab.com/xmpp-rs/xmpp-rs", rev = "2097b968", default-features = false }
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
