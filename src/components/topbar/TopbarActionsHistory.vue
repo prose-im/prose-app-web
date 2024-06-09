@@ -180,6 +180,8 @@ export default {
 
     onActionHistoryPopoverEntryClick(roomId: RoomID): void {
       // Go to conversation
+      // Notice: do not open conversation here, since this could perform \
+      //   network checks, and we want navigation to be as fast as possible.
       this.$router.push({
         name: "app.inbox",
 

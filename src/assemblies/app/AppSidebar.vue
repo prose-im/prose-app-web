@@ -223,6 +223,9 @@ export default {
 
     navigateToCreatedRoom(jid?: JID) {
       // Navigate to the created room? (if any JID provided)
+      // Notice: do not open conversation here, since this could perform \
+      //   network checks, and we know that the room definitely exists at this \
+      //   point.
       if (jid !== undefined) {
         this.$router.push({
           name: "app.inbox",

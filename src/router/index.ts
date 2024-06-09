@@ -122,7 +122,7 @@ class Router {
                 if (!from.name && lastRoomId !== null) {
                   logger.info(`Restoring last used room: ${lastRoomId}`);
 
-                  // Open last used room instead
+                  // Restore last used room instead
                   return {
                     name: "app.inbox",
 

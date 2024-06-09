@@ -199,6 +199,9 @@ export default {
     // --> EVENT LISTENERS <--
 
     onButtonClick(): void {
+      // Notice: do not open conversation here, since this could perform \
+      //   network checks, and we want navigation to be as fast as possible; \
+      //   the room must definitely exist if it was clicked.
       this.$router.push({
         name: "app.inbox",
         params: { roomId: this.item.room.id }

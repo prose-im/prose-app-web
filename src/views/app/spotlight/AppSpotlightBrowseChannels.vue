@@ -203,6 +203,8 @@ export default {
 
     async onBrowseActionNavigate(roomId: RoomID): Promise<void> {
       // Navigate to channel
+      // Notice: do not open conversation here, since this could perform \
+      //   network checks, and we want navigation to be as fast as possible.
       this.$router.push({
         name: "app.inbox",
 
