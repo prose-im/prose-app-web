@@ -1399,6 +1399,34 @@ export default {
       this.modals.removeMessage.visible = true;
     },
 
+    async onPopoverActionsUnreadClick({
+      messageId
+    }: {
+      messageId: string;
+    }): Promise<void> {
+      // Hide popover
+      this.hidePopover();
+
+      // Find message located before message identifier (if any)
+      let lastReadMessageId = null;
+
+      for (let i = this.messages.length - 1; i >= 0; i--) {
+        let message = this.messages[i];
+
+        // Found message, and preceded by another message? (pick that one)
+        if (message.id === messageId && i > 0) {
+          lastReadMessageId = this.messages[i - 1].id || null;
+
+          break;
+        }
+      }
+
+      // Set last read message? (if any)
+      if (lastReadMessageId !== null) {
+        await this.room?.setLastReadMessage(lastReadMessageId);
+      }
+    },
+
     onPopoverActionsDetailsClick({ messageId }: { messageId: string }): void {
       // Hide popover
       this.hidePopover();
@@ -1605,8 +1633,9 @@ export default {
               }
             });
 
-            // Message from self? Append private actions.
+            // Append message actions
             if (this.selfJID.toString() === message.from) {
+              // Append private actions (message is from self)
               items.push(
                 {
                   type: PopoverItemType.Divider
@@ -1634,6 +1663,24 @@ export default {
 
                   icon: {
                     name: "trash"
+                  }
+                }
+              );
+            } else {
+              // Append private actions (message is from remote)
+              items.push(
+                {
+                  type: PopoverItemType.Divider
+                },
+
+                {
+                  type: PopoverItemType.Button,
+                  label: "Mark as unread",
+                  disabled: !this.session.connected,
+                  click: this.onPopoverActionsUnreadClick,
+
+                  icon: {
+                    name: "app.badge"
                   }
                 }
               );
