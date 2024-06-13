@@ -304,6 +304,8 @@ export default {
       isFrameLoaded: false,
       isLastUnreadMessageVisible: false,
 
+      allowAutoMarkAsRead: true,
+
       visibleMessageIds: new Set() as Set<string>,
 
       checkMarkReadTimeout: null as null | ReturnType<typeof setTimeout>,
@@ -777,6 +779,7 @@ export default {
         // Mark as read? (application is in focus)
         if (
           this.session.visible === true &&
+          this.allowAutoMarkAsRead === true &&
           this.isLastUnreadMessageVisible === true
         ) {
           this.room?.markAsRead();
@@ -799,6 +802,7 @@ export default {
 
       // Reset states
       this.isLastUnreadMessageVisible = false;
+      this.allowAutoMarkAsRead = true;
     },
 
     showPopover({
@@ -1209,6 +1213,9 @@ export default {
     },
 
     onAlertUnreadClick(): void {
+      // Re-allow automatic mark as read (since user interacted)
+      this.allowAutoMarkAsRead = true;
+
       // Scroll to last message
       this.scrollToLastMessage();
     },
@@ -1425,6 +1432,11 @@ export default {
 
       // Set last read message? (if any)
       if (lastReadMessageId !== null) {
+        // Make sure not to automatically mark as read messages that will get \
+        //   marked as unread (disable scroll-based mark-as-read).
+        this.allowAutoMarkAsRead = false;
+
+        // Mark as unread up to the last read message identifier
         await this.room?.setLastReadMessage(lastReadMessageId);
       }
     },
