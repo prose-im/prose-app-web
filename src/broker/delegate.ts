@@ -238,6 +238,12 @@ class BrokerDelegate implements ProseClientDelegate {
       );
     }
   }
+
+  messagesNeedReload(_client: ProseClient, room: Room): void {
+    logger.info(`Messages need reload in room: ${room.id}`);
+
+    Store.$inbox.markMessagesReload(room.id);
+  }
 }
 
 /**************************************************************************

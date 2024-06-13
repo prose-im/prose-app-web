@@ -180,6 +180,7 @@ import {
   InboxEntryStateLoading,
   InboxInsertMode,
   InboxArchivesAcquiredMode,
+  EventMessagesGeneric,
   EventMessageGeneric,
   EventNameGeneric,
   EventStateLoadingGeneric
@@ -274,6 +275,7 @@ export default {
       // --> DATA <--
 
       storeEvents: {
+        "messages:reload": [Store.$inbox, this.onStoreMessagesReload],
         "message:restored": [Store.$inbox, this.onStoreMessageRestored],
         "message:inserted": [Store.$inbox, this.onStoreMessageInserted],
         "message:updated": [Store.$inbox, this.onStoreMessageUpdated],
@@ -1475,6 +1477,15 @@ export default {
       if (frameRuntime !== null) {
         // Re-setup theme
         this.setupTheme(frameRuntime);
+      }
+    },
+
+    onStoreMessagesReload(event: EventMessagesGeneric): void {
+      if (this.room?.id === event.roomId) {
+        // Synchronize messages eagerly?
+        if (this.frame() !== null) {
+          this.syncMessagesEager();
+        }
       }
     },
 

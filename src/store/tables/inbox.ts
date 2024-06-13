@@ -78,6 +78,10 @@ type InboxEntryStates = {
   composing: Array<CoreUser>;
 };
 
+type EventMessagesGeneric = {
+  roomId: RoomID;
+};
+
 type EventMessageGeneric = {
   roomId: RoomID;
   message: InboxEntryMessage;
@@ -698,6 +702,16 @@ const $inbox = defineStore("inbox", {
       this.$patch(() => {
         stateArchives.lastArchiveId = lastArchiveId || undefined;
       });
+    },
+
+    markMessagesReload(roomId: RoomID) {
+      // Mark archives as stale (since a reload has been requested)
+      this.markArchivesAcquired(roomId, InboxArchivesAcquiredMode.Stale);
+
+      // Emit reload request
+      EventBus.emit("messages:reload", {
+        roomId: roomId
+      } as EventMessagesGeneric);
     }
   }
 });
@@ -714,6 +728,7 @@ export {
 };
 
 export type {
+  EventMessagesGeneric,
   EventMessageGeneric,
   EventNameGeneric,
   EventStateLoadingGeneric,
