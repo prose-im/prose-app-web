@@ -340,7 +340,7 @@ $list-button-colors: (
     }
 
     #{$c}__label {
-      color: rgb(var(--color-white));
+      color: rgb(var(--color-always-white));
     }
   }
 
