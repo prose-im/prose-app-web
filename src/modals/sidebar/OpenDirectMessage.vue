@@ -93,7 +93,12 @@ base-modal(
 
       span.m-open-direct-message__notice-label
         template(
-          v-if="isVerified"
+          v-if="isContact"
+        )
+          | This is a contact of yours, start messaging right away!
+
+        template(
+          v-else-if="isVerified"
         )
           | This is a chat address, a contact request will also be sent.
 
@@ -102,7 +107,9 @@ base-modal(
         )
           | This chat address may not exist, an email invite will also be sent.
 
-    p.m-open-direct-message__notice-line
+    p.m-open-direct-message__notice-line(
+      v-if="!isContact"
+    )
       span.m-open-direct-message__notice-aside
 
       span.m-open-direct-message__notice-label
@@ -119,6 +126,9 @@ import { JID, UserProfile } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -178,6 +188,14 @@ export default {
 
     isVerified(): boolean {
       return this.hasIdentity === true && this.identity.name ? true : false;
+    },
+
+    isContact(): boolean {
+      return (
+        this.hasIdentity === true &&
+        this.identity.jid !== null &&
+        Store.$roster.getContactsEntry(this.identity.jid) !== undefined
+      );
     },
 
     confirmLabel(): string {
