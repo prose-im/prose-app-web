@@ -554,33 +554,17 @@ $c: ".c-form-field";
 #{$c} {
   position: relative;
 
-  &:before,
-  #{$c}__inner {
-    transition-duration: 150ms;
-    transition-timing-function: linear;
-  }
-
-  &:before {
-    content: "";
-    border: $size-form-field-outline-width solid transparent;
-    inset: -$size-form-field-outline-width;
-    position: absolute;
-    pointer-events: none;
-    transition-property: border-color;
-    border-radius: (
-      $size-form-field-border-radius + $size-form-field-outline-width
-    );
-  }
-
   #{$c}__inner {
     background-color: rgb(var(--color-white));
     border: 1px solid rgba(var(--color-black), 0.1);
-    outline: 0 none;
+    outline: 0 solid rgba(var(--color-base-purple-normal), 0);
     color: rgb(var(--color-text-primary));
     font-family: inherit;
     width: 100%;
     padding-block: $size-form-field-padding-block;
-    transition-property: box-shadow, border-color;
+    transition-property: box-shadow, border-color, outline-color, outline-width;
+    transition-duration: 150ms;
+    transition-timing-function: linear;
     border-radius: $size-form-field-border-radius;
     box-sizing: border-box;
     box-shadow: 0 3px 4px 0 rgba(var(--color-shadow-primary), 0.01),
@@ -772,8 +756,9 @@ $c: ".c-form-field";
   }
 
   &--focused {
-    &:before {
-      border-color: rgba(var(--color-base-purple-normal), 0.2);
+    #{$c}__inner {
+      outline-color: rgba(var(--color-base-purple-normal), 0.2);
+      outline-width: $size-form-field-outline-width;
     }
   }
 }
