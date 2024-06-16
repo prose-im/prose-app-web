@@ -118,6 +118,7 @@ interface InboxEntry {
 }
 
 interface InboxEntryMessage extends MessagingStoreMessageData {
+  timestamp: number;
   archiveId?: ArchiveID;
 }
 
@@ -153,6 +154,7 @@ const fromCoreMessage = function (
     archiveId: message.archiveId,
     type: message.type,
     date: message.date.toISOString(),
+    timestamp: message.date.getTime(),
     from: message.user.jid,
     content: message.content,
 
@@ -305,11 +307,41 @@ const $inbox = defineStore("inbox", {
 
     insertCoreMessages(
       room: Room,
-      messages: CoreMessage[],
-      mode = InboxInsertMode.Insert
+      messages: Array<CoreMessage>,
+      mode?: InboxInsertMode
     ): boolean {
+      const container = this.assert(room.id).messages;
+
+      // Define common insert markers
       let hasInserted = false,
         lastInsertError: Error | null = null;
+
+      // Automatically decide on the insert mode? (if none provided)
+      // Notice: this compares the first message entry date with the last core \
+      //   message date. If the first container message is more recent than \
+      //   the last core message to be inserted, then it means the whole block \
+      //   of messages to insert should be prepended BEFORE existing messages. \
+      //   This is required if there are already messages in the store, that \
+      //   could be more recent than those messages, eg. if a new message was \
+      //   received in-band and the room is opened later.
+      // Important: acquire insert mode AFTER loading messages and \
+      //   BEFORE inserting them to the store, since the loading could \
+      //   have taken quite some time, and some messages might have been \
+      //   inserted in the store mid-way.
+      if (mode === undefined) {
+        if (
+          container.list.length > 0 &&
+          messages.length > 0 &&
+          container.list[0].timestamp >=
+            messages[messages.length - 1].date.getTime()
+        ) {
+          // Use restore mode
+          mode = InboxInsertMode.Restore;
+        } else {
+          // Use insert mode (default)
+          mode = InboxInsertMode.Insert;
+        }
+      }
 
       // Insert or restore messages (forwards or backwards)
       // Notice: instead of allocating a new Array by using the simple \

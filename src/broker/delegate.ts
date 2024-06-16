@@ -20,7 +20,10 @@ import mitt from "mitt";
 
 // PROJECT: STORES
 import Store from "@/store";
-import { fromCoreMessage as inboxMessageFromCore } from "@/store/tables/inbox";
+import {
+  fromCoreMessage as inboxMessageFromCore,
+  InboxInsertMode
+} from "@/store/tables/inbox";
 
 // PROJECT: UTILITIES
 import { AudioSound, default as UtilitiesAudio } from "@/utilities/audio";
@@ -139,8 +142,12 @@ class BrokerDelegate implements ProseClientDelegate {
 
     const messages = await room.loadMessagesWithIDs(messageIDs);
 
-    // Insert all appended messages
-    const hasInserted = Store.$inbox.insertCoreMessages(room, messages);
+    // Insert all appended messages (in insert mode since messages got appended)
+    const hasInserted = Store.$inbox.insertCoreMessages(
+      room,
+      messages,
+      InboxInsertMode.Insert
+    );
 
     // Trigger a notification? (only for messages from remote users)
     if (hasInserted === true) {

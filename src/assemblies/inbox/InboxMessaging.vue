@@ -966,21 +966,8 @@ export default {
               result.lastMessageId
             );
 
-            // Check if should insert or restore messages?
-            // Notice: this is required if there are already messages in the \
-            //   store, that could be more recent than those messages, eg. if \
-            //   a new message was received in-band and the room is opened later.
-            // Important: acquire insert mode AFTER loading messages and \
-            //   BEFORE inserting them to the store, since the loading could \
-            //   have taken quite some time, and some messages might have been \
-            //   inserted in the store mid-way.
-            const insertMode =
-              this.messages.length > 0
-                ? InboxInsertMode.Restore
-                : InboxInsertMode.Insert;
-
             // Insert messages to store
-            Store.$inbox.insertCoreMessages(room, result.messages, insertMode);
+            Store.$inbox.insertCoreMessages(room, result.messages);
           } catch (error) {
             // Alert of load error
             this.$log.error(
@@ -1048,7 +1035,8 @@ export default {
               result.lastMessageId
             );
 
-            // Insert messages to store
+            // Insert messages to store (in restore mode since messages are \
+            //   definitely from past history)
             Store.$inbox.insertCoreMessages(
               room,
               result.messages,
