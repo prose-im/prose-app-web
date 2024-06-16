@@ -212,6 +212,34 @@ const fromCoreMessage = function (
   };
 };
 
+const detectInsertMode = function (
+  container: InboxEntryMessages,
+  messages: Array<CoreMessage>
+): InboxInsertMode {
+  // Notice: this compares the first message entry date with the last core \
+  //   message date. If the first container message is more recent than \
+  //   the last core message to be inserted, then it means the whole block \
+  //   of messages to insert should be prepended BEFORE existing messages. \
+  //   This is required if there are already messages in the store, that \
+  //   could be more recent than those messages, eg. if a new message was \
+  //   received in-band and the room is opened later.
+  // Important: acquire insert mode AFTER loading messages and \
+  //   BEFORE inserting them to the store, since the loading could \
+  //   have taken quite some time, and some messages might have been \
+  //   inserted in the store mid-way.
+  if (
+    container.list.length > 0 &&
+    messages.length > 0 &&
+    container.list[0].timestamp >= messages[messages.length - 1].date.getTime()
+  ) {
+    // Use restore mode
+    return InboxInsertMode.Restore;
+  }
+
+  // Use insert mode (default)
+  return InboxInsertMode.Insert;
+};
+
 /**************************************************************************
  * TABLE
  * ************************************************************************* */
@@ -317,30 +345,8 @@ const $inbox = defineStore("inbox", {
         lastInsertError: Error | null = null;
 
       // Automatically decide on the insert mode? (if none provided)
-      // Notice: this compares the first message entry date with the last core \
-      //   message date. If the first container message is more recent than \
-      //   the last core message to be inserted, then it means the whole block \
-      //   of messages to insert should be prepended BEFORE existing messages. \
-      //   This is required if there are already messages in the store, that \
-      //   could be more recent than those messages, eg. if a new message was \
-      //   received in-band and the room is opened later.
-      // Important: acquire insert mode AFTER loading messages and \
-      //   BEFORE inserting them to the store, since the loading could \
-      //   have taken quite some time, and some messages might have been \
-      //   inserted in the store mid-way.
       if (mode === undefined) {
-        if (
-          container.list.length > 0 &&
-          messages.length > 0 &&
-          container.list[0].timestamp >=
-            messages[messages.length - 1].date.getTime()
-        ) {
-          // Use restore mode
-          mode = InboxInsertMode.Restore;
-        } else {
-          // Use insert mode (default)
-          mode = InboxInsertMode.Insert;
-        }
+        mode = detectInsertMode(container, messages);
       }
 
       // Insert or restore messages (forwards or backwards)
