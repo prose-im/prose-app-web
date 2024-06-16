@@ -74,12 +74,12 @@ base-modal(
     )
 
   div(
-    v-if="hasIdentity"
+    v-if="hasIdentity || areMaybeMultipleUsers"
     :class=`[
       "m-open-direct-message__notice",
       {
         "m-open-direct-message__notice--verified": isVerified,
-        "m-open-direct-message__notice--unknown": !isVerified
+        "m-open-direct-message__notice--unknown": (!isVerified || areMaybeMultipleUsers)
       }
     ]`
   )
@@ -93,14 +93,19 @@ base-modal(
 
       span.m-open-direct-message__notice-label
         template(
-          v-if="isContact"
+          v-if="areMaybeMultipleUsers"
+        )
+          | Those are multiple users. A private group will be started.
+
+        template(
+          v-else-if="isContact"
         )
           | This is a contact of yours, start messaging right away!
 
         template(
           v-else-if="isVerified"
         )
-          | This is a chat address, a contact request will also be sent.
+          | This is a chat address, but this user is not in your contacts.
 
         template(
           v-else
@@ -108,12 +113,12 @@ base-modal(
           | This chat address may not exist, an email invite will also be sent.
 
     p.m-open-direct-message__notice-line(
-      v-if="!isContact"
+      v-if="!areMaybeMultipleUsers && !isContact"
     )
       span.m-open-direct-message__notice-aside
 
       span.m-open-direct-message__notice-label
-        | Once the user accepts, they will be able to see your message.
+        | You may add this user to your contacts anytime.
 </template>
 
 <!-- **********************************************************************
@@ -138,6 +143,8 @@ import { useRosterSuggestor } from "@/composables/roster";
 
 // CONSTANTS
 const IDENTITY_ACQUIRE_DELAY = 1000; // 1 second
+
+const JID_GROUP_SEPARATOR = ",";
 
 export default {
   name: "OpenDirectMessage",
@@ -182,6 +189,10 @@ export default {
   },
 
   computed: {
+    areMaybeMultipleUsers(): boolean {
+      return (this.jid || "").includes(JID_GROUP_SEPARATOR);
+    },
+
     hasIdentity(): boolean {
       return this.identity.jid !== null ? true : false;
     },
@@ -203,9 +214,15 @@ export default {
     },
 
     noticeIcon(): string {
-      return this.isVerified === true
-        ? "checkmark.circle.fill"
-        : "questionmark.circle.fill";
+      if (this.areMaybeMultipleUsers === true) {
+        return "info.circle.fill";
+      }
+
+      if (this.isVerified === true) {
+        return "checkmark.circle.fill";
+      }
+
+      return "questionmark.circle.fill";
     }
   },
 
@@ -262,8 +279,8 @@ export default {
         clearTimeout(this.identityAcquireTimeout);
       }
 
-      // Acquire identity?
-      if (address) {
+      // Acquire identity? (only if not group)
+      if (address && address.includes(JID_GROUP_SEPARATOR) === false) {
         this.identityAcquireTimeout = setTimeout(async () => {
           this.identityAcquireTimeout = null;
 
@@ -285,16 +302,24 @@ export default {
 
           await this.acquireIdentity(jid);
         }, IDENTITY_ACQUIRE_DELAY);
+      } else {
+        // Reset acquired identity
+        await this.acquireIdentity(null);
       }
     },
 
     onConfirm(): void {
-      const jidUnsafeString = this.jid || null;
+      // Split JID string into (possibly) multiple JIDs
+      const jidStrings = (this.jid || "")
+        .toLowerCase()
+        .split(",")
+        .map(value => value.trim())
+        .filter(value => (value ? true : false));
 
-      if (jidUnsafeString === null) {
+      if (jidStrings.length === 0) {
         BaseAlert.warning("Address required", "Please enter an address");
       } else {
-        this.$emit("open", jidUnsafeString.toLowerCase());
+        this.$emit("open", jidStrings);
       }
     }
   }

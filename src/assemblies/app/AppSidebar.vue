@@ -161,9 +161,7 @@ export default {
   methods: {
     // --> HELPERS <--
 
-    async openDirectMessage(jidString: string): Promise<void> {
-      const jids = jidString.split(",").map(value => new JID(value.trim()));
-
+    async openDirectMessage(jids: Array<JID>): Promise<void> {
       // Start conversation
       const roomJID = await Broker.$room.startConversation(jids);
 
@@ -277,13 +275,18 @@ export default {
       }
     },
 
-    async onModalOpenDirectMessageOpen(jidString: string): Promise<void> {
+    async onModalOpenDirectMessageOpen(
+      jidStrings: Array<string>
+    ): Promise<void> {
       if (this.modals.openDirectMessage.loading !== true) {
         this.modals.openDirectMessage.loading = true;
 
         try {
+          // Convert JID strings to pure JIDs (might fail)
+          const jids = jidStrings.map(value => new JID(value));
+
           // Open direct message (one or many persons)
-          await this.openDirectMessage(jidString);
+          await this.openDirectMessage(jids);
 
           this.modals.openDirectMessage.visible = false;
         } catch (error) {
@@ -291,7 +294,7 @@ export default {
 
           BaseAlert.error(
             "Direct Message not opened",
-            `${jidString} could not be added`
+            `${jidStrings.join(", ")} could not be added`
           );
         } finally {
           this.modals.openDirectMessage.loading = false;

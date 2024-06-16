@@ -273,7 +273,7 @@ export default {
     },
 
     onConfirm(): void {
-      const jidUnsafeString = this.jid || null;
+      const jidUnsafeString = (this.jid || "").toLowerCase() || null;
 
       if (jidUnsafeString === null) {
         BaseAlert.warning(
@@ -281,7 +281,7 @@ export default {
           "Please enter a name or address"
         );
       } else {
-        this.$emit("add", jidUnsafeString.toLowerCase(), {
+        this.$emit("add", jidUnsafeString, {
           private: this.private
         } as EventAddOptions);
       }
