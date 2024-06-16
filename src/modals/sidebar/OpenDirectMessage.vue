@@ -13,15 +13,27 @@ base-modal(
   @close="$emit('close')"
   @confirm="onConfirm"
   :confirm-loading="loading"
-  confirm-label="Open Direct Message"
+  :confirm-label="confirmLabel"
   class="m-open-direct-message"
   size="large"
 )
-  p.u-medium
-    | Open a direct message
+  template(
+    v-if="compose"
+  )
+    p.u-medium
+      | Compose a new message
 
-  p.u-regular
-    | Add an existing chat address, or invite an email to join your team.
+    p.u-regular
+      | Message anyone from your team, or create a group of people.
+
+  template(
+    v-else
+  )
+    p.u-medium
+      | Open a direct message
+
+    p.u-regular
+      | Add an existing chat address, or invite an email to join your team.
 
   .m-open-direct-message__form
     base-spinner(
@@ -83,18 +95,18 @@ base-modal(
         template(
           v-if="isVerified"
         )
-          | This is already a chat address, a contact request will be sent.
+          | This is a chat address, a contact request will also be sent.
 
         template(
           v-else
         )
-          | This chat address might not exist, an email invite will be sent.
+          | This chat address may not exist, an email invite will also be sent.
 
     p.m-open-direct-message__notice-line
       span.m-open-direct-message__notice-aside
 
       span.m-open-direct-message__notice-label
-        | Once the user accepts your request, you will be able to chat and call.
+        | Once the user accepts, they will be able to see your message.
 </template>
 
 <!-- **********************************************************************
@@ -122,6 +134,11 @@ export default {
 
   props: {
     loading: {
+      type: Boolean,
+      default: false
+    },
+
+    compose: {
       type: Boolean,
       default: false
     }
@@ -161,6 +178,10 @@ export default {
 
     isVerified(): boolean {
       return this.hasIdentity === true && this.identity.name ? true : false;
+    },
+
+    confirmLabel(): string {
+      return this.compose === true ? "Compose Message" : "Open Direct Message";
     },
 
     noticeIcon(): string {

@@ -10,6 +10,7 @@
 
 <template lang="pug">
 div(
+  v-hotkey="hotkeys"
   :class=`[
     "c-sidebar-header",
     "c-sidebar-header--platform-" + runtimePlatform
@@ -48,10 +49,10 @@ div(
       tooltip="Message Someone"
     )
       base-action(
+        @click="onActionMessageClick"
         class="c-sidebar-header__action"
         icon="square.and.pencil"
         size="18px"
-        disabled
       )
 </template>
 
@@ -66,7 +67,7 @@ import {
   ItemType as PopoverItemType
 } from "@/components/base/BasePopoverList.vue";
 
-// PROJECT: MODALS
+// PROJECT: ASSEMBLIES
 import { AddContactMode as SidebarAddContactMode } from "@/assemblies/app/AppSidebar.vue";
 
 // PROJECT: UTILITIES
@@ -122,6 +123,12 @@ export default {
           disabled: true
         }
       ];
+    },
+
+    hotkeys(): { [name: string]: (event: Event) => void } {
+      return {
+        "ctrl+n": this.onHotkeyControlN
+      };
     }
   },
 
@@ -146,6 +153,19 @@ export default {
     onIdentityPopoverCreateChannelClick(): void {
       // Request to show add contact modal (in channel mode)
       this.$emit("addContact", SidebarAddContactMode.Channel);
+    },
+
+    onActionMessageClick(): void {
+      // Request to show add contact modal (in member mode)
+      this.$emit("addContact", SidebarAddContactMode.Compose);
+    },
+
+    onHotkeyControlN(event: Event): void {
+      event.preventDefault();
+      event.stopPropagation();
+
+      // Request to open compose message popup (alias click event)
+      this.onActionMessageClick();
     }
   }
 };

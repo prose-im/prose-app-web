@@ -49,6 +49,7 @@ div(
     @open="onModalOpenDirectMessageOpen"
     @close="onModalOpenDirectMessageClose"
     :loading="modals.openDirectMessage.loading"
+    :compose="modals.openDirectMessage.compose"
   )
 
   add-channel(
@@ -94,6 +95,8 @@ import { translucent as runtimeTranslucent } from "@/utilities/runtime";
 
 // ENUMERATIONS
 export enum AddContactMode {
+  // Compose mode.
+  Compose = "compose",
   // Member mode.
   Member = "member",
   // Channel mode.
@@ -133,7 +136,8 @@ export default {
       modals: {
         openDirectMessage: {
           visible: false,
-          loading: false
+          loading: false,
+          compose: false
         },
 
         addChannel: {
@@ -242,8 +246,12 @@ export default {
     onAddContact(mode: AddContactMode): void {
       // Open target modal
       switch (mode) {
+        case AddContactMode.Compose:
         case AddContactMode.Member: {
           this.modals.openDirectMessage.visible = true;
+
+          this.modals.openDirectMessage.compose =
+            mode === AddContactMode.Compose ? true : false;
 
           break;
         }
