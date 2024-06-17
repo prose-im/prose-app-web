@@ -127,7 +127,8 @@ export default {
 
     hotkeys(): { [name: string]: (event: Event) => void } {
       return {
-        "ctrl+n": this.onHotkeyControlN
+        "ctrl+n": this.onHotkeyControlN,
+        "command+n": this.onHotkeyControlN
       };
     }
   },
