@@ -311,11 +311,20 @@ class UtilitiesRuntime {
     body: string,
     {
       force = false,
+      subtitle,
       route
-    }: { force?: boolean; route?: RuntimeNotificationRoute } = {}
+    }: {
+      force?: boolean;
+      subtitle?: string;
+      route?: RuntimeNotificationRoute;
+    } = {}
   ): Promise<void> {
     // Skip notification banners if window has focus (or forced)
     if (this.__states.focused !== true || force === true) {
+      // Generate final notification title
+      const notificationTitle = subtitle ? `${subtitle} (${title})` : title;
+
+      // Check for permission
       const hasPermission = await this.requestNotificationPermission();
 
       if (hasPermission === true) {
@@ -332,7 +341,7 @@ class UtilitiesRuntime {
             "plugin:notifications|send_notification",
 
             {
-              title,
+              title: notificationTitle,
               body,
               route
             }
@@ -344,14 +353,14 @@ class UtilitiesRuntime {
           });
         } else {
           // Request to show notification via browser APIs (Web build)
-          const notification = new Notification(title, { body });
+          const notification = new Notification(notificationTitle, { body });
 
           notification.addEventListener("click", clickHandler);
         }
       } else {
         logger.warn(
           "Not sending notification since permission is denied:",
-          title
+          notificationTitle
         );
       }
     }

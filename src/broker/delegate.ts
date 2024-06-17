@@ -14,8 +14,7 @@ import {
   JID,
   ProseClient,
   ProseClientDelegate,
-  Room,
-  RoomType
+  Room
 } from "@prose-im/prose-sdk-js";
 import mitt from "mitt";
 
@@ -183,23 +182,19 @@ class BrokerDelegate implements ProseClientDelegate {
 
         messages.forEach(message => {
           if (message.from !== selfJIDString) {
-            // Generate notification body (in parts)
-            const notificationBodyParts = [];
-
-            if (message.user.name !== room.name) {
-              // Prefix with sender name (if different from room name)
-              notificationBodyParts.push(message.user.name);
-            }
-
-            notificationBodyParts.push(message.text);
-
             // Request to send notification
+            // Notice: set sender name as subtitle (if different from room name)
             UtilitiesRuntime.requestNotificationSend(
               room.name,
-              notificationBodyParts.join(" | "),
+              message.text,
 
               {
                 force: shouldForce,
+
+                subtitle:
+                  message.user.name !== room.name
+                    ? message.user.name
+                    : undefined,
 
                 route: {
                   name: "app.inbox",
