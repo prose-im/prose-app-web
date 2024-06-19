@@ -41,10 +41,10 @@
         )
 
       template(
+        v-if="this.session.connected"
         v-slot:presence
       )
         base-presence(
-          v-if="this.session.connected"
           :jid="jid"
           size="small"
         )

@@ -16,6 +16,7 @@
     )
 
   div(
+    v-if="$slots.presence"
     :class=`[
       "c-layout-avatar-presence__presence",
       {
