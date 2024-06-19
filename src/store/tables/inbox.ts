@@ -216,49 +216,47 @@ const detectInsertMode = function (
   container: InboxEntryMessages,
   messages: Array<CoreMessage>
 ): InboxInsertMode {
-  if (messages.length > 0 && container.list.length > 0) {
-    // Exclude store messages that hold the same identifiers as messages to \
-    //   insert
-    const messageIds = new Set(
-      messages.map(message => message.id).filter(id => id !== undefined)
+  const storeMessages = container.list;
+
+  if (messages.length > 0 && storeMessages.length > 0) {
+    // Exclude messages to insert that hold the same identifiers as messages \
+    //   in store
+    const storeMessageIds = new Set(
+      storeMessages
+        .map(storeMessage => storeMessage.id)
+        .filter(id => id !== undefined)
     );
 
-    const storeMessages = container.list.filter(storeMessage => {
-      return messageIds.has(storeMessage.id) === false;
+    const insertMessages = messages.filter(message => {
+      return storeMessageIds.has(message.id) === false;
     });
 
-    // No messages remain in store? We should restore then
-    if (storeMessages.length === 0) {
-      // Use restore mode
-      return InboxInsertMode.Restore;
-    }
+    if (insertMessages.length > 0) {
+      // Acquire messages at boundaries
+      const firstStoreMessageTime = storeMessages[0].timestamp,
+        lastStoreMessageTime =
+          storeMessages[storeMessages.length - 1].timestamp;
 
-    // Acquire messages at boundaries
-    const firstStoreMessageTime = storeMessages[0].timestamp,
-      lastStoreMessageTime = storeMessages[storeMessages.length - 1].timestamp;
+      const firstInsertMessageTime = insertMessages[0].date.getTime(),
+        lastInsertMessageTime =
+          insertMessages[insertMessages.length - 1].date.getTime();
 
-    const firstInsertMessageTime = messages[0].date.getTime(),
-      lastInsertMessageTime = messages[messages.length - 1].date.getTime();
+      // Notice: this compares the last store message date with the first \
+      //   message date. If the last store message is more recent than \
+      //   the first message to be inserted, then it means the whole block \
+      //   of messages to insert should be prepended BEFORE existing messages. \
+      //   This is required if there are already messages in the store, that \
+      //   could be more recent than those messages, eg. if a new message was \
+      //   received in-band and the room is opened later.
+      if (firstInsertMessageTime >= lastStoreMessageTime) {
+        // Use insert mode
+        return InboxInsertMode.Insert;
+      }
 
-    // Notice: this compares the last store message date with the first \
-    //   message date. If the last store message is more recent than \
-    //   the first message to be inserted, then it means the whole block \
-    //   of messages to insert should be prepended BEFORE existing messages. \
-    //   This is required if there are already messages in the store, that \
-    //   could be more recent than those messages, eg. if a new message was \
-    //   received in-band and the room is opened later.
-    // Important: acquire insert mode AFTER loading messages and \
-    //   BEFORE inserting them to the store, since the loading could \
-    //   have taken quite some time, and some messages might have been \
-    //   inserted in the store mid-way.
-    if (lastInsertMessageTime >= lastStoreMessageTime) {
-      // Use insert mode
-      return InboxInsertMode.Insert;
-    }
-
-    if (firstInsertMessageTime < firstStoreMessageTime) {
-      // Use restore mode
-      return InboxInsertMode.Restore;
+      if (lastInsertMessageTime < firstStoreMessageTime) {
+        // Use restore mode
+        return InboxInsertMode.Restore;
+      }
     }
   }
 
