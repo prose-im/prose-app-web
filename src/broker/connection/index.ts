@@ -49,6 +49,8 @@ abstract class BrokerConnection {
 
   setEventHandler(handler: ProseConnectionEventHandler): void {
     this._eventHandler = handler;
+
+    logger.info("Broker event handler is now active");
   }
 
   protected _protocol(): string {
@@ -107,7 +109,7 @@ abstract class BrokerConnection {
     }, timeoutEvery);
 
     logger.debug(
-      `Started connection timers ` +
+      `Broker started connection timers ` +
         `(ping -> ${pingEvery}ms, timeout -> ${timeoutEvery}ms)`
     );
   }
@@ -125,7 +127,7 @@ abstract class BrokerConnection {
     delete this.__pingInterval;
     delete this.__timeoutInterval;
 
-    logger.debug("Stopped connection timers");
+    logger.debug("Broker stopped connection timers");
   }
 }
 

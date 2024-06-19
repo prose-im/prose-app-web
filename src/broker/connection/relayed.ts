@@ -135,7 +135,14 @@ class BrokerConnectionRelayedStrophe
               this.__connectIntent = false;
 
               // Pass disconnected event to caller client
-              this._eventHandler?.handleDisconnect();
+              if (this._eventHandler !== undefined) {
+                this._eventHandler.handleDisconnect();
+              } else {
+                logger.warn(
+                  "Broker could not signal disconnection " +
+                    "(no active event handler)"
+                );
+              }
             } else {
               logger.warn(
                 "Broker received disconnected (but was not connected)"

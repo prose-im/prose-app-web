@@ -109,7 +109,14 @@ class BrokerConnectionNativeTauri
             logger.warn("Broker disconnected");
 
             // Pass disconnected event to caller client
-            this._eventHandler?.handleDisconnect();
+            if (this._eventHandler !== undefined) {
+              this._eventHandler.handleDisconnect();
+            } else {
+              logger.warn(
+                "Broker could not signal disconnection " +
+                  "(no active event handler)"
+              );
+            }
 
             // Revoke connection
             this.__revokeConnection();
