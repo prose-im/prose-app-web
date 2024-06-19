@@ -216,11 +216,26 @@ const detectInsertMode = function (
   container: InboxEntryMessages,
   messages: Array<CoreMessage>
 ): InboxInsertMode {
-  const storeMessages = container.list;
+  if (messages.length > 0 && container.list.length > 0) {
+    // Exclude store messages that hold the same identifiers as messages to \
+    //   insert
+    const messageIds = new Set(
+      messages.map(message => message.id).filter(id => id !== undefined)
+    );
 
-  if (messages.length > 0 && storeMessages.length > 0) {
-    const lastStoreMessageTime =
-      storeMessages[storeMessages.length - 1].timestamp;
+    const storeMessages = container.list.filter(storeMessage => {
+      return messageIds.has(storeMessage.id) === false;
+    });
+
+    // No messages remain in store? We should restore then
+    if (storeMessages.length === 0) {
+      // Use restore mode
+      return InboxInsertMode.Restore;
+    }
+
+    // Acquire messages at boundaries
+    const firstStoreMessageTime = storeMessages[0].timestamp,
+      lastStoreMessageTime = storeMessages[storeMessages.length - 1].timestamp;
 
     const firstInsertMessageTime = messages[0].date.getTime(),
       lastInsertMessageTime = messages[messages.length - 1].date.getTime();
@@ -241,7 +256,7 @@ const detectInsertMode = function (
       return InboxInsertMode.Insert;
     }
 
-    if (firstInsertMessageTime < lastStoreMessageTime) {
+    if (firstInsertMessageTime < firstStoreMessageTime) {
       // Use restore mode
       return InboxInsertMode.Restore;
     }
