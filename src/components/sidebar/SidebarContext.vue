@@ -145,7 +145,10 @@ import {
 
 // PROJECT: MODALS
 import UpdateStatus from "@/modals/sidebar/UpdateStatus.vue";
-import SignOut from "@/modals/sidebar/SignOut.vue";
+import {
+  default as SignOut,
+  EventProceedOptions as SignOutEventProceedOptions
+} from "@/modals/sidebar/SignOut.vue";
 
 // PROJECT: POPUPS
 import EditProfile from "@/popups/sidebar/EditProfile.vue";
@@ -751,9 +754,11 @@ export default {
       this.modals.updateStatus.visible = false;
     },
 
-    async onModalSignOutProceed(): Promise<void> {
+    async onModalSignOutProceed(
+      options: SignOutEventProceedOptions
+    ): Promise<void> {
       // Logout from account
-      await Store.$account.logout();
+      await Store.$account.logout(options.purge);
 
       // Show confirm alert
       BaseAlert.info("Signed out", "Successfully signed out");
