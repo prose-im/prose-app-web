@@ -293,18 +293,18 @@ export default {
 
             {
               type: PopoverItemType.Button,
-              label: "Away (Invisible)",
-              click: this.onAvatarPopoverAvailabilityAwayClick,
-              emphasis: this.localAvailabilityStates.away,
-              active: this.localAvailabilityStates.away,
+              label: "Invisible",
+              click: this.onAvatarPopoverAvailabilityInvisibleClick,
+              emphasis: this.localAvailabilityStates.invisible,
+              active: this.localAvailabilityStates.invisible,
 
               icon: {
                 component: BasePresence,
 
                 properties: {
-                  availability: Availability.Away,
+                  availability: Availability.Invisible,
                   size: AVATAR_POPOVER_AVAILABILITY_ICON_SIZE,
-                  active: this.localAvailabilityStates.away
+                  active: this.localAvailabilityStates.invisible
                 }
               }
             }
@@ -454,7 +454,7 @@ export default {
       return {
         available: this.localAvailability === Availability.Available,
         busy: this.localAvailability === Availability.DoNotDisturb,
-        away: this.localAvailability === Availability.Away
+        invisible: this.localAvailability === Availability.Invisible
       };
     },
 
@@ -593,10 +593,10 @@ export default {
       );
     },
 
-    onAvatarPopoverAvailabilityAwayClick(): void {
-      // Toggle availability ('Extended Away' goes for 'Invisible')
+    onAvatarPopoverAvailabilityInvisibleClick(): void {
+      // Toggle availability
       this.toggleAvatarPopoverAvailability(
-        Availability.Away,
+        Availability.Invisible,
         "You are now invisible"
       );
     },

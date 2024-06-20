@@ -39,7 +39,8 @@ const AVAILABILITY_LABELS = {
   [Availability.Available]: "available",
   [Availability.Away]: "away",
   [Availability.Unavailable]: "unavailable",
-  [Availability.DoNotDisturb]: "dnd"
+  [Availability.DoNotDisturb]: "dnd",
+  [Availability.Invisible]: "invisible"
 };
 
 export default {
@@ -138,7 +139,8 @@ $sizes: (
 $availabilities: (
   "available": var(--color-base-green-normal),
   "dnd": var(--color-base-red-normal),
-  "away": var(--color-base-grey-normal),
+  "away": var(--color-base-orange-normal),
+  "invisible": var(--color-base-grey-normal),
   "unavailable": var(--color-base-grey-normal)
 );
 
@@ -183,7 +185,7 @@ $availabilities: (
 
   &--hide-offline {
     &#{$c}--unavailable,
-    &#{$c}--away {
+    &#{$c}--invisible {
       display: none;
     }
   }

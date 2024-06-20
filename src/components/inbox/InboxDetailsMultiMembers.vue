@@ -103,7 +103,8 @@ const MEMBER_AVAILABILITY_PRIORITIES = {
   [Availability.Available]: 0,
   [Availability.DoNotDisturb]: 1,
   [Availability.Away]: 2,
-  [Availability.Unavailable]: 2
+  [Availability.Invisible]: 3,
+  [Availability.Unavailable]: 3
 };
 
 export default {

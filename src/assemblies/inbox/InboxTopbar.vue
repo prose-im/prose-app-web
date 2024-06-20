@@ -266,6 +266,12 @@ export default {
           break;
         }
 
+        case Availability.Away: {
+          availabilityLabel = "Away";
+
+          break;
+        }
+
         default: {
           // Important: 'Away' is considered as 'Offline' since the user \
           //   wants to appear as invisible here (ie. offline).
