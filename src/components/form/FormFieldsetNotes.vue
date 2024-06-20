@@ -9,7 +9,14 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-form-fieldset-notes
+div(
+  :class=`[
+    "c-form-fieldset-notes",
+    {
+      "c-form-fieldset-notes--spaced": spaced
+    }
+  ]`
+)
   slot
 </template>
 
@@ -19,7 +26,14 @@
 
 <script lang="ts">
 export default {
-  name: "FormFieldsetNotes"
+  name: "FormFieldsetNotes",
+
+  props: {
+    spaced: {
+      type: Boolean,
+      default: true
+    }
+  }
 };
 </script>
 
@@ -34,7 +48,6 @@ $c: ".c-form-fieldset-notes";
   color: rgb(var(--color-text-secondary));
   font-size: 13.5px;
   line-height: 16px;
-  margin-block-start: 22px;
 
   p {
     margin-block-end: 11px;
@@ -42,6 +55,12 @@ $c: ".c-form-fieldset-notes";
     &:last-child {
       margin-block-end: 0;
     }
+  }
+
+  // --> BOOLEANS <--
+
+  &--spaced {
+    margin-block-start: 22px;
   }
 }
 </style>
