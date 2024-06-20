@@ -149,9 +149,9 @@ const $account = defineStore("account", {
       }
     },
 
-    async logout() {
+    async logout(purge = false) {
       // Disconnect from server
-      Broker.client.logout();
+      Broker.client.logout(purge);
 
       // Reset unread count
       UtilitiesRuntime.requestUnreadCountUpdate(0);

@@ -203,15 +203,19 @@ class BrokerClient {
     await Broker.$room.startObservingRooms();
   }
 
-  async logout(): Promise<void> {
+  async logout(deleteCache = false): Promise<void> {
     // Unassign authentication JID
     this.authenticationJID = undefined;
 
     // Void stored credentials
     this.__credentials = undefined;
 
-    // Flush client cached data and disconnect
-    await this.client?.deleteCachedData();
+    // Flush client cached data?
+    if (deleteCache === true) {
+      await this.client?.deleteCachedData();
+    }
+
+    // Disconnect client
     await this.client?.disconnect();
 
     // Void client
