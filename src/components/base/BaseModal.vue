@@ -14,7 +14,10 @@ base-popup(
   @close="onClose"
   :class=`[
     "c-base-modal",
-    "c-base-modal--" + size
+    "c-base-modal--" + size,
+    {
+      "c-base-modal--constrained": constrained
+    }
   ]`
   popup-class="c-base-modal__popup"
 )
@@ -76,6 +79,11 @@ export default {
       validator(x: string) {
         return ["medium", "large"].includes(x);
       }
+    },
+
+    constrained: {
+      type: Boolean,
+      default: false
     },
 
     destructive: {
@@ -162,11 +170,23 @@ $popup-width-full-breakpoint: (
     #{$c}__popup {
       min-width: $popup-min-width-medium;
     }
+
+    &#{$c}--constrained {
+      #{$c}__popup {
+        max-width: $popup-min-width-medium;
+      }
+    }
   }
 
   &--large {
     #{$c}__popup {
       min-width: $popup-min-width-large;
+    }
+
+    &#{$c}--constrained {
+      #{$c}__popup {
+        max-width: $popup-min-width-large;
+      }
     }
   }
 }
