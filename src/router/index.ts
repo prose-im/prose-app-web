@@ -29,6 +29,9 @@ import AppSpotlightBrowseBlocked from "@/views/app/spotlight/AppSpotlightBrowseB
 import AppInboxBase from "@/views/app/inbox/AppInboxBase.vue";
 import StartLogin from "@/views/start/StartLogin.vue";
 
+// PROJECT: COMMONS
+import CONFIG from "@/commons/config";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -63,7 +66,7 @@ class Router {
   constructor() {
     // Create router
     this.__router = createRouter({
-      history: createWebHistory(),
+      history: createWebHistory(CONFIG.context.basePath),
 
       routes: [
         // --> START <--

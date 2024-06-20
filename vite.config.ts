@@ -27,6 +27,23 @@ import developmentConfig from "./config/development";
 import productionConfig from "./config/production";
 
 /**************************************************************************
+ * INTERFACES
+ * ************************************************************************* */
+
+interface Configuration {
+  environment: string;
+  platform: string;
+
+  context: {
+    basePath: string;
+  };
+
+  overrides?: {
+    hostMeta?: string;
+  };
+}
+
+/**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
@@ -60,11 +77,62 @@ const INLINE_DATA_ITEMS = {
 };
 
 /**************************************************************************
+ * CONFIGURATION
+ * ************************************************************************* */
+
+const CONFIG: Configuration = (function () {
+  // Initialize empty configuration
+  const config = {
+    environment: "",
+    platform: "",
+
+    context: {
+      basePath: ""
+    }
+  };
+
+  // Merge common configuration
+  merge(config, commonConfig);
+
+  // Merge per-environment configuration
+  switch (process.env.NODE_ENV) {
+    case "production": {
+      merge(config, productionConfig);
+
+      break;
+    }
+
+    default: {
+      merge(config, developmentConfig);
+    }
+  }
+
+  // Merge local configuration? (if any)
+  try {
+    const localConfig = JSON.parse(
+      fs.readFileSync("./config/local.json", "utf8")
+    );
+
+    merge(config, localConfig);
+  } catch (_) {
+    // Ignore errors (local configuration not found)
+  }
+
+  // Replace platform with custom platform? (if any)
+  // Notice: this only applies to Tauri builds (eg. macOS bundle)
+  if (PLATFORM_APPLICATION_OVERRIDE) {
+    merge(config, { platform: PLATFORM_APPLICATION_OVERRIDE });
+  }
+
+  return config;
+})();
+
+/**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
 export default {
-  base: "/",
+  base: CONFIG.context.basePath,
   publicDir: "public",
   logLevel: "info",
 
@@ -179,44 +247,6 @@ export default {
 
   define: {
     __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: false,
-
-    __CONFIG__: (function () {
-      const config = {};
-
-      // Merge common configuration
-      merge(config, commonConfig);
-
-      // Merge per-environment configuration
-      switch (process.env.NODE_ENV) {
-        case "production": {
-          merge(config, productionConfig);
-
-          break;
-        }
-
-        default: {
-          merge(config, developmentConfig);
-        }
-      }
-
-      // Merge local configuration? (if any)
-      try {
-        const localConfig = JSON.parse(
-          fs.readFileSync("./config/local.json", "utf8")
-        );
-
-        merge(config, localConfig);
-      } catch (_) {
-        // Ignore errors (local configuration not found)
-      }
-
-      // Replace platform with custom platform? (if any)
-      // Notice: this only applies to Tauri builds (eg. macOS bundle)
-      if (PLATFORM_APPLICATION_OVERRIDE) {
-        merge(config, { platform: PLATFORM_APPLICATION_OVERRIDE });
-      }
-
-      return config;
-    })()
+    __CONFIG__: CONFIG
   }
 };

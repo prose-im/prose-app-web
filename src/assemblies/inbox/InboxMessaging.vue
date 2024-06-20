@@ -14,13 +14,13 @@
 )
   iframe(
     @load="onFrameLoad"
+    :src="frameUrl"
     :class=`[
       "a-inbox-messaging__frame",
       {
         "a-inbox-messaging__frame--visible": isFrameLoaded
       }
     ]`
-    src="/includes/views/messaging.html"
     ref="frame"
     sandbox="allow-same-origin allow-scripts"
   )
@@ -170,6 +170,9 @@ import MessageDetails from "@/popups/inbox/MessageDetails.vue";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
+
+// PROJECT: COMMONS
+import CONFIG from "@/commons/config";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -406,6 +409,10 @@ export default {
 
     unreadCount(): number {
       return this.roomItem?.unreadCount || 0;
+    },
+
+    frameUrl(): string {
+      return `${CONFIG.context.basePath}includes/views/messaging.html`;
     },
 
     selfJID(): JID {

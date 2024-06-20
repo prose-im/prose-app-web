@@ -1,3 +1,7 @@
 {
-  "platform": "web"
+  "platform": "web",
+
+  "context": {
+    "basePath": "/"
+  }
 }
