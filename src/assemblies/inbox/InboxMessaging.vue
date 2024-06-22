@@ -1125,8 +1125,14 @@ export default {
         // Hide popover
         this.hidePopover();
 
-        // Generate message quote
-        const messageQuote = `> ${message.content}\n\n`;
+        // Generate message quote (one quote per line)
+        const messageQuote =
+          message.content
+            .split("\n")
+            .map(messageLine => {
+              return `> ${messageLine}`;
+            })
+            .join("\n") + "\n\n";
 
         // Insert message quote
         this.$emit("fieldInsert", messageQuote);

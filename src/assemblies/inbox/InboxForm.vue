@@ -515,14 +515,17 @@ export default {
       // Insert text into message field
       // Notice: prefix with 2 new lines if field is non-empty.
       if (this.message) {
-        if (this.message.slice(-2) === "\n\n") {
+        const newLine = "\n",
+          newLineDouble = `${newLine}${newLine}`;
+
+        if (this.message.slice(-newLineDouble.length) === newLineDouble) {
           // Do nothing
-        } else if (this.message.slice(-1) === "\n") {
+        } else if (this.message.slice(-newLine.length) === newLine) {
           // Append 1 new line
-          this.message += "\n";
+          this.message += newLine;
         } else {
           // Append 2 new lines
-          this.message += "\n\n";
+          this.message += newLineDouble;
         }
       }
 
