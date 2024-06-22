@@ -252,11 +252,11 @@ const $roster = defineStore("roster", {
       return this.blockList.list;
     },
 
-    markContactsChanged() {
+    markContactsChanged(): void {
       EventBus.emit("contacts:changed");
     },
 
-    markBlockListChanged() {
+    markBlockListChanged(): void {
       EventBus.emit("blocklist:changed");
     }
   }
