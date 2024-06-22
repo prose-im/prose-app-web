@@ -430,6 +430,11 @@ export default {
   methods: {
     // --> EXTERNALS <--
 
+    insertMessageFieldFromParent(text: string): void {
+      // Insert message text
+      this.insertMessageField(text);
+    },
+
     async attachFileFromParent(file: File): Promise<void> {
       // Trigger attach file event (this is an alias)
       await this.onAttachFile(file);
@@ -504,6 +509,27 @@ export default {
       if (draft) {
         this.message = draft;
       }
+    },
+
+    insertMessageField(text: string): void {
+      // Insert text into message field
+      // Notice: prefix with 2 new lines if field is non-empty.
+      if (this.message) {
+        if (this.message.slice(-2) === "\n\n") {
+          // Do nothing
+        } else if (this.message.slice(-1) === "\n") {
+          // Append 1 new line
+          this.message += "\n";
+        } else {
+          // Append 2 new lines
+          this.message += "\n\n";
+        }
+      }
+
+      this.message += text;
+
+      // Focus on input
+      this.focusMessageField();
     },
 
     focusMessageField(): void {

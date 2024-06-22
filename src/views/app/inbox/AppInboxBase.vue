@@ -38,6 +38,7 @@ layout-view(
     )
 
     inbox-messaging(
+      @field-insert="onMessagesFieldInsert"
       @file-preview="onMessagesFilePreview"
       @dragover="onMessagesDragOver"
       :room="room"
@@ -205,6 +206,11 @@ export default {
           break;
         }
       }
+    },
+
+    onMessagesFieldInsert(text: string): void {
+      // Insert text into message form field
+      (this.$refs.form as typeof InboxForm).insertMessageFieldFromParent(text);
     },
 
     onMessagesFilePreview(collection: FilePreviewCollection, index = 0): void {

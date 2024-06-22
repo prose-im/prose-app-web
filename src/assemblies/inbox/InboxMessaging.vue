@@ -271,7 +271,7 @@ export default {
     }
   },
 
-  emits: ["filePreview", "dragover"],
+  emits: ["filePreview", "fieldInsert", "dragover"],
 
   data() {
     return {
@@ -1115,6 +1115,29 @@ export default {
       }
     },
 
+    insertQuoteMessage(messageId: string): void {
+      // Acquire message
+      const message = this.room
+        ? Store.$inbox.getMessage(this.room.id, messageId)
+        : undefined;
+
+      if (message && message.type === "text" && message.content) {
+        // Hide popover
+        this.hidePopover();
+
+        // Generate message quote
+        const messageQuote = `> ${message.content}\n\n`;
+
+        // Insert message quote
+        this.$emit("fieldInsert", messageQuote);
+      } else {
+        BaseAlert.warning(
+          "No text to quote",
+          "The message does not contain any text to quote"
+        );
+      }
+    },
+
     makeFilePreviewFile(event: EventMessageFileView): FilePreviewFile {
       return {
         type: event.file.type as FilePreviewFileType,
@@ -1411,6 +1434,11 @@ export default {
       this.modals.removeMessage.visible = true;
     },
 
+    onPopoverActionsQuoteClick({ messageId }: { messageId: string }): void {
+      // Insert message quote
+      this.insertQuoteMessage(messageId);
+    },
+
     async onPopoverActionsUnreadClick({
       messageId
     }: {
@@ -1697,6 +1725,17 @@ export default {
               items.push(
                 {
                   type: PopoverItemType.Divider
+                },
+
+                {
+                  type: PopoverItemType.Button,
+                  label: "Quote reply",
+                  disabled: !this.session.connected,
+                  click: this.onPopoverActionsQuoteClick,
+
+                  icon: {
+                    name: "arrowshape.turn.up.left"
+                  }
                 },
 
                 {
