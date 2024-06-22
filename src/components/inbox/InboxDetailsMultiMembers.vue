@@ -53,9 +53,9 @@ list-disclosure(
       )
 
   list-button(
-    v-if="hasExpandMember"
-    @click="onExpandMembersClick"
-    class="c-inbox-details-multi-members__button c-inbox-details-multi-members__button--expand"
+    v-if="isCollapsibleMembers"
+    @click="onCollapsibleMembersClick"
+    class="c-inbox-details-multi-members__button c-inbox-details-multi-members__button--collapsible"
     color="lighter"
     size="small"
   )
@@ -63,7 +63,7 @@ list-disclosure(
       v-slot:icon
     )
       base-icon(
-        name="chevron.down"
+        :name="isCollapsed ? 'chevron.down' : 'chevron.up'"
         size="9px"
         class="c-inbox-details-multi-members__icon"
       )
@@ -71,7 +71,15 @@ list-disclosure(
     template(
       v-slot:default
     )
-      | See all members
+      template(
+        v-if="isCollapsed"
+      )
+        | See all members
+
+      template(
+        v-else
+      )
+        | See less members
 
   list-button(
     v-if="hasAddMember"
@@ -174,8 +182,8 @@ export default {
       return this.type === "channel";
     },
 
-    hasExpandMember(): boolean {
-      return this.members.length > this.filteredMembers.length;
+    isCollapsibleMembers(): boolean {
+      return this.members.length > MEMBERS_COLLAPSE_COUNT;
     },
 
     members(): Array<ParticipantInfo> {
@@ -231,8 +239,8 @@ export default {
       }
     },
 
-    onExpandMembersClick(): void {
-      this.isCollapsed = false;
+    onCollapsibleMembersClick(): void {
+      this.isCollapsed = !this.isCollapsed;
     },
 
     onAddMemberClick(): void {
@@ -259,7 +267,7 @@ $c: ".c-inbox-details-multi-members";
   }
 
   #{$c}__button {
-    &--expand {
+    &--collapsible {
       #{$c}__icon {
         fill: rgb(var(--color-base-grey-normal));
       }
