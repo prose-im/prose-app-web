@@ -56,6 +56,9 @@ class BrokerDelegate implements ProseClientDelegate {
       logger.info(`Client disconnected`);
     }
 
+    // Reset internal states
+    Store.$inbox.markResetStates();
+
     this.__eventBus.emit("client:disconnected");
   }
 

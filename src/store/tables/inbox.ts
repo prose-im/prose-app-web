@@ -689,14 +689,20 @@ const $inbox = defineStore("inbox", {
     setComposing(roomId: RoomID, composing: Array<CoreUser>): void {
       const states = this.assert(roomId).states;
 
-      // Filter-out local JID in the list of composing users
-      const selfJID = Store.$account.getSelfJID();
+      if (composing.length > 0) {
+        // Filter-out local JID in the list of composing users
+        const selfJID = Store.$account.getSelfJID();
 
-      this.$patch(() => {
-        states.composing = composing.filter(user => {
-          return !user.jid.equals(selfJID);
+        this.$patch(() => {
+          states.composing = composing.filter(user => {
+            return !user.jid.equals(selfJID);
+          });
         });
-      });
+      } else {
+        this.$patch(() => {
+          states.composing = [];
+        });
+      }
     },
 
     updateLoading(
@@ -766,7 +772,16 @@ const $inbox = defineStore("inbox", {
       });
     },
 
-    markMessagesReload(roomId: RoomID) {
+    markResetStates(): void {
+      const roomIds = this.getRooms();
+
+      // Clear all composing users in all rooms
+      roomIds.forEach(roomId => {
+        this.setComposing(roomId, []);
+      });
+    },
+
+    markMessagesReload(roomId: RoomID): void {
       // Mark archives as stale (since a reload has been requested)
       this.markArchivesAcquired(roomId, InboxArchivesAcquiredMode.Stale);
 
