@@ -412,7 +412,15 @@ export default {
     },
 
     frameUrl(): string {
-      return `${CONFIG.context.basePath}includes/views/messaging.html`;
+      // Normalize base path
+      let basePath = CONFIG.context.basePath || "";
+
+      if (basePath.endsWith("/") === true) {
+        basePath = basePath.slice(0, -1);
+      }
+
+      // Generate frame URL (with base path)
+      return `${basePath}/includes/views/messaging.html`;
     },
 
     selfJID(): JID {
