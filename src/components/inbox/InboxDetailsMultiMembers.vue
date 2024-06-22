@@ -17,7 +17,7 @@ list-disclosure(
   separated
 )
   list-button(
-    v-for="member in members"
+    v-for="member in filteredMembers"
     @click="onMemberClick(member)"
     :class=`[
       "c-inbox-details-multi-members__member",
@@ -53,10 +53,31 @@ list-disclosure(
       )
 
   list-button(
+    v-if="hasExpandMember"
+    @click="onExpandMembersClick"
+    class="c-inbox-details-multi-members__button c-inbox-details-multi-members__button--expand"
+    color="lighter"
+    size="small"
+  )
+    template(
+      v-slot:icon
+    )
+      base-icon(
+        name="chevron.down"
+        size="9px"
+        class="c-inbox-details-multi-members__icon"
+      )
+
+    template(
+      v-slot:default
+    )
+      | See all members
+
+  list-button(
     v-if="hasAddMember"
     @click="onAddMemberClick"
     :class=`[
-      "c-inbox-details-multi-members__add",
+      "c-inbox-details-multi-members__button c-inbox-details-multi-members__button--add",
       {
         [buttonClass]: buttonClass
       }
@@ -107,6 +128,8 @@ const MEMBER_AVAILABILITY_PRIORITIES = {
   [Availability.Unavailable]: 3
 };
 
+const MEMBERS_COLLAPSE_COUNT = 20;
+
 export default {
   name: "InboxDetailsUserMembers",
 
@@ -138,9 +161,21 @@ export default {
 
   emits: ["add"],
 
+  data() {
+    return {
+      // --> STATE <--
+
+      isCollapsed: true
+    };
+  },
+
   computed: {
     hasAddMember(): boolean {
       return this.type === "channel";
+    },
+
+    hasExpandMember(): boolean {
+      return this.members.length > this.filteredMembers.length;
     },
 
     members(): Array<ParticipantInfo> {
@@ -161,6 +196,13 @@ export default {
             return participant.jid?.toString() || "";
           })
       );
+    },
+
+    filteredMembers(): Array<ParticipantInfo> {
+      // Collapse members count?
+      return this.isCollapsed === true
+        ? this.members.slice(0, MEMBERS_COLLAPSE_COUNT)
+        : this.members;
     }
   },
 
@@ -189,6 +231,10 @@ export default {
       }
     },
 
+    onExpandMembersClick(): void {
+      this.isCollapsed = false;
+    },
+
     onAddMemberClick(): void {
       this.$emit("add");
     }
@@ -212,9 +258,17 @@ $c: ".c-inbox-details-multi-members";
     }
   }
 
-  #{$c}__add {
-    #{$c}__icon {
-      fill: rgb(var(--color-base-blue-dark));
+  #{$c}__button {
+    &--expand {
+      #{$c}__icon {
+        fill: rgb(var(--color-base-grey-normal));
+      }
+    }
+
+    &--add {
+      #{$c}__icon {
+        fill: rgb(var(--color-base-blue-dark));
+      }
     }
   }
 }
