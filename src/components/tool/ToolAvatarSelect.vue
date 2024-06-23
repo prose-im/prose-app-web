@@ -13,14 +13,19 @@ div(
   :class=`[
     "c-tool-avatar-select",
     {
-      "c-tool-avatar-select--locked": pending || fileLoading
+      "c-tool-avatar-select--locked": pending || fileLoading,
+      "c-tool-avatar-select--block": block
     }
   ]`
+  :style=`{
+    width: size,
+    height: size
+  }`
 )
   base-avatar(
     :jid="jid"
     :data-url="avatarDataUrl"
-    size="96px"
+    :size="size"
     shadow="light"
     class="c-tool-avatar-select__image"
     square
@@ -84,7 +89,17 @@ export default {
       required: true
     },
 
+    size: {
+      type: String,
+      default: "100px"
+    },
+
     pending: {
+      type: Boolean,
+      default: false
+    },
+
+    block: {
       type: Boolean,
       default: false
     }
@@ -289,6 +304,11 @@ $c: ".c-tool-avatar-select";
 
   &--locked {
     pointer-events: none;
+  }
+
+  &--block {
+    margin-inline: auto;
+    display: block;
   }
 }
 </style>

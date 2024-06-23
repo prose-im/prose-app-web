@@ -15,6 +15,7 @@
       @update="onAvatarUpdate"
       :jid="jid"
       :pending="pending"
+      size="96px"
     )
 
     p.p-edit-profile-navigate__identity-name.u-medium
