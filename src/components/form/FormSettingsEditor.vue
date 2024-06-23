@@ -62,10 +62,10 @@
             v-model="field.data.value.inner"
             @change="field.data.value.change"
             :name="field.id"
+            :size="fieldSize"
             :placeholder="field.data.placeholder"
             :disabled="field.data.disabled"
             type="text"
-            size="mid-medium"
             align="left"
           )
 
@@ -74,10 +74,10 @@
             v-model="field.data.value.inner"
             @change="field.data.value.change"
             :name="field.id"
+            :size="fieldSize"
             :placeholder="field.data.placeholder"
             :disabled="field.data.disabled"
             type="textarea"
-            size="mid-medium"
             align="left"
           )
 
@@ -88,11 +88,11 @@
             :options="field.data.options"
             :icon="field.data.icon"
             :name="field.id"
+            :size="fieldSize"
             :placeholder="field.data.placeholder"
             :position="field.data.position"
             :search="field.data.options.length > 10"
             :disabled="field.data.disabled"
-            size="mid-medium"
           )
 
           form-checkbox(
@@ -133,9 +133,9 @@
             v-else-if="field.type === 'button'",
             @click="field.data.click"
             :tint="field.data.tint || 'light'"
+            :size="fieldSize"
             :reverse="field.data.reverse"
             :disabled="field.data.disabled"
-            size="mid-medium"
           )
             | {{ field.data.text }}
 
@@ -450,6 +450,15 @@ export default {
 
       validator(x: Array<Fieldset>): boolean {
         return x.length > 0;
+      }
+    },
+
+    fieldSize: {
+      type: String,
+      default: "mid-medium",
+
+      validator(x: string) {
+        return ["mid-medium", "large"].includes(x);
       }
     },
 
