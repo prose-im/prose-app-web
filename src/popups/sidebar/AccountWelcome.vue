@@ -153,10 +153,6 @@ export default {
   },
 
   computed: {
-    isPending(): boolean {
-      return this.fetching || this.saving;
-    },
-
     fieldsets() {
       return {
         name: [
@@ -230,6 +226,16 @@ export default {
       };
     },
 
+    isPending(): boolean {
+      return this.fetching || this.saving;
+    },
+
+    hasUserProfileName(): boolean {
+      return this.userProfile?.firstName || this.userProfile?.lastName
+        ? true
+        : false;
+    },
+
     selfJID(): JID {
       return this.account.getSelfJID();
     },
@@ -297,20 +303,21 @@ export default {
         lastName = this.form.nameLast.inner;
 
       // Not enough details provided?
-      if (!firstName || !lastName) {
-        throw new Error("Either first name or last name missing");
+      if (!firstName && !lastName) {
+        throw new Error("Either first name or last name required");
       }
 
-      // Acquire loaded profile (or construct new empty profile)
-      const profile =
-        this.userProfile !== null ? this.userProfile : new UserProfile();
+      // Construct new empty profile?
+      if (this.userProfile === null) {
+        this.userProfile = new UserProfile();
+      }
 
       // Assign new name to user profile
-      profile.firstName = firstName;
-      profile.lastName = lastName;
+      this.userProfile.firstName = firstName;
+      this.userProfile.lastName = lastName;
 
       // Save vCard data
-      await Broker.$profile.saveUserProfile(this.selfJID, profile);
+      await Broker.$profile.saveUserProfile(this.selfJID, this.userProfile);
     },
 
     async saveProfileAvatar(): Promise<void> {
@@ -343,6 +350,19 @@ export default {
       if (nextStep === StepType.End) {
         // Trigger done event
         this.$emit("complete");
+
+        // Show alert
+        if (this.hasUserProfileName === true) {
+          BaseAlert.success(
+            "Your profile is all set",
+            "Start chatting with your team!"
+          );
+        } else {
+          BaseAlert.info(
+            "Your profile was not fully set",
+            "We will remind you later"
+          );
+        }
       }
     },
 
