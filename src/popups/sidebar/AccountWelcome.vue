@@ -21,7 +21,8 @@ layout-popup-navigate(
     v-slot:content
   )
     h1.p-account-welcome__title.u-bold
-      | 👋
+      span.p-account-welcome__title-hand
+        | 👋
 
       base-space(
         :repeat="2"
@@ -407,6 +408,14 @@ $c: ".p-account-welcome";
     color: rgb(var(--color-text-primary));
     font-size: 28px;
     margin-block-start: 12px;
+
+    #{$c}__title-hand {
+      animation-name: p-account-welcome-title-hand-wave;
+      animation-duration: 2.5s;
+      animation-delay: 250ms;
+      transform-origin: 70% 70%;
+      display: inline-block;
+    }
   }
 
   #{$c}__notice {
@@ -436,6 +445,42 @@ $c: ".p-account-welcome";
     #{$c}__actions-controls {
       flex: 0 1 auto;
     }
+  }
+}
+
+// KEYFRAMES
+
+@keyframes p-account-welcome-title-hand-wave {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  10% {
+    transform: rotate(14deg);
+  }
+
+  20% {
+    transform: rotate(-8deg);
+  }
+
+  30% {
+    transform: rotate(14deg);
+  }
+
+  40% {
+    transform: rotate(-4deg);
+  }
+
+  50% {
+    transform: rotate(10deg);
+  }
+
+  60% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
   }
 }
 </style>
