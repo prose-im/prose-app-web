@@ -46,6 +46,7 @@ div(
     base-tooltip(
       align="right"
       direction="bottom"
+      click="hide"
       tooltip="Message Someone"
     )
       base-action(
