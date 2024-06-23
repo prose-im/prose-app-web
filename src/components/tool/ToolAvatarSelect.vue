@@ -207,6 +207,7 @@ $c: ".c-tool-avatar-select";
 
 #{$c} {
   line-height: 0;
+  text-align: center;
   overflow: hidden;
   display: inline-block;
   position: relative;
