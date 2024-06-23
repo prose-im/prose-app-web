@@ -61,6 +61,6 @@ $c: ".c-base-foreground";
   justify-content: center;
   position: fixed;
   inset: 0;
-  z-index: $index-foreground-secondary;
+  z-index: $index-foreground-tertiary;
 }
 </style>
