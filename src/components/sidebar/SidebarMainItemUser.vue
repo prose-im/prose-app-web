@@ -56,21 +56,14 @@ sidebar-main-item-generic(
     base-tooltip(
       v-if="statusActivity.status"
       :bypassed="!statusActivity.status.text"
+      :tooltip="statusActivity.status.text"
       align="left"
       class="c-sidebar-main-item-user__activity"
     )
-      template(
-        v-slot:tooltip
+      span(
+        class="c-sidebar-main-item-user__activity-icon"
       )
-        | {{ statusActivity.status.text }}
-
-      template(
-        v-slot:default
-      )
-        span(
-          class="c-sidebar-main-item-user__activity-icon"
-        )
-          | {{ statusActivity.status.icon }}
+        | {{ statusActivity.status.icon }}
 </template>
 
 <!-- **********************************************************************
