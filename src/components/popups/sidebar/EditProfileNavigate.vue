@@ -116,7 +116,7 @@ export default {
   methods: {
     // --> EVENT LISTENERS <--
 
-    async onAvatarUpdate(avatarUpdate: ToolAvatarUpdate): Promise<void> {
+    onAvatarUpdate(avatarUpdate: ToolAvatarUpdate): void {
       this.$emit("avatar", avatarUpdate);
 
       BaseAlert.info("Avatar changed", "Save your profile to submit it!");
