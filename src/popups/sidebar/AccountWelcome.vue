@@ -127,7 +127,7 @@ export default {
 
   components: { FormSettingsEditor },
 
-  emits: ["close"],
+  emits: ["close", "complete"],
 
   data() {
     return {
@@ -336,13 +336,13 @@ export default {
     goToNextStep(): void {
       const nextStep = STEPS_CHAIN[this.step];
 
-      // Last step reached? (or any next step?)
+      // Go to next step
+      this.step = nextStep;
+
+      // Last step reached?
       if (nextStep === StepType.End) {
-        // Trigger close event
-        this.onClose();
-      } else {
-        // Go to next step
-        this.step = nextStep;
+        // Trigger done event
+        this.$emit("complete");
       }
     },
 

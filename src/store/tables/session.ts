@@ -66,6 +66,10 @@ const $session = defineStore("session", {
         foreground: {
           mounted: false
         }
+      },
+
+      onboarding: {
+        welcome: false
       }
     };
   },
@@ -125,6 +129,12 @@ const $session = defineStore("session", {
     setInterfaceForegroundMounted(mounted: boolean) {
       this.$patch(state => {
         state.interface.foreground.mounted = mounted;
+      });
+    },
+
+    setOnboardingWelcome(welcome: boolean) {
+      this.$patch(state => {
+        state.onboarding.welcome = welcome;
       });
     },
 

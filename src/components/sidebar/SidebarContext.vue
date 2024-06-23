@@ -123,11 +123,6 @@
     v-if="popups.accountSettings.visible"
     @close="onPopupAccountSettingsClose"
   )
-
-  account-welcome(
-    v-if="popups.accountWelcome.visible"
-    @close="onPopupAccountWelcomeClose"
-  )
 </template>
 
 <!-- **********************************************************************
@@ -158,7 +153,6 @@ import {
 // PROJECT: POPUPS
 import EditProfile from "@/popups/sidebar/EditProfile.vue";
 import AccountSettings from "@/popups/sidebar/AccountSettings.vue";
-import AccountWelcome from "@/popups/sidebar/AccountWelcome.vue";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
@@ -185,8 +179,7 @@ export default {
     UpdateStatus,
     SignOut,
     EditProfile,
-    AccountSettings,
-    AccountWelcome
+    AccountSettings
   },
 
   props: {
@@ -230,10 +223,6 @@ export default {
         },
 
         accountSettings: {
-          visible: false
-        },
-
-        accountWelcome: {
           visible: false
         }
       }
@@ -707,10 +696,6 @@ export default {
 
     onPopupAccountSettingsClose(): void {
       this.popups.accountSettings.visible = false;
-    },
-
-    onPopupAccountWelcomeClose(): void {
-      this.popups.accountWelcome.visible = false;
     },
 
     async onModalUpdateStatusUpdate(

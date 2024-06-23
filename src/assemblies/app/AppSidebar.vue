@@ -58,6 +58,12 @@ div(
     @close="onModalAddChannelClose"
     :loading="modals.addChannel.loading"
   )
+
+  account-welcome(
+    v-if="popups.accountWelcome.visible"
+    @complete="onPopupAccountWelcomeComplete"
+    @close="onPopupAccountWelcomeClose"
+  )
 </template>
 
 <!-- **********************************************************************
@@ -82,6 +88,9 @@ import Broker from "@/broker";
 
 // PROJECT: STORES
 import Store from "@/store";
+
+// PROJECT: POPUPS
+import AccountWelcome from "@/popups/sidebar/AccountWelcome.vue";
 
 // PROJECT: MODALS
 import OpenDirectMessage from "@/modals/sidebar/OpenDirectMessage.vue";
@@ -114,7 +123,8 @@ export default {
     SidebarMain,
     SidebarContext,
     OpenDirectMessage,
-    AddChannel
+    AddChannel,
+    AccountWelcome
   },
 
   setup() {
@@ -144,6 +154,12 @@ export default {
           visible: false,
           loading: false
         }
+      },
+
+      popups: {
+        accountWelcome: {
+          visible: false
+        }
       }
     };
   },
@@ -153,9 +169,18 @@ export default {
       return Store.$account;
     },
 
+    session(): typeof Store.$session {
+      return Store.$session;
+    },
+
     selfJID(): JID {
       return this.account.getSelfJID();
     }
+  },
+
+  mounted() {
+    // Check if should show welcome
+    this.checkPopupAccountWelcomeOpen();
   },
 
   methods: {
@@ -236,6 +261,15 @@ export default {
             roomId: jid.toString()
           }
         });
+      }
+    },
+
+    checkPopupAccountWelcomeOpen(): void {
+      const shouldOpenWelcome = this.session.onboarding.welcome;
+
+      // Open welcome popup?
+      if (shouldOpenWelcome === true) {
+        this.popups.accountWelcome.visible = true;
       }
     },
 
@@ -333,6 +367,18 @@ export default {
 
     onModalAddChannelClose(): void {
       this.modals.addChannel.visible = false;
+    },
+
+    onPopupAccountWelcomeComplete(): void {
+      // Mark welcome onboarding as complete
+      this.session.setOnboardingWelcome(false);
+
+      // Trigger close event
+      this.onPopupAccountWelcomeClose();
+    },
+
+    onPopupAccountWelcomeClose(): void {
+      this.popups.accountWelcome.visible = false;
     }
   }
 };

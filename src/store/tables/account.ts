@@ -20,6 +20,7 @@ import { InboxNameOrigin } from "@/store/tables/inbox";
 import Broker from "@/broker";
 
 // PROJECT: UTILITIES
+import logger from "@/utilities/logger";
 import UtilitiesRuntime from "@/utilities/runtime";
 
 /**************************************************************************
@@ -146,6 +147,26 @@ const $account = defineStore("account", {
           state.last.jid = rawJID;
           state.last.timestamp = Date.now();
         });
+      }
+
+      // Load local user profile and check if should show onboarding
+      try {
+        const profile = await Broker.$profile.loadUserProfile(jid);
+
+        // No profile first/last name set? (or profile is completely empty)
+        if (
+          profile === undefined ||
+          (!profile.firstName && !profile.lastName)
+        ) {
+          Store.$session.setOnboardingWelcome(true);
+        }
+      } catch (error) {
+        // Ignore profile load errors (this is not mandatory for login to \
+        //   succeed)
+        logger.error(
+          `Failed loading local user profile after logging in (ignoring error)`,
+          error
+        );
       }
     },
 
