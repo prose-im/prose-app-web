@@ -9,31 +9,19 @@
      ********************************************************************** -->
 
 <template lang="pug">
-div(
+.c-base-tooltip(
   @mouseenter="onMouseEnter"
   @mouseleave="onMouseLeave"
-  :class=`[
-    "c-base-tooltip",
-    "c-base-tooltip--" + direction,
-    "c-base-tooltip--" + align,
-    {
-      "c-base-tooltip--visible": isVisible
-    }
-  ]`
+  ref="root"
 )
-  .c-base-tooltip__overlay(
-    v-if="isInserted && !bypassed"
+  base-tooltip-overlay(
+    v-if="isVisible && !bypassed"
+    :value="tooltip"
+    :align="align"
+    :direction="direction"
+    :anchor="overlayAnchor"
+    :origin="overlayOrigin"
   )
-    span.c-base-tooltip__value
-      template(
-        v-if="tooltip"
-      )
-        | {{ tooltip }}
-
-      slot(
-        v-else
-        name="tooltip"
-      )
 
   .c-base-tooltip__wrapped(
     @click="onWrappedClick"
@@ -62,7 +50,7 @@ export default {
   props: {
     tooltip: {
       type: String,
-      default: null
+      required: true
     },
 
     align: {
@@ -109,8 +97,10 @@ export default {
       autoHideTimeout: null as null | ReturnType<typeof setTimeout>,
       mouseEnterApplyTimeout: null as null | ReturnType<typeof setTimeout>,
 
-      isInserted: false,
-      isVisible: false
+      isVisible: false,
+
+      overlayAnchor: [0, 0],
+      overlayOrigin: [0, 0]
     };
   },
 
@@ -130,10 +120,12 @@ export default {
 
       // Now visible? Proceed more actions
       if (visible === true) {
-        // Mark as inserted? (insert overlay on first mark-as-visible)
-        if (this.isInserted !== true) {
-          this.isInserted = true;
-        }
+        // Update anchor position of root element
+        const rootElement = this.$refs.root as HTMLElement,
+          rootBounds = rootElement.getBoundingClientRect();
+
+        this.overlayAnchor = [rootBounds.left, rootBounds.top];
+        this.overlayOrigin = [rootBounds.width, rootBounds.height];
 
         // Schedule auto-hide?
         // Notice: this is done to auto-clear any dangling tooltip that did \
@@ -218,100 +210,12 @@ export default {
 <style lang="scss">
 $c: ".c-base-tooltip";
 
-// VARIABLES
-$tooltip-spacing-block: 6px;
-$tooltip-spacing-inline: -3px;
-
 #{$c} {
   display: inline-block;
   position: relative;
 
-  #{$c}__overlay {
-    font-weight: initial;
-    line-height: 18px;
-    user-select: none;
-    cursor: default;
-    width: max-content;
-    opacity: 0;
-    display: block;
-    visibility: hidden;
-    position: absolute;
-    z-index: $index-foreground-tertiary;
-  }
-
-  #{$c}__value {
-    background-color: rgba(var(--color-white), 0.9);
-    backdrop-filter: blur(3px);
-    font-size: 11.5px;
-    user-select: none;
-    text-align: center;
-    letter-spacing: 0.1px;
-    padding: 5px 10px;
-    display: inline-block;
-    border-radius: 3px;
-    box-shadow: 0 2px 6px 0 rgba(var(--color-shadow-primary), 0.06);
-
-    &,
-    a {
-      color: rgb(var(--color-text-primary));
-    }
-
-    a {
-      text-decoration: underline;
-    }
-  }
-
   #{$c}__wrapped {
     display: contents;
-  }
-
-  // --> DIRECTIONS <--
-
-  &--top {
-    > #{$c}__overlay {
-      padding-block-end: $tooltip-spacing-block;
-      inset-block-end: 100%;
-    }
-  }
-
-  &--bottom {
-    > #{$c}__overlay {
-      padding-block-start: $tooltip-spacing-block;
-      inset-block-start: 100%;
-    }
-  }
-
-  // --> ALIGNS <--
-
-  &--left {
-    > #{$c}__overlay {
-      inset-inline-start: $tooltip-spacing-inline;
-      text-align: left;
-    }
-  }
-
-  &--center {
-    > #{$c}__overlay {
-      text-align: center;
-      inset-inline-start: 50%;
-      transform: translateX(-50%);
-    }
-  }
-
-  &--right {
-    > #{$c}__overlay {
-      inset-inline-end: $tooltip-spacing-inline;
-      text-align: right;
-    }
-  }
-
-  // --> BOOLEANS <--
-
-  &--visible {
-    > #{$c}__overlay {
-      visibility: visible;
-      opacity: 1;
-    }
   }
 }
 </style>
