@@ -134,6 +134,7 @@ import {
 import {
   JID,
   Room,
+  ParticipantInfo,
   SendMessageRequest,
   SendMessageRequestBody
 } from "@prose-im/prose-sdk-js";
@@ -485,6 +486,13 @@ export default {
           Store.$inbox.trimMessages(oldValue.id, ROOM_TRIM_MESSAGES_RETAIN);
         }
       }
+    },
+
+    "room.participants": {
+      handler(newValue: Array<ParticipantInfo>) {
+        // Re-register global participant names
+        this.registerGlobalParticipantNames(newValue);
+      }
     }
   },
 
@@ -635,7 +643,8 @@ export default {
       runtime.MessagingStore.flush();
 
       // Register global names
-      this.registerGlobalNames();
+      this.registerGlobalSelfName();
+      this.registerGlobalParticipantNames();
 
       // Identify all parties
       this.identifyAllParties(runtime);
@@ -719,7 +728,7 @@ export default {
       }
     },
 
-    registerGlobalNames(): void {
+    registerGlobalSelfName(): void {
       const roomId = this.room?.id || null;
 
       if (roomId !== null) {
@@ -730,13 +739,21 @@ export default {
           this.selfName,
           InboxNameOrigin.Global
         );
+      }
+    },
 
+    registerGlobalParticipantNames(
+      participants?: Array<ParticipantInfo>
+    ): void {
+      const roomId = this.room?.id || null;
+
+      if (roomId !== null) {
         // Register participant names
         // Notice: those names are preferred over the per-message names, since \
         //   they are guaranteed to be always up-to-date. Those are defined \
         //   secondly since they may overwrite per-message names, which is \
         //   desired.
-        this.room?.participants.forEach(member => {
+        (participants || this.room?.participants)?.forEach(member => {
           if (member.jid) {
             Store.$inbox.setName(
               roomId,
