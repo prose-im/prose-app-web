@@ -37,8 +37,12 @@ sidebar-main-item-generic(
     span.c-sidebar-main-item-multi__name.u-ellipsis
       | {{ item.name }}
 
-    span.c-sidebar-main-item-multi__domain.u-ellipsis(
+    base-tooltip(
       v-if="domainExternal"
+      :tooltip="'Via ' + domainExternal"
+      align="left"
+      click="hide"
+      class="c-sidebar-main-item-multi__domain u-ellipsis"
     )
       | \#{{ domainExternal }}
 </template>
