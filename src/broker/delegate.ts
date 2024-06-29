@@ -14,7 +14,8 @@ import {
   JID,
   ProseClient,
   ProseClientDelegate,
-  Room
+  Room,
+  Availability
 } from "@prose-im/prose-sdk-js";
 import mitt from "mitt";
 
@@ -154,9 +155,17 @@ class BrokerDelegate implements ProseClientDelegate {
 
     // Trigger a notification? (only for messages from remote users)
     if (hasInserted === true) {
+      const selfJIDString = Store.$account.getSelfJID().toString(),
+        selfAvailability = Store.$account.getInformationAvailability();
+
+      // Check if user can be notified
+      // Notice: user cannot be notified if:
+      //  - #1. User has paused notifications
+      //  - #2. User is in 'Available' availability mode (DND and Invisible \
+      //          should both mute alerts)
       const hasNotifications =
-          (Store.$settings.notifications.pause.until || 0) <= Date.now(),
-        selfJIDString = Store.$account.getSelfJID().toString();
+        (Store.$settings.notifications.pause.until || 0) <= Date.now() &&
+        selfAvailability === Availability.Available;
 
       // Play incoming message sound? (check if sounds are allowed or not)
       if (
