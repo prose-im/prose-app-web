@@ -151,17 +151,17 @@ $inner-spacing-sides: 18px;
 
       #{$c}__snapshot-system {
         color: rgb(var(--color-text-primary));
-        font-size: 14px;
+        font-size: $font-size-baseline;
       }
 
       #{$c}__snapshot-client {
         color: rgb(var(--color-text-secondary));
-        font-size: 12.5px;
+        font-size: ($font-size-baseline - 1.5px);
         margin-block-start: 3px;
       }
 
       #{$c}__snapshot-security {
-        font-size: 11px;
+        font-size: ($font-size-baseline - 3px);
         margin-block-start: 9px;
 
         a {

@@ -124,13 +124,13 @@ $icon-size: 28px;
 
     #{$c}__text-title {
       color: rgb(var(--color-text-primary));
-      font-size: 14px;
+      font-size: $font-size-baseline;
       line-height: 16px;
     }
 
     #{$c}__text-label {
       color: rgb(var(--color-text-secondary));
-      font-size: 12.75px;
+      font-size: ($font-size-baseline - 1.25px);
       line-height: 15px;
       margin-block-start: 2px;
     }

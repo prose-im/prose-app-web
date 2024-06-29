@@ -168,19 +168,19 @@ $c: ".c-list-browse-result";
 
       #{$c}__identity-primary {
         color: rgb(var(--color-text-primary));
-        font-size: 14px;
+        font-size: $font-size-baseline;
       }
 
       #{$c}__identity-secondary {
         color: rgb(var(--color-text-secondary));
-        font-size: 13px;
+        font-size: ($font-size-baseline - 1px);
         margin-inline-start: 10px;
       }
     }
 
     #{$c}__preview {
       color: rgb(var(--color-text-secondary));
-      font-size: 12.5px;
+      font-size: ($font-size-baseline - 1.5px);
       line-height: 14px;
       margin-block-start: 4px;
     }

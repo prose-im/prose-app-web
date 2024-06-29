@@ -384,12 +384,12 @@ $alert-padding-sides: 12px;
       align-items: center;
 
       #{$c}__text-title {
-        font-size: 14px;
+        font-size: $font-size-baseline;
         flex: 0 0 auto;
       }
 
       #{$c}__text-description {
-        font-size: 13.5px;
+        font-size: ($font-size-baseline - 0.5px);
         flex: 1;
         display: flex;
         align-items: center;

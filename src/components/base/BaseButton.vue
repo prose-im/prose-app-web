@@ -343,7 +343,7 @@ $size-ultra-large-padding-sides: 44px;
 
   &--small {
     #{$c}__inner {
-      font-size: 8.5px;
+      font-size: ($font-size-baseline - 5.5px);
       line-height: 20px;
       padding-inline-start: $size-small-padding-sides;
       padding-inline-end: $size-small-padding-sides;
@@ -352,7 +352,7 @@ $size-ultra-large-padding-sides: 44px;
 
   &--mid-small {
     #{$c}__inner {
-      font-size: 9.5px;
+      font-size: ($font-size-baseline - 4.5px);
       line-height: 22px;
       padding-inline-start: $size-mid-small-padding-sides;
       padding-inline-end: $size-mid-small-padding-sides;
@@ -361,7 +361,7 @@ $size-ultra-large-padding-sides: 44px;
 
   &--medium {
     #{$c}__inner {
-      font-size: 10px;
+      font-size: ($font-size-baseline - 4px);
       line-height: 25px;
       padding-inline-start: $size-medium-padding-sides;
       padding-inline-end: $size-medium-padding-sides;
@@ -370,7 +370,7 @@ $size-ultra-large-padding-sides: 44px;
 
   &--mid-medium {
     #{$c}__inner {
-      font-size: 12px;
+      font-size: ($font-size-baseline - 2px);
       line-height: 32px;
       padding-inline-start: $size-mid-medium-padding-sides;
       padding-inline-end: $size-mid-medium-padding-sides;
@@ -379,7 +379,7 @@ $size-ultra-large-padding-sides: 44px;
 
   &--large {
     #{$c}__inner {
-      font-size: 14px;
+      font-size: $font-size-baseline;
       line-height: 42px;
       padding-inline-start: $size-large-padding-sides;
       padding-inline-end: $size-large-padding-sides;
@@ -388,7 +388,7 @@ $size-ultra-large-padding-sides: 44px;
 
   &--mid-large {
     #{$c}__inner {
-      font-size: 15px;
+      font-size: ($font-size-baseline + 1px);
       line-height: 48px;
       padding-inline-start: $size-mid-large-padding-sides;
       padding-inline-end: $size-mid-large-padding-sides;
@@ -397,7 +397,7 @@ $size-ultra-large-padding-sides: 44px;
 
   &--ultra-large {
     #{$c}__inner {
-      font-size: 16px;
+      font-size: ($font-size-baseline + 2px);
       line-height: 58px;
       padding-inline-start: $size-ultra-large-padding-sides;
       padding-inline-end: $size-ultra-large-padding-sides;

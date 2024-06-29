@@ -847,7 +847,7 @@ $current-status-define-padding-block: 2px;
 
     #{$c}__team {
       color: rgb(var(--color-text-primary));
-      font-size: 14px;
+      font-size: $font-size-baseline;
       margin-block-start: -1px;
     }
 
@@ -858,11 +858,11 @@ $current-status-define-padding-block: 2px;
 
       #{$c}__status-text,
       #{$c}__status-define {
-        font-size: 13px;
+        font-size: ($font-size-baseline - 1px);
       }
 
       #{$c}__status-icon {
-        font-size: 15px;
+        font-size: ($font-size-baseline + 1px);
         flex: 0 0 auto;
       }
 

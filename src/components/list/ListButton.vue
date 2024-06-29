@@ -234,7 +234,7 @@ $list-button-colors: (
     padding-inline: 10px;
 
     #{$c}__label {
-      font-size: 13px;
+      font-size: ($font-size-baseline - 1px);
       line-height: 18px;
     }
   }
@@ -244,7 +244,7 @@ $list-button-colors: (
     padding-inline: 12px;
 
     #{$c}__label {
-      font-size: 14px;
+      font-size: $font-size-baseline;
       line-height: 19px;
     }
   }

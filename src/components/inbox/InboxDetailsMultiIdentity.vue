@@ -60,7 +60,7 @@ $c: ".c-inbox-details-multi-identity";
 
 #{$c} {
   #{$c}__name {
-    font-size: 14px;
+    font-size: $font-size-baseline;
     padding-inline: 8px;
     display: flex;
     align-items: center;

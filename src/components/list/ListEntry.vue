@@ -98,7 +98,7 @@ $c: ".c-list-entry";
   }
 
   #{$c}__label {
-    font-size: 14px;
+    font-size: $font-size-baseline;
     line-height: 18px;
     flex: 1;
   }
@@ -127,7 +127,7 @@ $c: ".c-list-entry";
 
   &--multi-line {
     #{$c}__label {
-      font-size: 13.5px;
+      font-size: ($font-size-baseline - 0.5px);
       line-height: 16px;
       word-break: break-word;
       hyphens: auto;

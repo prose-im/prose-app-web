@@ -271,7 +271,7 @@ $c: ".p-message-details";
 
   #{$c}__value {
     color: rgb(var(--color-text-primary));
-    font-size: 14px;
+    font-size: $font-size-baseline;
 
     &--lighter {
       color: rgb(var(--color-text-secondary));

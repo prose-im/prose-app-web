@@ -99,7 +99,7 @@ $c: ".c-form-fieldset-field";
 
   #{$c}__label {
     color: rgb(var(--color-text-primary));
-    font-size: 14px;
+    font-size: $font-size-baseline;
     letter-spacing: 0.1px;
     line-height: 20px;
     width: 100%;

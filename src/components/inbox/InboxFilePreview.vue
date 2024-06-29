@@ -453,7 +453,7 @@ $file-preview-border-radius: 9px;
 
     #{$c}__title {
       color: rgb(var(--color-text-primary));
-      font-size: 14px;
+      font-size: $font-size-baseline;
     }
 
     #{$c}__button {

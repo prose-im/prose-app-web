@@ -614,7 +614,8 @@ $c: ".c-form-field";
 
   &--medium {
     #{$c}__inner {
-      font-size: 11px;
+      font-size: ($font-size-baseline - 3px);
+      letter-spacing: 0.05px;
       padding-inline-start: $size-form-field-medium-padding-sides;
       padding-inline-end: $size-form-field-medium-padding-sides;
 
@@ -631,7 +632,8 @@ $c: ".c-form-field";
 
   &--mid-medium {
     #{$c}__inner {
-      font-size: 13px;
+      font-size: ($font-size-baseline - 1px);
+      letter-spacing: 0.075px;
       padding-inline-start: $size-form-field-mid-medium-padding-sides;
       padding-inline-end: $size-form-field-mid-medium-padding-sides;
 
@@ -648,7 +650,8 @@ $c: ".c-form-field";
 
   &--large {
     #{$c}__inner {
-      font-size: 15px;
+      font-size: $font-size-baseline;
+      letter-spacing: 0.1px;
       padding-inline-start: $size-form-field-large-padding-sides;
       padding-inline-end: $size-form-field-large-padding-sides;
 
@@ -665,7 +668,8 @@ $c: ".c-form-field";
 
   &--mid-large {
     #{$c}__inner {
-      font-size: 16px;
+      font-size: ($font-size-baseline + 2px);
+      letter-spacing: 0.125px;
       padding-inline-start: $size-form-field-mid-large-padding-sides;
       padding-inline-end: $size-form-field-mid-large-padding-sides;
 
@@ -682,7 +686,8 @@ $c: ".c-form-field";
 
   &--ultra-large {
     #{$c}__inner {
-      font-size: 17px;
+      font-size: ($font-size-baseline + 3px);
+      letter-spacing: 0.15px;
       padding-inline-start: $size-form-field-ultra-large-padding-sides;
       padding-inline-end: $size-form-field-ultra-large-padding-sides;
 
