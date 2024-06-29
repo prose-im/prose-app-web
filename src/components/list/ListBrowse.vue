@@ -177,14 +177,14 @@ $c: ".c-list-browse";
 
       #{$c}__title-name {
         color: rgb(var(--color-text-primary));
-        font-size: 15.5px;
+        font-size: ($font-size-baseline + 1.5px);
         letter-spacing: 0.1px;
         flex: 1;
       }
 
       #{$c}__title-aside {
         color: rgb(var(--color-text-secondary));
-        font-size: 13.5px;
+        font-size: ($font-size-baseline - 0.5px);
         margin-inline-start: 8px;
         flex: 0 0 auto;
       }

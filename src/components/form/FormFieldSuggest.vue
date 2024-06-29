@@ -281,7 +281,7 @@ $suggest-sizes: (
     }
 
     #{$c}__link {
-      font-size: 12.5px;
+      font-size: ($font-size-baseline - 1.5px);
       display: flex;
       align-items: center;
       transition: none;

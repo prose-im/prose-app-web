@@ -89,13 +89,13 @@ $c: ".c-base-badge-details";
 
       #{$c}__title {
         color: rgb(var(--color-text-primary));
-        font-size: 12.5px;
+        font-size: ($font-size-baseline - 1.5px);
         line-height: 14px;
       }
 
       #{$c}__label {
         color: rgb(var(--color-text-secondary));
-        font-size: 12px;
+        font-size: ($font-size-baseline - 2px);
         line-height: 13px;
         margin-block-start: 4px;
       }

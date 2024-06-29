@@ -171,7 +171,7 @@ $c: ".c-inbox-details-user-identity";
     margin-block-end: 18px;
 
     #{$c}__name {
-      font-size: 15px;
+      font-size: ($font-size-baseline + 1px);
       line-height: 17px;
       display: flex;
       align-items: center;
@@ -190,7 +190,7 @@ $c: ".c-inbox-details-user-identity";
 
     #{$c}__role {
       color: rgb(var(--color-text-secondary));
-      font-size: 13px;
+      font-size: ($font-size-baseline - 1px);
       line-height: 16px;
       margin-block-start: 4px;
     }

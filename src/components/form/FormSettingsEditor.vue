@@ -538,7 +538,7 @@ $c: ".c-form-settings-editor";
 #{$c} {
   #{$c}__title {
     color: rgb(var(--color-text-secondary));
-    font-size: 14.5px;
+    font-size: ($font-size-baseline + 0.5px);
     margin-block-end: 16px;
   }
 
@@ -553,7 +553,7 @@ $c: ".c-form-settings-editor";
       margin-block-start: -3px;
 
       > * {
-        font-size: 13.5px;
+        font-size: ($font-size-baseline - 0.5px);
       }
 
       #{$c}__field-aside-link {

@@ -243,20 +243,20 @@ $c: ".c-message-author";
 
       &--name {
         color: rgb(var(--color-text-primary));
-        font-size: 15px;
+        font-size: ($font-size-baseline + 1px);
         line-height: 17px;
       }
 
       &--jid {
         color: rgb(var(--color-text-secondary));
-        font-size: 13px;
+        font-size: ($font-size-baseline - 1px);
         line-height: 15px;
       }
 
       &--job,
       &--timezone {
         color: rgb(var(--color-text-primary));
-        font-size: 12px;
+        font-size: ($font-size-baseline - 2px);
         line-height: 14px;
       }
 

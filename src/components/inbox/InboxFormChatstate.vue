@@ -85,7 +85,7 @@ $c: ".c-inbox-form-chatstate";
   background: rgba(var(--color-white), 0.875);
   color: lighten-var(var(--color-base-grey-dark), 15%);
   border: 1px solid rgba(var(--color-border-primary), 0.8);
-  font-size: 12.5px;
+  font-size: ($font-size-baseline - 1.5px);
   line-height: 24px;
   padding-inline: 12px;
   padding-block-end: 1px;

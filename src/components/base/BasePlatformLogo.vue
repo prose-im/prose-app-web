@@ -117,7 +117,7 @@ $name-logos: ("web", "macos", "ios", "windows", "android", "linux");
   }
 
   #{$c}__label {
-    font-size: 11px;
+    font-size: ($font-size-baseline - 3px);
     text-align: center;
     margin-block-start: 5px;
   }

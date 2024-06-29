@@ -177,7 +177,7 @@ $tooltip-spacing-inline: -3px;
   #{$c}__value {
     background-color: rgba(var(--color-white), 0.9);
     backdrop-filter: blur(3px);
-    font-size: 11.5px;
+    font-size: ($font-size-baseline - 2.5px);
     user-select: none;
     text-align: center;
     letter-spacing: 0.1px;

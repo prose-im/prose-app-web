@@ -118,13 +118,13 @@ $illustration-images: (
 
   #{$c}__title {
     color: rgb(var(--color-text-primary));
-    font-size: 20px;
+    font-size: ($font-size-baseline + 6px);
     margin-block-start: 18px;
   }
 
   #{$c}__description {
     color: rgb(var(--color-text-secondary));
-    font-size: 15.5px;
+    font-size: ($font-size-baseline + 1.5px);
     line-height: 21px;
     margin-block-start: 12px;
   }

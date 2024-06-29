@@ -285,7 +285,7 @@ $c: ".p-shared-files";
 
           #{$c}__name {
             color: rgb(var(--color-text-primary));
-            font-size: 12.5px;
+            font-size: ($font-size-baseline - 1.5px);
             line-height: 24px;
             flex: 1;
           }

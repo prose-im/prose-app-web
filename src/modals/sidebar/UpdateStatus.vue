@@ -276,7 +276,7 @@ $c: ".m-update-status";
 
   #{$c}__example {
     color: rgb(var(--color-text-secondary));
-    font-size: 13px;
+    font-size: ($font-size-baseline - 1px);
     margin-block-start: 15px;
 
     #{$c}__example-status {

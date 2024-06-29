@@ -240,7 +240,7 @@ $c: ".c-inbox-details-user-information";
   }
 
   #{$c}__emoji {
-    font-size: 18px;
+    font-size: ($font-size-baseline + 4px);
   }
 }
 </style>

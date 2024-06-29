@@ -320,7 +320,7 @@ $c: ".m-add-channel";
 
   #{$c}__notice {
     color: rgb(var(--color-text-secondary));
-    font-size: 13.5px;
+    font-size: ($font-size-baseline - 0.5px);
     margin-block-start: 16px;
   }
 }

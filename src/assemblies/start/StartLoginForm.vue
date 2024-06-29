@@ -174,7 +174,7 @@ $c: ".a-start-login-form";
 
       #{$c}__options-recover {
         color: rgb(var(--color-text-primary));
-        font-size: 15px;
+        font-size: ($font-size-baseline + 1px);
         opacity: 0.3;
         pointer-events: none;
 

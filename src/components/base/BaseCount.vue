@@ -72,7 +72,7 @@ $count-size-base: 20px;
 $count-padding-sides: 5px;
 
 #{$c} {
-  font-size: 12px;
+  font-size: ($font-size-baseline - 2px);
   text-align: center;
   line-height: $count-size-base;
   padding-inline: $count-padding-sides;

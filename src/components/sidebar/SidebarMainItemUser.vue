@@ -182,7 +182,7 @@ $composing-dot-size: 3px;
     margin-block-start: 2px;
 
     #{$c}__activity-icon {
-      font-size: 16px;
+      font-size: ($font-size-baseline + 2px);
     }
   }
 

@@ -426,7 +426,7 @@ $c: ".p-account-welcome";
 
   #{$c}__title {
     color: rgb(var(--color-text-primary));
-    font-size: 28px;
+    font-size: ($font-size-baseline + 14px);
     margin-block-start: 12px;
 
     #{$c}__title-hand {
@@ -440,7 +440,7 @@ $c: ".p-account-welcome";
 
   #{$c}__notice {
     color: rgb(var(--color-text-secondary));
-    font-size: 17.5px;
+    font-size: ($font-size-baseline + 3.5px);
     margin-block-start: 20px;
   }
 

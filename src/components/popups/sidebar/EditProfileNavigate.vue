@@ -145,13 +145,13 @@ $c: ".p-edit-profile-navigate";
 
     #{$c}__identity-name {
       color: rgb(var(--color-text-primary));
-      font-size: 15.5px;
+      font-size: ($font-size-baseline + 1.5px);
       margin-block-start: 14px;
     }
 
     #{$c}__identity-address {
       color: rgb(var(--color-text-secondary));
-      font-size: 13.5px;
+      font-size: ($font-size-baseline - 0.5px);
       margin-block-start: 4px;
     }
   }

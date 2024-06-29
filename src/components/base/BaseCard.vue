@@ -180,7 +180,7 @@ $c: ".c-base-card";
 #{$c} {
   background-color: rgb(var(--color-white));
   border: 1px solid rgb(var(--color-border-secondary));
-  font-size: 12px;
+  font-size: ($font-size-baseline - 2px);
   line-height: 15px;
   padding: 9px 11px;
   position: absolute;

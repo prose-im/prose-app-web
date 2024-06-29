@@ -46,7 +46,7 @@ $c: ".c-form-fieldset-notes";
 
 #{$c} {
   color: rgb(var(--color-text-secondary));
-  font-size: 13.5px;
+  font-size: ($font-size-baseline - 0.5px);
   line-height: 16px;
 
   p {

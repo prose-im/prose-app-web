@@ -383,7 +383,7 @@ $c: ".a-inbox-topbar";
 
     &--name {
       color: rgb(var(--color-text-primary));
-      font-size: 16px;
+      font-size: ($font-size-baseline + 2px);
 
       #{$c}__identity-badge,
       #{$c}__identity-action {
@@ -397,7 +397,7 @@ $c: ".a-inbox-topbar";
 
     &--jid {
       color: rgb(var(--color-text-secondary));
-      font-size: 15px;
+      font-size: ($font-size-baseline + 1px);
 
       #{$c}__identity-badge {
         margin-inline-end: -($size-base-action-padding-sides + 2px);

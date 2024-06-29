@@ -161,7 +161,7 @@ $quickie-icon-size: 26px;
 
   #{$c}__disclaimer {
     color: rgb(var(--color-text-primary));
-    font-size: 11.5px;
+    font-size: ($font-size-baseline - 2.5px);
     line-height: 13px;
     border-block-start: 1px solid rgb(var(--color-border-tertiary));
     padding-block: 8px;

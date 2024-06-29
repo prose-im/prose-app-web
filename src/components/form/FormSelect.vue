@@ -528,35 +528,35 @@ $c: ".c-form-select";
 // VARIABLES
 $sizes: (
   "medium": (
-    "font-size": 11.5px,
+    "font-size": $font-size-baseline - 2.5px,
     "line-height": $size-form-select-medium-line-height,
     "padding-sides": $size-form-select-medium-padding-sides,
     "option-retract": 2px
   ),
 
   "mid-medium": (
-    "font-size": 12.5px,
+    "font-size": $font-size-baseline - 1.5px,
     "line-height": $size-form-select-mid-medium-line-height,
     "padding-sides": $size-form-select-mid-medium-padding-sides,
     "option-retract": 4px
   ),
 
   "large": (
-    "font-size": 14.5px,
+    "font-size": $font-size-baseline,
     "line-height": $size-form-select-large-line-height,
     "padding-sides": $size-form-select-large-padding-sides,
     "option-retract": 6px
   ),
 
   "mid-large": (
-    "font-size": 15.5px,
+    "font-size": $font-size-baseline + 1.5px,
     "line-height": $size-form-select-mid-large-line-height,
     "padding-sides": $size-form-select-mid-large-padding-sides,
     "option-retract": 8px
   ),
 
   "ultra-large": (
-    "font-size": 16.5px,
+    "font-size": $font-size-baseline + 2.5px,
     "line-height": $size-form-select-ultra-large-line-height,
     "padding-sides": $size-form-select-ultra-large-padding-sides,
     "option-retract": 10px
@@ -657,7 +657,7 @@ $sizes: (
       border-block-end: 1px solid rgb(var(--color-border-tertiary));
       color: rgb(var(--color-text-primary));
       outline: 0 none;
-      font-size: 11px;
+      font-size: ($font-size-baseline - 3px);
       letter-spacing: 0.05px;
       width: 100%;
 

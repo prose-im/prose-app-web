@@ -164,24 +164,24 @@ $c: ".p-encryption-settings-identities-devices";
 
       #{$c}__device-name {
         color: rgb(var(--color-text-primary));
-        font-size: 13.5px;
+        font-size: ($font-size-baseline - 0.5px);
       }
 
       #{$c}__device-last {
         color: rgb(var(--color-text-tertiary));
-        font-size: 12.5px;
+        font-size: ($font-size-baseline - 1.5px);
         margin-inline-start: 10px;
       }
     }
 
     #{$c}__device-emojis {
-      font-size: 25px;
+      font-size: ($font-size-baseline + 11px);
       letter-spacing: 8px;
     }
 
     #{$c}__device-fingerprint {
       color: rgb(var(--color-text-secondary));
-      font-size: 11.5px;
+      font-size: ($font-size-baseline - 2.5px);
       line-height: 15px;
     }
 

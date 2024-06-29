@@ -520,7 +520,7 @@ $recorder-send-button-size: 24px;
   }
 
   #{$c}__timer {
-    font-size: 12.5px;
+    font-size: ($font-size-baseline - 1.5px);
     margin-block-start: -1px;
 
     /* This normalizes different glyphs/numbers horizontal widths */

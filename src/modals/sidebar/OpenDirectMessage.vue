@@ -367,7 +367,7 @@ $c: ".m-open-direct-message";
     margin-block-start: 16px;
 
     #{$c}__notice-line {
-      font-size: 13.5px;
+      font-size: ($font-size-baseline - 0.5px);
       margin-block-end: 2px;
       display: flex;
       align-items: center;

@@ -391,7 +391,7 @@ $controls-button-height: 22px;
 
   #{$c}__header {
     border-block-end: 1px solid rgb(var(--color-border-secondary));
-    font-size: 12px;
+    font-size: ($font-size-baseline - 2px);
     line-height: 14px;
     padding-block: 8px;
 
@@ -425,7 +425,7 @@ $controls-button-height: 22px;
   }
 
   #{$c}__rows {
-    font-size: 13px;
+    font-size: ($font-size-baseline - 1px);
     line-height: 13px;
     padding-block-start: 4px;
     padding-block-end: 14px;

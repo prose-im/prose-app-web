@@ -188,7 +188,7 @@ $group-spacing-edges: 12px;
 
   #{$c}__group {
     border-inline-end: 1px solid rgb(var(--color-border-tertiary));
-    font-size: 13px;
+    font-size: ($font-size-baseline - 1px);
     margin-inline-end: $group-spacing-edges;
     padding-inline-end: $group-spacing-edges;
     column-gap: 5px;

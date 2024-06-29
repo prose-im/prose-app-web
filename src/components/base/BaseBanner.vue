@@ -105,13 +105,13 @@ $c: ".c-base-banner";
   }
 
   #{$c}__title {
-    font-size: 13.5px;
+    font-size: ($font-size-baseline - 0.5px);
     line-height: 17px;
     letter-spacing: 0.15px;
   }
 
   #{$c}__description {
-    font-size: 12.5px;
+    font-size: ($font-size-baseline - 1.5px);
     line-height: 15px;
     letter-spacing: 0.05px;
     margin-inline-start: 16px;

@@ -145,7 +145,7 @@ $c: ".c-tool-emoji-picker";
           border: 1px solid rgba(var(--color-black), 0.1);
           outline: 0 solid rgba(var(--color-base-purple-normal), 0.2);
           color: rgb(var(--color-text-primary));
-          font-size: 12px;
+          font-size: ($font-size-baseline - 2px);
           height: 30px;
           padding: $size-form-field-padding-block
             $size-form-field-medium-padding-sides;
@@ -178,7 +178,7 @@ $c: ".c-tool-emoji-picker";
         .v3-group {
           h5 {
             background: rgba(var(--color-white), 0.925);
-            font-size: 13px;
+            font-size: ($font-size-baseline - 1px);
             font-weight: $font-weight-medium;
             padding-block-start: 7px;
             padding-block-end: 8px;
@@ -212,7 +212,7 @@ $c: ".c-tool-emoji-picker";
 
       .v3-foot-left {
         > .v3-text {
-          font-size: 12.5px;
+          font-size: ($font-size-baseline - 1.5px);
         }
       }
     }

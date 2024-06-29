@@ -230,7 +230,7 @@ $c: ".c-form-checkbox";
     }
 
     #{$c}__label {
-      font-size: 13px;
+      font-size: ($font-size-baseline - 1px);
       padding-inline-start: 6px;
     }
   }
@@ -242,7 +242,7 @@ $c: ".c-form-checkbox";
     }
 
     #{$c}__label {
-      font-size: 15px;
+      font-size: ($font-size-baseline + 1px);
       padding-inline-start: 10px;
     }
   }

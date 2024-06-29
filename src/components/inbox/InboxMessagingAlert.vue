@@ -48,7 +48,7 @@ $c: ".c-inbox-messaging-alert";
   background-color: rgb(var(--color-background-primary));
   border: 1px solid rgb(var(--color-border-secondary));
   color: rgb(var(--color-text-primary));
-  font-size: 12px;
+  font-size: ($font-size-baseline - 2px);
   line-height: 15px;
   padding-inline: 18px;
   padding-block: 6px 8px;

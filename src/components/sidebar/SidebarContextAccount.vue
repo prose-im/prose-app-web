@@ -113,14 +113,14 @@ $c: ".c-sidebar-context-account";
 
       #{$c}__identity-name {
         color: rgb(var(--color-text-primary));
-        font-size: 13.5px;
+        font-size: ($font-size-baseline - 0.5px);
         flex: 1;
       }
     }
 
     #{$c}__identity-address {
       color: rgb(var(--color-text-secondary));
-      font-size: 12.5px;
+      font-size: ($font-size-baseline - 1.5px);
     }
   }
 }

@@ -136,7 +136,7 @@ $popup-width-full-breakpoint: (
   }
 
   #{$c}__content {
-    font-size: 14.5px;
+    font-size: ($font-size-baseline + 0.5px);
     line-height: 18px;
 
     &--loading {

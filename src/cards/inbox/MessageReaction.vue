@@ -125,7 +125,7 @@ $c: ".c-message-reaction";
   align-items: flex-start;
 
   #{$c}__emoji {
-    font-size: 28px;
+    font-size: ($font-size-baseline + 14px);
     margin-block: 9px;
     flex: 0 0 auto;
   }

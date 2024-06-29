@@ -291,7 +291,7 @@ $c: ".c-tool-avatar-select";
 
       #{$c}__edit-text {
         color: rgb(var(--color-text-reverse));
-        font-size: 12.5px;
+        font-size: ($font-size-baseline - 1.5px);
         line-height: 14px;
         text-transform: lowercase;
         display: inline-block;

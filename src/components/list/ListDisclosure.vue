@@ -137,7 +137,7 @@ $c: ".c-list-disclosure";
 #{$c} {
   #{$c}__header {
     color: rgb(var(--color-base-grey-normal));
-    font-size: 12.5px;
+    font-size: ($font-size-baseline - 1.5px);
     line-height: 20px;
     display: flex;
     align-items: center;
