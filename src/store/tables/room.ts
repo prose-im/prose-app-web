@@ -74,18 +74,12 @@ const ROOM_TYPE_PRIORITIES = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const makeSidebarItemSorter = function (): IThenBy<any> {
   // Sorting rules:
-  //  - Rooms w/ the most unread counts are shown first (if any count)
-  //  - Rooms w/ mentions are shown afterwards (if any)
-  //  - Rooms w/ drafts are shown afterwards (if any)
-  //  - Rooms are ordered by their type, most private rooms come first
-  //  - Rooms are ordered by name, alphabetically
-  //  - Finally, order by room identifier for sort stability on 2 same names
-  return firstBy("unreadCount", "desc")
-    .thenBy("mentionsCount", "desc")
-    .thenBy("hasDraft", "desc")
-    .thenBy((item: SidebarItem) => {
-      return ROOM_TYPE_PRIORITIES[item.room.type];
-    })
+  //  - #1. Rooms are ordered by their type, most private rooms come first
+  //  - #2. Rooms are ordered by name, alphabetically
+  //  - #3. Finally, order by room identifier for sort stability on 2 same names
+  return firstBy((item: SidebarItem) => {
+    return ROOM_TYPE_PRIORITIES[item.room.type];
+  })
     .thenBy("name", { ignoreCase: true })
     .thenBy((item: SidebarItem) => {
       return item.room.id as string;
