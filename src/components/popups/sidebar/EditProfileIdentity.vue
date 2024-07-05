@@ -60,8 +60,8 @@ export default {
 
       fieldsets: [
         {
-          id: "name",
-          title: "Name",
+          id: "full_name",
+          title: "Full name",
 
           fields: [
             {
@@ -72,13 +72,7 @@ export default {
               data: {
                 value: this.form.nameFirst,
                 placeholder: "Enter your first name…"
-              } as FormFieldsetFieldDataInput,
-
-              aside: {
-                type: FormFieldsetFieldAsideType.Link,
-                label: "Get verified",
-                disabled: true
-              }
+              } as FormFieldsetFieldDataInput
             },
 
             {
@@ -94,8 +88,33 @@ export default {
           ],
 
           notes: [
-            "In order to show a verified badge on your profile, visible to other users, you should get your real identity verified (first name & last name). The process takes a few seconds: you will be asked to submit a government ID (ID card, password or driving license). Note that the verified status is optional.",
-            "Your data will be processed on an external service. This service does not keep any record of your ID after your verified status is confirmed."
+            "Your full name is visible from everyone in your team. It should be your real name. If you want to specify a different display name, you can set it right below."
+          ],
+
+          options: {
+            aside: FormFieldsetOptionAside.Fixed
+          }
+        },
+
+        {
+          id: "display_name",
+          title: "Display name",
+
+          fields: [
+            {
+              id: "nickname",
+              type: FormFieldsetFieldType.Input,
+              label: "Name:",
+
+              data: {
+                value: this.form.nickname,
+                placeholder: "Enter a display name…"
+              } as FormFieldsetFieldDataInput
+            }
+          ],
+
+          notes: [
+            "You can opt to specify a display name that's different from your full name, if you want people to refer to you using a different name."
           ],
 
           options: {
@@ -134,19 +153,13 @@ export default {
               data: {
                 value: this.form.phone,
                 placeholder: "Enter your phone number…"
-              } as FormFieldsetFieldDataInput,
-
-              aside: {
-                type: FormFieldsetFieldAsideType.Link,
-                label: "Get verified",
-                disabled: true
-              }
+              } as FormFieldsetFieldDataInput
             }
           ],
 
           notes: [
             "Your email address and phone number are public. They are visible to all team members and contacts. They will not be available to other users.",
-            "It is recommended that your email address and phone number each get verified, as this increases the level of trust of your profile. The process only takes a few seconds: you will receive a link to verify your contact details."
+            "Make sure that your email address is verified, for account security purposes."
           ],
 
           options: {

@@ -118,13 +118,12 @@ export default {
     },
 
     userName(): string {
-      // Prefer profile-based name, since we are showing the full profile here \
-      //   (from vCard)
-      if (this.profile.name) {
-        return `${this.profile.name.first} ${this.profile.name.last}`;
+      // Prefer profile-based full name (ie. name from official identity)
+      if (this.profile.name?.full) {
+        return `${this.profile.name.full.first} ${this.profile.name.full.last}`;
       }
 
-      return this.room.name;
+      return this.jid.toString();
     },
 
     identityUrl(): string {

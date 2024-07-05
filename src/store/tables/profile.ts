@@ -23,6 +23,11 @@ import Broker from "@/broker";
  * ************************************************************************* */
 
 type ProfileEntryName = {
+  full?: ProfileEntryNameFull;
+  nick?: string;
+};
+
+type ProfileEntryNameFull = {
   first: string;
   last: string;
 };
@@ -221,14 +226,22 @@ const $profile = defineStore("profile", {
       } else {
         // Update data in store
         this.$patch(() => {
-          // #1. Store name
+          // #1. Store name (full name & nick name)
+          profile.name = profile.name || {};
+
           if (userProfile.firstName || userProfile.lastName) {
-            profile.name = {
+            profile.name.full = {
               first: userProfile.firstName || "",
               last: userProfile.lastName || ""
             };
           } else {
-            delete profile.name;
+            delete profile.name.full;
+          }
+
+          if (userProfile.nickname) {
+            profile.name.nick = userProfile.nickname;
+          } else {
+            delete profile.name.nick;
           }
 
           // #2. Store employment

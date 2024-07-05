@@ -99,9 +99,14 @@ export default {
   computed: {
     userName(): string {
       // Prefer profile-based name, since we are showing the full profile here \
-      //   (from vCard)
-      if (this.profile.name) {
-        return `${this.profile.name.first} ${this.profile.name.last}`;
+      //   from vCard. Set priority on user-defined given name, or else use \
+      //   user full name.
+      if (this.profile.name?.nick) {
+        return this.profile.name.nick;
+      }
+
+      if (this.profile.name?.full) {
+        return `${this.profile.name.full.first} ${this.profile.name.full.last}`;
       }
 
       return this.room.name;

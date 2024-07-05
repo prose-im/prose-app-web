@@ -95,6 +95,7 @@ type FormValueString = { inner: string };
 export interface FormIdentity {
   nameFirst: FormValueString;
   nameLast: FormValueString;
+  nickname: FormValueString;
   email: FormValueString;
   phone: FormValueString;
 }
@@ -160,6 +161,7 @@ export default {
             form: {
               nameFirst: { inner: "" },
               nameLast: { inner: "" },
+              nickname: { inner: "" },
               email: { inner: "" },
               phone: { inner: "" }
             } as FormIdentity
@@ -263,30 +265,23 @@ export default {
         formProfile = this.contentSections.profile.properties.form;
 
       // Populate identity form
-      if (profile.name) {
-        formIdentity.nameFirst.inner = profile.name.first;
-        formIdentity.nameLast.inner = profile.name.last;
-      }
+      formIdentity.nameFirst.inner = profile.name?.full?.first || "";
+      formIdentity.nameLast.inner = profile.name?.full?.last || "";
+      formIdentity.nickname.inner = profile.name?.nick || "";
 
-      if (profile.information && profile.information.contact) {
-        formIdentity.email.inner = profile.information.contact.email || "";
-        formIdentity.phone.inner = profile.information.contact.phone || "";
-      }
+      formIdentity.email.inner = profile.information?.contact?.email || "";
+      formIdentity.phone.inner = profile.information?.contact?.phone || "";
 
       // Populate profile form
-      if (profile.employment) {
-        formProfile.jobOrganization.inner =
-          profile.employment.organization || "";
-        formProfile.jobTitle.inner = profile.employment.title || "";
-      }
+      formProfile.jobOrganization.inner =
+        profile.employment?.organization || "";
+      formProfile.jobTitle.inner = profile.employment?.title || "";
 
-      if (profile.information && profile.information.location) {
-        formProfile.locationCity.inner =
-          profile.information.location.city || "";
+      formProfile.locationCity.inner =
+        profile.information?.location?.city || "";
 
-        formProfile.locationCountry.inner =
-          profile.information.location.country || "";
-      }
+      formProfile.locationCountry.inner =
+        profile.information?.location?.country || "";
     },
 
     formsToUserProfile(
@@ -298,6 +293,7 @@ export default {
       // Assign base information
       profile.firstName = formIdentity.nameFirst.inner || undefined;
       profile.lastName = formIdentity.nameLast.inner || undefined;
+      profile.nickname = formIdentity.nickname.inner || undefined;
       profile.email = formIdentity.email.inner || undefined;
       profile.phone = formIdentity.phone.inner || undefined;
 
