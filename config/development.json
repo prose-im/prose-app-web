@@ -3,7 +3,10 @@
 
   "overrides": {
     "hostMeta": {
-      "prose.org.local": "<?xml version='1.0' encoding='utf-8'?>\n<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'>\n  <Link rel='urn:xmpp:alt-connections:websocket' href='ws://localhost:5280/xmpp-websocket/' />\n</XRD>"
+      "prose.org.local": {
+        "xrd": "<?xml version='1.0' encoding='utf-8'?>\n<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'>\n  <Link rel='urn:xmpp:alt-connections:websocket' href='ws://localhost:5280/xmpp-websocket/' />\n</XRD>",
+        "jrd": "{\n  \"links\": [\n    {\n      \"rel\": \"urn:xmpp:alt-connections:websocket\",\n      \"href\": \"ws://localhost:5280/xmpp-websocket/\"\n    }\n  ]\n}"
+      }
     }
   }
 }

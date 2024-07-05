@@ -39,7 +39,12 @@ interface Configuration {
   };
 
   overrides?: {
-    hostMeta?: string;
+    hostMeta?: {
+      [domain: string]: {
+        xrd?: string;
+        jrd?: string;
+      };
+    };
   };
 }
 

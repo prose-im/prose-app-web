@@ -32,6 +32,7 @@ import logger from "@/utilities/logger";
  * ************************************************************************* */
 
 type RelayHostProtocol = "wss" | undefined;
+type RelayHostJRDValue = { [key: string]: string };
 
 // @ts-expect-error Strophe type exports are borked
 type StropheConnection = Strophe.Connection;
@@ -318,68 +319,142 @@ class BrokerConnectionRelayedStrophe
     // XEP-0156: Discovering Alternative XMPP Connection Methods
     // https://xmpp.org/extensions/xep-0156.html
 
+    // #1. Attempt to fetch the XRD relay host file
     try {
-      // Fetch host metadata file (if any)
-      let xmlString: string | null = null;
+      const relayHost = await this.__fetchRelayHostXRD(domain);
 
-      const hostMetaOverride = CONFIG.overrides?.hostMeta?.[domain] || null;
+      logger.debug(
+        `Loaded relay host from XRD from domain: ${domain}`,
+        relayHost
+      );
 
-      if (hostMetaOverride !== null) {
-        xmlString = hostMetaOverride;
-      } else {
-        const response = await fetch(
-          `https://${domain}/.well-known/host-meta`,
-          {
-            mode: "cors"
-          }
-        );
-
-        if (response.ok === true) {
-          xmlString = (await response.text()) || null;
-        }
-      }
-
-      if (xmlString !== null) {
-        // Read XML string from host-meta
-        const xmlElement = new DOMParser().parseFromString(
-          xmlString,
-          "text/xml"
-        );
-
-        // Acquire connection URL (priorized)
-        for (let i = 0; i < RELAY_HOST_METADATA_PARSE.length; i++) {
-          const metadataParse = RELAY_HOST_METADATA_PARSE[i];
-
-          const linkElement =
-            xmlElement.querySelector(`Link[rel="${metadataParse.xmlns}"]`) ||
-            null;
-
-          if (linkElement !== null) {
-            const linkUrl = linkElement.getAttribute("href") || null;
-
-            if (linkUrl !== null) {
-              return {
-                url: linkUrl,
-                protocol: metadataParse.protocol
-              };
-            }
-          }
-        }
-      }
+      return relayHost;
     } catch (error) {
-      logger.error(
-        `Broker error loading relay host from domain: ${domain}`,
+      logger.warn(
+        `Could not load the XRD relay host from domain: ${domain}`,
         error
       );
     }
 
-    // Generate default URL (fallback)
-    logger.warn(`Broker using fallback relay host for domain: ${domain}`);
+    // #2. Attempt to fetch the JRD relay host file
+    try {
+      const relayHost = await this.__fetchRelayHostJRD(domain);
 
-    return {
+      logger.debug(
+        `Loaded relay host from JRD from domain: ${domain}`,
+        relayHost
+      );
+
+      return relayHost;
+    } catch (error) {
+      logger.warn(
+        `Could not load the JRD relay host from domain: ${domain}`,
+        error
+      );
+    }
+
+    // #3. Generate default URL (fallback)
+    const relayHost: RelayHost = {
       url: `wss://${domain}/websocket/`,
       protocol: "wss"
     };
+
+    logger.warn(
+      `Broker using fallback relay host for domain: ${domain}`,
+      relayHost
+    );
+
+    return relayHost;
+  }
+
+  private async __fetchRelayHostXRD(domain: string): Promise<RelayHost> {
+    const xmlString = await this.__obtainRelayHostData(domain, "xrd");
+
+    if (xmlString !== null) {
+      // Read XML string from host-meta
+      const xmlElement = new DOMParser().parseFromString(xmlString, "text/xml");
+
+      // Acquire connection URL (priorized)
+      for (let i = 0; i < RELAY_HOST_METADATA_PARSE.length; i++) {
+        const metadataParse = RELAY_HOST_METADATA_PARSE[i];
+
+        const linkElement =
+          xmlElement.querySelector(`Link[rel="${metadataParse.xmlns}"]`) ||
+          null;
+
+        if (linkElement !== null) {
+          const linkUrl = linkElement.getAttribute("href") || null;
+
+          if (linkUrl !== null) {
+            return {
+              url: linkUrl,
+              protocol: metadataParse.protocol
+            };
+          }
+        }
+      }
+    }
+
+    throw new Error("No XRD host file");
+  }
+
+  private async __fetchRelayHostJRD(domain: string): Promise<RelayHost> {
+    const jsonString = await this.__obtainRelayHostData(domain, "jrd", ".json");
+
+    if (jsonString !== null) {
+      // Parse JSON from host-meta
+      const jsonData = JSON.parse(jsonString);
+
+      // Acquire all link URLs
+      const linkUrls: RelayHostJRDValue = {};
+
+      jsonData.links?.forEach((link: RelayHostJRDValue) => {
+        linkUrls[link.rel] = link.href;
+      });
+
+      // Acquire connection URL (priorized)
+      for (let i = 0; i < RELAY_HOST_METADATA_PARSE.length; i++) {
+        const metadataParse = RELAY_HOST_METADATA_PARSE[i],
+          linkUrl = linkUrls[metadataParse.xmlns] || null;
+
+        if (linkUrl !== null) {
+          return {
+            url: linkUrl,
+            protocol: metadataParse.protocol
+          };
+        }
+      }
+    }
+
+    throw new Error("No JRD host file");
+  }
+
+  private async __obtainRelayHostData(
+    domain: string,
+    format: string,
+    pathSuffix = ""
+  ): Promise<string | null> {
+    let data: string | null = null;
+
+    const hostMetaOverride =
+      CONFIG.overrides?.hostMeta?.[domain]?.[format] || null;
+
+    if (hostMetaOverride !== null) {
+      data = hostMetaOverride;
+    } else {
+      const response = await fetch(
+        `https://${domain}/.well-known/host-meta${pathSuffix}`,
+        {
+          mode: "cors"
+        }
+      );
+
+      if (response.ok === true) {
+        data = (await response.text()) || null;
+      }
+    }
+
+    return data;
   }
 
   private __bindDummyHandler(connection: StropheConnection): void {
