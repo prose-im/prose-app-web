@@ -20,9 +20,9 @@
 
     p.p-edit-profile-navigate__identity-name.u-medium
       template(
-        v-if="profile.name"
+        v-if="profile.name?.full"
       )
-        | {{ profile.name.first }} {{ profile.name.last }}
+        | {{ profile.name.full.first }} {{ profile.name.full.last }}
 
       template(
         v-else
