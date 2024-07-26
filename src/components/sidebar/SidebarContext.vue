@@ -50,8 +50,8 @@
         )
 
   .c-sidebar-context__current
-    p.c-sidebar-context__team.u-bold.u-ellipsis
-      | {{ teamName }}
+    p.c-sidebar-context__identity.u-bold.u-ellipsis
+      | {{ selfName }}
 
     p.c-sidebar-context__status(
       v-if="statusActivity.status"
@@ -845,7 +845,7 @@ $current-status-define-padding-block: 2px;
     flex: 1;
     overflow: hidden;
 
-    #{$c}__team {
+    #{$c}__identity {
       color: rgb(var(--color-text-primary));
       font-size: $font-size-baseline;
       margin-block-start: -1px;
