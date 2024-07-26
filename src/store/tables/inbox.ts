@@ -139,6 +139,12 @@ interface InboxEntryStateLoading {
 const EventBus = mitt();
 
 /**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const CORE_MESSAGE_CONTENT_ENCODING = "html";
+
+/**************************************************************************
  * METHODS
  * ************************************************************************* */
 
@@ -156,7 +162,13 @@ const fromCoreMessage = function (
     date: message.date.toISOString(),
     timestamp: message.date.getTime(),
     from: message.user.jid,
-    content: message.content,
+    content: message.rawContent,
+
+    // Formatted content
+    formatted: {
+      encoding: CORE_MESSAGE_CONTENT_ENCODING,
+      content: message.content
+    },
 
     // Metas
     metas: {

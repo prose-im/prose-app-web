@@ -194,7 +194,7 @@ class BrokerDelegate implements ProseClientDelegate {
             // Notice: set sender name as subtitle (if different from room name)
             UtilitiesRuntime.requestNotificationSend(
               room.name,
-              message.text,
+              message.rawContent,
 
               {
                 force: shouldForce,
