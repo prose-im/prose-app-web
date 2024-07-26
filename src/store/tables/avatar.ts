@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, Avatar as CoreAvatar } from "@prose-im/prose-sdk-js";
 import { defineStore } from "pinia";
 import mitt from "mitt";
 
@@ -20,6 +20,7 @@ import Broker from "@/broker";
  * TYPES
  * ************************************************************************* */
 
+type AvatarIdentifier = string;
 type AvatarDataURL = string;
 
 type EventAvatarGeneric = { jid: JID };
@@ -33,7 +34,12 @@ interface Avatar {
 }
 
 interface AvatarEntries {
-  [jid: string]: AvatarDataURL;
+  [jid: string]: AvatarEntry;
+}
+
+interface AvatarEntry {
+  id?: AvatarIdentifier;
+  url?: AvatarDataURL;
 }
 
 /**************************************************************************
@@ -47,7 +53,7 @@ const EventBus = mitt();
  * ************************************************************************* */
 
 const LOCAL_STATES = {
-  loading: {} as { [jid: string]: boolean }
+  refreshing: {} as { [jid: string]: boolean }
 };
 
 /**************************************************************************
@@ -69,53 +75,73 @@ const $avatar = defineStore("avatar", {
       return EventBus;
     },
 
-    assert(jid: JID): AvatarDataURL | void {
-      return this.entries[jid.toString()];
+    assert(jid: JID): AvatarEntry {
+      const jidString = jid.toString();
+
+      // Assign new avatar entry for JID?
+      if (!(jidString in this.entries)) {
+        this.$patch(state => {
+          // Insert empty data
+          state.entries[jidString] = {};
+        });
+      }
+
+      return this.entries[jidString];
     },
 
     getAvatarDataUrl(jid: JID): AvatarDataURL | void {
       // Notice: pseudo-getter, which needs to be defined as an action since \
       //   it might mutate the state (as we are asserting).
-      return this.assert(jid);
+      return this.assert(jid).url;
     },
 
-    async load(jid: JID): Promise<void> {
-      const jidString = jid.toString();
+    async refresh(jid: JID, avatar: CoreAvatar): Promise<void> {
+      const entry = this.assert(jid),
+        jidString = jid.toString();
 
-      // Already loading? Skip this one.
-      if (LOCAL_STATES.loading[jidString]) {
-        return;
-      }
+      // Avatar changed, and not already refreshing?
+      if (
+        entry.id !== avatar.id &&
+        LOCAL_STATES.refreshing[jidString] !== true
+      ) {
+        // Mark as refreshing
+        LOCAL_STATES.refreshing[jidString] = true;
 
-      // Mark as loading
-      LOCAL_STATES.loading[jidString] = true;
-
-      // Load avatar data
-      const avatarResponse = await Broker.$profile.loadAvatarData(jid);
-
-      if (avatarResponse) {
-        // Set avatar data
+        // Immediately set avatar identifier
         this.$patch(() => {
-          this.entries[jidString] = avatarResponse.dataURL;
+          entry.id = avatar.id;
         });
 
-        // Emit IPC changed event
-        EventBus.emit("avatar:changed", {
-          jid: jid
-        } as EventAvatarGeneric);
-      } else {
-        // Set avatar data
-        this.$patch(() => {
-          delete this.entries[jidString];
-        });
+        // Load avatar data
+        const avatarResponse = await Broker.$profile.loadAvatarData(
+          jid,
+          avatar
+        );
 
-        EventBus.emit("avatar:flushed", {
-          jid: jid
-        } as EventAvatarGeneric);
+        if (avatarResponse?.dataURL) {
+          // Set avatar data
+          this.$patch(() => {
+            entry.url = avatarResponse.dataURL;
+          });
+
+          // Emit IPC changed event
+          EventBus.emit("avatar:changed", {
+            jid: jid
+          } as EventAvatarGeneric);
+        } else {
+          // Set avatar data
+          this.$patch(() => {
+            delete entry.url;
+          });
+
+          EventBus.emit("avatar:flushed", {
+            jid: jid
+          } as EventAvatarGeneric);
+        }
+
+        // Remove refreshing marker
+        delete LOCAL_STATES.refreshing[jidString];
       }
-
-      // Remove loading marker
-      delete LOCAL_STATES.loading[jidString];
     }
   }
 });

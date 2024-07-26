@@ -14,7 +14,7 @@ import { defineStore } from "pinia";
 import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/messaging";
 import {
   Message as CoreMessage,
-  UserBasicInfo as CoreUser,
+  ParticipantBasicInfo as CoreParticipantBasicInfo,
   ArchiveID,
   Room,
   RoomID,
@@ -75,7 +75,7 @@ type InboxEntryName = {
 type InboxEntryStates = {
   archives: InboxEntryStateArchives;
   loading: InboxEntryStateLoading;
-  composing: Array<CoreUser>;
+  composing: Array<CoreParticipantBasicInfo>;
 };
 
 type EventMessagesGeneric = {
@@ -686,16 +686,27 @@ const $inbox = defineStore("inbox", {
       return shouldChange;
     },
 
-    setComposing(roomId: RoomID, composing: Array<CoreUser>): void {
+    setComposing(
+      roomId: RoomID,
+      composing: Array<CoreParticipantBasicInfo>
+    ): void {
       const states = this.assert(roomId).states;
 
       if (composing.length > 0) {
+        const room = Store.$room.getRoom(roomId);
+
         // Filter-out local JID in the list of composing users
-        const selfJID = Store.$account.getSelfJID();
+        const selfJID = Store.$account.getSelfJID(),
+          selfParticipant = room?.participants.find(participant => {
+            return participant.jid?.equals(selfJID);
+          });
+
+        // Acquire self participant identifier (if any)
+        const selfParticipantId = selfParticipant?.id.toString();
 
         this.$patch(() => {
           states.composing = composing.filter(user => {
-            return !user.jid.equals(selfJID);
+            return user.id.toString() !== selfParticipantId;
           });
         });
       } else {

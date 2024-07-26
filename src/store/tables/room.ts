@@ -219,6 +219,11 @@ const $room = defineStore("room", {
           state.byId = roomsById;
         });
 
+        // Refresh all room associated data
+        all.forEach(item => {
+          this.requestRefreshRoomAssociations(item.room.id);
+        });
+
         // Update unread count (it might have changed)
         // Notice: check if badges are allowed or not, otherwise reset back to \
         //   zero.
@@ -243,8 +248,21 @@ const $room = defineStore("room", {
       if (this.getRoom(roomID) !== undefined) {
         this.byId.set(roomID, roomData);
 
+        // Refresh room associated data
+        this.requestRefreshRoomAssociations(roomID);
+
         return roomData;
       }
+    },
+
+    requestRefreshRoomAssociations(roomID: RoomID): void {
+      this.getRoom(roomID)?.participants.forEach(participant => {
+        // Refresh avatar for participant
+        // Notice: this is a cross-store operation, for convenience.
+        if (participant.jid !== undefined && participant.avatar !== undefined) {
+          Store.$avatar.refresh(participant.jid, participant.avatar);
+        }
+      });
     },
 
     markRoomsChanged(): void {

@@ -68,7 +68,7 @@ class BrokerDelegate implements ProseClientDelegate {
 
     logger.info(
       `Composing users changed: ${
-        composingUsers.map(user => user.jid).join(", ") || "(none)"
+        composingUsers.map(user => user.id).join(", ") || "(none)"
       }`
     );
 
@@ -121,10 +121,6 @@ class BrokerDelegate implements ProseClientDelegate {
 
   avatarChanged(_client: ProseClient, jids: Array<JID>): void {
     logger.info(`Avatars changed: ${jids.join(", ")}`);
-
-    jids.forEach(jid => {
-      Store.$avatar.load(jid);
-    });
   }
 
   async accountInfoChanged(): Promise<void> {

@@ -60,6 +60,20 @@ base-card(
 
         | {{ authorTimezone }}
 
+      template(
+        v-if="authorClientOther"
+      )
+        .c-message-author__detail.c-message-author__spacer
+
+        .c-message-author__detail.c-message-author__detail--client
+          | Now using
+
+          base-client(
+            :name="authorClientOther"
+            size="14px"
+            class="c-message-author__detail-client"
+          )
+
   template(
     v-else
   )
@@ -73,7 +87,7 @@ base-card(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { Room, JID } from "@prose-im/prose-sdk-js";
+import { Room, JID, ParticipantInfo } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -134,6 +148,18 @@ export default {
       return undefined;
     },
 
+    authorParticipant(): ParticipantInfo | void {
+      const authorJID = this.authorJID;
+
+      if (authorJID !== undefined) {
+        return this.room.participants.find(participant => {
+          return participant.jid?.equals(authorJID);
+        });
+      }
+
+      return undefined;
+    },
+
     authorName(): string | null {
       if (this.authorJID !== undefined) {
         const jidString = this.authorJID.toString();
@@ -171,6 +197,17 @@ export default {
           nowDate,
           profileTimezone.offset
         )} local time`;
+      }
+
+      return null;
+    },
+
+    authorClientOther(): string | null {
+      const client = this.authorParticipant?.client || null;
+
+      // Only return clients that are not Prose
+      if (client !== null && client.isProse() !== true) {
+        return client.toString() || null;
       }
 
       return null;
@@ -254,10 +291,19 @@ $c: ".c-message-author";
       }
 
       &--job,
-      &--timezone {
-        color: rgb(var(--color-text-primary));
+      &--timezone,
+      &--client {
         font-size: ($font-size-baseline - 2px);
         line-height: 14px;
+      }
+
+      &--job,
+      &--timezone {
+        color: rgb(var(--color-text-primary));
+      }
+
+      &--client {
+        color: rgb(var(--color-text-secondary));
       }
 
       #{$c}__detail-presence,
@@ -272,6 +318,10 @@ $c: ".c-message-author";
 
       #{$c}__detail-icon {
         fill: currentcolor;
+      }
+
+      #{$c}__detail-client {
+        margin-inline-start: 6px;
       }
     }
   }

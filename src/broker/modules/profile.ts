@@ -9,7 +9,12 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, UserMetadata, UserProfile } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  UserMetadata,
+  UserProfile,
+  Avatar as CoreAvatar
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -64,13 +69,16 @@ class BrokerModuleProfile extends BrokerModule {
     return await this._client.client?.loadUserMetadata(jid);
   }
 
-  async loadAvatarData(jid: JID): Promise<LoadAvatarDataResponse | void> {
+  async loadAvatarData(
+    jid: JID,
+    avatar: CoreAvatar
+  ): Promise<LoadAvatarDataResponse | void> {
     // XEP-0084: User Avatar
     // https://xmpp.org/extensions/xep-0084.html
 
-    logger.info(`Will load avatar for: '${jid}'`);
+    logger.info(`Will load avatar for: '${jid}' (ID ${avatar.id})`);
 
-    const dataURL = await this._client.client?.loadAvatarDataURL(jid);
+    const dataURL = await this._client.client?.loadAvatarDataURL(avatar);
 
     if (dataURL) {
       return { dataURL };
