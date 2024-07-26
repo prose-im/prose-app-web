@@ -33,25 +33,25 @@ const LOGO_MARGIN_INLINE_END_FROM_SIZE_RATIO = 0.25;
 const NAME_FONT_SIZE_OFFSET = 2;
 
 const CLIENT_IMAGE_NAMES = {
-  Adium: "adium",
-  Aparté: "aparte",
-  AstraChat: "astrachat",
-  ChatSecure: "chatsecure",
-  Conversations: "conversations",
-  Dino: "dino",
-  Gajim: "gajim",
-  Jappix: "jappix",
-  Monal: "monal",
-  Movim: "movim",
-  Moxxy: "moxxy",
-  Pidgin: "pidgin",
-  Poezio: "poezio",
-  Prose: "prose",
-  Psi: "psi",
-  "Psi+": "psi",
-  Siskin: "siskin",
-  Snikket: "snikket",
-  Yaxim: "yaxim"
+  adium: "adium",
+  aparté: "aparte",
+  "astrachat xmpp client": "astrachat",
+  chatsecure: "chatsecure",
+  conversations: "conversations",
+  dino: "dino",
+  gajim: "gajim",
+  jappix: "jappix",
+  "monal im": "monal",
+  movim: "movim",
+  moxxy: "moxxy",
+  pidgin: "pidgin",
+  poezio: "poezio",
+  prose: "prose",
+  psi: "psi",
+  "psi+": "psi",
+  "siskin im": "siskin",
+  snikket: "snikket",
+  yaxim: "yaxim"
 };
 
 export default {
@@ -71,7 +71,8 @@ export default {
 
   computed: {
     clientImageUrl(): string | null {
-      const clientImageName = CLIENT_IMAGE_NAMES[this.name] || null;
+      const clientImageName =
+        CLIENT_IMAGE_NAMES[this.name.toLowerCase()] || null;
 
       if (clientImageName !== null) {
         return `/images/components/base/BaseClient/${clientImageName}.png`;
