@@ -238,6 +238,12 @@ const $roster = defineStore("roster", {
 
           // Append entry to per-JID storage
           byJID[entry.jid] = entry;
+
+          // Refresh avatar for item
+          // Notice: this is a cross-store operation, for convenience.
+          if (blockListItem.avatar !== undefined) {
+            Store.$avatar.refresh(blockListItem.jid, blockListItem.avatar);
+          }
         });
 
         this.$patch(state => {
