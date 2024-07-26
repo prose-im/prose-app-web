@@ -182,8 +182,7 @@ import {
   RoomType,
   SendMessageRequest,
   SendMessageRequestBody,
-  UploadSlot,
-  Mention
+  UploadSlot
 } from "@prose-im/prose-sdk-js";
 import { codes as keyCodes } from "keycode";
 import { useKeypress } from "vue3-keypress";
@@ -230,7 +229,6 @@ export enum Request {
 
 // INSTANCES
 const MESSAGE_TEXT_MENTION_REGEX = /(?:^|\s)@([^@\s]{0,80})$/;
-const MESSAGE_CODE_MENTION_REGEX = /(\[@[^[\]]+\]\(xmpp:([^()]+)\))/g;
 
 // CONSTANTS
 const CHATSTATE_COMPOSE_INACTIVE_DELAY = 10000; // 10 seconds
@@ -670,32 +668,6 @@ export default {
       }
     },
 
-    *extractMessageMentions(message: string): Generator<Mention> {
-      // Find mentions in message code
-      // Notice: make sure to drain this regular expression before re-using it.
-      let match;
-
-      while ((match = MESSAGE_CODE_MENTION_REGEX.exec(message)) !== null) {
-        const matchedValue = match[0] || null,
-          jidString = match[2] || null;
-
-        if (matchedValue !== null && jidString !== null) {
-          try {
-            yield new Mention(
-              new JID(jidString),
-              match.index,
-              match.index + matchedValue.length
-            );
-          } catch (error) {
-            this.$log.warn(
-              `Could not extract mentionned JID: '${jidString}'`,
-              error
-            );
-          }
-        }
-      }
-    },
-
     mayHandleGlobalKeyPress(event: KeyboardEvent): boolean {
       // Notice: this is quite hacky, as we restrict auto-focus on \
       //   single-character keys only, which typically map to a written \
@@ -1002,12 +974,8 @@ export default {
         let messageRequest = new SendMessageRequest(),
           messageRequestBody = new SendMessageRequestBody();
 
-        // Generate message body (extract mentions from message)
+        // Generate message body
         messageRequestBody.text = message;
-
-        for (const mention of this.extractMessageMentions(message)) {
-          messageRequestBody.addMention(mention);
-        }
 
         messageRequest.body = messageRequestBody;
 
