@@ -32,7 +32,7 @@ span.c-base-client
 const LOGO_MARGIN_INLINE_END_FROM_SIZE_RATIO = 0.25;
 const NAME_FONT_SIZE_OFFSET = 2;
 
-const CLIENT_IMAGE_NAMES = {
+const CLIENT_IMAGE_NAMES: { [name: string]: string } = {
   adium: "adium",
   aparté: "aparte",
   "astrachat xmpp client": "astrachat",
