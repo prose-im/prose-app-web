@@ -201,6 +201,13 @@ const $roster = defineStore("roster", {
 
           // Append entry to per-JID storage
           byJID[entry.jid] = entry;
+
+          // Refresh avatar for contact
+          // Notice: this is a cross-store operation, for convenience.
+          // TODO: implement once SDK has bindings
+          // if (contact.avatar !== undefined) {
+          //   Store.$avatar.refresh(contact.jid, contact.avatar);
+          // }
         });
 
         this.$patch(state => {

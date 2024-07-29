@@ -203,6 +203,13 @@ const $account = defineStore("account", {
           this.setInformationName(accountInfo.name);
           this.setInformationAvailability(accountInfo.availability);
 
+          // Update account avatar
+          // Notice: this is a cross-store operation, for convenience.
+          // TODO: implement once SDK has bindings
+          // if (accountInfo.avatar !== undefined) {
+          //   Store.$avatar.refresh(accountInfo.jid, accountInfo.avatar);
+          // }
+
           // Update stored activity
           // Notice: this is a cross-store operation, for convenience.
           Store.$activity.setActivity(accountInfo.jid, accountInfo.status);
