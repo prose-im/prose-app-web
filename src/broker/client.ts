@@ -285,6 +285,7 @@ class BrokerClient {
 
           case ProseConnectionErrorType.Generic: {
             logger.error("Cannot connect: other reason");
+
             break;
           }
         }
