@@ -263,6 +263,8 @@ class BrokerClient {
     try {
       // Connect client
       await this.client.connect(jid, password);
+
+      logger.info("Could connect: success");
     } catch (error) {
       // Mark as disconnected
       Store.$session.setConnected(false);
@@ -272,19 +274,19 @@ class BrokerClient {
       if (error instanceof ProseConnectionError) {
         switch (error.type) {
           case ProseConnectionErrorType.TimedOut: {
-            logger.error("Cannot connect: timed out");
+            logger.error("Could not connect: timed out");
 
             break;
           }
 
           case ProseConnectionErrorType.InvalidCredentials: {
-            logger.error("Cannot connect: invalid credentials");
+            logger.error("Could not connect: invalid credentials");
 
             break;
           }
 
           case ProseConnectionErrorType.Generic: {
-            logger.error("Cannot connect: other reason");
+            logger.error("Could not connect: other reason");
 
             break;
           }
