@@ -40,7 +40,7 @@ notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = 
 send_wrapper = "0.6.0"
 futures = "0.3"
 jid = { version = "0.11.1", default-features = false }
-tokio-xmpp = { git = "https://gitlab.com/xmpp-rs/xmpp-rs", rev = "b3fd0b53" }
+tokio-xmpp = "4.0.0"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!
