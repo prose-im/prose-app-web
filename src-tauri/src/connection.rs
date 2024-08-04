@@ -321,6 +321,9 @@ pub fn connect<R: Runtime>(
     // Connections are single-use only
     client.set_reconnect(false);
 
+    // TODO: implement some kind of timeout, because connection can be left in \
+    //   a dangling state at this point, not connected, not disconnected.
+
     // Split client into RX (for writer) and TX (for reader)
     let (tx, rx) = mpsc::unbounded_channel();
     let (writer, reader) = client.split();
