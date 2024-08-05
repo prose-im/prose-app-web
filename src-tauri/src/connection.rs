@@ -13,11 +13,13 @@ use log::{debug, error, info, warn};
 use serde::Serialize;
 use std::collections::HashMap;
 use std::sync::RwLock;
+use std::time::Duration;
 use tauri::plugin::{Builder, TauriPlugin};
 use tauri::{Manager, Runtime, State, Window};
 use thiserror::Error;
 use tokio::sync::mpsc::{self, UnboundedReceiver, UnboundedSender};
 use tokio::task::{self, JoinHandle};
+use tokio::time::timeout;
 use tokio_xmpp::connect::ServerConnector;
 use tokio_xmpp::{AsyncClient as Client, Error, Event, Packet};
 
@@ -27,6 +29,8 @@ use tokio_xmpp::{AsyncClient as Client, Error, Event, Packet};
 
 const EVENT_STATE: &'static str = "connection:state";
 const EVENT_RECEIVE: &'static str = "connection:receive";
+
+const READ_TIMEOUT_MILLISECONDS: u64 = 300000;
 
 /**************************************************************************
  * TYPES
@@ -74,6 +78,8 @@ pub enum PollInputError {
     AuthenticationError,
     #[error("Connection error")]
     ConnectionError,
+    #[error("Timeout error")]
+    TimeoutError,
     #[error("Other error")]
     OtherError,
 }
@@ -167,87 +173,34 @@ fn recover_closed_sender_channel<R: Runtime>(
 async fn poll_input_events<R: Runtime, C: ServerConnector>(
     window: &Window<R>,
     id: &str,
+    read_timeout: Duration,
     mut client_reader: SplitStream<Client<C>>,
 ) -> Result<(), PollInputError> {
-    while let Some(event) = client_reader.next().await {
-        match event {
-            Event::Disconnected(Error::Disconnected) => {
-                info!("Received disconnected event on: #{}", id);
-
-                emit_connection_abort(window, id, ConnectionState::Disconnected);
-
-                // Abort here (success)
-                return Ok(());
-            }
-            Event::Disconnected(Error::Auth(err)) => {
-                warn!(
-                    "Received disconnected event on: #{}, with authentication error: {}",
-                    id, err
-                );
-
-                emit_connection_abort(window, id, ConnectionState::AuthenticationFailure);
-
-                // Abort here (error)
-                return Err(PollInputError::AuthenticationError);
-            }
-            Event::Disconnected(Error::Connection(err)) => {
-                warn!(
-                    "Received disconnected event: #{}, with connection error: {}",
-                    id, err
-                );
-
-                // Notice: consider as timeout here.
-                emit_connection_abort(window, id, ConnectionState::ConnectionTimeout);
-
-                // Abort here (error)
-                return Err(PollInputError::ConnectionError);
-            }
-            Event::Disconnected(err) => {
-                warn!("Received disconnected event: #{}, with error: {}", id, err);
-
-                emit_connection_abort(window, id, ConnectionState::ConnectionError);
-
-                // Abort here (error)
-                return Err(PollInputError::OtherError);
-            }
-            Event::Online { .. } => {
-                info!("Received connected event on: #{}", id);
-
-                window
-                    .emit(
-                        EVENT_STATE,
-                        EventConnectionState {
-                            id,
-                            state: ConnectionState::Connected,
-                        },
-                    )
-                    .unwrap();
-
-                // Continue
-                continue;
-            }
-            Event::Stanza(stanza) => {
-                debug!("Received stanza event on: #{}", id);
-
-                let stanza_xml = String::from(&stanza);
-
-                window
-                    .emit(
-                        EVENT_RECEIVE,
-                        EventConnectionReceive {
-                            id,
-                            stanza: &stanza_xml,
-                        },
-                    )
-                    .unwrap();
-
-                // Continue
-                continue;
-            }
+    // Wrap client reader in a timeout task; this is especially important \
+    //   since the underlying 'tokio-xmpp' does not implement any kind of \
+    //   timeout whatsoever. This timeout duration is served from the \
+    //   connection initiator, and will most likely depend on the PING \
+    //   interval set by the client.
+    while let Ok(event_maybe) = timeout(read_timeout, client_reader.next()).await {
+        // Handle next event
+        if let Some(result) = handle_next_input_event(window, id, event_maybe) {
+            // We received a non-empty result: we have to stop the loop there!
+            return result;
         }
     }
 
-    Ok(())
+    // The next event did not come in due time, consider as timed out
+    warn!(
+        "Timed out waiting {}ms for next event on: #{}",
+        read_timeout.as_millis(),
+        id
+    );
+
+    // Abort here (timed out)
+    // Notice: the event loop has timed out, abort connection and error out.
+    emit_connection_abort(window, id, ConnectionState::ConnectionTimeout);
+
+    Err(PollInputError::TimeoutError)
 }
 
 async fn poll_output_events<C: ServerConnector>(
@@ -271,6 +224,92 @@ async fn poll_output_events<C: ServerConnector>(
     Ok(())
 }
 
+fn handle_next_input_event<R: Runtime>(
+    window: &Window<R>,
+    id: &str,
+    event_maybe: Option<Event>,
+) -> Option<Result<(), PollInputError>> {
+    if let Some(event) = event_maybe {
+        match event {
+            Event::Disconnected(Error::Disconnected) => {
+                info!("Received disconnected event on: #{}", id);
+
+                emit_connection_abort(window, id, ConnectionState::Disconnected);
+
+                // Abort here (success)
+                Some(Ok(()))
+            }
+            Event::Disconnected(Error::Auth(err)) => {
+                warn!(
+                    "Received disconnected event on: #{}, with authentication error: {}",
+                    id, err
+                );
+
+                emit_connection_abort(window, id, ConnectionState::AuthenticationFailure);
+
+                // Abort here (error)
+                Some(Err(PollInputError::AuthenticationError))
+            }
+            Event::Disconnected(Error::Connection(err)) => {
+                warn!(
+                    "Received disconnected event: #{}, with connection error: {}",
+                    id, err
+                );
+
+                emit_connection_abort(window, id, ConnectionState::ConnectionError);
+
+                // Abort here (error)
+                Some(Err(PollInputError::ConnectionError))
+            }
+            Event::Disconnected(err) => {
+                warn!("Received disconnected event: #{}, with error: {}", id, err);
+
+                emit_connection_abort(window, id, ConnectionState::ConnectionError);
+
+                // Abort here (error)
+                Some(Err(PollInputError::OtherError))
+            }
+            Event::Online { .. } => {
+                info!("Received connected event on: #{}", id);
+
+                window
+                    .emit(
+                        EVENT_STATE,
+                        EventConnectionState {
+                            id,
+                            state: ConnectionState::Connected,
+                        },
+                    )
+                    .unwrap();
+
+                // Continue
+                None
+            }
+            Event::Stanza(stanza) => {
+                debug!("Received stanza event on: #{}", id);
+
+                let stanza_xml = String::from(&stanza);
+
+                window
+                    .emit(
+                        EVENT_RECEIVE,
+                        EventConnectionReceive {
+                            id,
+                            stanza: &stanza_xml,
+                        },
+                    )
+                    .unwrap();
+
+                // Continue
+                None
+            }
+        }
+    } else {
+        // Abort here (normal stop)
+        Some(Ok(()))
+    }
+}
+
 /**************************************************************************
  * COMMANDS
  * ************************************************************************* */
@@ -282,6 +321,7 @@ pub fn connect<R: Runtime>(
     id: &str,
     jid: &str,
     password: &str,
+    timeout: Option<u64>,
 ) -> Result<(), ConnectError> {
     info!("Connection #{} connect requested on JID: {}", id, jid);
 
@@ -321,9 +361,6 @@ pub fn connect<R: Runtime>(
     // Connections are single-use only
     client.set_reconnect(false);
 
-    // TODO: implement some kind of timeout, because connection can be left in \
-    //   a dangling state at this point, not connected, not disconnected.
-
     // Split client into RX (for writer) and TX (for reader)
     let (tx, rx) = mpsc::unbounded_channel();
     let (writer, reader) = client.split();
@@ -333,6 +370,8 @@ pub fn connect<R: Runtime>(
         let id = id.to_owned();
 
         task::spawn(async move {
+            info!("Connection #{} write poller has started", id);
+
             // Poll for output events
             if let Err(err) = poll_output_events(&id, writer, rx).await {
                 warn!(
@@ -347,10 +386,17 @@ pub fn connect<R: Runtime>(
 
     let read_handle = {
         let id = id.to_owned();
+        let read_timeout = Duration::from_millis(timeout.unwrap_or(READ_TIMEOUT_MILLISECONDS));
 
         task::spawn(async move {
+            info!(
+                "Connection #{} read poller has started (with timeout: {}ms)",
+                id,
+                read_timeout.as_millis()
+            );
+
             // Poll for input events
-            if let Err(err) = poll_input_events(&window, &id, reader).await {
+            if let Err(err) = poll_input_events(&window, &id, read_timeout, reader).await {
                 warn!(
                     "Connection #{} read poller terminated with error: {}",
                     id, err

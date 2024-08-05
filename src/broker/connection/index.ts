@@ -58,6 +58,12 @@ abstract class BrokerConnection {
     return "XMPP";
   }
 
+  protected _pingIntervalTime(): number {
+    return runtimeContext === "application"
+      ? TIMER_PING_INTERVAL_APPLICATION
+      : TIMER_PING_INTERVAL_DEFAULT;
+  }
+
   protected _onInput(data: string): void {
     // Trace raw input?
     if (this.__config.logReceivedStanzas === true) {
@@ -89,10 +95,7 @@ abstract class BrokerConnection {
     }
 
     // Acquire interval times
-    const pingEvery =
-      runtimeContext === "application"
-        ? TIMER_PING_INTERVAL_APPLICATION
-        : TIMER_PING_INTERVAL_DEFAULT;
+    const pingEvery = this._pingIntervalTime();
     const timeoutEvery = TIMER_TIMEOUT_INTERVAL;
 
     // Schedule timers

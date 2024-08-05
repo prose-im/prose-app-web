@@ -29,6 +29,12 @@ import {
 import logger from "@/utilities/logger";
 
 /**************************************************************************
+ * CONSTANTS
+ * ************************************************************************* */
+
+const TIMEOUT_PING_DELAY = 15000; // 15 seconds
+
+/**************************************************************************
  * CLASS
  * ************************************************************************* */
 
@@ -49,16 +55,29 @@ class BrokerConnectionNativeTauri
         fail: reject
       });
 
+      // Acquire connection timeout
+      // Notice: timeout should be a function of the ping interval, with a \
+      //   slight delay on the top so that the server has time to respond to \
+      //   a given ping. This sets up a realistic timeout where we are sure \
+      //   that something occurs on the network channel in the timeout \
+      //   timeframe. If nothing happens in this same timeframe, this means \
+      //   that the connection is likely dead and should be considered as \
+      //   timed out by the underlying connection manager.
+      const timeout = this._pingIntervalTime() + TIMEOUT_PING_DELAY;
+
       // Request connection to connect
       // Important: trigger reject handler if runtime request failed
-      UtilitiesRuntime.requestConnectionConnect(id, jidString, password).catch(
-        error => {
-          // Intercept error for logging purposes
-          logger.error("Broker failed to request a connection connect", error);
+      UtilitiesRuntime.requestConnectionConnect(
+        id,
+        jidString,
+        password,
+        timeout
+      ).catch(error => {
+        // Intercept error for logging purposes
+        logger.error("Broker failed to request a connection connect", error);
 
-          reject(error);
-        }
-      );
+        reject(error);
+      });
     });
   }
 

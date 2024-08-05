@@ -531,14 +531,16 @@ class UtilitiesRuntime {
   async requestConnectionConnect(
     id: RuntimeConnectionID,
     jidString: string,
-    password: string
+    password: string,
+    timeout?: number
   ): Promise<void> {
     if (this.__isApplication === true) {
       // Request to connect via Tauri API (application build)
       await tauriInvoke("plugin:connection|connect", {
         jid: jidString,
         password,
-        id
+        id,
+        timeout
       });
     } else {
       // This method should NEVER be used on other platforms
