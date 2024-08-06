@@ -229,6 +229,7 @@ fn handle_next_input_event<R: Runtime>(
     id: &str,
     event_maybe: Option<Event>,
 ) -> Option<Result<(), PollInputError>> {
+    // Any event received? (or no event?)
     if let Some(event) = event_maybe {
         match event {
             Event::Disconnected(Error::Disconnected) => {
@@ -305,7 +306,7 @@ fn handle_next_input_event<R: Runtime>(
             }
         }
     } else {
-        // Abort here (normal stop)
+        // Abort here (no more events)
         Some(Ok(()))
     }
 }
