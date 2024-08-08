@@ -20,7 +20,7 @@ base-modal(
     | Edit message:
 
   form-field(
-    v-model.trim="editedText"
+    v-model="editedText"
     @keystroke="onFieldKeyStroke"
     @submit="onConfirm"
     :rows="5"
@@ -87,10 +87,18 @@ export default {
     },
 
     onConfirm(): void {
-      if (this.editedText) {
-        if (this.editedText !== this.originalText) {
+      // Handle virtual key stroke (adding a space at the end of the \
+      //   message, so that the last smiley gets replaced, if any)
+      // Notice: the extra space will be trimmed after that.
+      this.onFieldKeyStroke(this.editedText + " ");
+
+      // Process edited text
+      const editedText = this.editedText.trim();
+
+      if (editedText) {
+        if (editedText !== this.originalText) {
           // Messages are different, therefore consider as edition
-          this.$emit("edit", this.context, this.editedText);
+          this.$emit("edit", this.context, editedText);
         } else {
           // Messages are the same, therefore consider as close
           this.$emit("close");
