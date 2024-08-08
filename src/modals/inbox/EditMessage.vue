@@ -14,7 +14,7 @@ base-modal(
   @confirm="onConfirm"
   confirm-label="Edit Message"
   class="m-edit-message"
-  size="large"
+  size="mid-large"
 )
   p.u-medium
     | Edit message:
@@ -23,7 +23,7 @@ base-modal(
     v-model="editedText"
     @keystroke="onFieldKeyStroke"
     @submit="onConfirm"
-    :rows="5"
+    :rows="8"
     placeholder="Enter edited message…"
     class="m-edit-message__field"
     type="textarea"
