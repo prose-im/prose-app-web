@@ -77,7 +77,7 @@ export default {
       default: "medium",
 
       validator(x: string) {
-        return ["medium", "large"].includes(x);
+        return ["medium", "large", "mid-large"].includes(x);
       }
     },
 
@@ -120,7 +120,8 @@ $c: ".c-base-modal";
 // VARIABLES
 $popup-min-width-medium: 350px;
 $popup-min-width-large: 440px;
-$popup-max-width: 500px;
+$popup-min-width-mid-large: 560px;
+$popup-max-width: ($popup-min-width-mid-large + 40px);
 $popup-padding-sides: 25px;
 
 $popup-width-full-margin-sides: 14px;
@@ -186,6 +187,18 @@ $popup-width-full-breakpoint: (
     &#{$c}--constrained {
       #{$c}__popup {
         max-width: $popup-min-width-large;
+      }
+    }
+  }
+
+  &--mid-large {
+    #{$c}__popup {
+      min-width: $popup-min-width-mid-large;
+    }
+
+    &#{$c}--constrained {
+      #{$c}__popup {
+        max-width: $popup-min-width-mid-large;
       }
     }
   }
