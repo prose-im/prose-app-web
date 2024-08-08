@@ -693,21 +693,6 @@ export default {
       return false;
     },
 
-    triggerHookPreSubmit(): void {
-      // Append a space at the end of the message? (this closes the last \
-      //   message word and enforces processing of eg. emoji replacements \
-      //   before the message gets sent)
-      if (
-        this.message.length > 0 &&
-        this.message[this.message.length - 1] !== " "
-      ) {
-        this.message += " ";
-
-        // Handle this virtual key stroke
-        this.onKeyStroke(this.message);
-      }
-    },
-
     // --> EVENT LISTENERS <--
 
     onActionFormatClick(): void {
@@ -957,8 +942,10 @@ export default {
     },
 
     async onSubmit(): Promise<void> {
-      // Trigger pre-submit hook
-      this.triggerHookPreSubmit();
+      // Handle virtual key stroke (adding a space at the end of the \
+      //   message, so that the last smiley gets replaced, if any)
+      // Notice: the extra space will be trimmed after that.
+      this.onKeyStroke(this.message + " ");
 
       // Send message
       const message = this.message.trim();
