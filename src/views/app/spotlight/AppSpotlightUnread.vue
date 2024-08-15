@@ -36,7 +36,13 @@ layout-view(
 <script lang="ts">
 // NPM
 import { shallowRef } from "vue";
-import { JID, Room, RoomID, SidebarItem } from "@prose-im/prose-sdk-js";
+import {
+  JID,
+  Room,
+  RoomID,
+  SidebarItem,
+  Message as CoreMessage
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: ASSEMBLIES
 import {
@@ -304,7 +310,7 @@ export default {
               return message.id ? true : false;
             })
             .slice(-excerptsCount)
-            .map(message => {
+            .map((message: CoreMessage) => {
               // Generate message excerpt data
               // Notice: message definitely has an identifier set there, since \
               //   we filtered out messages with empty identifiers earlier on.
@@ -312,7 +318,7 @@ export default {
                 id: message.id || "",
                 from: message.from,
                 name: message.user.name,
-                content: message.content,
+                content: message.rawContent,
                 date: message.date
               });
             });
