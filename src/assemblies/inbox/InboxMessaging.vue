@@ -741,24 +741,20 @@ export default {
         //   they are guaranteed to be always up-to-date. Those are defined \
         //   secondly since they may overwrite per-message names, which is \
         //   desired.
-        (participants || this.room?.participants)?.forEach(member => {
-          // Store name for member identifier
+        (participants || this.room?.participants)?.forEach(participant => {
+          // Notice: prefer using JID over abstract participant identifier, \
+          //   if JID is known.
+          const participantUserId =
+            participant.jid !== undefined
+              ? participant.jid.toString()
+              : participant.id.toString();
+
           Store.$inbox.setName(
             roomId,
-            member.id.toString(),
-            member.name,
+            participantUserId,
+            participant.name,
             InboxNameOrigin.Global
           );
-
-          // Store name for member JID? (if known)
-          if (member.jid) {
-            Store.$inbox.setName(
-              roomId,
-              member.jid.toString(),
-              member.name,
-              InboxNameOrigin.Global
-            );
-          }
         });
       }
     },

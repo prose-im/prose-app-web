@@ -262,12 +262,12 @@ const $room = defineStore("room", {
         if (participant.avatar !== undefined) {
           // Notice: prefer using JID over abstract participant identifier, \
           //   if JID is known.
-          const userId =
+          const participantUserId =
             participant.jid !== undefined
               ? participant.jid.toString()
               : participant.id.toString();
 
-          Store.$avatar.refresh(userId, participant.avatar);
+          Store.$avatar.refresh(participantUserId, participant.avatar);
         }
       });
     },

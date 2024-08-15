@@ -160,13 +160,17 @@ export default {
     authorParticipant(): ParticipantInfo | void {
       const authorJID = this.authorJID;
 
+      // Find participant by JID?
       if (authorJID !== undefined) {
         return this.room.participants.find(participant => {
           return participant.jid?.equals(authorJID);
         });
       }
 
-      return undefined;
+      // Find participant by identifier (fallback)
+      return this.room.participants.find(participant => {
+        return participant.id.toString() === this.authorUserId;
+      });
     },
 
     authorName(): string | null {

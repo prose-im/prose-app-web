@@ -100,16 +100,20 @@ export default {
           }
         ] as Array<DataTableColumn>,
 
-        rows: this.room.participants.map(room => {
+        rows: this.room.participants.map(participant => {
           return {
             selected: false,
 
             columns: {
-              name: room.name,
-              jid: room.jid ? room.jid.toString() : "<unknown jid>",
+              name: participant.name,
+
+              jid:
+                participant.jid !== undefined
+                  ? participant.jid.toString()
+                  : participant.id.toString(),
 
               role:
-                AFFILIATION_ROLES[room.affiliation] ||
+                AFFILIATION_ROLES[participant.affiliation] ||
                 AFFILIATION_ROLES[RoomAffiliation.None]
             }
           };
