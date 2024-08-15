@@ -24,12 +24,7 @@
         | {{ snapshot.client }}
 
       p.p-edit-profile-encryption-device-current__snapshot-security.u-medium
-        a(
-          :href="snapshot.security.target"
-          rel="noopener noreferrer"
-          target="_blank"
-        )
-          | {{ snapshot.security.label }}
+        | {{ snapshot.security }}
 
   .p-edit-profile-encryption-device-current__details
     form-fieldset-control(
@@ -83,11 +78,7 @@ export default {
         platform: "web",
         system: VERSION_SYSTEM,
         client: `${VERSION_NAME} ${VERSION_REVISION}`,
-
-        security: {
-          label: `OMEMO v${OMEMO_VERSION}`,
-          target: "https://xmpp.org/extensions/xep-0384.html"
-        }
+        security: `OMEMO v${OMEMO_VERSION}`
       },
 
       details: [
@@ -159,6 +150,7 @@ $inner-spacing-sides: 18px;
       }
 
       #{$c}__snapshot-security {
+        color: rgb(var(--color-base-purple-normal));
         font-size: ($font-size-baseline - 3px);
         margin-block-start: 9px;
 
