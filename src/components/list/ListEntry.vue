@@ -29,6 +29,7 @@ div(
     :class=`[
       "c-list-entry__label",
       {
+        "c-list-entry__label--selectable": selectable,
         "u-select": selectable,
         "u-ellipsis": !multiLine
       }
@@ -101,6 +102,10 @@ $c: ".c-list-entry";
     font-size: $font-size-baseline;
     line-height: 18px;
     flex: 1;
+
+    &--selectable {
+      cursor: text;
+    }
   }
 
   #{$c}__details {
