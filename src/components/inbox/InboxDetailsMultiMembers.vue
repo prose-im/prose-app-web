@@ -32,6 +32,7 @@ list-disclosure(
       v-slot:icon
     )
       base-avatar(
+        :participant-id="member.id"
         :jid="member.jid"
         :name="member.name"
         class="c-inbox-details-multi-members__avatar"
