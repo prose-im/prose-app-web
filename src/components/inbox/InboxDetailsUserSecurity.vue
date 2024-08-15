@@ -158,47 +158,48 @@ export default {
             icon: "xmark.seal.fill"
           });
         }
+      }
 
-        if (
-          !this.profile.security.encryption ||
-          !this.profile.security.encryption.connectionProtocol
-        ) {
-          // No connection available (might be insecure?)
-          entries.push({
-            id: "encryption",
-            kind: "unknown",
-            title: "Unknown security",
-            icon: "exclamationmark.lock.fill",
-            important: true
-          });
-        } else if (!this.profile.security.encryption.secureProtocol) {
-          // No encryption whatsoever (insecure!)
-          entries.push({
-            id: "encryption",
-            kind: "insecure",
-            title: "Insecure channel",
-            icon: "lock.slash.fill",
-            critical: true
-          });
-        } else if (!this.profile.security.encryption.messageEndToEndMethod) {
-          // Okay-level of encryption (C2S)
-          entries.push({
-            id: "encryption",
-            kind: "safe",
-            title: "Partially encrypted",
-            icon: "lock.fill"
-          });
-        } else {
-          // Best level of encryption (C2S + E2E)
-          entries.push({
-            id: "encryption",
-            kind: "secure",
-            title:
-              `Encrypted ` +
-              `(${this.profile.security.encryption.messageEndToEndMethod})`,
-            icon: "lock.fill"
-          });
-        }
+      if (
+        !this.profile.security ||
+        !this.profile.security.encryption ||
+        !this.profile.security.encryption.connectionProtocol
+      ) {
+        // No connection available (might be insecure?)
+        entries.push({
+          id: "encryption",
+          kind: "unknown",
+          title: "Unknown security",
+          icon: "exclamationmark.lock.fill",
+          important: true
+        });
+      } else if (!this.profile.security.encryption.secureProtocol) {
+        // No encryption whatsoever (insecure!)
+        entries.push({
+          id: "encryption",
+          kind: "insecure",
+          title: "Insecure channel",
+          icon: "lock.slash.fill",
+          critical: true
+        });
+      } else if (!this.profile.security.encryption.messageEndToEndMethod) {
+        // Okay-level of encryption (C2S)
+        entries.push({
+          id: "encryption",
+          kind: "safe",
+          title: "Partially encrypted",
+          icon: "lock.fill"
+        });
+      } else {
+        // Best level of encryption (C2S + E2E)
+        entries.push({
+          id: "encryption",
+          kind: "secure",
+          title:
+            `Encrypted ` +
+            `(${this.profile.security.encryption.messageEndToEndMethod})`,
+          icon: "lock.fill"
+        });
       }
 
       return entries;

@@ -24,7 +24,6 @@ layout-sidebar-details(
     v-slot:items
   )
     inbox-details-user-information(
-      v-if="profile.information"
       :jid="jid"
       :header-class="headerClass"
       :item-class="itemClass"
@@ -32,7 +31,6 @@ layout-sidebar-details(
     )
 
     inbox-details-user-security(
-      v-if="profile.security"
       :jid="jid"
       :room="room"
       :header-class="headerClass"

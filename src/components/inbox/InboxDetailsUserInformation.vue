@@ -110,99 +110,105 @@ export default {
     entries(): Array<Entry> {
       const entries: Array<Entry> = [];
 
-      if (this.profile.information) {
-        if (this.profile.information.contact) {
-          if (this.profile.information.contact.email) {
-            entries.push({
-              id: "email",
-              title: this.profile.information.contact.email,
-              icon: "envelope.fill",
-              selectable: true
-            });
-          }
+      if (this.profile.information?.contact.email) {
+        entries.push({
+          id: "email",
+          title: this.profile.information.contact.email,
+          icon: "envelope.fill",
+          selectable: true
+        });
+      }
 
-          if (this.profile.information.contact.phone) {
-            entries.push({
-              id: "phone",
-              title: this.profile.information.contact.phone,
-              icon: "iphone",
-              selectable: true
-            });
-          }
-        }
+      if (this.profile.information?.contact.phone) {
+        entries.push({
+          id: "phone",
+          title: this.profile.information.contact.phone,
+          icon: "iphone",
+          selectable: true
+        });
+      }
 
-        if (this.profile.information.lastActive?.timestamp) {
-          const activePrefix =
-            this.availability !== Availability.Unavailable
-              ? "Active"
-              : "Last seen";
+      if (this.profile.information?.lastActive?.timestamp) {
+        const activePrefix =
+          this.availability !== Availability.Unavailable
+            ? "Active"
+            : "Last seen";
+
+        entries.push({
+          id: "active",
+          title: `${activePrefix} ${this.$filters.date.timeAgo(
+            this.profile.information.lastActive.timestamp,
+            true
+          )}`,
+          icon: "hand.wave.fill"
+        });
+      }
+
+      if (this.profile.information?.location) {
+        const userTimezone = this.profile.information.location.timezone || null,
+          userCountry = this.profile.information.location.country || null;
+
+        if (userTimezone !== null) {
+          const nowDate = new Date();
 
           entries.push({
-            id: "active",
-            title: `${activePrefix} ${this.$filters.date.timeAgo(
-              this.profile.information.lastActive.timestamp,
-              true
-            )}`,
-            icon: "hand.wave.fill"
+            id: "timezone",
+            title: this.$filters.date.localTime(nowDate, userTimezone.offset),
+            icon: "clock.fill"
           });
         }
 
-        if (this.profile.information.location) {
-          const userTimezone =
-              this.profile.information.location.timezone || null,
-            userCountry = this.profile.information.location.country || null;
+        if (userCountry !== null) {
+          const locationParts = [];
 
-          if (userTimezone !== null) {
-            const nowDate = new Date();
-
-            entries.push({
-              id: "timezone",
-              title: this.$filters.date.localTime(nowDate, userTimezone.offset),
-              icon: "clock.fill"
-            });
+          // Append city? (if any)
+          if (this.profile.information.location.city) {
+            locationParts.push(this.profile.information.location.city);
           }
 
-          if (userCountry !== null) {
-            const locationParts = [];
+          // Append country? (convert code to country name for display, eg. \
+          //   'FR'/'fr' becomes 'France')
+          const userCountryName = getCountryName(userCountry) || null;
 
-            // Append city? (if any)
-            if (this.profile.information.location.city) {
-              locationParts.push(this.profile.information.location.city);
-            }
+          locationParts.push(userCountryName || userCountry);
 
-            // Append country? (convert code to country name for display, eg. \
-            //   'FR'/'fr' becomes 'France')
-            const userCountryName = getCountryName(userCountry) || null;
+          // Acquire user country code (if country name found, then we \
+          //   already got a country code, otherwise we need to look it up \
+          //   from raw country name)
+          let userCountryCode = userCountryName !== null ? userCountry : null;
 
-            locationParts.push(userCountryName || userCountry);
-
-            // Acquire user country code (if country name found, then we \
-            //   already got a country code, otherwise we need to look it up \
-            //   from raw country name)
-            let userCountryCode = userCountryName !== null ? userCountry : null;
-
-            if (userCountryCode === null) {
-              // Attempt to acquire country code from raw country name (will \
-              //   possibly return nothing, eg. 'Germany' will become 'DE')
-              userCountryCode = getCountryCode(userCountry) || null;
-            }
-
-            entries.push({
-              id: "location",
-              title: locationParts.join(", "),
-              icon: "location.fill",
-              flag: userCountryCode || undefined
-            });
+          if (userCountryCode === null) {
+            // Attempt to acquire country code from raw country name (will \
+            //   possibly return nothing, eg. 'Germany' will become 'DE')
+            userCountryCode = getCountryCode(userCountry) || null;
           }
-        }
 
-        if (this.statusActivity.status) {
           entries.push({
-            id: "activity",
-            title: this.statusActivity.status.text || "Current status",
-            emoji: this.statusActivity.status.icon
+            id: "location",
+            title: locationParts.join(", "),
+            icon: "location.fill",
+            flag: userCountryCode || undefined
           });
         }
+      }
+
+      if (this.statusActivity.status) {
+        entries.push({
+          id: "activity",
+          title: this.statusActivity.status.text || "Current status",
+          emoji: this.statusActivity.status.icon
+        });
+      }
+
+      // Fallback on JID for user? (if no entries has been set)
+      // Notice: this is to avoid the 'empty information' UI issue.
+      if (entries.length === 0) {
+        entries.push({
+          id: "jid",
+          title: this.jid.toString(),
+          icon: "message",
+          selectable: true
+        });
       }
 
       return entries;
