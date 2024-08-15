@@ -38,9 +38,7 @@
     base-space
 
     a.u-medium(
-      :href="identityUrl"
-      rel="noopener noreferrer"
-      target="_blank"
+      @click="onIdentityDomainClick"
     )
       | {{ identityDomain }}
 </template>
@@ -59,6 +57,9 @@ import { Detail as BadgeDetail } from "@/components/base/BaseBadgeDetails.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
+
+// PROJECT: UTILITIES
+import UtilitiesRuntime from "@/utilities/runtime";
 
 // CONSTANTS
 const QUICKIE_DESCRIPTION_PREFIX =
@@ -139,6 +140,21 @@ export default {
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    async onIdentityDomainClick(): Promise<void> {
+      try {
+        await UtilitiesRuntime.requestOpenUrl(this.identityUrl);
+      } catch (error) {
+        this.$log.error(
+          `Failed opening identity server URL: ${this.identityUrl}`,
+          error
+        );
+      }
     }
   }
 };
