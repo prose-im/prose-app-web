@@ -46,6 +46,13 @@ enum RuntimeLogLevel {
   Error = "error"
 }
 
+enum RuntimeUrlOpenTarget {
+  // Self target.
+  Self = "_self",
+  // Blank target.
+  Blank = "_blank"
+}
+
 enum RuntimeNotificationInteractionAction {
   // Click action.
   Click = "click",
@@ -254,7 +261,10 @@ class UtilitiesRuntime {
     delete this.__handlers.connection[id];
   }
 
-  async requestOpenUrl(url: string, target = "_blank"): Promise<void> {
+  async requestOpenUrl(
+    url: string,
+    target = RuntimeUrlOpenTarget.Blank
+  ): Promise<void> {
     if (this.__isApplication === true) {
       // Request to open via Tauri API (application build)
       await tauriOpen(url);
@@ -732,6 +742,7 @@ class UtilitiesRuntime {
 
 export {
   RuntimeLogLevel,
+  RuntimeUrlOpenTarget,
   RuntimeConnectionState,
   RuntimeConnectionMethod,
   platform,
