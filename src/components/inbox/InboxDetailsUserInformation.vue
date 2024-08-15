@@ -120,9 +120,9 @@ export default {
 
           if (this.profile.information.contact.phone) {
             entries.push({
-              id: "email",
+              id: "phone",
               title: this.profile.information.contact.phone,
-              icon: "envelope.fill"
+              icon: "iphone"
             });
           }
         }
