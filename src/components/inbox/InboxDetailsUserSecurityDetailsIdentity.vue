@@ -39,6 +39,7 @@
 
     a.u-medium(
       :href="identityUrl"
+      rel="noopener noreferrer"
       target="_blank"
     )
       | {{ identityDomain }}

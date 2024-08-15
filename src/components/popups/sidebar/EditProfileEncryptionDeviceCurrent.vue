@@ -26,6 +26,7 @@
       p.p-edit-profile-encryption-device-current__snapshot-security.u-medium
         a(
           :href="snapshot.security.target"
+          rel="noopener noreferrer"
           target="_blank"
         )
           | {{ snapshot.security.label }}
@@ -85,10 +86,7 @@ export default {
 
         security: {
           label: `OMEMO v${OMEMO_VERSION}`,
-
-          target:
-            `https://xmpp.org/extensions/attic/` +
-            `xep-0384-${OMEMO_VERSION}.html`
+          target: "https://xmpp.org/extensions/xep-0384.html"
         }
       },
 

@@ -40,7 +40,7 @@
     )
       a(
         :href="profilePhoneUrl"
-        target="_blank"
+        rel="noopener noreferrer"
         class="c-inbox-details-user-identity__action-link"
       )
         base-button(
@@ -56,7 +56,7 @@
     )
       a(
         :href="profileEmailUrl"
-        target="_blank"
+        rel="noopener noreferrer"
         class="c-inbox-details-user-identity__action-link"
       )
         base-button(
