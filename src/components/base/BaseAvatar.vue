@@ -125,7 +125,7 @@ export default {
   },
 
   computed: {
-    jidLike(): string | null {
+    jidLikeSource(): string | null {
       // #1. Prefer using JID (if given)
       if (this.jid !== null) {
         return this.jid.toString();
@@ -152,11 +152,11 @@ export default {
     backgroundImage(): string | void {
       // Acquire background image? (a JID-like is required to obtain avatar \
       //   data)
-      if (this.jidLike !== null) {
+      if (this.jidLikeSource !== null) {
         const avatarDataUrl =
           this.dataUrl !== null
             ? this.dataUrl
-            : Store.$avatar.getAvatarDataUrl(this.jidLike);
+            : Store.$avatar.getAvatarDataUrl(this.jidLikeSource);
 
         if (avatarDataUrl) {
           return `url(${avatarDataUrl})`;
@@ -169,7 +169,7 @@ export default {
     backgroundColor(): string | void {
       // Generate background color? (as avatar is textual)
       if (this.isTextual === true) {
-        const value = this.jidLike || this.name || "";
+        const value = this.jidLikeSource || this.name || "";
 
         if (value) {
           return this.generateTextualPalette(value);
@@ -185,7 +185,7 @@ export default {
         const name = this.name || this.roomName || "";
 
         return this.normalizeTextualInitials(
-          this.generateTextualInitials(this.jidLike, name) || undefined
+          this.generateTextualInitials(this.jidLikeSource, name) || undefined
         );
       }
 
@@ -232,8 +232,8 @@ export default {
 
     roomName(): string {
       const room =
-        this.jidLike !== null
-          ? Store.$room.getRoom(this.jidLike as RoomID)
+        this.jidLikeSource !== null
+          ? Store.$room.getRoom(this.jidLikeSource as RoomID)
           : undefined;
 
       return room?.name || "";

@@ -257,10 +257,17 @@ const $room = defineStore("room", {
 
     requestRefreshRoomAssociations(roomID: RoomID): void {
       this.getRoom(roomID)?.participants.forEach(participant => {
-        // Refresh avatar for participant
+        // Refresh avatar for participant?
         // Notice: this is a cross-store operation, for convenience.
-        if (participant.jid !== undefined && participant.avatar !== undefined) {
-          Store.$avatar.refresh(participant.jid.toString(), participant.avatar);
+        if (participant.avatar !== undefined) {
+          // Notice: prefer using JID over abstract participant identifier, \
+          //   if JID is known.
+          const userId =
+            participant.jid !== undefined
+              ? participant.jid.toString()
+              : participant.id.toString();
+
+          Store.$avatar.refresh(userId, participant.avatar);
         }
       });
     },
