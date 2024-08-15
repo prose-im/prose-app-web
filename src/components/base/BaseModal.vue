@@ -118,11 +118,21 @@ export default {
 $c: ".c-base-modal";
 
 // VARIABLES
-$popup-min-width-medium: 350px;
-$popup-min-width-large: 440px;
-$popup-min-width-mid-large: 560px;
+$popup-sizes: (
+  "medium": (
+    "min-width": 350px
+  ),
 
-$popup-max-width: $popup-min-width-mid-large;
+  "large": (
+    "min-width": 440px
+  ),
+
+  "mid-large": (
+    "min-width": 560px
+  )
+);
+
+$popup-max-width: map-get(map-get($popup-sizes, "mid-large"), "min-width");
 $popup-max-width-toleration-sides: 20px;
 
 $popup-padding-sides: 25px;
@@ -169,50 +179,20 @@ $popup-width-full-breakpoint: (
 
   // --> SIZES <--
 
-  &--medium {
-    #{$c}__popup {
-      min-width: $popup-min-width-medium;
-
-      max-width: (
-        $popup-min-width-medium + (2 * $popup-max-width-toleration-sides)
-      );
-    }
-
-    &#{$c}--constrained {
+  @each $name, $size in $popup-sizes {
+    &--#{$name} {
       #{$c}__popup {
-        max-width: $popup-min-width-medium;
+        min-width: map-get($size, "min-width");
+
+        max-width: (
+          map-get($size, "min-width") + (2 * $popup-max-width-toleration-sides)
+        );
       }
-    }
-  }
 
-  &--large {
-    #{$c}__popup {
-      min-width: $popup-min-width-large;
-
-      max-width: (
-        $popup-min-width-large + (2 * $popup-max-width-toleration-sides)
-      );
-    }
-
-    &#{$c}--constrained {
-      #{$c}__popup {
-        max-width: $popup-min-width-large;
-      }
-    }
-  }
-
-  &--mid-large {
-    #{$c}__popup {
-      min-width: $popup-min-width-mid-large;
-
-      max-width: (
-        $popup-min-width-mid-large + (2 * $popup-max-width-toleration-sides)
-      );
-    }
-
-    &#{$c}--constrained {
-      #{$c}__popup {
-        max-width: $popup-min-width-mid-large;
+      &#{$c}--constrained {
+        #{$c}__popup {
+          max-width: map-get($size, "min-width");
+        }
       }
     }
   }
