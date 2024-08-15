@@ -88,19 +88,6 @@ teleport(
                 size="18px"
               )
 
-            base-tooltip(
-              align="right"
-              direction="bottom"
-              tooltip="Share File"
-            )
-              base-action(
-                @click="onActionShareClick"
-                :disabled="areActionsDisabled || true"
-                icon="square.and.arrow.up"
-                context="grey"
-                size="20px"
-              )
-
           base-button(
             @click="onButtonCloseClick"
             tint="light"
@@ -378,10 +365,6 @@ export default {
           this.pendingActions.download = false;
         }
       }
-    },
-
-    onActionShareClick(): void {
-      // TODO: not implemented yet
     },
 
     async onButtonCloseClick(): Promise<void> {
