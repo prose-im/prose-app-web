@@ -70,13 +70,13 @@ class BrokerModuleProfile extends BrokerModule {
   }
 
   async loadAvatarData(
-    jid: JID,
+    userId: string,
     avatar: CoreAvatar
   ): Promise<LoadAvatarDataResponse | void> {
     // XEP-0084: User Avatar
     // https://xmpp.org/extensions/xep-0084.html
 
-    logger.info(`Will load avatar for: '${jid}' (ID ${avatar.id})`);
+    logger.info(`Will load avatar for: '${userId}' (ID ${avatar.id})`);
 
     const dataURL = await this._client.client?.loadAvatarDataURL(avatar);
 
