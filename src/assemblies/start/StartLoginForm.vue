@@ -61,9 +61,7 @@
           | Remember me
 
       .a-start-login-form__options-right
-        a.a-start-login-form__options-recover(
-          href="#"
-        )
+        a.a-start-login-form__options-recover
           | Forgot password?
 </template>
 
