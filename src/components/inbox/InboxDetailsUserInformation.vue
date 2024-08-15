@@ -20,6 +20,7 @@ list-disclosure(
     v-for="entry in entries"
     :key="entry.id"
     :color="entry.emoji ? 'lighter' : 'normal'"
+    :selectable="entry.selectable"
     :class=`{
       [itemClass]: itemClass
     }`
@@ -74,6 +75,7 @@ interface Entry {
   icon?: string;
   flag?: string;
   emoji?: string;
+  selectable?: boolean;
 }
 
 export default {
@@ -114,7 +116,8 @@ export default {
             entries.push({
               id: "email",
               title: this.profile.information.contact.email,
-              icon: "envelope.fill"
+              icon: "envelope.fill",
+              selectable: true
             });
           }
 
@@ -122,7 +125,8 @@ export default {
             entries.push({
               id: "phone",
               title: this.profile.information.contact.phone,
-              icon: "iphone"
+              icon: "iphone",
+              selectable: true
             });
           }
         }
