@@ -35,7 +35,7 @@ div(
 <script lang="ts">
 // NPM
 import { PropType } from "vue";
-import { JID, RoomID } from "@prose-im/prose-sdk-js";
+import { JID, ParticipantId, RoomID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -79,6 +79,16 @@ export default {
       default: null
     },
 
+    participantId: {
+      type: Object as PropType<ParticipantId>,
+      default: null
+    },
+
+    userId: {
+      type: String,
+      default: null
+    },
+
     name: {
       type: String,
       default: null
@@ -115,17 +125,38 @@ export default {
   },
 
   computed: {
+    jidLike(): string | null {
+      // #1. Prefer using JID (if given)
+      if (this.jid !== null) {
+        return this.jid.toString();
+      }
+
+      // #2. Prefer participant identifier (if given)
+      if (this.participantId !== null) {
+        return this.participantId.toString();
+      }
+
+      // #3. Fallback on user identifier (if given)
+      if (this.userId !== null) {
+        return this.userId;
+      }
+
+      // #4. No JID like value provided
+      return null;
+    },
+
     isTextual(): boolean {
       return !this.backgroundImage ? true : false;
     },
 
     backgroundImage(): string | void {
-      // Acquire background image? (a JID is required to obtain avatar data)
-      if (this.jid !== null) {
+      // Acquire background image? (a JID-like is required to obtain avatar \
+      //   data)
+      if (this.jidLike !== null) {
         const avatarDataUrl =
           this.dataUrl !== null
             ? this.dataUrl
-            : Store.$avatar.getAvatarDataUrl(this.jid);
+            : Store.$avatar.getAvatarDataUrl(this.jidLike);
 
         if (avatarDataUrl) {
           return `url(${avatarDataUrl})`;
@@ -138,7 +169,7 @@ export default {
     backgroundColor(): string | void {
       // Generate background color? (as avatar is textual)
       if (this.isTextual === true) {
-        const value = this.jid?.toString() || this.name || "";
+        const value = this.jidLike || this.name || "";
 
         if (value) {
           return this.generateTextualPalette(value);
@@ -154,7 +185,7 @@ export default {
         const name = this.name || this.roomName || "";
 
         return this.normalizeTextualInitials(
-          this.generateTextualInitials(this.jid, name) || undefined
+          this.generateTextualInitials(this.jidLike, name) || undefined
         );
       }
 
@@ -201,8 +232,8 @@ export default {
 
     roomName(): string {
       const room =
-        this.jid !== null
-          ? Store.$room.getRoom(this.jid.toString() as RoomID)
+        this.jidLike !== null
+          ? Store.$room.getRoom(this.jidLike as RoomID)
           : undefined;
 
       return room?.name || "";
@@ -241,7 +272,7 @@ export default {
       return `#${color}`;
     },
 
-    generateTextualInitials(jid: JID | null, name = ""): string | void {
+    generateTextualInitials(jidLike: string | null, name = ""): string | void {
       // #1. Extract initials from name (if any, and if long enough)
       if (name) {
         const nameChunks = name
@@ -264,9 +295,13 @@ export default {
         }
       }
 
-      // #2. Extract initials from JID (fallback)
-      if (jid?.node && jid?.node.length >= 1) {
-        return jid.node.substring(0, 2);
+      // #2. Extract initials from JID, if identifier is JID-like (fallback)
+      if (jidLike !== null) {
+        let jidParts = jidLike.split("@");
+
+        if (jidParts[0]?.length >= 1 && jidParts[1]?.length >= 1) {
+          return jidParts[0].substring(0, 2);
+        }
       }
 
       // No initials extracted
