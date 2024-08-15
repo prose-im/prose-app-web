@@ -37,7 +37,6 @@ layout-view(
 // NPM
 import { shallowRef } from "vue";
 import {
-  JID,
   Room,
   RoomID,
   SidebarItem,
@@ -67,7 +66,7 @@ import { EventMessageGeneric } from "@/store/tables/inbox";
 // INTERFACES
 interface UnreadMessageExcerpt {
   id: string;
-  jid: JID;
+  from: string;
   name: string;
   preview: string;
   timeAgo: string;
@@ -167,7 +166,7 @@ export default {
                       component: BaseAvatar,
 
                       properties: {
-                        jid: excerpt.jid,
+                        userId: excerpt.from,
                         size: "32px",
                         shadow: "none"
                       }
@@ -352,7 +351,7 @@ export default {
     }): UnreadMessageExcerpt {
       return {
         id: id,
-        jid: new JID(from),
+        from: from,
         name: name || from,
         preview: content,
         timeAgo: this.$filters.date.timeAgo(date.getTime(), true)
