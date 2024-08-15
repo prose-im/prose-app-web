@@ -206,7 +206,10 @@ const $account = defineStore("account", {
           // Update account avatar
           // Notice: this is a cross-store operation, for convenience.
           if (accountInfo.avatar !== undefined) {
-            Store.$avatar.refresh(accountInfo.jid, accountInfo.avatar);
+            Store.$avatar.refresh(
+              accountInfo.jid.toString(),
+              accountInfo.avatar
+            );
           }
 
           // Update stored activity

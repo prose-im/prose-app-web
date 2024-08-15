@@ -678,37 +678,25 @@ export default {
     identifyAllParties(runtime: MessagingRuntime): void {
       // Identify all parties
       Object.values(this.names).forEach((name: InboxEntryName) => {
-        this.identifyParty(runtime, name.from, name.name);
+        this.identifyParty(runtime, name.userId, name.name);
       });
     },
 
     identifyParty(
       runtime: MessagingRuntime,
-      jidStringMaybe: string,
+      userId: string,
       name: string
     ): void {
-      // Attempt to parse JID, since the JID string might contain a resource \
-      //   part for MUC rooms here, which is not allowed in bare JIDs. In the \
-      //   case JID parsing fails, then we will not attempt to acquire the \
-      //   avatar attached to that JID.
-      let jidMaybe: JID | null;
-
-      try {
-        jidMaybe = new JID(jidStringMaybe);
-      } catch (_) {
-        jidMaybe = null;
-      }
-
       // Identify party
       // Important: do not try to acquire avatars for full JIDs, as those \
       //   come from MUC full JIDs and thus we do not have any avatar for them \
       //   anyway, plus they are not parsable as bare JIDs.
-      runtime.MessagingStore.identify(jidStringMaybe, {
+      runtime.MessagingStore.identify(userId, {
         name,
 
         avatar:
-          jidMaybe !== null
-            ? Store.$avatar.getAvatarDataUrl(jidMaybe) || undefined
+          userId !== null
+            ? Store.$avatar.getAvatarDataUrl(userId) || undefined
             : undefined
       });
     },
@@ -754,6 +742,15 @@ export default {
         //   secondly since they may overwrite per-message names, which is \
         //   desired.
         (participants || this.room?.participants)?.forEach(member => {
+          // Store name for member identifier
+          Store.$inbox.setName(
+            roomId,
+            member.id.toString(),
+            member.name,
+            InboxNameOrigin.Global
+          );
+
+          // Store name for member JID? (if known)
           if (member.jid) {
             Store.$inbox.setName(
               roomId,
@@ -1608,7 +1605,7 @@ export default {
 
         if (frameRuntime !== null) {
           // Re-identify party
-          this.identifyParty(frameRuntime, event.from, event.name);
+          this.identifyParty(frameRuntime, event.userId, event.name);
         }
       }
     },
@@ -1628,17 +1625,16 @@ export default {
       }
     },
 
-    onStoreAvatarChangedOrFlushed({ jid }: EventAvatarGeneric): void {
+    onStoreAvatarChangedOrFlushed({ userId }: EventAvatarGeneric): void {
       // Check if should re-identify (if runtime is available)
       const frameRuntime = this.frame();
 
       if (frameRuntime !== null) {
-        // Re-identify party w/ new avatar? (if JID found in names)
-        const jidString = jid.toString(),
-          name = this.names[jidString] || null;
+        // Re-identify party w/ new avatar? (if user identifier found in names)
+        const name = this.names[userId] || null;
 
         if (name !== null) {
-          this.identifyParty(frameRuntime, name.from, name.name);
+          this.identifyParty(frameRuntime, name.userId, name.name);
         }
       }
     },

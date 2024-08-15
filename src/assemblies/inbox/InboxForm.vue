@@ -178,6 +178,7 @@ layout-toolbar(
 import { PropType } from "vue";
 import {
   JID,
+  ParticipantId,
   Room,
   RoomType,
   SendMessageRequest,
@@ -325,6 +326,7 @@ export default {
               suggestions,
               appendRegister,
               participant.jid.toString(),
+              participant.id,
               participant.name,
               mentionQuery
             );
@@ -337,6 +339,7 @@ export default {
             suggestions,
             appendRegister,
             entry.jid,
+            null,
             entry.name,
             mentionQuery
           );
@@ -631,6 +634,7 @@ export default {
       suggestions: Array<FormFieldSuggestSuggestion>,
       appendRegister: Set<string>,
       jidString: string,
+      participantId: ParticipantId | null,
       name: string,
       query: string
     ): void {
@@ -658,7 +662,8 @@ export default {
               properties: {
                 jid: new JID(jidString),
                 size: "18px",
-                shadow: "none"
+                shadow: "none",
+                participantId
               }
             }
           });

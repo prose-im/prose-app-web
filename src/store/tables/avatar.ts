@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { JID, Avatar as CoreAvatar } from "@prose-im/prose-sdk-js";
+import { Avatar as CoreAvatar } from "@prose-im/prose-sdk-js";
 import { defineStore } from "pinia";
 import mitt from "mitt";
 
@@ -23,7 +23,7 @@ import Broker from "@/broker";
 type AvatarIdentifier = string;
 type AvatarDataURL = string;
 
-type EventAvatarGeneric = { jid: JID };
+type EventAvatarGeneric = { userId: string };
 
 /**************************************************************************
  * INTERFACES
@@ -34,7 +34,7 @@ interface Avatar {
 }
 
 interface AvatarEntries {
-  [jid: string]: AvatarEntry;
+  [userId: string]: AvatarEntry;
 }
 
 interface AvatarEntry {
@@ -53,7 +53,7 @@ const EventBus = mitt();
  * ************************************************************************* */
 
 const LOCAL_STATES = {
-  refreshing: {} as { [jid: string]: boolean }
+  refreshing: {} as { [userId: string]: boolean }
 };
 
 /**************************************************************************
@@ -75,37 +75,31 @@ const $avatar = defineStore("avatar", {
       return EventBus;
     },
 
-    assert(jid: JID): AvatarEntry {
-      const jidString = jid.toString();
-
-      // Assign new avatar entry for JID?
-      if (!(jidString in this.entries)) {
+    assert(userId: string): AvatarEntry {
+      // Assign new avatar entry?
+      if (!(userId in this.entries)) {
         this.$patch(state => {
           // Insert empty data
-          state.entries[jidString] = {};
+          state.entries[userId] = {};
         });
       }
 
-      return this.entries[jidString];
+      return this.entries[userId];
     },
 
-    getAvatarDataUrl(jid: JID): AvatarDataURL | void {
+    getAvatarDataUrl(userId: string): AvatarDataURL | void {
       // Notice: pseudo-getter, which needs to be defined as an action since \
       //   it might mutate the state (as we are asserting).
-      return this.assert(jid).url;
+      return this.assert(userId).url;
     },
 
-    async refresh(jid: JID, avatar: CoreAvatar): Promise<void> {
-      const entry = this.assert(jid),
-        jidString = jid.toString();
+    async refresh(userId: string, avatar: CoreAvatar): Promise<void> {
+      const entry = this.assert(userId);
 
       // Avatar changed, and not already refreshing?
-      if (
-        entry.id !== avatar.id &&
-        LOCAL_STATES.refreshing[jidString] !== true
-      ) {
+      if (entry.id !== avatar.id && LOCAL_STATES.refreshing[userId] !== true) {
         // Mark as refreshing
-        LOCAL_STATES.refreshing[jidString] = true;
+        LOCAL_STATES.refreshing[userId] = true;
 
         // Immediately set avatar identifier
         this.$patch(() => {
@@ -114,7 +108,7 @@ const $avatar = defineStore("avatar", {
 
         // Load avatar data
         const avatarResponse = await Broker.$profile.loadAvatarData(
-          jid,
+          userId,
           avatar
         );
 
@@ -126,7 +120,7 @@ const $avatar = defineStore("avatar", {
 
           // Emit IPC changed event
           EventBus.emit("avatar:changed", {
-            jid: jid
+            userId
           } as EventAvatarGeneric);
         } else {
           // Set avatar data
@@ -135,12 +129,12 @@ const $avatar = defineStore("avatar", {
           });
 
           EventBus.emit("avatar:flushed", {
-            jid: jid
+            userId
           } as EventAvatarGeneric);
         }
 
         // Remove refreshing marker
-        delete LOCAL_STATES.refreshing[jidString];
+        delete LOCAL_STATES.refreshing[userId];
       }
     }
   }

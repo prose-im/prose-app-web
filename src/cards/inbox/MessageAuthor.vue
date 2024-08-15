@@ -16,10 +16,11 @@ base-card(
   class="c-message-author"
 )
   .c-message-author__profile(
-    v-if="authorJID"
+    v-if="authorUserId"
   )
     base-avatar(
       :jid="authorJID"
+      :user-id="authorUserId"
       size="80px"
       shadow="none"
       class="c-message-author__avatar"
@@ -38,7 +39,7 @@ base-card(
         | {{ authorName}}
 
       .c-message-author__detail.c-message-author__detail--jid
-        | {{ authorJID }}
+        | {{ authorJID || authorUserId }}
 
       .c-message-author__detail.c-message-author__spacer(
         v-if="hasExtendedInformation"
@@ -138,14 +139,22 @@ export default {
         : undefined;
     },
 
-    authorJID(): JID | void {
-      const jidStringMaybe = this.message?.from || null;
+    authorUserId(): string | void {
+      return this.message?.from || undefined;
+    },
 
-      if (jidStringMaybe !== null) {
-        return new JID(jidStringMaybe);
+    authorJID(): JID | void {
+      let authorJID = undefined;
+
+      if (this.authorUserId !== undefined) {
+        try {
+          authorJID = new JID(this.authorUserId);
+        } catch (_) {
+          // Ignore error (not a proper JID)
+        }
       }
 
-      return undefined;
+      return authorJID;
     },
 
     authorParticipant(): ParticipantInfo | void {
@@ -161,10 +170,8 @@ export default {
     },
 
     authorName(): string | null {
-      if (this.authorJID !== undefined) {
-        const jidString = this.authorJID.toString();
-
-        return this.names[jidString]?.name || null;
+      if (this.authorUserId !== undefined) {
+        return this.names[this.authorUserId]?.name || null;
       }
 
       return null;

@@ -63,11 +63,11 @@ type InboxEntryMessages = {
 };
 
 type InboxEntryNames = {
-  byFrom: { [from: string]: InboxEntryName };
+  byUserId: { [userId: string]: InboxEntryName };
 };
 
 type InboxEntryName = {
-  from: string;
+  userId: string;
   name: string;
   origin: InboxNameOrigin;
 };
@@ -90,7 +90,7 @@ type EventMessageGeneric = {
 
 type EventNameGeneric = {
   roomId: RoomID;
-  from: string;
+  userId: string;
   name: string;
 };
 
@@ -309,7 +309,7 @@ const $inbox = defineStore("inbox", {
             },
 
             names: {
-              byFrom: {}
+              byUserId: {}
             },
 
             states: {
@@ -357,10 +357,10 @@ const $inbox = defineStore("inbox", {
       return this.assert(roomId).messages.byId[id] || undefined;
     },
 
-    getNames(roomId: RoomID): { [from: string]: InboxEntryName } {
+    getNames(roomId: RoomID): { [userId: string]: InboxEntryName } {
       // Notice: pseudo-getter, which needs to be defined as an action since \
       //   it might mutate the state (as we are asserting).
-      return this.assert(roomId).names.byFrom;
+      return this.assert(roomId).names.byUserId;
     },
 
     getStates(roomId: RoomID): InboxEntryStates {
@@ -649,16 +649,16 @@ const $inbox = defineStore("inbox", {
 
     setName(
       roomId: RoomID,
-      from: string,
+      userId: string,
       name: string,
       origin: InboxNameOrigin
     ): boolean {
-      const container = this.assert(roomId).names.byFrom;
+      const container = this.assert(roomId).names.byUserId;
 
       // Check if should change name
       let shouldChange = false;
 
-      const existingName = container[from];
+      const existingName = container[userId];
 
       if (!existingName) {
         shouldChange = true;
@@ -676,21 +676,21 @@ const $inbox = defineStore("inbox", {
       // Name should be changed?
       if (shouldChange === true) {
         // Initialize or update?
-        if (!container[from]) {
-          container[from] = {
-            from,
+        if (!container[userId]) {
+          container[userId] = {
+            userId,
             name,
             origin
           };
         } else {
-          container[from].name = name;
-          container[from].origin = origin;
+          container[userId].name = name;
+          container[userId].origin = origin;
         }
 
         // Emit IPC changed event
         EventBus.emit("name:changed", {
           roomId: roomId,
-          from,
+          userId,
           name
         } as EventNameGeneric);
       }

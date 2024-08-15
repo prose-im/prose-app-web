@@ -260,7 +260,7 @@ const $room = defineStore("room", {
         // Refresh avatar for participant
         // Notice: this is a cross-store operation, for convenience.
         if (participant.jid !== undefined && participant.avatar !== undefined) {
-          Store.$avatar.refresh(participant.jid, participant.avatar);
+          Store.$avatar.refresh(participant.jid.toString(), participant.avatar);
         }
       });
     },

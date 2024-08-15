@@ -205,7 +205,7 @@ const $roster = defineStore("roster", {
           // Refresh avatar for contact
           // Notice: this is a cross-store operation, for convenience.
           if (contact.avatar !== undefined) {
-            Store.$avatar.refresh(contact.jid, contact.avatar);
+            Store.$avatar.refresh(contact.jid.toString(), contact.avatar);
           }
         });
 
@@ -248,7 +248,10 @@ const $roster = defineStore("roster", {
           // Refresh avatar for item
           // Notice: this is a cross-store operation, for convenience.
           if (blockListItem.avatar !== undefined) {
-            Store.$avatar.refresh(blockListItem.jid, blockListItem.avatar);
+            Store.$avatar.refresh(
+              blockListItem.jid.toString(),
+              blockListItem.avatar
+            );
           }
         });
 
