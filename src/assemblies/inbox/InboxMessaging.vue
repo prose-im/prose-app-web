@@ -591,7 +591,7 @@ export default {
     setupContext(runtime: MessagingRuntime): void {
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
-      runtime.MessagingContext.setAccountJID(this.selfJID.toString());
+      runtime.MessagingContext.setAccountUserId(this.selfJID.toString());
     },
 
     setupTheme(runtime: MessagingRuntime): void {
