@@ -63,7 +63,7 @@
         "setFullscreen": true
       },
       "shell": {
-        "open": true
+        "open": "^((mailto:)|(tel:)|(https?://)).+"
       }
     },
     "security": {
