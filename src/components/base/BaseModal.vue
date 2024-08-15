@@ -121,7 +121,10 @@ $c: ".c-base-modal";
 $popup-min-width-medium: 350px;
 $popup-min-width-large: 440px;
 $popup-min-width-mid-large: 560px;
-$popup-max-width: ($popup-min-width-mid-large + 40px);
+
+$popup-max-width: $popup-min-width-mid-large;
+$popup-max-width-toleration-sides: 20px;
+
 $popup-padding-sides: 25px;
 
 $popup-width-full-margin-sides: 14px;
@@ -131,7 +134,6 @@ $popup-width-full-breakpoint: (
 
 #{$c} {
   #{$c}__popup {
-    max-width: $popup-max-width;
     padding-inline: $popup-padding-sides;
     padding-block: 19px;
   }
@@ -170,6 +172,10 @@ $popup-width-full-breakpoint: (
   &--medium {
     #{$c}__popup {
       min-width: $popup-min-width-medium;
+
+      max-width: (
+        $popup-min-width-medium + (2 * $popup-max-width-toleration-sides)
+      );
     }
 
     &#{$c}--constrained {
@@ -182,6 +188,10 @@ $popup-width-full-breakpoint: (
   &--large {
     #{$c}__popup {
       min-width: $popup-min-width-large;
+
+      max-width: (
+        $popup-min-width-large + (2 * $popup-max-width-toleration-sides)
+      );
     }
 
     &#{$c}--constrained {
@@ -194,6 +204,10 @@ $popup-width-full-breakpoint: (
   &--mid-large {
     #{$c}__popup {
       min-width: $popup-min-width-mid-large;
+
+      max-width: (
+        $popup-min-width-mid-large + (2 * $popup-max-width-toleration-sides)
+      );
     }
 
     &#{$c}--constrained {
