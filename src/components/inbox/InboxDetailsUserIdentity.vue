@@ -38,34 +38,26 @@
     li.c-inbox-details-user-identity__action(
       v-if="profilePhoneUrl"
     )
-      a(
-        :href="profilePhoneUrl"
-        rel="noopener noreferrer"
-        class="c-inbox-details-user-identity__action-link"
+      base-button(
+        @click="onActionClick(profilePhoneUrl)"
+        class="c-inbox-details-user-identity__action-button"
+        icon="phone.fill"
+        size="medium"
+        reverse
       )
-        base-button(
-          class="c-inbox-details-user-identity__action-button"
-          icon="phone.fill"
-          size="medium"
-          reverse
-        )
-          | Phone
+        | Phone
 
     li.c-inbox-details-user-identity__action(
       v-if="profileEmailUrl"
     )
-      a(
-        :href="profileEmailUrl"
-        rel="noopener noreferrer"
-        class="c-inbox-details-user-identity__action-link"
+      base-button(
+        @click="onActionClick(profileEmailUrl)"
+        class="c-inbox-details-user-identity__action-button"
+        icon="envelope.fill"
+        size="medium"
+        reverse
       )
-        base-button(
-          class="c-inbox-details-user-identity__action-button"
-          icon="envelope.fill"
-          size="medium"
-          reverse
-        )
-          | Email
+        | Email
 </template>
 
 <!-- **********************************************************************
@@ -80,6 +72,12 @@ import { JID, Room } from "@prose-im/prose-sdk-js";
 // PROJECT: STORES
 import Store from "@/store";
 import { ProfileEntryInformationContact } from "@/store/tables/profile";
+
+// PROJECT: UTILITIES
+import {
+  default as UtilitiesRuntime,
+  RuntimeUrlOpenTarget
+} from "@/utilities/runtime";
 
 export default {
   name: "InboxDetailsUserIdentity",
@@ -152,6 +150,21 @@ export default {
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
+    }
+  },
+
+  methods: {
+    // --> EVENT LISTENERS <--
+
+    async onActionClick(actionUrl: string): Promise<void> {
+      try {
+        await UtilitiesRuntime.requestOpenUrl(
+          actionUrl,
+          RuntimeUrlOpenTarget.Self
+        );
+      } catch (error) {
+        this.$log.error(`Failed opening action URL: ${actionUrl}`, error);
+      }
     }
   }
 };
