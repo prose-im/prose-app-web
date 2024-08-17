@@ -35,7 +35,7 @@
       description="It's pretty quiet around here, send your first message to get the conversation rolling."
     )
 
-  inbox-messaging-alert(
+  base-floater(
     v-else-if="unreadCount > 0 && !isLastUnreadMessageVisible"
     @click="onAlertUnreadClick"
     icon="arrow.down"
@@ -155,7 +155,6 @@ import {
   File as FilePreviewFile,
   FileType as FilePreviewFileType
 } from "@/components/inbox/InboxFilePreview.vue";
-import InboxMessagingAlert from "@/components/inbox/InboxMessagingAlert.vue";
 import ToolEmojiPicker from "@/components/tool/ToolEmojiPicker.vue";
 
 // PROJECT: CARDS
@@ -257,7 +256,6 @@ export default {
   name: "InboxMessaging",
 
   components: {
-    InboxMessagingAlert,
     MessageDetails,
     EditMessage,
     RemoveMessage,
@@ -2012,7 +2010,7 @@ export default {
 $c: ".a-inbox-messaging";
 
 // VARIABLES
-$heads-up-edge-offset: 12px;
+$alert-edge-offset: 12px;
 
 #{$c} {
   position: relative;
@@ -2032,12 +2030,8 @@ $heads-up-edge-offset: 12px;
     inset-inline-start: 50%;
     transform: translateX(-50%);
 
-    &--top {
-      inset-block-start: $heads-up-edge-offset;
-    }
-
     &--bottom {
-      inset-block-end: $heads-up-edge-offset;
+      inset-block-end: $alert-edge-offset;
     }
   }
 
