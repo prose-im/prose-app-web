@@ -13,7 +13,8 @@ div(
   :class=`[
     "a-app-sidebar",
     {
-      "a-app-sidebar--translucent": runtimeTranslucent
+      "a-app-sidebar--translucent": runtimeTranslucent,
+      "a-app-sidebar--has-alert-bottom": alertUnreadLabel
     }
   ]`
 )
@@ -44,6 +45,15 @@ div(
     avatar-presence-class="a-app-sidebar__context-presence"
   )
 
+  base-floater(
+    v-if="alertUnreadLabel"
+    @click="onAlertUnreadClick"
+    color="blue"
+    class="a-app-sidebar__alert a-app-sidebar__alert--bottom"
+    emphasis
+  )
+    | {{ alertUnreadLabel }}
+
   open-direct-message(
     v-if="modals.openDirectMessage.visible"
     @open="onModalOpenDirectMessageOpen"
@@ -72,7 +82,7 @@ div(
 
 <script lang="ts">
 // NPM
-import { JID } from "@prose-im/prose-sdk-js";
+import { JID, SidebarItem, RoomID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
@@ -165,6 +175,30 @@ export default {
   },
 
   computed: {
+    totalUnreadCount(): number {
+      // Acquire total unread count, except unread count from the \
+      //   currently-open room (if any)
+      return this.items.reduce((accumulator, item) => {
+        return (
+          accumulator + (this.roomId !== item.room.id ? item.unreadCount : 0)
+        );
+      }, 0);
+    },
+
+    alertUnreadLabel(): string | null {
+      if (this.totalUnreadCount > 0) {
+        return `${this.totalUnreadCount} unread ${
+          this.totalUnreadCount === 1 ? "message" : "messages"
+        }`;
+      }
+
+      return null;
+    },
+
+    roomId(): RoomID | null {
+      return (this.$route.params.roomId as RoomID) || null;
+    },
+
     account(): typeof Store.$account {
       return Store.$account;
     },
@@ -175,6 +209,10 @@ export default {
 
     selfJID(): JID {
       return this.account.getSelfJID();
+    },
+
+    items(): Array<SidebarItem> {
+      return Store.$room.getItems();
     }
   },
 
@@ -309,6 +347,24 @@ export default {
       }
     },
 
+    onAlertUnreadClick(): void {
+      // Attempt to find first unread item (if any)
+      let unreadItem = this.items.find(item => {
+        return item.unreadCount > 0 && item.room.id !== this.roomId;
+      });
+
+      // Any unread item found? Navigate to room
+      if (unreadItem !== undefined) {
+        this.$router.push({
+          name: "app.inbox",
+
+          params: {
+            roomId: unreadItem.room.id
+          }
+        });
+      }
+    },
+
     async onModalOpenDirectMessageOpen(
       jidStrings: Array<string>
     ): Promise<void> {
@@ -398,6 +454,7 @@ $sidebar-header-border-width: 1px;
 $sidebar-header-height: $size-layout-view-topbar-height;
 $sidebar-context-border-width: 1px;
 $sidebar-context-height: $size-inbox-form-height;
+$sidebar-alert-edge-offset: 18px;
 
 #{$c} {
   position: relative;
@@ -486,7 +543,7 @@ $sidebar-context-height: $size-inbox-form-height;
       rgb(var(--color-border-secondary));
     height: $sidebar-context-height;
     inset-block-end: 0;
-    z-index: 2;
+    z-index: 3;
 
     &:before {
       background-image: linear-gradient(
@@ -495,6 +552,20 @@ $sidebar-context-height: $size-inbox-form-height;
         rgba(var(--color-black), 0.01) 100%
       );
       inset-block-end: calc(100% + 1px);
+    }
+  }
+
+  #{$c}__alert {
+    box-sizing: border-box;
+    width: max-content;
+    max-width: calc(100% - (2 * #{$sidebar-items-padding-sides}));
+    position: absolute;
+    inset-inline-start: 50%;
+    z-index: 2;
+    transform: translateX(-50%);
+
+    &--bottom {
+      inset-block-end: ($sidebar-context-height + $sidebar-alert-edge-offset);
     }
   }
 
@@ -520,6 +591,12 @@ $sidebar-context-height: $size-inbox-form-height;
         background-color: rgba(var(--color-background-secondary), 0.8);
         backdrop-filter: blur(6px);
       }
+    }
+  }
+
+  &--has-alert-bottom {
+    #{$c}__main {
+      padding-block-end: ($sidebar-main-padding-block + 46px);
     }
   }
 }
