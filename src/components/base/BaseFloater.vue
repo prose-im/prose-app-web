@@ -12,7 +12,10 @@
 div(
   :class=`[
     "c-base-floater",
-    "c-base-floater--" + color
+    "c-base-floater--" + color,
+    {
+      "u-medium": emphasis
+    }
   ]`
 )
   slot
@@ -46,6 +49,11 @@ export default {
     icon: {
       type: String,
       default: null
+    },
+
+    emphasis: {
+      type: Boolean,
+      default: false
     }
   }
 };
