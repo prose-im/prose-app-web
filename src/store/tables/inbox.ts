@@ -436,7 +436,7 @@ const $inbox = defineStore("inbox", {
       message: CoreMessage,
       mode = InboxInsertMode.Insert
     ): boolean {
-      // Update sender names contained into message
+      // Update sender names (contained into message)
       this.setName(
         room.id,
         message.user.jid,
@@ -444,7 +444,13 @@ const $inbox = defineStore("inbox", {
         InboxNameOrigin.Message
       );
 
-      // Insert message
+      // Update sender avatar (contained into message)
+      // Notice: this is a cross-store operation, for convenience.
+      if (message.user.avatar !== undefined) {
+        Store.$avatar.refresh(message.user.jid.toString(), message.user.avatar);
+      }
+
+      // Insert actual message
       return this.insertMessage(room.id, fromCoreMessage(room, message), mode);
     },
 
