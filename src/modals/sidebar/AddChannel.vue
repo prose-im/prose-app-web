@@ -32,7 +32,7 @@ base-modal(
       :suggestions="channelSuggestions"
       placeholder="Enter channel name (or address)…"
       class="m-add-channel__form-field"
-      type="email"
+      type="text"
       name="address"
       size="large"
       align="left"
