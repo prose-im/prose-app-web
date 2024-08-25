@@ -21,6 +21,7 @@ base-card(
     base-avatar(
       :jid="authorJID"
       :user-id="authorUserId"
+      :name="authorName"
       size="80px"
       shadow="none"
       class="c-message-author__avatar"
