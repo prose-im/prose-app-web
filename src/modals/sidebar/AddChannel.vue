@@ -167,6 +167,10 @@ export default {
       return this.hasExistence === true && this.existence.exists;
     },
 
+    isExternal(): boolean {
+      return this.jid.includes("@");
+    },
+
     channelSuggestions(): Array<FormFieldSuggestSuggestion> {
       // Do not return any suggestion if private mode
       if (this.private === true) {
@@ -182,8 +186,8 @@ export default {
         return "Create Private Channel";
       }
 
-      // Join existing channel?
-      if (this.doesExist === true) {
+      // Join existing or external channel?
+      if (this.doesExist === true || this.isExternal === true) {
         return "Join Channel";
       }
 
@@ -246,7 +250,7 @@ export default {
 
       // Check if channel already exists? (only if not a JID-like value, and \
       //   if channel is public)
-      if (address && address.includes("@") === false && this.private !== true) {
+      if (address && this.isExternal === false && this.private !== true) {
         // Alias address to a channel name (since it is not JID-like)
         const name = address.toLowerCase();
 
