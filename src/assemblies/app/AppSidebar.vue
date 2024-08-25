@@ -48,7 +48,6 @@ div(
   base-floater(
     v-if="alertUnreadLabel"
     @click="onAlertUnreadClick"
-    color="blue"
     class="a-app-sidebar__alert a-app-sidebar__alert--bottom"
     emphasis
   )
@@ -454,7 +453,7 @@ $sidebar-header-border-width: 1px;
 $sidebar-header-height: $size-layout-view-topbar-height;
 $sidebar-context-border-width: 1px;
 $sidebar-context-height: $size-inbox-form-height;
-$sidebar-alert-edge-offset: 18px;
+$sidebar-alert-edge-offset: 16px;
 
 #{$c} {
   position: relative;
