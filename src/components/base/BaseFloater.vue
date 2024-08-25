@@ -42,7 +42,7 @@ export default {
       default: "white",
 
       validator(x: string) {
-        return ["white", "blue"].includes(x);
+        return ["white"].includes(x);
       }
     },
 
@@ -97,20 +97,6 @@ $c: ".c-base-floater";
 
     &:active {
       background-color: darken-var(var(--color-background-secondary), 0.75%);
-    }
-  }
-
-  &--blue {
-    background-color: darken-var(var(--color-base-blue-normal), 2%);
-    border: 1px solid darken-var(var(--color-base-blue-dark), 1%);
-    color: rgb(var(--color-text-reverse));
-
-    &:hover {
-      background-color: darken-var(var(--color-base-blue-normal), 5.5%);
-    }
-
-    &:active {
-      background-color: darken-var(var(--color-base-blue-normal), 7%);
     }
   }
 }
