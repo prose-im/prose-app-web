@@ -84,6 +84,16 @@ jobs:
             env/nginx/
             Dockerfile
 
+      - name: Acquire Docker image metadata
+        id: metadata
+        uses: docker/metadata-action@v4
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=${{ needs.build.outputs.tag }}
+            type=raw,value=latest
+
       - name: Log in to the container registry
         uses: docker/login-action@v3
         with:
@@ -103,8 +113,9 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
+          tags: ${{ steps.metadata.outputs.tags }}
+          labels: ${{ steps.metadata.outputs.labels }}
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ needs.build.outputs.tag }}
 
   deploy:
     needs: build
