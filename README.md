@@ -46,7 +46,7 @@ That's it, your Prose Web app should now be available at: [http://localhost:8080
 
 ### Manual build
 
-If you prefer to make your own build, you will first need to install all the build dependencies. Make sure your build environment has NodeJS version `12` and above.
+If you prefer to make your own build, first make sure your build environment has NodeJS version `12` and above.
 
 Then, execute those commands:
 
