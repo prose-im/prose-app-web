@@ -24,15 +24,38 @@ The app uses the core client library to connect to XMPP. It calls programmatic m
 
 This decoupling makes things extremely clean, and enables common code sharing between platforms (eg. Web, macOS, iOS, etc.).
 
-## Installation
+## Setup
 
-To install all the build dependencies, you first need to install NodeJS (version `12` and above).
+### Docker image
 
-Then, hit:
+A Docker image containing a production build of the Prose Web app is available on Docker Hub as [proseim/prose-app-web](https://hub.docker.com/r/proseim/prose-app-web/). It contains all required assets and listens as a HTTP server serving those assets with the proper rules.
 
+**First, pull the `proseim/prose-app-web` image:**
+
+```bash
+docker pull proseim/prose-app-web:latest
 ```
+
+**Then, run it:**
+
+```bash
+docker run --rm -p 8080:8080 proseim/prose-app-web
+```
+
+That's it, your Prose Web app should now be available at: [http://localhost:8080](http://localhost:8080/)
+
+### Manual build
+
+If you prefer to make your own build, you will first need to install all the build dependencies. Make sure your build environment has NodeJS version `12` and above.
+
+Then, execute those commands:
+
+```bash
 npm install
+npm run build
 ```
+
+The built files will be available in the `dist/` directory. The content of this directory need to be copied to your Web server and served from a root URL.
 
 ## Build
 
@@ -44,7 +67,7 @@ Building the Prose Web app is done per-target environment. Please check below fo
 
 To build Prose for a production environment (with all optimizations, meaning the build will be slower), hit:
 
-```
+```bash
 npm run build
 ```
 
@@ -58,7 +81,7 @@ _👉 Before you start, please make sure that a local `prose-pod-server` ([repos
 
 To build Prose for a development environment (that is, a live development server streaming changes live), hit:
 
-```
+```bash
 npm run dev
 ```
 
@@ -68,13 +91,13 @@ npm run dev
 
 If it is desired to build against a local `prose-core-client` ([repository](https://github.com/prose-im/prose-core-client)) containing a built `prose-sdk-js` package, you may pass a `PROSE_CORE_CLIENT_PATH` environment variable with the relative path to the core client library:
 
-```
+```bash
 PROSE_CORE_CLIENT_PATH="../prose-core-client" npm run dev
 ```
 
 On a second terminal, you may also watch for changes in the `prose-core-client` repository:
 
-```
+```bash
 find crates bindings/prose-sdk-js/src Cargo.toml | entr -r cargo xtask wasm-pack build --dev
 ```
 
@@ -84,7 +107,7 @@ Any change happening in the core will trigger a compilation run, which itself wi
 
 If you would like to source a local `prose-core-views` ([repository](https://github.com/prose-im/prose-core-views)) build, you may pass a `PROSE_CORE_VIEWS_PATH` environment variable with the relative path to the core views library:
 
-```
+```bash
 PROSE_CORE_VIEWS_PATH="../prose-core-views" npm run dev
 ```
 
@@ -98,7 +121,7 @@ Prose can be bundled into a native-like application using [Tauri](https://tauri.
 
 To bundle Prose as a final production application, run:
 
-```
+```bash
 npm run bundle build
 ```
 
@@ -106,7 +129,7 @@ npm run bundle build
 
 To bundle Prose as a development application (with Hot Module Replacement), run:
 
-```
+```bash
 npm run bundle dev
 ```
 
