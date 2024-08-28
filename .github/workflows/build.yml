@@ -31,6 +31,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: 0.5.3 Release
+          search_artifacts: true
 
       - name: Extract build artifacts
         run: tar -xzvf ./release-0.5.3.tar.gz
