@@ -16,15 +16,7 @@ _Tested at NodeJS version: `v20.10.0`_
 
 👉 Interested? **[Contact us there](https://prose.org/contact/).**
 
-## Architecture
-
-The Prose Web app consists mostly of VueJS views, bound to core libraries, namely the [client](https://github.com/prose-im/prose-core-client) and [views](https://github.com/prose-im/prose-core-views) cores, that are common to all platforms Prose runs on.
-
-The app uses the core client library to connect to XMPP. It calls programmatic methods in order to interact with its internal database and the network. It binds as well to an event bus to receive network events, or update events from the store. Messages are shown in their own view, which is provided by the core views library.
-
-This decoupling makes things extremely clean, and enables common code sharing between platforms (eg. Web, macOS, iOS, etc.).
-
-## Setup
+## Quick Setup
 
 ### Docker image
 
@@ -56,6 +48,14 @@ npm run build
 ```
 
 The built files will be available in the `dist/` directory. The content of this directory need to be copied to your Web server and served from a root URL.
+
+## Architecture
+
+The Prose Web app consists mostly of VueJS views, bound to core libraries, namely the [client](https://github.com/prose-im/prose-core-client) and [views](https://github.com/prose-im/prose-core-views) cores, that are common to all platforms Prose runs on.
+
+The app uses the core client library to connect to XMPP. It calls programmatic methods in order to interact with its internal database and the network. It binds as well to an event bus to receive network events, or update events from the store. Messages are shown in their own view, which is provided by the core views library.
+
+This decoupling makes things extremely clean, and enables common code sharing between platforms (eg. Web, macOS, iOS, etc.).
 
 ## Build
 
