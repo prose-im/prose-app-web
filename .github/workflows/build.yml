@@ -65,6 +65,46 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  ship:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      packages: write
+
+    env:
+      REGISTRY: ghcr.io
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            env/nginx/
+            Dockerfile
+
+      - name: Log in to the container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ needs.build.outputs.tag }} Release
+
+      - name: Extract build artifacts
+        run: tar -xzvf ./release-${{ needs.build.outputs.tag }}.tar.gz
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ needs.build.outputs.tag }}
+
   deploy:
     needs: build
     environment: app.prose.org
