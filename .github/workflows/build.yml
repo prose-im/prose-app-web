@@ -121,25 +121,3 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           push: true
-
-  deploy:
-    needs: build
-    environment: app.prose.org
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download build artifacts
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ needs.build.outputs.tag }} Release
-
-      - name: Extract build artifacts
-        run: tar -xzvf ./release-${{ needs.build.outputs.tag }}.tar.gz
-
-      - name: Deploy application
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
-          AWS_EC2_METADATA_DISABLED: true
-        run: |
-          aws s3 sync --delete --endpoint-url ${{ vars.S3_ENDPOINT }} dist/ s3://${{ vars.S3_BUCKET }}/${{ vars.S3_SITE_DOMAIN }}/
