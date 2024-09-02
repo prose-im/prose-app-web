@@ -121,3 +121,19 @@ jobs:
           tags: ${{ steps.metadata.outputs.tags }}
           labels: ${{ steps.metadata.outputs.labels }}
           push: true
+
+  deploy:
+    needs: [build, ship]
+    environment: app.prose.org
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install Nomad
+        uses: hashicorp/setup-nomad@v1.0.0
+
+      - name: Request deployment to Nomad
+        env:
+          NOMAD_ADDR: ${{ vars.NOMAD_ADDR }}
+          NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
+        run: |
+          nomad var put -force nomad/jobs/prose-app-web IMAGE_TAG=${{ needs.build.outputs.tag }}
