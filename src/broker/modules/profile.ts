@@ -78,10 +78,17 @@ class BrokerModuleProfile extends BrokerModule {
 
     logger.info(`Will load avatar for: '${userId}' (ID ${avatar.id})`);
 
-    const dataURL = await this._client.client?.loadAvatarDataURL(avatar);
+    try {
+      const dataURL = await this._client.client?.loadAvatarDataURL(avatar);
 
-    if (dataURL) {
-      return { dataURL };
+      if (dataURL) {
+        return { dataURL };
+      }
+    } catch (error) {
+      logger.warn(
+        `Failed to load avatar for ${userId} (ID ${avatar.id})`,
+        error
+      );
     }
 
     return undefined;
