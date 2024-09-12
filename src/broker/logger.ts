@@ -37,6 +37,10 @@ class BrokerLogger implements ProseLogger {
   logError(message: string): void {
     UtilitiesRuntime.requestLog(RuntimeLogLevel.Error, message);
   }
+
+  logPanic(message: string): void {
+    UtilitiesRuntime.requestLog(RuntimeLogLevel.Error, message);
+  }
 }
 
 /**************************************************************************
