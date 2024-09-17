@@ -47,9 +47,8 @@
     "lodash.camelcase": "4.3.0",
     "lodash.merge": "4.6.2",
     "lodash.upperfirst": "4.3.1",
-    "nanoid": "5.0.7",
     "mitt": "3.0.0",
-    "worker-timers": "7.1.7",
+    "nanoid": "5.0.7",
     "pinia": "2.1.4",
     "pinia-plugin-persistedstate": "3.1.0",
     "smile2emoji": "3.10.0",
@@ -63,7 +62,8 @@
     "vue3-click-away": "1.2.4",
     "vue3-emoji-picker": "1.1.8",
     "vue3-keypress": "4.0.1",
-    "webm-duration-fix": "1.0.4"
+    "webm-duration-fix": "1.0.4",
+    "worker-timers": "7.1.7"
   },
   "devDependencies": {
     "@tauri-apps/cli": "1.5.x",
