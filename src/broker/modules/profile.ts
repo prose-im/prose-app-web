@@ -86,7 +86,7 @@ class BrokerModuleProfile extends BrokerModule {
       }
     } catch (error) {
       logger.warn(
-        `Failed to load avatar for ${userId} (ID ${avatar.id})`,
+        `Failed to load avatar for: '${userId}' (ID ${avatar.id})`,
         error
       );
     }
