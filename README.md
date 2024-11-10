@@ -72,7 +72,7 @@ The production build expects the XMPP domain you will connect to through Prose t
 _👉 Before you start, please make sure that a local `prose-pod-server` ([repository](https://github.com/prose-im/prose-pod-server)) is running on your development machine. Configurations for your local server can be sourced from `prose-pod-system` ([repository](https://github.com/prose-im/prose-pod-system))._
 
 > [!TIP]
-> You may follow our instructions on [how to start a local Prose Pod](https://github.com/prose-im/prose-pod-system/blob/master/USAGE.md) setup. This will start a self-contained Prose Pod with all required components (the XMPP server and the Prose API).
+> You may follow our usage guide on [how to start a local Prose Pod](https://github.com/prose-im/prose-pod-system/blob/master/USAGE.md) setup. This will start a self-contained Prose Pod with all required components (the XMPP server and the Prose API).
 
 #### 📦 Develop with a release core (default)
 
