@@ -31,6 +31,7 @@ const TEXT_TO_MULTI_LINE_REGEX = /\n/g;
  * ************************************************************************* */
 
 const SPACE_CHARACTER = " ";
+const NEW_LINE_CHARACTER = "\n";
 
 /**************************************************************************
  * FILTERS
@@ -81,13 +82,20 @@ class FilterString {
       //   to replace every single word to an emoji, which could be heavy \
       //   on large texts. Rather, we attempt the replacement on the last \
       //   word that was typed only, and then merge it with the text if, \
-      //   and only if, an emoji replacement occurred.
-      const textNoEndSpace = text.trimEnd(),
-        lastWordSpace = textNoEndSpace.lastIndexOf(SPACE_CHARACTER);
+      //   and only if, an emoji replacement occurred. In order to find the \
+      //   last word from the text, we pick the last word separator character, \
+      //   which can be a space or a new line.
+      const textNoEndSpace = text.trimEnd();
 
-      // Acquire text from last word (this includes the trailing spaces)
+      const lastWordSeparator = Math.max(
+        textNoEndSpace.lastIndexOf(SPACE_CHARACTER),
+        textNoEndSpace.lastIndexOf(NEW_LINE_CHARACTER)
+      );
+
+      // Acquire text from last word (this includes the trailing word \
+      //   separators)
       const lastWordText = text.substring(
-        lastWordSpace + SPACE_CHARACTER.length
+        lastWordSeparator + SPACE_CHARACTER.length
       );
 
       // Attempt to replace smiles to emojis (in last typed word)
@@ -97,7 +105,7 @@ class FilterString {
       if (lastWordText !== replacedLastWordText) {
         // Merge replaced last word with original text
         const updatedText =
-          text.substring(0, lastWordSpace + SPACE_CHARACTER.length) +
+          text.substring(0, lastWordSeparator + SPACE_CHARACTER.length) +
           replacedLastWordText;
 
         return updatedText;
