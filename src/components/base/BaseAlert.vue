@@ -428,11 +428,23 @@ $alert-padding-sides: 12px;
   }
 
   &--with-sidebar {
-    padding-inline-start: ($alert-padding-sides + $size-sidebar-width);
+    padding-inline-start: ($alert-padding-sides + $size-sidebar-default-width);
   }
 
   &--with-inbox-details {
     padding-inline-end: ($alert-padding-sides + $size-inbox-details-width);
+  }
+}
+
+// --> MEDIA-QUERIES <--
+
+@media (max-width: $size-screen-reduced-width-breakpoint) {
+  #{$c} {
+    &--with-sidebar {
+      padding-inline-start: (
+        $alert-padding-sides + $size-sidebar-reduced-width
+      );
+    }
   }
 }
 </style>

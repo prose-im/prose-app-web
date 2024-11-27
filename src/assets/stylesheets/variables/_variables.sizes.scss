@@ -14,7 +14,8 @@ $size-common-gradient-height: 6px;
 
 // --> SIDEBAR <--
 
-$size-sidebar-width: 300px;
+$size-sidebar-default-width: 300px;
+$size-sidebar-reduced-width: 240px;
 $size-sidebar-popover-inset-inline-side: -3px;
 
 // --> INBOX <--
@@ -119,3 +120,7 @@ $size-form-select-ultra-large-line-height: $size-form-field-ultra-large-input-li
 
 $size-form-checkbox-small-size: 18px;
 $size-form-checkbox-medium-size: 24px;
+
+// --> SCREEN <--
+
+$size-screen-reduced-width-breakpoint: 1160px;

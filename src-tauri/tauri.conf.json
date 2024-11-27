@@ -18,7 +18,7 @@
         "title": "Prose",
         "width": 1360,
         "height": 940,
-        "minWidth": 1060,
+        "minWidth": 1080,
         "minHeight": 680,
         "resizable": true,
         "maximizable": true,

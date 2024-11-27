@@ -48,13 +48,23 @@ $c: ".v-app-base";
 
   #{$c}__sidebar {
     border-inline-end: 1px solid rgb(var(--color-border-secondary));
-    width: $size-sidebar-width;
+    width: $size-sidebar-default-width;
     flex: 0 0 auto;
   }
 
   #{$c}__content {
     background-color: rgb(var(--color-background-primary));
     flex: 1;
+  }
+}
+
+// --> MEDIA-QUERIES <--
+
+@media (max-width: $size-screen-reduced-width-breakpoint) {
+  #{$c} {
+    #{$c}__sidebar {
+      width: $size-sidebar-reduced-width;
+    }
   }
 }
 </style>
