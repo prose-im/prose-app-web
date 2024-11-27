@@ -69,11 +69,20 @@ layout-toolbar(
       inbox-form-formatting(
         v-if="isActionFormatFormattingVisible"
         @action="onFormattingAction"
+        @mode="onFormattingMode"
         :disabled="isFormDisabled"
+        :mode="formattingMode"
         class="a-inbox-form__compose-formatting"
       )
 
+      inbox-form-preview(
+        v-if="formattingMode === formattingModeOptions.Preview"
+        :message="message"
+        class="a-inbox-form__compose-preview"
+      )
+
       form.a-inbox-form__compose-form(
+        v-show="formattingMode === formattingModeOptions.Write"
         @submit.prevent="onSubmit"
       )
         form-field(
@@ -199,6 +208,7 @@ import { Suggestion as FormFieldSuggestSuggestion } from "@/components/form/Form
 import {
   default as InboxFormFormatting,
   FormattingAction,
+  FormattingMode,
   FormattingSyntax,
   TAG_TEXT as FORMATTING_TAG_TEXT,
   TAG_INDEX as FORMATTING_TAG_INDEX
@@ -209,6 +219,7 @@ import {
 } from "@/components/inbox/InboxFormRecorder.vue";
 import InboxFormAttach from "@/components/inbox/InboxFormAttach.vue";
 import InboxFormChatstate from "@/components/inbox/InboxFormChatstate.vue";
+import InboxFormPreview from "@/components/inbox/InboxFormPreview.vue";
 import InboxFormLoader from "@/components/inbox/InboxFormLoader.vue";
 
 // PROJECT: STORES
@@ -243,6 +254,7 @@ export default {
     InboxFormRecorder,
     InboxFormAttach,
     InboxFormChatstate,
+    InboxFormPreview,
     InboxFormLoader
   },
 
@@ -261,9 +273,13 @@ export default {
 
       actionIconSize: "18px",
 
+      formattingModeOptions: FormattingMode,
+
       // --> STATE <--
 
       message: "",
+
+      formattingMode: FormattingMode.Write,
 
       mentionQuery: null as string | null,
 
@@ -539,6 +555,12 @@ export default {
     focusMessageField(): void {
       // Focus on input
       (this.$refs.message as typeof FormField)?.focusFieldFromParent();
+
+      // Force formatting mode to write
+      // Notice: this is important, as the user might be previewing a message \
+      //   when something requests to focus on the message field. We therefore \
+      //   need to force the mode to write.
+      this.formattingMode = FormattingMode.Write;
     },
 
     clearMessageField(): void {
@@ -740,6 +762,10 @@ export default {
           selection.cursor
         );
       }
+    },
+
+    onFormattingMode(mode: FormattingMode): void {
+      this.formattingMode = mode;
     },
 
     onRecorderAudio(audio: RecorderAudio) {
@@ -1054,15 +1080,19 @@ $form-compose-send-button-size: (
       width: 100%;
     }
 
+    #{$c}__compose-field textarea,
+    #{$c}__compose-preview {
+      min-height: $form-compose-field-height-minimum;
+      max-height: 220px;
+      border-radius: ($size-form-field-border-radius + 2px);
+    }
+
     #{$c}__compose-field {
       textarea {
-        min-height: $form-compose-field-height-minimum;
-        max-height: 220px;
         padding-inline-end: (
           $form-compose-send-button-size + $form-compose-send-position-edges +
             2px
         );
-        border-radius: ($size-base-button-border-radius + 2px);
       }
     }
 

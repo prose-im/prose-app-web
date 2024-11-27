@@ -10,24 +10,59 @@
 
 <template lang="pug">
 .c-inbox-form-formatting
-  .c-inbox-form-formatting__group(
-    v-for="group in groups"
+  .c-inbox-form-formatting__groups
+    .c-inbox-form-formatting__group(
+      v-for="group in groups"
+    )
+      base-tooltip(
+        v-for="action in group"
+        :tooltip="action.title"
+      )
+        base-action(
+          @click="onActionClick(action.action, action.syntax)"
+          :icon="action.icon"
+          :disabled="disabled"
+          class="c-inbox-form-formatting__action"
+          context="transparent"
+          size="12px"
+          auto-width
+          auto-height
+          bordered
+        )
+
+  .c-inbox-form-formatting__modes(
+    v-if="modeToggle"
   )
     base-tooltip(
-      v-for="action in group"
-      :tooltip="action.title"
+      :tooltip="modeToggle.title"
+      align="right"
     )
       base-action(
-        @click="onActionClick(action.action, action.syntax)"
-        :icon="action.icon"
-        :disabled="disabled"
-        class="c-inbox-form-formatting__action"
+        @click="onModeToggleClick"
+        :icon="modeToggle.icon"
+        :class=`[
+          "c-inbox-form-formatting__mode",
+          "c-inbox-form-formatting__mode--" + mode
+        ]`
+        icon-class="c-inbox-form-formatting__mode-icon"
         context="transparent"
         size="12px"
         auto-width
         auto-height
         bordered
       )
+        template(
+          v-slot:inner
+        )
+          span(
+            :class=`[
+              "c-inbox-form-formatting__mode-label",
+              {
+                "u-medium": (mode === formattingModeOptions.Preview)
+              }
+            ]`
+          )
+            | {{ modeToggle.label }}
 </template>
 
 <!-- **********************************************************************
@@ -35,6 +70,9 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+
 // ENUMERATIONS
 export enum FormattingAction {
   // Bold formatting.
@@ -53,10 +91,23 @@ export enum FormattingAction {
   CodeBlock = "code-block"
 }
 
+export enum FormattingMode {
+  // Write mode.
+  Write = "write",
+  // Preview mode.
+  Preview = "preview"
+}
+
 // INTERFACES
 export interface FormattingSyntax {
   code: string;
   contiguous?: boolean;
+}
+
+interface FormattingModeToggle {
+  icon: string;
+  label: string;
+  title: string;
 }
 
 // CONSTANTS
@@ -67,17 +118,24 @@ export default {
   name: "InboxFormFormatting",
 
   props: {
+    mode: {
+      type: String as PropType<FormattingMode>,
+      default: FormattingMode.Write
+    },
+
     disabled: {
       type: Boolean,
       default: false
     }
   },
 
-  emits: ["action"],
+  emits: ["action", "mode"],
 
   data() {
     return {
       // --> DATA <--
+
+      formattingModeOptions: FormattingMode,
 
       groups: [
         [
@@ -162,11 +220,59 @@ export default {
     };
   },
 
+  computed: {
+    modeToggle(): FormattingModeToggle | null {
+      switch (this.mode) {
+        case FormattingMode.Write: {
+          return {
+            icon: "character.cursor.ibeam",
+            label: "Write",
+            title: "Go to preview"
+          };
+        }
+
+        case FormattingMode.Preview: {
+          return {
+            icon: "text.viewfinder",
+            label: "Preview",
+            title: "Return to editor"
+          };
+        }
+
+        default: {
+          return null;
+        }
+      }
+    }
+  },
+
   methods: {
     // --> EVENT LISTENERS <--
 
     onActionClick(action: FormattingAction, syntax: FormattingSyntax): void {
       this.$emit("action", action, syntax);
+    },
+
+    onModeToggleClick(): void {
+      // Find next mode (circle through modes)
+      let nextMode: FormattingMode;
+
+      switch (this.mode) {
+        case FormattingMode.Write: {
+          nextMode = FormattingMode.Preview;
+
+          break;
+        }
+
+        case FormattingMode.Preview: {
+          nextMode = FormattingMode.Write;
+
+          break;
+        }
+      }
+
+      // Update mode to next mode
+      this.$emit("mode", nextMode);
     }
   }
 };
@@ -183,15 +289,25 @@ $c: ".c-inbox-form-formatting";
 $group-spacing-edges: 12px;
 
 #{$c} {
-  display: flex;
-  align-items: center;
+  column-gap: 14px;
+
+  &,
+  #{$c}__groups,
+  #{$c}__modes {
+    display: flex;
+    align-items: center;
+  }
+
+  #{$c}__group,
+  #{$c}__modes {
+    column-gap: 5px;
+  }
 
   #{$c}__group {
     border-inline-end: 1px solid rgb(var(--color-border-tertiary));
     font-size: ($font-size-baseline - 1px);
     margin-inline-end: $group-spacing-edges;
     padding-inline-end: $group-spacing-edges;
-    column-gap: 5px;
     display: flex;
     align-items: center;
 
@@ -211,6 +327,32 @@ $group-spacing-edges: 12px;
 
       &:last-child {
         margin-inline-end: 0;
+      }
+    }
+  }
+
+  #{$c}__modes {
+    flex: 1;
+    justify-content: flex-end;
+
+    #{$c}__mode {
+      #{$c}__mode-icon {
+        margin-inline-end: 5px;
+      }
+
+      #{$c}__mode-label {
+        font-size: ($font-size-baseline - 2px);
+        line-height: 12px;
+      }
+
+      &--preview {
+        #{$c}__mode-icon {
+          fill: rgb(var(--color-base-blue-dark));
+        }
+
+        #{$c}__mode-label {
+          color: rgb(var(--color-base-blue-dark));
+        }
       }
     }
   }

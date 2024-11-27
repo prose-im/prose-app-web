@@ -14,6 +14,7 @@ import BrokerClient from "@/broker/client";
 import BrokerModuleAccount from "@/broker/modules/account";
 import BrokerModuleRoom from "@/broker/modules/room";
 import BrokerModulePresence from "@/broker/modules/presence";
+import BrokerModuleMessage from "@/broker/modules/message";
 import BrokerModuleChannel from "@/broker/modules/channel";
 import BrokerModuleProfile from "@/broker/modules/profile";
 import BrokerModuleRoster from "@/broker/modules/roster";
@@ -32,6 +33,7 @@ class Broker {
   readonly $roster: BrokerModuleRoster;
   readonly $status: BrokerModuleStatus;
   readonly $presence: BrokerModulePresence;
+  readonly $message: BrokerModuleMessage;
   readonly $room: BrokerModuleRoom;
   readonly $channel: BrokerModuleChannel;
   readonly $data: BrokerModuleData;
@@ -46,6 +48,7 @@ class Broker {
     this.$roster = new BrokerModuleRoster(this.client);
     this.$status = new BrokerModuleStatus(this.client);
     this.$presence = new BrokerModulePresence(this.client);
+    this.$message = new BrokerModuleMessage(this.client);
     this.$room = new BrokerModuleRoom(this.client);
     this.$channel = new BrokerModuleChannel(this.client);
     this.$data = new BrokerModuleData(this.client);
