@@ -553,14 +553,25 @@ export default {
     },
 
     focusMessageField(): void {
-      // Focus on input
-      (this.$refs.message as typeof FormField)?.focusFieldFromParent();
+      const messageComponent = this.$refs.message as typeof FormField;
 
-      // Force formatting mode to write
-      // Notice: this is important, as the user might be previewing a message \
-      //   when something requests to focus on the message field. We therefore \
-      //   need to force the mode to write.
-      this.formattingMode = FormattingMode.Write;
+      // Can focus immediately?
+      if (this.formattingMode === FormattingMode.Write) {
+        // Focus on input
+        messageComponent?.focusFieldFromParent();
+      } else {
+        // Force formatting mode back to write
+        // Notice: this is important, as the user might be previewing a \
+        //   message when something requests to focus on the message field. We \
+        //   therefore need to force the mode to write.
+        this.formattingMode = FormattingMode.Write;
+
+        // Focus on input
+        // Notice: once message field is visible in DOM.
+        this.$nextTick(() => {
+          messageComponent?.focusFieldFromParent();
+        });
+      }
     },
 
     clearMessageField(): void {
