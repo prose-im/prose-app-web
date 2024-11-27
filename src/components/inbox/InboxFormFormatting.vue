@@ -40,6 +40,7 @@
       base-action(
         @click="onModeToggleClick"
         :icon="modeToggle.icon"
+        :disabled="disabled"
         :class=`[
           "c-inbox-form-formatting__mode",
           "c-inbox-form-formatting__mode--" + mode
