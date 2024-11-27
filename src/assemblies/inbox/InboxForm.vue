@@ -727,6 +727,9 @@ export default {
       Store.$layout.setInboxFormFormatting(
         !this.isActionFormatFormattingVisible
       );
+
+      // Focus on input
+      this.focusMessageField();
     },
 
     onActionRecordClick(): void {
