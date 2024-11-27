@@ -624,8 +624,8 @@ $c: ".c-form-field";
       }
 
       &--textarea {
-        line-height: 16px;
-        padding-block: 7px;
+        line-height: $size-form-field-medium-textarea-line-height;
+        padding-block: $size-form-field-medium-textarea-padding-block;
       }
     }
   }
@@ -642,8 +642,8 @@ $c: ".c-form-field";
       }
 
       &--textarea {
-        line-height: 18px;
-        padding-block: 9px;
+        line-height: $size-form-field-mid-medium-textarea-line-height;
+        padding-block: $size-form-field-mid-medium-textarea-padding-block;
       }
     }
   }
@@ -660,8 +660,8 @@ $c: ".c-form-field";
       }
 
       &--textarea {
-        line-height: 20px;
-        padding-block: 11px;
+        line-height: $size-form-field-large-textarea-line-height;
+        padding-block: $size-form-field-large-textarea-padding-block;
       }
     }
   }
@@ -678,8 +678,8 @@ $c: ".c-form-field";
       }
 
       &--textarea {
-        line-height: 21px;
-        padding-block: 12px;
+        line-height: $size-form-field-mid-large-textarea-line-height;
+        padding-block: $size-form-field-mid-large-textarea-padding-block;
       }
     }
   }
@@ -696,8 +696,8 @@ $c: ".c-form-field";
       }
 
       &--textarea {
-        line-height: 22px;
-        padding-block: 13px;
+        line-height: $size-form-field-ultra-large-textarea-line-height;
+        padding-block: $size-form-field-ultra-large-textarea-padding-block;
       }
     }
   }
