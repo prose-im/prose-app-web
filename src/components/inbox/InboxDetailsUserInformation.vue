@@ -65,6 +65,9 @@ import { PropType } from "vue";
 import { JID, Availability } from "@prose-im/prose-sdk-js";
 import { getCountryCode, getCountryName } from "crisp-countries-languages";
 
+// PROJECT: COMPOSABLES
+import { useTimerMinutes } from "@/composables/timer";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -96,6 +99,18 @@ export default {
       type: String,
       default: null
     }
+  },
+
+  setup() {
+    // Export a local date that monotonically updates every minute
+    // Notice: this is required, since a Vue computed on a Date instance will \
+    //   only return once, and be treated as a static value afterwards. \
+    //   Meaning the date value would not progress as time passes.
+    const { date } = useTimerMinutes();
+
+    return {
+      localDateMinutes: date
+    };
   },
 
   data() {
@@ -149,11 +164,12 @@ export default {
           userCountry = this.profile.information.location.country || null;
 
         if (userTimezone !== null) {
-          const nowDate = new Date();
-
           entries.push({
             id: "timezone",
-            title: this.$filters.date.localTime(nowDate, userTimezone.offset),
+            title: this.$filters.date.localTime(
+              this.localDateMinutes,
+              userTimezone.offset
+            ),
             icon: "clock.fill"
           });
         }

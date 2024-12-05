@@ -95,6 +95,9 @@ import { Room, JID, ParticipantInfo } from "@prose-im/prose-sdk-js";
 import Store from "@/store";
 import { InboxEntryMessage } from "@/store/tables/inbox";
 
+// PROJECT: COMPOSABLES
+import { useTimerMinutes } from "@/composables/timer";
+
 export default {
   name: "MessageAuthor",
 
@@ -123,6 +126,14 @@ export default {
       type: Array<number>,
       default: null
     }
+  },
+
+  setup() {
+    const { date } = useTimerMinutes();
+
+    return {
+      localDateMinutes: date
+    };
   },
 
   computed: {
@@ -203,10 +214,8 @@ export default {
         this.profile?.information?.location.timezone || null;
 
       if (profileTimezone !== null) {
-        const nowDate = new Date();
-
         return `${this.$filters.date.localTime(
-          nowDate,
+          this.localDateMinutes,
           profileTimezone.offset
         )} local time`;
       }

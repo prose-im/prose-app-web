@@ -44,6 +44,7 @@ import { JID, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
+import { useTimerMinutes } from "@/composables/timer";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -88,6 +89,18 @@ export default {
       type: Object as PropType<Room>,
       default: undefined
     }
+  },
+
+  setup() {
+    // Export a local date that monotonically updates every minute
+    // Notice: this is required, since a Vue computed on a Date instance will \
+    //   only return once, and be treated as a static value afterwards. \
+    //   Meaning the date value would not progress as time passes.
+    const { date } = useTimerMinutes();
+
+    return {
+      localDateMinutes: date
+    };
   },
 
   data() {
@@ -156,7 +169,7 @@ export default {
         // Apply offset to date (in minutes)
         // Notice: create new date object, as not to mutate the provided one.
         const userDate = new Date(
-          this.localDate.getTime() +
+          this.localDateMinutes.getTime() +
             userTimezone.offset * MINUTE_TO_MILLISECONDS
         );
 
@@ -167,7 +180,7 @@ export default {
           userTimeHour < CONSIDER_TIME_ASLEEP_BEFORE
         ) {
           return this.$filters.date.localTime(
-            this.localDate,
+            this.localDateMinutes,
             userTimezone.offset
           );
         }
@@ -176,15 +189,10 @@ export default {
       return null;
     },
 
-    localDate(): Date {
-      // Return current local date (for local environment)
-      return new Date();
-    },
-
     localTimezoneOffset(): number {
       // Return current local TZO (for local environment)
       // Important: negate result since JS returns inverted TZOs.
-      return -this.localDate.getTimezoneOffset();
+      return -this.localDateMinutes.getTimezoneOffset();
     },
 
     session(): typeof Store.$session {
