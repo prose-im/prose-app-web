@@ -15,7 +15,6 @@ import { MessagingStoreMessageData } from "@prose-im/prose-core-views/types/mess
 import {
   Message as CoreMessage,
   ParticipantBasicInfo as CoreParticipantBasicInfo,
-  ArchiveID,
   Room,
   RoomID,
   RoomType
@@ -119,12 +118,12 @@ interface InboxEntry {
 
 interface InboxEntryMessage extends MessagingStoreMessageData {
   timestamp: number;
-  archiveId?: ArchiveID;
+  archiveId?: string;
 }
 
 interface InboxEntryStateArchives {
   acquiredAt?: number;
-  lastArchiveId?: ArchiveID;
+  lastArchiveId?: string;
 }
 
 interface InboxEntryStateLoading {
@@ -157,7 +156,6 @@ const fromCoreMessage = function (
   //   encrypted.
   return {
     id: message.id,
-    archiveId: message.archiveId,
     type: message.type,
     date: message.date.toISOString(),
     timestamp: message.date.getTime(),
@@ -639,7 +637,7 @@ const $inbox = defineStore("inbox", {
         // Update last archive identifier marker?
         // Notice: we need to move the last archive identifier to match the \
         //   now-first message in the container list.
-        const lastArchiveId = container.list[0]?.archiveId || null;
+        const lastArchiveId = container.list[0]?.id || null;
 
         if (lastArchiveId !== null) {
           this.setArchivesLastArchiveId(roomId, lastArchiveId);
@@ -792,7 +790,7 @@ const $inbox = defineStore("inbox", {
 
     setArchivesLastArchiveId(
       roomId: RoomID,
-      lastArchiveId: ArchiveID | void
+      lastArchiveId: string | void
     ): void {
       const stateArchives = this.assert(roomId).states.archives;
 
