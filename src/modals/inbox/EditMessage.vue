@@ -30,6 +30,10 @@ base-modal(
     name="message"
     size="large"
     align="left"
+    autocomplete="off"
+    autocorrect="off"
+    autocapitalize="none"
+    spellcheck="false"
     field-class="m-edit-message__field-textarea"
     submittable
     autofocus
