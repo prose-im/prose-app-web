@@ -102,6 +102,10 @@ layout-toolbar(
           size="large"
           align="left"
           direction="top"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="none"
+          spellcheck="false"
           ref="message"
           submittable
           autogrow
