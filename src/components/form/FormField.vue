@@ -39,6 +39,9 @@ div(
     :placeholder="placeholder"
     :disabled="disabled"
     :autocomplete="autocomplete"
+    :autocorrect="autocorrect"
+    :autocapitalize="autocapitalize"
+    :spellcheck="spellcheck"
     :class=`[
       "c-form-field__inner",
       "c-form-field__inner--textarea",
@@ -64,6 +67,9 @@ div(
     :placeholder="placeholder"
     :disabled="disabled"
     :autocomplete="autocomplete"
+    :autocorrect="autocorrect"
+    :autocapitalize="autocapitalize"
+    :spellcheck="spellcheck"
     :class=`[
       "c-form-field__inner",
       "c-form-field__inner--input",
@@ -184,7 +190,22 @@ export default {
       default: 4
     },
 
+    spellcheck: {
+      type: String,
+      default: null
+    },
+
     autocomplete: {
+      type: String,
+      default: null
+    },
+
+    autocorrect: {
+      type: String,
+      default: null
+    },
+
+    autocapitalize: {
       type: String,
       default: null
     },
