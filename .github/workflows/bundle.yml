@@ -50,7 +50,7 @@ jobs:
 
       - name: Cache build context (NodeJS)
         id: cache-node
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.npm
@@ -59,7 +59,7 @@ jobs:
 
       - name: Cache build context (Cargo)
         id: cache-cargo
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.cargo/bin
