@@ -11,6 +11,7 @@
 <template lang="pug">
 .v-app-base
   app-sidebar(
+    v-resizable.r="{ minWidth: 220, maxWidth: 300, handleWidth: 8 }"
     class="v-app-base__sidebar"
   )
 
@@ -50,6 +51,9 @@ $c: ".v-app-base";
     border-inline-end: 1px solid rgb(var(--color-border-secondary));
     width: $size-sidebar-default-width;
     flex: 0 0 auto;
+
+    // Hack: prevent v-resizable directive from applying its absolute position
+    position: relative !important;
   }
 
   #{$c}__content {

@@ -12,6 +12,7 @@
 import { App } from "vue";
 import VueClickAway from "vue3-click-away";
 import VueHotkey from "v-hotkey3";
+import VResizable from "v-resizable";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -28,6 +29,7 @@ class BootstrapPlugins {
     // Vue directives
     app.use(VueClickAway);
     app.use(VueHotkey);
+    app.use(VResizable);
   }
 }
 

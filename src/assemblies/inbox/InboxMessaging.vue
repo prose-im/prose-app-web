@@ -670,6 +670,9 @@ export default {
       runtime.addEventListener("keyup", this.onFrameInnerKey);
       runtime.addEventListener("keydown", this.onFrameInnerKey);
       runtime.addEventListener("keypress", this.onFrameInnerKey);
+      runtime.addEventListener("mouseup", this.onFrameInnerMouse);
+      runtime.addEventListener("mousedown", this.onFrameInnerMouse);
+      runtime.addEventListener("mousemove", this.onFrameInnerMouse);
       runtime.addEventListener("dragover", this.onFrameInnerDragOver);
     },
 
@@ -1240,6 +1243,20 @@ export default {
 
       // Re-dispatch the event on the wrapper component
       this.$el.dispatchEvent(new KeyboardEvent(event.type, event));
+    },
+
+    onFrameInnerMouse(event: MouseEvent): void {
+      // Prevent frame to capture mouse events
+      // Notice: frames capture all mouse events when the mouse goes over it,
+      //   meaning the parent document will not receive any such event. \
+      //   In our case, we do not want the frame to capture mouse events at \
+      //   all, therefore we need to intercept there at the frame document \
+      //   level, and then re-dispatch the same mouse event to the parent \
+      //   document.
+      event.stopPropagation();
+
+      // Re-dispatch the event on the wrapper component
+      this.$el.dispatchEvent(new MouseEvent(event.type, event));
     },
 
     onFrameInnerDragOver(event: DragEvent): void {
