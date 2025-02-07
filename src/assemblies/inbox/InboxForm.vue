@@ -471,7 +471,11 @@ export default {
       if (composing !== this.isUserComposing) {
         this.isUserComposing = composing;
 
-        await (room || this.room)?.setUserIsComposing(composing);
+        // Propagate actual chat state? (if user opted to announce if they are \
+        //   composing or not)
+        if (this.settings.messages.chats.chatstates !== false) {
+          await (room || this.room)?.setUserIsComposing(composing);
+        }
       }
     },
 

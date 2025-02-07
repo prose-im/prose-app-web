@@ -48,7 +48,6 @@ export default {
 
           fields: [
             {
-              // TODO: implement functionality using this option
               id: "chatstates",
               type: FormFieldsetFieldType.Checkbox,
               label: "Composing:",
