@@ -96,6 +96,7 @@ layout-toolbar(
           :disabled="isFormDisabled"
           :rows="1"
           :placeholder="fieldComposePlaceholder"
+          :spellcheck="hasSpellCheck"
           class="a-inbox-form__compose-field"
           type="textarea"
           name="message"
@@ -105,7 +106,6 @@ layout-toolbar(
           autocomplete="off"
           autocorrect="off"
           autocapitalize="none"
-          spellcheck="false"
           ref="message"
           submittable
           autogrow
@@ -375,6 +375,10 @@ export default {
 
     isFormDisabled(): boolean {
       return !this.session.connected ? true : false;
+    },
+
+    hasSpellCheck(): boolean {
+      return this.settings.messages.chats.spellcheck;
     },
 
     layout(): typeof Store.$layout {

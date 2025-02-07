@@ -41,7 +41,7 @@ div(
     :autocomplete="autocomplete"
     :autocorrect="autocorrect"
     :autocapitalize="autocapitalize"
-    :spellcheck="spellcheck"
+    :spellcheck="spellcheckString"
     :class=`[
       "c-form-field__inner",
       "c-form-field__inner--textarea",
@@ -69,7 +69,7 @@ div(
     :autocomplete="autocomplete"
     :autocorrect="autocorrect"
     :autocapitalize="autocapitalize"
-    :spellcheck="spellcheck"
+    :spellcheck="spellcheckString"
     :class=`[
       "c-form-field__inner",
       "c-form-field__inner--input",
@@ -191,8 +191,8 @@ export default {
     },
 
     spellcheck: {
-      type: String,
-      default: null
+      type: Boolean,
+      default: false
     },
 
     autocomplete: {
@@ -270,6 +270,10 @@ export default {
   computed: {
     hasSuggestions(): boolean {
       return this.suggestions.length > 0 && this.areSuggestionsHidden !== true;
+    },
+
+    spellcheckString(): string {
+      return this.spellcheck === true ? "true" : "false";
     }
   },
 

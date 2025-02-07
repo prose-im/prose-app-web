@@ -63,7 +63,6 @@ export default {
             },
 
             {
-              // TODO: implement functionality using this option
               id: "spellcheck",
               type: FormFieldsetFieldType.Checkbox,
 

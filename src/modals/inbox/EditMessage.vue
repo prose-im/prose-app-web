@@ -24,6 +24,7 @@ base-modal(
     @keystroke="onFieldKeyStroke"
     @submit="onConfirm"
     :rows="8"
+    :spellcheck="hasSpellCheck"
     placeholder="Enter edited message…"
     class="m-edit-message__field"
     type="textarea"
@@ -33,7 +34,6 @@ base-modal(
     autocomplete="off"
     autocorrect="off"
     autocapitalize="none"
-    spellcheck="false"
     field-class="m-edit-message__field-textarea"
     submittable
     autofocus
@@ -46,6 +46,9 @@ base-modal(
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: STORES
+import Store from "@/store";
+
 export default {
   name: "EditMessage",
 
@@ -69,6 +72,16 @@ export default {
 
       editedText: ""
     };
+  },
+
+  computed: {
+    hasSpellCheck(): boolean {
+      return this.settings.messages.chats.spellcheck;
+    },
+
+    settings(): typeof Store.$settings {
+      return Store.$settings;
+    }
   },
 
   created() {
