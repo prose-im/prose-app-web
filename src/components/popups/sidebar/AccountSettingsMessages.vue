@@ -82,7 +82,6 @@ export default {
             },
 
             {
-              // TODO: implement functionality using this option
               id: "clock-24h",
               type: FormFieldsetFieldType.Checkbox,
               label: "Messages:",
@@ -90,7 +89,7 @@ export default {
               data: {
                 value: {
                   inner: Store.$settings.messages.chats.clock24h,
-                  change: Store.$settings.setMessagesChatsClock24h
+                  change: Store.$settings.setMessagesChatsClock24H
                 },
 
                 label: "Use a 24-hour clock"
@@ -125,7 +124,6 @@ export default {
             },
 
             {
-              // TODO: implement functionality using this option
               id: "image-previews-enabled",
               type: FormFieldsetFieldType.Checkbox,
               label: "Thumbnails:",
@@ -141,7 +139,6 @@ export default {
             },
 
             {
-              // TODO: implement functionality using this option
               id: "image-previews-size",
               type: FormFieldsetFieldType.Select,
 

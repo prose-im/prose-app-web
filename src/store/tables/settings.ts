@@ -222,8 +222,10 @@ const $settings = defineStore("settings", {
       this.setGeneric(this.messages.chats, "spellcheck", value);
     },
 
-    setMessagesChatsClock24h(value: boolean): void {
-      this.setGeneric(this.messages.chats, "clock24h", value);
+    setMessagesChatsClock24H(value: boolean): void {
+      this.setGeneric(this.messages.chats, "clock24h", value, {
+        event: "messages:chats:clock24h"
+      });
     },
 
     setMessagesFilesUploadsOptimize(value: boolean): void {
@@ -231,11 +233,15 @@ const $settings = defineStore("settings", {
     },
 
     setMessagesFilesImagePreviewsEnabled(value: boolean): void {
-      this.setGeneric(this.messages.files.imagePreviews, "enabled", value);
+      this.setGeneric(this.messages.files.imagePreviews, "enabled", value, {
+        event: "messages:files:image:previews:enabled"
+      });
     },
 
     setMessagesFilesImagePreviewsSize(value: string): void {
-      this.setGeneric(this.messages.files.imagePreviews, "size", value);
+      this.setGeneric(this.messages.files.imagePreviews, "size", value, {
+        event: "messages:files:image:previews:size"
+      });
     },
 
     setCallsCameraInputSource(value: string): void {

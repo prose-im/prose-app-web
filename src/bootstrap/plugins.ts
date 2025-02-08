@@ -12,6 +12,7 @@
 import { App } from "vue";
 import VueClickAway from "vue3-click-away";
 import VueHotkey from "v-hotkey3";
+// @ts-expect-error v-resizable does not have exported types
 import VResizable from "v-resizable";
 
 // PROJECT: UTILITIES

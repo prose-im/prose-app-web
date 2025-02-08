@@ -127,6 +127,9 @@ import {
   Modifier as MessagingModifier,
   Platform as MessagingPlatform,
   Messaging as MessagingRuntime,
+  BehaviorGroup as MessagingBehaviorGroup,
+  BehaviorDate as MessagingBehaviorDate,
+  BehaviorThumbnail as MessagingBehaviorThumbnail,
   ViewVisibility as MessagingViewVisibility,
   SeekDirection as MessagingSeekDirection,
   Theme as MessagingTheme
@@ -277,6 +280,21 @@ export default {
       // --> DATA <--
 
       storeEvents: {
+        // [$settings]
+        "messages:chats:clock24h": [
+          Store.$settings,
+          this.onStoreSettingsMessagesAny
+        ],
+        "messages:files:image:previews:enabled": [
+          Store.$settings,
+          this.onStoreSettingsMessagesAny
+        ],
+        "messages:files:image:previews:size": [
+          Store.$settings,
+          this.onStoreSettingsMessagesAny
+        ],
+
+        // [$inbox]
         "messages:reload": [Store.$inbox, this.onStoreMessagesReload],
         "message:restored": [Store.$inbox, this.onStoreMessageRestored],
         "message:inserted": [Store.$inbox, this.onStoreMessageInserted],
@@ -285,6 +303,8 @@ export default {
         "message:trimmed": [Store.$inbox, this.onStoreMessageTrimmed],
         "name:changed": [Store.$inbox, this.onStoreNameChanged],
         "state:loading:marked": [Store.$inbox, this.onStoreStateLoadingMarked],
+
+        // [$avatar]
         "avatar:changed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed],
         "avatar:flushed": [Store.$avatar, this.onStoreAvatarChangedOrFlushed]
       },
@@ -607,6 +627,26 @@ export default {
           break;
         }
       }
+    },
+
+    setupBehavior(runtime: MessagingRuntime): void {
+      let options = this.settings.messages;
+
+      runtime.MessagingContext.setBehavior(
+        MessagingBehaviorGroup.Dates,
+        MessagingBehaviorDate.Clock24H,
+        options.chats.clock24h
+      );
+      runtime.MessagingContext.setBehavior(
+        MessagingBehaviorGroup.Thumbnails,
+        MessagingBehaviorThumbnail.Enable,
+        options.files.imagePreviews.enabled
+      );
+      runtime.MessagingContext.setBehavior(
+        MessagingBehaviorGroup.Thumbnails,
+        MessagingBehaviorThumbnail.Small,
+        options.files.imagePreviews.size === "small"
+      );
     },
 
     setupEvents(runtime: MessagingRuntime): void {
@@ -1215,6 +1255,7 @@ export default {
         this.setupDocument(frameRuntime);
         this.setupContext(frameRuntime);
         this.setupTheme(frameRuntime);
+        this.setupBehavior(frameRuntime);
         this.setupEvents(frameRuntime);
         this.setupStore(frameRuntime);
         this.setupListeners(frameRuntime);
@@ -1551,6 +1592,15 @@ export default {
       if (frameRuntime !== null) {
         // Re-setup theme
         this.setupTheme(frameRuntime);
+      }
+    },
+
+    onStoreSettingsMessagesAny(): void {
+      const frameRuntime = this.frame();
+
+      if (frameRuntime !== null) {
+        // Re-setup behavior
+        this.setupBehavior(frameRuntime);
       }
     },
 
