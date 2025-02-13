@@ -69,15 +69,6 @@ const $settings = defineStore("settings", {
             sound: true,
             banner: true
           }
-        },
-
-        devices: {
-          mobile: {
-            alerts: {
-              enabled: true,
-              after: "5m"
-            }
-          }
         }
       },
 
@@ -200,18 +191,6 @@ const $settings = defineStore("settings", {
 
     setNotificationsActionNotifyBanner(value: boolean): void {
       this.setGeneric(this.notifications.action.notify, "banner", value);
-    },
-
-    setNotificationsDevicesMobileAlertsEnabled(value: boolean): void {
-      this.setGeneric(
-        this.notifications.devices.mobile.alerts,
-        "enabled",
-        value
-      );
-    },
-
-    setNotificationsDevicesMobileAlertsAfter(value: string): void {
-      this.setGeneric(this.notifications.devices.mobile.alerts, "after", value);
     },
 
     setMessagesChatsChatstates(value: boolean): void {
