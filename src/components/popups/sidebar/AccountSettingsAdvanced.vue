@@ -57,7 +57,6 @@ export default {
 
           fields: [
             {
-              // TODO: implement functionality using this option
               id: "channel",
               type: FormFieldsetFieldType.Select,
               label: "Channel:",
@@ -74,11 +73,6 @@ export default {
                   {
                     value: "stable",
                     label: "Stable (recommended)"
-                  },
-
-                  {
-                    value: "beta",
-                    label: "Beta (more updates, unstable)"
                   }
                 ],
 
@@ -94,7 +88,7 @@ export default {
 
           fields: [
             {
-              // TODO: implement functionality using this option
+              // TODO: this option is unused for now, but will be at some point
               id: "report-analytics",
               type: FormFieldsetFieldType.Checkbox,
               label: "Reports:",
@@ -110,7 +104,7 @@ export default {
             },
 
             {
-              // TODO: implement functionality using this option
+              // TODO: this option is unused for now, but will be at some point
               id: "report-crashes",
               type: FormFieldsetFieldType.Checkbox,
 
