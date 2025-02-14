@@ -37,10 +37,6 @@ layout-toolbar(
           :disabled="action.disabled"
           context="grey"
         )
-
-      base-separator
-
-    topbar-actions-search
 </template>
 
 <!-- **********************************************************************
@@ -53,7 +49,6 @@ import { PropType } from "vue";
 
 // PROJECT: COMPONENTS
 import TopbarActionsHistory from "@/components/topbar/TopbarActionsHistory.vue";
-import TopbarActionsSearch from "@/components/topbar/TopbarActionsSearch.vue";
 
 // PROJECT: COMPOSABLES
 import { useInterfaceMounted } from "@/composables/interface";
@@ -79,7 +74,7 @@ export interface Action {
 export default {
   name: "SpotlightTopbar",
 
-  components: { TopbarActionsHistory, TopbarActionsSearch },
+  components: { TopbarActionsHistory },
 
   props: {
     actions: {

@@ -100,10 +100,6 @@ layout-toolbar(
           size="18px"
         )
 
-    base-separator
-
-    topbar-actions-search
-
   encryption-settings(
     v-if="popups.encryptionSettings.visible"
     @close="onPopupEncryptionSettingsClose"
@@ -126,7 +122,6 @@ import Store from "@/store";
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import TopbarActionsHistory from "@/components/topbar/TopbarActionsHistory.vue";
-import TopbarActionsSearch from "@/components/topbar/TopbarActionsSearch.vue";
 
 // PROJECT: POPUPS
 import EncryptionSettings from "@/popups/inbox/EncryptionSettings.vue";
@@ -146,7 +141,7 @@ const JID_TRUNCATE_LENGTH = 15;
 export default {
   name: "InboxTopbar",
 
-  components: { TopbarActionsHistory, TopbarActionsSearch, EncryptionSettings },
+  components: { TopbarActionsHistory, EncryptionSettings },
 
   props: {
     jid: {
