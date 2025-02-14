@@ -23,6 +23,7 @@ div(
     @change="onInputChange"
     :name="name"
     :checked="modelValue"
+    :disabled="!canToggle"
     class="c-form-checkbox__input"
     type="checkbox"
   )
@@ -68,6 +69,11 @@ export default {
       default: null
     },
 
+    locked: {
+      type: Boolean,
+      default: false
+    },
+
     disabled: {
       type: Boolean,
       default: false
@@ -82,6 +88,10 @@ export default {
   emits: ["update:modelValue", "change"],
 
   computed: {
+    canToggle(): boolean {
+      return this.disabled === true || this.locked === true ? false : true;
+    },
+
     hasLabelEmphasis(): boolean {
       return this.size === "medium" ? true : false;
     }
@@ -105,8 +115,10 @@ export default {
     },
 
     onLabelClick(): void {
-      // Toggle model value
-      this.updateValue(!this.modelValue);
+      // Toggle model value? (if can toggle)
+      if (this.canToggle === true) {
+        this.updateValue(!this.modelValue);
+      }
     }
   }
 };
