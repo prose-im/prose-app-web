@@ -423,20 +423,14 @@ export default {
         {
           type: PopoverItemType.Button,
           label: "Switch account",
-          disabled: true,
 
           children: [
             {
               type: PopoverItemType.Button,
-              label: `${this.teamName} – ${this.teamDomain}`
+              label: this.teamName,
+              click: this.onActionsPopoverSwitchTeamClick
             }
           ]
-        },
-
-        {
-          type: PopoverItemType.Button,
-          label: "Connect account",
-          disabled: true
         }
       ];
     },
@@ -673,6 +667,11 @@ export default {
 
       // Show sign out confirm modal
       this.modals.signOut.visible = true;
+    },
+
+    onActionsPopoverSwitchTeamClick(): void {
+      // Hide actions popover
+      this.isActionsPopoverVisible = false;
     },
 
     onCurrentStatusDefineClick(): void {
