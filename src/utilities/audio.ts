@@ -26,9 +26,7 @@ export enum AudioSound {
   // Alert action success.
   AlertActionSuccess = "alerts/action-success",
   // Alert message receive.
-  AlertMessageReceive = "alerts/message-receive",
-  // Call ringtone pending.
-  CallRingtonePending = "calls/ringtone-pending"
+  AlertMessageReceive = "alerts/message-receive"
 }
 
 /**************************************************************************

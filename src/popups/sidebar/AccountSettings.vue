@@ -58,7 +58,6 @@ import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
 import AccountSettingsGeneral from "@/components/popups/sidebar/AccountSettingsGeneral.vue";
 import AccountSettingsNotifications from "@/components/popups/sidebar/AccountSettingsNotifications.vue";
 import AccountSettingsMessages from "@/components/popups/sidebar/AccountSettingsMessages.vue";
-import AccountSettingsCalls from "@/components/popups/sidebar/AccountSettingsCalls.vue";
 import AccountSettingsAdvanced from "@/components/popups/sidebar/AccountSettingsAdvanced.vue";
 
 // CONSTANTS
@@ -97,12 +96,6 @@ export default {
         },
 
         {
-          id: "calls",
-          title: "Calls",
-          icon: "phone.arrow.up.right"
-        },
-
-        {
           id: "advanced",
           title: "Advanced",
           icon: "dial.low"
@@ -120,10 +113,6 @@ export default {
 
         messages: {
           component: shallowRef(AccountSettingsMessages)
-        },
-
-        calls: {
-          component: shallowRef(AccountSettingsCalls)
         },
 
         advanced: {

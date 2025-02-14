@@ -67,20 +67,6 @@ export default {
 
                 disabled: true
               } as FormFieldsetFieldDataToggle
-            },
-
-            {
-              id: "calls",
-              type: FormFieldsetFieldType.Toggle,
-              label: "Video calls:",
-
-              data: {
-                value: {
-                  inner: true // TODO: save somewhere
-                },
-
-                disabled: true
-              } as FormFieldsetFieldDataToggle
             }
           ],
 

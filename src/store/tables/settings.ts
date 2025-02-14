@@ -91,20 +91,6 @@ const $settings = defineStore("settings", {
         }
       },
 
-      calls: {
-        camera: {
-          inputSource: "system"
-        },
-
-        microphone: {
-          inputSource: "system"
-        },
-
-        sound: {
-          outputSource: "system"
-        }
-      },
-
       updates: {
         channel: "stable"
       },
@@ -221,18 +207,6 @@ const $settings = defineStore("settings", {
       this.setGeneric(this.messages.files.imagePreviews, "size", value, {
         event: "messages:files:image:previews:size"
       });
-    },
-
-    setCallsCameraInputSource(value: string): void {
-      this.setGeneric(this.calls.camera, "inputSource", value);
-    },
-
-    setCallsMicrophoneInputSource(value: string): void {
-      this.setGeneric(this.calls.microphone, "inputSource", value);
-    },
-
-    setCallSoundOutputSource(value: string): void {
-      this.setGeneric(this.calls.sound, "outputSource", value);
     },
 
     setUpdatesChannel(value: string): void {
