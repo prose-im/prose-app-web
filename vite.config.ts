@@ -33,6 +33,7 @@ import productionConfig from "./config/production";
 interface Configuration {
   environment: string;
   platform: string;
+  url: { [_: string]: string };
 
   context: {
     basePath: string;
@@ -90,6 +91,7 @@ const CONFIG: Configuration = (function () {
   const config = {
     environment: "",
     platform: "",
+    url: {},
 
     context: {
       basePath: ""

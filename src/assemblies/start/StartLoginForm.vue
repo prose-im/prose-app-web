@@ -56,13 +56,15 @@
           v-model="form.remember"
           :loading="loading"
           name="remember"
-          disabled
+          locked
         )
           | Remember me
 
       .a-start-login-form__options-right
-        a.a-start-login-form__options-recover
-          | Forgot password?
+        a.a-start-login-form__options-help(
+          @click="onOptionHelpClick"
+        )
+          | Get Help
 </template>
 
 <!-- **********************************************************************
@@ -70,8 +72,14 @@
      ********************************************************************** -->
 
 <script lang="ts">
+// PROJECT: COMMONS
+import CONFIG from "@/commons/config";
+
 // PROJECT: STORES
 import Store from "@/store";
+
+// PROJECT: UTILITIES
+import UtilitiesRuntime from "@/utilities/runtime";
 
 // INTERFACES
 export interface StateForm {
@@ -111,6 +119,16 @@ export default {
 
   methods: {
     // --> EVENT LISTENERS <--
+
+    async onOptionHelpClick(): Promise<void> {
+      const helpUrl = CONFIG.url.prose_help;
+
+      try {
+        await UtilitiesRuntime.requestOpenUrl(helpUrl);
+      } catch (error) {
+        this.$log.error(`Failed opening help URL: ${helpUrl}`, error);
+      }
+    },
 
     onSubmit(): void {
       this.$emit("submit", {
@@ -170,11 +188,9 @@ $c: ".a-start-login-form";
         flex: 0 0 auto;
       }
 
-      #{$c}__options-recover {
+      #{$c}__options-help {
         color: rgb(var(--color-text-primary));
         font-size: ($font-size-baseline + 1px);
-        opacity: 0.3;
-        pointer-events: none;
 
         &:hover {
           text-decoration: underline;

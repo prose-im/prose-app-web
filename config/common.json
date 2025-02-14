@@ -1,6 +1,10 @@
 {
   "platform": "web",
 
+  "url": {
+    "prose_help": "https://help.prose.org"
+  },
+
   "context": {
     "basePath": "/"
   }
