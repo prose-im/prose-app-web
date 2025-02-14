@@ -11,7 +11,7 @@
 <template lang="pug">
 .v-app-base
   app-sidebar(
-    v-resizable.r="{ minWidth: 220, maxWidth: 300, handleWidth: 8 }"
+    v-resizable.r="{ minWidth: 220, maxWidth: 300, handleWidth: 8, handleZIndex: 1 }"
     class="v-app-base__sidebar"
   )
 
