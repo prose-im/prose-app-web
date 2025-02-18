@@ -192,11 +192,7 @@ export default {
 
     rows: {
       type: Array<Row>,
-      required: true,
-
-      validator(x: Array<Row>): boolean {
-        return x.length > 0;
-      }
+      required: true
     },
 
     sizes: {
