@@ -27,6 +27,14 @@ layout-popup-navigate(
   template(
     v-slot:content
   )
+    base-banner(
+      icon="hand.wave.fill"
+      title="Coming soon"
+      description="Message encryption is coming soon."
+      color="blue"
+      class="p-encryption-settings__banner"
+    )
+
     component(
       v-if="contentSections[section]"
       v-bind="contentSections[section].properties"
@@ -119,3 +127,17 @@ export default {
   }
 };
 </script>
+
+<!-- **********************************************************************
+     STYLE
+     ********************************************************************** -->
+
+<style lang="scss">
+$c: ".p-encryption-settings";
+
+#{$c} {
+  #{$c}__banner {
+    margin-block-end: 22px;
+  }
+}
+</style>

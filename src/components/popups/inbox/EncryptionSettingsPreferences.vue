@@ -48,7 +48,7 @@ export default {
 
               data: {
                 value: {
-                  inner: true // TODO: save somewhere
+                  inner: false // TODO: save somewhere
                 },
 
                 disabled: true
@@ -62,7 +62,7 @@ export default {
 
               data: {
                 value: {
-                  inner: true // TODO: save somewhere
+                  inner: false // TODO: save somewhere
                 },
 
                 disabled: true
@@ -89,7 +89,7 @@ export default {
 
               data: {
                 value: {
-                  inner: true // TODO: save somewhere
+                  inner: false // TODO: save somewhere
                 },
 
                 disabled: true

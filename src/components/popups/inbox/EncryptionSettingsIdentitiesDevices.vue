@@ -32,7 +32,7 @@ ul.p-encryption-settings-identities-devices
           | {{ device.name }}
 
         span.p-encryption-settings-identities-devices__device-last
-          | Last seen 1h ago
+          | Last seen {{ device.seen }} ago
 
       span.p-encryption-settings-identities-devices__device-emojis.u-select
         | {{ device.emoji }}
@@ -62,7 +62,10 @@ export default {
     return {
       // --> DATA <--
 
-      devices: [
+      devices: []
+
+      // TODO: this is not yet implemented
+      /* devices: [
         {
           name: "MacBook Valerian",
           emoji: "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣",
@@ -78,6 +81,7 @@ export default {
             "d3d6bd3a"
           ].join(" "),
 
+          seen: "1h",
           trusted: true
         },
 
@@ -96,9 +100,10 @@ export default {
             "d3d6bd3a"
           ].join(" "),
 
+          seen: "1h",
           trusted: false
         }
-      ]
+      ] */
     };
   }
 };

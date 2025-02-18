@@ -24,7 +24,6 @@
     )
 
   div(
-    v-if="identityUrl"
     :class=`[
       "c-inbox-details-user-security-details-identity__disclaimer",
       "u-regular",
@@ -33,14 +32,7 @@
       }
     ]`
   )
-    | User data is verified on your identity server, which is
-
-    base-space
-
-    a.u-medium(
-      @click="onIdentityDomainClick"
-    )
-      | {{ identityDomain }}
+    | You can always verify user devices in user encryption settings.
 </template>
 
 <!-- **********************************************************************
@@ -58,12 +50,8 @@ import { Detail as BadgeDetail } from "@/components/base/BaseBadgeDetails.vue";
 // PROJECT: STORES
 import Store from "@/store";
 
-// PROJECT: UTILITIES
-import UtilitiesRuntime from "@/utilities/runtime";
-
 // CONSTANTS
-const QUICKIE_DESCRIPTION_PREFIX =
-  "Prose checked on the identity server for matches.";
+const QUICKIE_DESCRIPTION_PREFIX = "Prose checked for identity verifications.";
 
 export default {
   name: "InboxDetailsUserSecurityDetailsIdentity",
@@ -128,33 +116,8 @@ export default {
       return this.jid.toString();
     },
 
-    identityUrl(): string {
-      return `https://${this.jid.domain}/identity/verify/${encodeURIComponent(
-        this.jid.toString()
-      )}/`;
-    },
-
-    identityDomain(): string {
-      return new URL(this.identityUrl).hostname;
-    },
-
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
-    }
-  },
-
-  methods: {
-    // --> EVENT LISTENERS <--
-
-    async onIdentityDomainClick(): Promise<void> {
-      try {
-        await UtilitiesRuntime.requestOpenUrl(this.identityUrl);
-      } catch (error) {
-        this.$log.error(
-          `Failed opening identity server URL: ${this.identityUrl}`,
-          error
-        );
-      }
     }
   }
 };

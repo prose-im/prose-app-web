@@ -208,7 +208,7 @@ export default {
 
     identityBadgeVerification(): IdentityBadge {
       // Identity verified?
-      if (this.profile.security && this.profile.security.verification) {
+      if (this.profile.security?.verification) {
         return {
           status: "verified",
           icon: "checkmark.seal.fill"
