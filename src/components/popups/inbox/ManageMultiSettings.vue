@@ -152,41 +152,6 @@ export default {
             aside: FormFieldsetOptionAside.Auto
           }
         });
-
-        // Append maintenance fields
-        fieldsets.push({
-          id: "maintenance",
-          title: "Housekeeping",
-
-          fields: [
-            // TODO: only if channel is currently public
-            {
-              id: "convert",
-              type: FormFieldsetFieldType.Button,
-              label: "Convert:",
-
-              data: {
-                text: "Convert to private channel",
-                disabled: true
-              } as FormFieldsetFieldDataButton
-            },
-
-            {
-              id: "archive",
-              type: FormFieldsetFieldType.Button,
-              label: "Archive:",
-
-              data: {
-                text: `Archive ${this.type}`,
-                disabled: true
-              } as FormFieldsetFieldDataButton
-            }
-          ],
-
-          notes: [
-            `Archive this ${this.type} if you want to keep all its history and make it read-only. You can still restore it to its normal state later.`
-          ]
-        });
       }
 
       // Append Danger Zone
