@@ -18,6 +18,7 @@
     :title="banner.title"
     :description="banner.description"
     class="v-app-inbox-base__banner"
+    squared
   )
     template(
       v-if="banner.action"

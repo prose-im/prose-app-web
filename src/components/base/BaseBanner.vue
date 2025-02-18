@@ -12,7 +12,10 @@
 div(
   :class=`[
     "c-base-banner",
-    "c-base-banner--" + color
+    "c-base-banner--" + color,
+    {
+      "c-base-banner--squared": squared
+    }
   ]`
 )
   base-icon(
@@ -66,6 +69,11 @@ export default {
       validator(x: string) {
         return ["white", "grey", "blue", "red", "orange"].includes(x);
       }
+    },
+
+    squared: {
+      type: Boolean,
+      default: false
     }
   }
 };
@@ -86,6 +94,7 @@ $c: ".c-base-banner";
   overflow: hidden;
   display: flex;
   align-items: center;
+  border-radius: 6px;
 
   #{$c}__icon,
   #{$c}__title,
@@ -147,6 +156,12 @@ $c: ".c-base-banner";
 
   &--orange {
     background-color: rgb(var(--color-base-orange-dark));
+  }
+
+  // --> BOOLEANS <--
+
+  &--squared {
+    border-radius: 0;
   }
 }
 </style>
