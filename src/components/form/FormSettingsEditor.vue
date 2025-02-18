@@ -414,7 +414,7 @@ interface FieldsetField {
   aside?: FieldsetFieldAside;
 }
 
-interface FieldsetFieldAside {
+export interface FieldsetFieldAside {
   type: FieldsetFieldAsideType;
   label: string;
   color?: string;
@@ -583,6 +583,22 @@ $c: ".c-form-settings-editor";
 
           #{$c}__field-aside-icon {
             fill: rgb(var(--color-base-green-normal));
+          }
+        }
+
+        &--orange {
+          color: rgb(var(--color-base-orange-normal));
+
+          #{$c}__field-aside-icon {
+            fill: rgb(var(--color-base-orange-normal));
+          }
+        }
+
+        &--grey {
+          color: rgb(var(--color-base-grey-normal));
+
+          #{$c}__field-aside-icon {
+            fill: rgb(var(--color-base-grey-normal));
           }
         }
       }
