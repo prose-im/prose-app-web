@@ -28,6 +28,7 @@ layout-popup-navigate(
     v-slot:content
   )
     base-banner(
+      icon="info.circle"
       title="Only latest files are shown"
       description="Load older messages to see more files."
       color="white"
