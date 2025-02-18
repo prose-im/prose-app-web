@@ -72,9 +72,8 @@ export default {
         ] as Array<DataTableColumn>,
 
         rows: [
-          // TODO: from dynamic data (those are fixtures)
-
-          {
+          // TODO: add actual data
+          /* {
             selected: false,
 
             columns: {
@@ -82,27 +81,7 @@ export default {
               device: "(none)",
               hash: "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣"
             }
-          },
-
-          {
-            selected: false,
-
-            columns: {
-              name: "Unknown Device #2",
-              device: "(none)",
-              hash: "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣"
-            }
-          },
-
-          {
-            selected: false,
-
-            columns: {
-              name: "Unknown Device #3",
-              device: "(none)",
-              hash: "1️⃣ 2️⃣ 3️⃣ 4️⃣ 5️⃣ 6️⃣"
-            }
-          }
+          } */
         ] as Array<DataTableRow>,
 
         sizes: { name: "40%", device: "20%", hash: "40%" } as DataTableSizes,

@@ -28,6 +28,7 @@ import { JID } from "@prose-im/prose-sdk-js";
 import {
   default as FormSettingsEditor,
   Fieldset as FormFieldset,
+  FieldsetFieldAside as FormFieldsetFieldAside,
   FieldsetFieldType as FormFieldsetFieldType,
   FieldsetFieldAsideType as FormFieldsetFieldAsideType,
   FieldsetFieldDataInput as FormFieldsetFieldDataInput,
@@ -36,6 +37,14 @@ import {
 
 // PROJECT: POPUPS
 import { FormIdentity as ProfileFormIdentity } from "@/popups/sidebar/EditProfile.vue";
+
+// CONSTANTS
+const ASIDE_NONE: FormFieldsetFieldAside = {
+  type: FormFieldsetFieldAsideType.Label,
+  color: "grey",
+  icon: "exclamationmark.circle.fill",
+  label: "None set"
+};
 
 export default {
   name: "EditProfileIdentity",
@@ -54,11 +63,9 @@ export default {
     }
   },
 
-  data() {
-    return {
-      // --> DATA <--
-
-      fieldsets: [
+  computed: {
+    fieldsets(): Array<FormFieldset> {
+      return [
         {
           id: "full_name",
           title: "Full name",
@@ -72,7 +79,9 @@ export default {
               data: {
                 value: this.form.nameFirst,
                 placeholder: "Enter your first name…"
-              } as FormFieldsetFieldDataInput
+              } as FormFieldsetFieldDataInput,
+
+              aside: !this.form.nameFirst.inner ? ASIDE_NONE : undefined
             },
 
             {
@@ -83,7 +92,9 @@ export default {
               data: {
                 value: this.form.nameLast,
                 placeholder: "Enter your last name…"
-              } as FormFieldsetFieldDataInput
+              } as FormFieldsetFieldDataInput,
+
+              aside: !this.form.nameLast.inner ? ASIDE_NONE : undefined
             }
           ],
 
@@ -137,12 +148,7 @@ export default {
                 placeholder: "Enter your email address…"
               } as FormFieldsetFieldDataInput,
 
-              aside: {
-                type: FormFieldsetFieldAsideType.Label,
-                color: "green",
-                icon: "checkmark.seal.fill",
-                label: "Verified"
-              }
+              aside: !this.form.email.inner ? ASIDE_NONE : undefined
             },
 
             {
@@ -153,21 +159,22 @@ export default {
               data: {
                 value: this.form.phone,
                 placeholder: "Enter your phone number…"
-              } as FormFieldsetFieldDataInput
+              } as FormFieldsetFieldDataInput,
+
+              aside: !this.form.phone.inner ? ASIDE_NONE : undefined
             }
           ],
 
           notes: [
-            "Your email address and phone number are public. They are visible to all team members and contacts. They will not be available to other users.",
-            "Make sure that your email address is verified, for account security purposes."
+            "Your email address and phone number are public. They are visible to all team members and contacts. They will not be available to other users."
           ],
 
           options: {
             aside: FormFieldsetOptionAside.Fixed
           }
         }
-      ] as Array<FormFieldset>
-    };
+      ];
+    }
   }
 };
 </script>

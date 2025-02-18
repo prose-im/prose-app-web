@@ -62,11 +62,6 @@ import {
   VERSION_REVISION
 } from "@/broker/context";
 
-// CONSTANTS
-// TODO: import this from the JS SDK?
-// TODO: from local OMEMO library version tag
-const OMEMO_VERSION = "0.0.0";
-
 export default {
   name: "EditProfileEncryptionDeviceCurrent",
 
@@ -78,7 +73,7 @@ export default {
         platform: "web",
         system: VERSION_SYSTEM,
         client: `${VERSION_NAME} ${VERSION_REVISION}`,
-        security: `OMEMO v${OMEMO_VERSION}`
+        security: "OMEMO"
       },
 
       details: [
