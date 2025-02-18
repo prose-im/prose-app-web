@@ -52,6 +52,7 @@ layout-sidebar-details(
       v-if="popups.sharedFiles.visible"
       @file-preview="onPopupSharedFilesFilePreview"
       @close="onPopupSharedFilesClose"
+      :room="room"
     )
 
     leave-multi(

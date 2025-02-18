@@ -27,6 +27,13 @@ layout-popup-navigate(
   template(
     v-slot:content
   )
+    base-banner(
+      title="Only latest files are shown"
+      description="Load older messages to see more files."
+      color="white"
+      class="p-shared-files__banner"
+    )
+
     ul(
       v-if="sectionFiles.length > 0"
       :class=`[
@@ -38,23 +45,29 @@ layout-popup-navigate(
       ]`
     )
       li.p-shared-files__file(
-        v-for="file in sectionFiles"
+        v-for="(file, index) in sectionFiles"
       )
         a.p-shared-files__target(
-          @click="onThumbnailClick"
+          v-if="isSectionMedia"
+          @click="onPreviewClick(sectionFiles, sectionPreviewCollection, index)"
+          :style=`{
+            backgroundImage: ('url(' + file.previewUrl + ')')
+          }`
         )
-          template(
-            v-if="!isSectionMedia"
-          )
-            base-action(
-              class="p-shared-files__action"
-              icon="arrow.down.circle.dotted"
-              context="grey"
-              size="18px"
-            )
 
-            span.p-shared-files__name.u-ellipsis
-              | {{ file.name }}
+        a.p-shared-files__target(
+          v-else
+          @click="onDownloadClick(file)"
+        )
+          base-action(
+            class="p-shared-files__action"
+            icon="arrow.down.circle.dotted"
+            context="grey"
+            size="18px"
+          )
+
+          span.p-shared-files__name.u-ellipsis
+            | {{ file.name }}
 
     base-overlay(
       v-else
@@ -83,18 +96,48 @@ layout-popup-navigate(
 
 <script lang="ts">
 // PROJECT: COMPONENTS
+import { PropType } from "vue";
+import { Room } from "@prose-im/prose-sdk-js";
 import BaseAlert from "@/components/base/BaseAlert.vue";
 import { Section as NavigateSection } from "@/components/base/BaseNavigate.vue";
-import { Collection as FilePreviewCollection } from "@/components/inbox/InboxFilePreview.vue";
+import {
+  Collection as FilePreviewCollection,
+  FileType as FilePreviewFileType
+} from "@/components/inbox/InboxFilePreview.vue";
+
+// PROJECT: STORES
+import Store from "@/store";
 
 // PROJECT: UTILITIES
 import UtilitiesRuntime from "@/utilities/runtime";
 
+// INTERFACES
+interface SharedFile {
+  name: string;
+  type: string;
+  url: string;
+  previewUrl?: string;
+}
+
 // CONSTANTS
 const SECTION_INITIAL = "images";
 
+const SECTION_TYPE_GROUPS = ["image", "video"];
+
+const SECTION_FILE_TYPE: { [type: string]: FilePreviewFileType } = {
+  images: FilePreviewFileType.Image,
+  videos: FilePreviewFileType.Video
+};
+
 export default {
   name: "SharedFiles",
+
+  props: {
+    room: {
+      type: Object as PropType<Room>,
+      required: true
+    }
+  },
 
   emits: ["filePreview", "close"],
 
@@ -124,17 +167,52 @@ export default {
           title: "Others",
           icon: "archivebox.fill"
         }
-      ] as Array<NavigateSection>,
-
-      // TODO: populate from somewhere
-      files: []
+      ] as Array<NavigateSection>
     };
   },
 
   computed: {
-    sectionFiles(): Array<object> {
-      // TODO: filter files based on section
-      return this.files;
+    sectionFiles(): Array<SharedFile> {
+      const files: Array<SharedFile> = [];
+
+      this.messages.forEach(message => {
+        message.files?.forEach(file => {
+          const fileGroup = file.type.split("/")[0],
+            isFileTypeGroup = SECTION_TYPE_GROUPS.includes(fileGroup);
+
+          if (
+            (isFileTypeGroup === false && this.section === "others") ||
+            (isFileTypeGroup === true && this.section === `${fileGroup}s`)
+          ) {
+            files.push({
+              name: file.name,
+              type: file.type,
+              url: file.url,
+              previewUrl: file.preview?.url
+            });
+          }
+        });
+      });
+
+      return files;
+    },
+
+    sectionPreviewCollection(): FilePreviewCollection {
+      // Create file collection (only for sections that can be previewed)
+      const fileCollection: FilePreviewCollection = [],
+        fileType = SECTION_FILE_TYPE[this.section] || null;
+
+      if (fileType !== null) {
+        this.sectionFiles.forEach(file => {
+          fileCollection.push({
+            type: fileType,
+            url: file.url,
+            name: file.name
+          });
+        });
+      }
+
+      return fileCollection;
     },
 
     emptyTitle(): string {
@@ -155,6 +233,10 @@ export default {
           return false;
         }
       }
+    },
+
+    messages(): ReturnType<typeof Store.$inbox.getMessages> {
+      return this.room ? Store.$inbox.getMessages(this.room.id) : [];
     }
   },
 
@@ -167,38 +249,36 @@ export default {
 
     // --> EVENT LISTENERS <--
 
-    async onThumbnailClick(): Promise<void> {
-      const fileCollection: FilePreviewCollection = [],
-        fileIndex = 0;
-
-      let fileDownloadUrl: string | null = null,
-        fileDownloadName: string | null = null;
-
-      // TODO: add file data
-
-      if (fileDownloadUrl !== null) {
-        try {
-          // Download target file
-          await UtilitiesRuntime.requestFileDownload(
-            fileDownloadUrl,
-            fileDownloadName
-          );
-
-          BaseAlert.info("Shared file saved", "The file has been downloaded");
-        } catch (error) {
-          this.$log.error(
-            `Could not download file from thumbnail at URL: ${fileDownloadUrl}`,
-            error
-          );
-
-          BaseAlert.error(
-            "Failed saving shared file",
-            "Could not download. Try again?"
-          );
-        }
-      } else {
+    async onPreviewClick(
+      file: Array<SharedFile>,
+      collection: FilePreviewCollection,
+      index: number
+    ): Promise<void> {
+      if (collection[index]) {
         // Preview files
-        this.$emit("filePreview", fileCollection, fileIndex);
+        this.$emit("filePreview", collection, index);
+      } else {
+        // Trigger fallback download (no such file in collection)
+        this.onDownloadClick(file[index]);
+      }
+    },
+
+    async onDownloadClick(file: SharedFile): Promise<void> {
+      try {
+        // Download target file
+        await UtilitiesRuntime.requestFileDownload(file.url, file.name);
+
+        BaseAlert.info("Shared file saved", "The file has been downloaded");
+      } catch (error) {
+        this.$log.error(
+          `Could not download file from thumbnail at URL: ${file.url}`,
+          error
+        );
+
+        BaseAlert.error(
+          "Failed saving shared file",
+          "Could not download. Try again?"
+        );
       }
     },
 
@@ -224,6 +304,10 @@ $c: ".p-shared-files";
     #{$c}__overlay {
       flex: 1;
     }
+  }
+
+  #{$c}__banner {
+    margin-block-end: 20px;
   }
 
   #{$c}__mosaic {
@@ -258,6 +342,8 @@ $c: ".p-shared-files";
 
       #{$c}__file {
         #{$c}__target {
+          background-size: cover;
+          background-position: center center;
           width: 100%;
           aspect-ratio: 1;
         }
