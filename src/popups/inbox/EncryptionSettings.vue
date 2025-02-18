@@ -31,7 +31,6 @@ layout-popup-navigate(
       icon="hand.wave.fill"
       title="Coming soon"
       description="Message encryption is coming soon."
-      color="blue"
       class="p-encryption-settings__banner"
     )
 
