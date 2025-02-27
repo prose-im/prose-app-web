@@ -27,6 +27,15 @@ class BrokerModuleAccount extends BrokerModule {
 
     return (await this._client.client?.loadAccountInfo()) || undefined;
   }
+
+  async changePassword(password: string): Promise<void> {
+    // XEP-0077: In-Band Registration
+    // https://xmpp.org/extensions/xep-0077.html#usecases-changepw
+
+    logger.info("Will change account password");
+
+    await this._client.client?.changePassword(password);
+  }
 }
 
 /**************************************************************************
