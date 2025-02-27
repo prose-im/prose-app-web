@@ -10,10 +10,8 @@
 
 // NPM
 import {
-  ProseClientConfig,
   ProseConnection,
-  ProseConnectionErrorType,
-  ProseConnectionProvider
+  ProseConnectionErrorType
 } from "@prose-im/prose-sdk-js";
 import { nanoid } from "nanoid";
 
@@ -215,14 +213,8 @@ class BrokerConnectionNativeTauri
   }
 }
 
-class BrokerConnectionNative implements ProseConnectionProvider {
-  provideConnection(config: ProseClientConfig): ProseConnection {
-    return new BrokerConnectionNativeTauri(config);
-  }
-}
-
 /**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
-export default BrokerConnectionNative;
+export { BrokerConnectionNativeTauri };

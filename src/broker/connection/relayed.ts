@@ -11,10 +11,8 @@
 // NPM
 import {
   JID,
-  ProseClientConfig,
   ProseConnection,
-  ProseConnectionErrorType,
-  ProseConnectionProvider
+  ProseConnectionErrorType
 } from "@prose-im/prose-sdk-js";
 import { Strophe } from "strophe.js";
 
@@ -471,14 +469,8 @@ class BrokerConnectionRelayedStrophe
   }
 }
 
-class BrokerConnectionRelayed implements ProseConnectionProvider {
-  provideConnection(config: ProseClientConfig): ProseConnection {
-    return new BrokerConnectionRelayedStrophe(config);
-  }
-}
-
 /**************************************************************************
  * EXPORTS
  * ************************************************************************* */
 
-export default BrokerConnectionRelayed;
+export { BrokerConnectionRelayedStrophe };
