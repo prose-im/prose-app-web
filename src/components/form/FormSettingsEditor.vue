@@ -63,9 +63,11 @@
             @change="field.data.value.change"
             :name="field.id"
             :size="fieldSize"
+            :type="field.data.type || 'text'"
             :placeholder="field.data.placeholder"
+            :autofocus="field.data.autofocus"
             :disabled="field.data.disabled"
-            type="text"
+            :loading="field.data.loading"
             align="left"
           )
 
@@ -76,7 +78,9 @@
             :name="field.id"
             :size="fieldSize"
             :placeholder="field.data.placeholder"
+            :autofocus="field.data.autofocus"
             :disabled="field.data.disabled"
+            :loading="field.data.loading"
             type="textarea"
             align="left"
           )
@@ -305,9 +309,12 @@ export enum FieldsetOptionAside {
 
 export type FieldsetFieldDataInput = {
   value: FieldsetFieldDataInputValue;
+  type: string;
   placeholder: string;
   initial?: string;
+  autofocus?: boolean;
   disabled?: boolean;
+  loading?: boolean;
 };
 
 type FieldsetFieldDataInputValue = {
