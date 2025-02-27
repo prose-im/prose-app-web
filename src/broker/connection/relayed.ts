@@ -372,7 +372,7 @@ class BrokerConnectionRelayedStrophe
       // Read XML string from host-meta
       const xmlElement = new DOMParser().parseFromString(xmlString, "text/xml");
 
-      // Acquire connection URL (priorized)
+      // Acquire connection URL (prioritized)
       for (let i = 0; i < RELAY_HOST_METADATA_PARSE.length; i++) {
         const metadataParse = RELAY_HOST_METADATA_PARSE[i];
 
@@ -410,7 +410,7 @@ class BrokerConnectionRelayedStrophe
         linkUrls[link.rel] = link.href;
       });
 
-      // Acquire connection URL (priorized)
+      // Acquire connection URL (prioritized)
       for (let i = 0; i < RELAY_HOST_METADATA_PARSE.length; i++) {
         const metadataParse = RELAY_HOST_METADATA_PARSE[i],
           linkUrl = linkUrls[metadataParse.xmlns] || null;
