@@ -100,6 +100,10 @@ export interface FormIdentity {
   phone: FormValueString;
 }
 
+export interface FormAuthentication {
+  newPassword: FormValueString;
+}
+
 export interface FormProfile {
   jobOrganization: FormValueString;
   jobTitle: FormValueString;
@@ -169,7 +173,13 @@ export default {
         },
 
         authentication: {
-          component: shallowRef(EditProfileAuthentication)
+          component: shallowRef(EditProfileAuthentication),
+
+          properties: {
+            form: {
+              newPassword: { inner: "" }
+            } as FormAuthentication
+          }
         },
 
         profile: {
