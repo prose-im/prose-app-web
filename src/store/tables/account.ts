@@ -235,6 +235,12 @@ const $account = defineStore("account", {
       }
     },
 
+    setCredentialsPassword(password: string): void {
+      this.$patch(() => {
+        this.credentials.password = password;
+      });
+    },
+
     setInformationJID(jid: JID): void {
       this.$patch(() => {
         this.information.jid = jid.toString();
