@@ -605,12 +605,18 @@ class UtilitiesRuntime {
   acquireConnectionMethods(): Array<RuntimeConnectionMethod> {
     // Allow relayed connection method via Web frontend (Web build or \
     //   application build)
-    const methods = [RuntimeConnectionMethod.Relayed];
+    const methods = [];
 
     if (this.__isApplication === true) {
       // Allow native connection method via Tauri backend (application build)
+      // Notice: priorized if available.
       methods.push(RuntimeConnectionMethod.Native);
     }
+
+    // Allow relayed connection method via Web frontend (Web build or \
+    //   application build)
+    // Notice: fallback in any case.
+    methods.push(RuntimeConnectionMethod.Relayed);
 
     return methods;
   }
