@@ -27,7 +27,7 @@ jobs:
       - name: Install AWS CLI
         uses: unfor19/install-aws-cli-action@v1
         with:
-          version: 2.22.35
+          version: 2.22
 
       - name: Verify versions
         run: aws --version
@@ -73,7 +73,7 @@ jobs:
       - name: Install AWS CLI
         uses: unfor19/install-aws-cli-action@v1
         with:
-          version: 2.22.35
+          version: 2.22
 
       - name: Verify versions
         run: aws --version
