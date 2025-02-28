@@ -121,6 +121,14 @@ jobs:
             format: dmg
 
     steps:
+      - name: Install AWS CLI
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2.22.35
+
+      - name: Verify versions
+        run: aws --version
+
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
@@ -156,6 +164,14 @@ jobs:
         with:
           sparse-checkout: |
             src-tauri/scripts/updater.sh
+
+      - name: Install AWS CLI
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2.22.35
+
+      - name: Verify versions
+        run: aws --version
 
       - name: Generate update manifest
         run: |
