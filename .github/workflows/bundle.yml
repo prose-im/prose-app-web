@@ -54,7 +54,7 @@ jobs:
           aws_secret_access_key: ${{ secrets.S3_SECRET_ACCESS_KEY }}
 
   publish-manifest:
-    needs: [bundle, publish-version]
+    needs: publish-version
     environment: bundle-publish
     runs-on: ubuntu-latest
 
