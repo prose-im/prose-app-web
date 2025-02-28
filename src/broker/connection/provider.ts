@@ -24,8 +24,6 @@ import { BrokerConnectionRelayedStrophe } from "@/broker/connection/relayed";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
-
-// PROJECT: UTILITIES
 import {
   default as UtilitiesRuntime,
   RuntimeConnectionMethod
@@ -36,10 +34,16 @@ import {
  * ************************************************************************* */
 
 class BrokerConnectionProvider implements ProseConnectionProvider {
-  provideConnection(config: ProseClientConfig): ProseConnection {
-    // List all available methods
-    const methods = UtilitiesRuntime.acquireConnectionMethods();
+  private __connectMethods: Array<RuntimeConnectionMethod>;
 
+  private __nextConnectMethodIndex = 0;
+
+  constructor() {
+    // Acquire available connection methods
+    this.__connectMethods = UtilitiesRuntime.acquireConnectionMethods();
+  }
+
+  provideConnection(config: ProseClientConfig): ProseConnection {
     // Acquire preferred connection (from available priority list)
     const preferConnection = Store.$settings.network.connection || "auto";
 
@@ -50,31 +54,34 @@ class BrokerConnectionProvider implements ProseConnectionProvider {
     switch (preferConnection) {
       case "native": {
         // Request a native connection
-        return this.__makeConnection(
-          RuntimeConnectionMethod.Native,
-          methods,
-          config
-        );
+        return this.__makeConnection(RuntimeConnectionMethod.Native, config);
       }
 
       case "relayed": {
         // Request a relayed connection
-        return this.__makeConnection(
-          RuntimeConnectionMethod.Relayed,
-          methods,
-          config
-        );
+        return this.__makeConnection(RuntimeConnectionMethod.Relayed, config);
       }
 
       case "auto": {
-        // Pick highest-priority method?
-        if (methods.length > 0) {
-          return this.__makeConnection(methods[0], methods, config);
+        // Acquire highest-priority connection method (the next method is only \
+        //   served if reconnecting)
+        const nextMethod =
+          this.__connectMethods[this.__nextConnectMethodIndex] || null;
+
+        // Request a connection, using the acquired next method
+        // Notice: the next method counter lets Prose converge to a stable \
+        //   connection method, which is very useful in cases where a native \
+        //   connection is attempted in priority, but where the current \
+        //   network has a firewall into place that prevents native XMPP \
+        //   connections; in this specific case, Prose will attempt a second \
+        //   reconnect over WebSocket, and succeed establishing the connection \
+        //   there. On most networks, the next method will always be the first \
+        //   method in the list of available methods.
+        if (nextMethod !== null) {
+          return this.__makeConnection(nextMethod, config);
         }
 
-        throw new Error(
-          "Automatic connection requested, but no method available"
-        );
+        throw new Error("Could not find a next connection method");
       }
     }
 
@@ -82,15 +89,29 @@ class BrokerConnectionProvider implements ProseConnectionProvider {
     throw new Error("No connection method available");
   }
 
-  __makeConnection(
+  rollToNextConnectMethod(): void {
+    // Increment next connect method
+    this.__nextConnectMethodIndex++;
+
+    // Circle back to first method
+    if (this.__nextConnectMethodIndex >= this.__connectMethods.length) {
+      this.__nextConnectMethodIndex = 0;
+    }
+  }
+
+  resetNextConnectMethod(): void {
+    // Reset back to first method
+    this.__nextConnectMethodIndex = 0;
+  }
+
+  private __makeConnection(
     method: RuntimeConnectionMethod,
-    availableMethods: Array<RuntimeConnectionMethod>,
     config: ProseClientConfig
   ): ProseConnection {
     logger.debug(`Making connection using selected method: ${method}`);
 
     // Is the requested method available?
-    if (availableMethods.includes(method) === true) {
+    if (this.__connectMethods.includes(method) === true) {
       switch (method) {
         case RuntimeConnectionMethod.Native: {
           return new BrokerConnectionNativeTauri(config);

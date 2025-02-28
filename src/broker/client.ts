@@ -63,6 +63,7 @@ class BrokerClient {
   client?: ProseClient;
 
   private __delegate: BrokerDelegate;
+  private __connector: BrokerConnectionProvider;
   private __credentials?: { jid: JID; password: string };
 
   private __reconnectAttempts = 0;
@@ -71,6 +72,9 @@ class BrokerClient {
   constructor() {
     // Initialize delegate
     this.__delegate = new BrokerDelegate();
+
+    // Initialize connector (ie. connection provider)
+    this.__connector = new BrokerConnectionProvider();
 
     // Bind all delegate event handlers
     this.__bindDelegateEvents(this.__delegate);
@@ -246,7 +250,7 @@ class BrokerClient {
     // Initialize client? (or re-use existing client)
     if (this.client === undefined) {
       this.client = await ProseClient.init(
-        new BrokerConnectionProvider(),
+        this.__connector,
         this.__delegate,
         new BrokerEncryption(),
         new BrokerLogger(),
@@ -258,11 +262,18 @@ class BrokerClient {
       // Connect client
       await this.client.connect(jid, password);
 
+      // Reset next connection method index (back to prioritized method)
+      this.__connector.resetNextConnectMethod();
+
       logger.info("Could connect: success");
     } catch (error) {
       // Mark as disconnected
       Store.$session.setConnected(false);
       Store.$session.setConnecting(false);
+
+      // Increment next connection method index (used to pick the next \
+      //   connection mode, effectively rolling/circling in available methods)
+      this.__connector.rollToNextConnectMethod();
 
       // Handle connection error (re-throw error after intercepting)
       if (error instanceof ProseConnectionError) {
