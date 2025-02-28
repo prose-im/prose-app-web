@@ -37,24 +37,26 @@ jobs:
       - name: Publish application version
         uses: keithweaver/aws-s3-github-action@v1.0.0
         env:
+          AWS_ENDPOINT_URL: ${{ vars.S3_ENDPOINT }}
           AWS_EC2_METADATA_DISABLED: true
         with:
           command: cp
           source: ${{ matrix.settings.format }}/
           destination: s3://${{ vars.S3_BUCKET }}/versions/0.6.0/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/
-          flags: --endpoint-url ${{ vars.S3_ENDPOINT }} --recursive --exclude "*" --include "*.${{ matrix.settings.format }}" --exclude ".*"
+          flags: --recursive --exclude "*" --include "*.${{ matrix.settings.format }}" --exclude ".*"
           aws_access_key_id: ${{ secrets.S3_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_SECRET_ACCESS_KEY }}
 
       - name: Publish update archive
         uses: keithweaver/aws-s3-github-action@v1.0.0
         env:
+          AWS_ENDPOINT_URL: ${{ vars.S3_ENDPOINT }}
           AWS_EC2_METADATA_DISABLED: true
         with:
           command: cp
           source: ${{ matrix.settings.platform }}/
           destination: s3://${{ vars.S3_BUCKET }}/versions/0.6.0/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/update/
-          flags: --endpoint-url ${{ vars.S3_ENDPOINT }} --recursive --exclude "*" --include "*.tar.gz" --include "*.tar.gz.sig"
+          flags: --recursive --exclude "*" --include "*.tar.gz" --include "*.tar.gz.sig"
           aws_access_key_id: ${{ secrets.S3_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_SECRET_ACCESS_KEY }}
 
@@ -77,11 +79,11 @@ jobs:
       - name: Publish update manifest
         uses: keithweaver/aws-s3-github-action@v1.0.0
         env:
+          AWS_ENDPOINT_URL: ${{ vars.S3_ENDPOINT }}
           AWS_EC2_METADATA_DISABLED: true
         with:
           command: cp
           source: manifest.json
           destination: s3://${{ vars.S3_BUCKET }}/updates/latest.json
-          flags: --endpoint-url ${{ vars.S3_ENDPOINT }}
           aws_access_key_id: ${{ secrets.S3_ACCESS_KEY_ID }}
           aws_secret_access_key: ${{ secrets.S3_SECRET_ACCESS_KEY }}
