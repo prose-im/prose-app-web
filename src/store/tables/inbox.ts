@@ -170,7 +170,13 @@ const fromCoreMessage = function (
 
     // Metas
     metas: {
-      secure: message.meta.isEncrypted || room.type === RoomType.PublicChannel,
+      // TODO: all messages are considered secure for now, until we have e2e \
+      //   encryption official support.
+      secure:
+        true ||
+        message.meta.isEncrypted ||
+        room.type === RoomType.PublicChannel,
+
       encrypted: message.meta.isEncrypted,
       edited: message.meta.isEdited,
       transient: message.meta.isTransient,
