@@ -54,12 +54,15 @@ class BrokerConnectionProvider implements ProseConnectionProvider {
     switch (preferConnection) {
       case "native": {
         // Request a native connection
-        return this.__makeConnection(RuntimeConnectionMethod.Native, config);
+        return this.__acquireConnection(RuntimeConnectionMethod.Native, config);
       }
 
       case "relayed": {
         // Request a relayed connection
-        return this.__makeConnection(RuntimeConnectionMethod.Relayed, config);
+        return this.__acquireConnection(
+          RuntimeConnectionMethod.Relayed,
+          config
+        );
       }
 
       case "auto": {
@@ -78,7 +81,7 @@ class BrokerConnectionProvider implements ProseConnectionProvider {
         //   there. On most networks, the next method will always be the first \
         //   method in the list of available methods.
         if (nextMethod !== null) {
-          return this.__makeConnection(nextMethod, config);
+          return this.__acquireConnection(nextMethod, config);
         }
 
         throw new Error("Could not find a next connection method");
@@ -104,11 +107,11 @@ class BrokerConnectionProvider implements ProseConnectionProvider {
     this.__nextConnectMethodIndex = 0;
   }
 
-  private __makeConnection(
+  private __acquireConnection(
     method: RuntimeConnectionMethod,
     config: ProseClientConfig
   ): ProseConnection {
-    logger.debug(`Making connection using selected method: ${method}`);
+    logger.debug(`Acquiring connection using selected method: ${method}`);
 
     // Is the requested method available?
     if (this.__connectMethods.includes(method) === true) {
@@ -122,7 +125,7 @@ class BrokerConnectionProvider implements ProseConnectionProvider {
         }
 
         default: {
-          throw new Error(`Cannot make connection using: ${method}`);
+          throw new Error(`Cannot acquire connection using: ${method}`);
         }
       }
     }
