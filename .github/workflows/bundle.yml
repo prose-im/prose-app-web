@@ -37,7 +37,7 @@ jobs:
       - name: Publish application version
         uses: keithweaver/aws-s3-github-action@v1.0.0
         env:
-          AWS_ENDPOINT_URL: ${{ vars.S3_ENDPOINT }}
+          AWS_ENDPOINT_URL_S3: ${{ vars.S3_ENDPOINT }}
           AWS_EC2_METADATA_DISABLED: true
         with:
           command: cp
@@ -50,7 +50,7 @@ jobs:
       - name: Publish update archive
         uses: keithweaver/aws-s3-github-action@v1.0.0
         env:
-          AWS_ENDPOINT_URL: ${{ vars.S3_ENDPOINT }}
+          AWS_ENDPOINT_URL_S3: ${{ vars.S3_ENDPOINT }}
           AWS_EC2_METADATA_DISABLED: true
         with:
           command: cp
@@ -79,7 +79,7 @@ jobs:
       - name: Publish update manifest
         uses: keithweaver/aws-s3-github-action@v1.0.0
         env:
-          AWS_ENDPOINT_URL: ${{ vars.S3_ENDPOINT }}
+          AWS_ENDPOINT_URL_S3: ${{ vars.S3_ENDPOINT }}
           AWS_EC2_METADATA_DISABLED: true
         with:
           command: cp
