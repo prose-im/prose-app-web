@@ -29,6 +29,7 @@ jobs:
         with:
           name: 0.6.0 Bundle (${{ matrix.settings.system }}-${{ matrix.settings.architecture }})
           run-id: 13592522684
+          github-token: ${{ github.token }}
 
       - name: Extract build artifacts
         run: tar -xzvf ./bundle-0.6.0-${{ matrix.settings.system }}.tar.gz
