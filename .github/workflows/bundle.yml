@@ -1,109 +1,12 @@
-on:
-  push:
-    tags:
-      - "*.*.*"
+on: [push]
+
+permissions:
+  actions: read
 
 name: Bundle and Publish
 
 jobs:
-  bundle:
-    environment: bundle-build
-    runs-on: ${{ matrix.settings.runner }}
-
-    strategy:
-      fail-fast: false
-      matrix:
-        settings:
-          - runner: macos-14 # (macOS 14 = Apple silicon runner)
-            system: mac
-            architecture: aarch64
-            target: aarch64-apple-darwin
-            bundles: dmg,updater
-          - runner: macos-13 # (macOS 13 = Intel runner)
-            system: mac
-            architecture: x86_64
-            target: x86_64-apple-darwin
-            bundles: dmg,updater
-
-    outputs:
-      tag: ${{ steps.current_tag.outputs.tag }}
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Install NodeJS
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.x
-          registry-url: https://registry.npmjs.org
-
-      - name: Install Rust toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: ${{ matrix.settings.target }}
-          override: true
-
-      - name: Verify versions
-        run: node --version && npm --version && node -p process.versions.v8 && node -p process.arch && rustc --version
-
-      - name: Cache build context (NodeJS)
-        id: cache-node
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.npm
-            node_modules
-          key: ${{ runner.os }}-${{ runner.arch }}-node
-
-      - name: Cache build context (Cargo)
-        id: cache-cargo
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cargo/bin
-            ~/.cargo/registry
-            ~/.cargo/git
-            src-tauri/target
-          key: ${{ runner.os }}-${{ runner.arch }}-cargo
-
-      - name: Get current tag
-        id: current_tag
-        uses: WyriHaximus/github-action-get-previous-tag@v1
-        with:
-          fallback: 0.0.0
-
-      - name: Install dependencies
-        run: npm install --no-audit
-
-      - name: Run bundle build
-        uses: tauri-apps/tauri-action@v0
-        env:
-          TAURI_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
-          TAURI_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
-          APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
-          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
-          APPLE_SIGNING_IDENTITY: ${{ vars.APPLE_SIGNING_IDENTITY }}
-          APPLE_ID: ${{ vars.APPLE_ID }}
-          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
-          APPLE_TEAM_ID: ${{ vars.APPLE_TEAM_ID }}
-        with:
-          tauriScript: npm run bundle
-          args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
-
-      - name: Archive output files
-        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz -C src-tauri/target/${{ matrix.settings.target }}/release/bundle/ .
-
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ matrix.settings.system }}-${{ matrix.settings.architecture }})
-          path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
-          retention-days: 7
-
   publish-version:
-    needs: bundle
     environment: bundle-publish
     runs-on: ubuntu-latest
 
@@ -124,10 +27,12 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          name: ${{ needs.bundle.outputs.tag }} Bundle (${{ matrix.settings.system }}-${{ matrix.settings.architecture }})
+          name: 0.6.0 Bundle (${{ matrix.settings.system }}-${{ matrix.settings.architecture }})
+          run-id: 13592522684
+          github-token: ${{ github.token }}
 
       - name: Extract build artifacts
-        run: tar -xzvf ./bundle-${{ needs.bundle.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
+        run: tar -xzvf ./bundle-0.6.0-${{ matrix.settings.system }}.tar.gz
 
       - name: Publish application version
         env:
@@ -135,7 +40,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} --checksum-algorithm sha256 ${{ matrix.settings.format }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/ --recursive --exclude "*" --include "*.${{ matrix.settings.format }}" --exclude ".*"
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} --checksum-algorithm sha256 ${{ matrix.settings.format }}/ s3://${{ vars.S3_BUCKET }}/versions/0.6.0/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/ --recursive --exclude "*" --include "*.${{ matrix.settings.format }}" --exclude ".*"
 
       - name: Publish update archive
         env:
@@ -143,10 +48,10 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} --checksum-algorithm sha256 ${{ matrix.settings.platform }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/update/ --recursive --exclude "*" --include "*.tar.gz" --include "*.tar.gz.sig"
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} --checksum-algorithm sha256 ${{ matrix.settings.platform }}/ s3://${{ vars.S3_BUCKET }}/versions/0.6.0/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/update/ --recursive --exclude "*" --include "*.tar.gz" --include "*.tar.gz.sig"
 
   publish-manifest:
-    needs: [bundle, publish-version]
+    needs: publish-version
     environment: bundle-publish
     runs-on: ubuntu-latest
 
@@ -159,7 +64,7 @@ jobs:
 
       - name: Generate update manifest
         run: |
-          ./src-tauri/scripts/updater.sh --endpoint=${{ vars.S3_ENDPOINT }} --bucket=${{ vars.S3_BUCKET }} --version=${{ needs.bundle.outputs.tag }} --manifest=manifest.json
+          ./src-tauri/scripts/updater.sh --endpoint=${{ vars.S3_ENDPOINT }} --bucket=${{ vars.S3_BUCKET }} --version=0.6.0 --manifest=manifest.json
 
       - name: Publish update manifest
         env:
