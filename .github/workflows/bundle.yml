@@ -4,7 +4,6 @@ name: Bundle and Publish
 
 jobs:
   publish-version:
-    needs: bundle
     environment: bundle-publish
     runs-on: ubuntu-latest
 
