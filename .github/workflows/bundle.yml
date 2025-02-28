@@ -1,5 +1,7 @@
 on: [push]
-permissions: read-all
+
+permissions:
+  actions: read
 
 name: Bundle and Publish
 
