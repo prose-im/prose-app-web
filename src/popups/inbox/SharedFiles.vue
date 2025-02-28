@@ -176,6 +176,7 @@ export default {
     sectionFiles(): Array<SharedFile> {
       const files: Array<SharedFile> = [];
 
+      // Find all files contained in messages
       this.messages.forEach(message => {
         message.files?.forEach(file => {
           const fileGroup = file.type.split("/")[0],
@@ -194,6 +195,9 @@ export default {
           }
         });
       });
+
+      // Newest files must come first
+      files.reverse();
 
       return files;
     },
