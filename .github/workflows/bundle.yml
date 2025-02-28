@@ -70,6 +70,14 @@ jobs:
           sparse-checkout: |
             src-tauri/scripts/updater.sh
 
+      - name: Install AWS CLI
+        uses: unfor19/install-aws-cli-action@v1
+        with:
+          version: 2.22.35
+
+      - name: Verify versions
+        run: aws --version
+
       - name: Generate update manifest
         run: |
           ./src-tauri/scripts/updater.sh --endpoint=${{ vars.S3_ENDPOINT }} --bucket=${{ vars.S3_BUCKET }} --version=0.6.0 --manifest=manifest.json
