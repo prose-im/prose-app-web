@@ -609,7 +609,7 @@ class UtilitiesRuntime {
 
     if (this.__isApplication === true) {
       // Allow native connection method via Tauri backend (application build)
-      // Notice: priorized if available.
+      // Notice: prioritized if available.
       methods.push(RuntimeConnectionMethod.Native);
     }
 
