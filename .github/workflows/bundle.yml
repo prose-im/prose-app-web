@@ -1,4 +1,5 @@
 on: [push]
+permissions: read-all
 
 name: Bundle and Publish
 
