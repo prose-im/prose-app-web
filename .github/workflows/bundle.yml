@@ -36,6 +36,8 @@ jobs:
 
       - name: Publish application version
         uses: keithweaver/aws-s3-github-action@v1.0.0
+        env:
+          AWS_EC2_METADATA_DISABLED: true
         with:
           command: cp
           source: ${{ matrix.settings.format }}/
@@ -46,6 +48,8 @@ jobs:
 
       - name: Publish update archive
         uses: keithweaver/aws-s3-github-action@v1.0.0
+        env:
+          AWS_EC2_METADATA_DISABLED: true
         with:
           command: cp
           source: ${{ matrix.settings.platform }}/
@@ -72,6 +76,8 @@ jobs:
 
       - name: Publish update manifest
         uses: keithweaver/aws-s3-github-action@v1.0.0
+        env:
+          AWS_EC2_METADATA_DISABLED: true
         with:
           command: cp
           source: manifest.json
