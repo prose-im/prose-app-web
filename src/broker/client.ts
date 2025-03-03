@@ -187,7 +187,11 @@ class BrokerClient {
       try {
         logger.info("Reconnecting now…");
 
-        await this.__connect(credentials.jid, credentials.password);
+        await this.__connect(
+          credentials.jid,
+          credentials.password,
+          afterActualDelay
+        );
       } catch (error) {
         // Ignore reconnection errors here
         logger.warn("Could not reconnect client", error);
@@ -243,7 +247,11 @@ class BrokerClient {
     }
   }
 
-  private async __connect(jid: JID, password: string): Promise<void> {
+  private async __connect(
+    jid: JID,
+    password: string,
+    delayedBy = 0
+  ): Promise<void> {
     // Check if network is online or not (before connecting)
     const isNetworkOnline = navigator.onLine || false;
 
@@ -274,31 +282,26 @@ class BrokerClient {
       Store.$session.setConnected(false);
       Store.$session.setConnecting(false);
 
+      // Increment next connection method index? (used to pick the next \
+      //   connection mode, effectively rolling/circling in available \
+      //   methods)
+      // Notice: only if network was online, meaning we attempted a real \
+      //   network connection, and connection attempt was not delayed, meaning \
+      //   it was most likely user-initiated.
+      if (isNetworkOnline === true && delayedBy === 0) {
+        this.__connector.rollToNextConnectMethod();
+
+        logger.warn(
+          "Rolled next connect method, since network is online but " +
+            "non-delayed connection failed"
+        );
+      }
+
       // Handle connection error (re-throw error after intercepting)
       if (error instanceof ProseConnectionError) {
         switch (error.type) {
           case ProseConnectionErrorType.TimedOut: {
             logger.error("Could not connect: timed out");
-
-            // Increment next connection method index? (used to pick the next \
-            //   connection mode, effectively rolling/circling in available \
-            //   methods)
-            // Notice: only if network was online, meaning we attempted a real \
-            //   network connection.
-            if (isNetworkOnline === true) {
-              this.__connector.rollToNextConnectMethod();
-
-              logger.warn(
-                "Rolled next connect method, since network is online but " +
-                  "connection timed out (another method might be used on " +
-                  "next connection attempt)"
-              );
-            } else {
-              logger.warn(
-                "Connection attempt timed out, but network is also offline, " +
-                  "so this might be normal"
-              );
-            }
 
             break;
           }
