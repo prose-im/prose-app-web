@@ -52,37 +52,6 @@ export default {
 
       fieldsets: [
         {
-          id: "updates",
-          title: "Updates",
-
-          fields: [
-            {
-              id: "channel",
-              type: FormFieldsetFieldType.Select,
-              label: "Channel:",
-
-              data: {
-                value: {
-                  inner: Store.$settings.updates.channel,
-                  change: Store.$settings.setUpdatesChannel
-                },
-
-                placeholder: "Pick an update channel…",
-
-                options: [
-                  {
-                    value: "stable",
-                    label: "Stable (recommended)"
-                  }
-                ],
-
-                position: "bottom"
-              } as FormFieldsetFieldDataSelect
-            }
-          ]
-        },
-
-        {
           id: "privacy",
           title: "Privacy",
 

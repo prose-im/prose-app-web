@@ -25,8 +25,7 @@ import {
   default as FormSettingsEditor,
   Fieldset as FormFieldset,
   FieldsetFieldType as FormFieldsetFieldType,
-  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect,
-  FieldsetFieldDataCheckbox as FormFieldsetFieldDataCheckbox
+  FieldsetFieldDataSelect as FormFieldsetFieldDataSelect
 } from "@/components/form/FormSettingsEditor.vue";
 
 // PROJECT: STORES
@@ -84,65 +83,31 @@ export default {
         },
 
         {
-          id: "availability",
-          title: "Availability",
+          id: "updates",
+          title: "Updates",
 
           fields: [
             {
-              // TODO: implement functionality using this option
-              id: "auto-away-enabled",
-              type: FormFieldsetFieldType.Checkbox,
-              label: "When idle:",
-
-              data: {
-                value: {
-                  inner: Store.$settings.availability.autoAway.enabled,
-                  change: Store.$settings.setAvailabilityAutoAwayEnabled
-                },
-
-                label: "Automatically mark me as away after:"
-              } as FormFieldsetFieldDataCheckbox
-            },
-
-            {
-              // TODO: implement functionality using this option
-              id: "auto-away-after",
+              id: "channel",
               type: FormFieldsetFieldType.Select,
+              label: "Channel:",
 
               data: {
                 value: {
-                  inner: Store.$settings.availability.autoAway.after,
-                  change: Store.$settings.setAvailabilityAutoAwayAfter
+                  inner: Store.$settings.updates.channel,
+                  change: Store.$settings.setUpdatesChannel
                 },
 
-                placeholder: "Pick an away delay…",
+                placeholder: "Pick an update channel…",
 
                 options: [
                   {
-                    value: "1m",
-                    label: "1 minute"
-                  },
-
-                  {
-                    value: "5m",
-                    label: "5 minutes"
-                  },
-
-                  {
-                    value: "15m",
-                    label: "15 minutes"
-                  },
-
-                  {
-                    value: "30m",
-                    label: "30 minutes"
-                  },
-
-                  {
-                    value: "1h",
-                    label: "1 hour"
+                    value: "stable",
+                    label: "Stable (recommended)"
                   }
-                ]
+                ],
+
+                position: "bottom"
               } as FormFieldsetFieldDataSelect
             }
           ]

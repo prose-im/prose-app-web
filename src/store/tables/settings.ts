@@ -37,13 +37,6 @@ const $settings = defineStore("settings", {
         theme: "system"
       },
 
-      availability: {
-        autoAway: {
-          enabled: false,
-          after: "5m"
-        }
-      },
-
       notifications: {
         pause: {
           until: null as number | null
@@ -129,14 +122,6 @@ const $settings = defineStore("settings", {
 
         window.localStorage.setItem(bootStorageKey, value);
       }
-    },
-
-    setAvailabilityAutoAwayEnabled(value: boolean): void {
-      this.setGeneric(this.availability.autoAway, "enabled", value);
-    },
-
-    setAvailabilityAutoAwayAfter(value: string): void {
-      this.setGeneric(this.availability.autoAway, "after", value);
     },
 
     setNotificationsPauseUntil(value: number | null): void {
