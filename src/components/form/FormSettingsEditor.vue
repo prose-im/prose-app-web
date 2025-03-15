@@ -97,6 +97,7 @@
             :position="field.data.position"
             :search="field.data.options.length > 10"
             :disabled="field.data.disabled"
+            options-max-height="160px"
           )
 
           form-checkbox(
