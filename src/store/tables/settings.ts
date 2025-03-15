@@ -50,8 +50,8 @@ const $settings = defineStore("settings", {
             days: "weekdays",
 
             time: {
-              from: "10:00",
-              to: "18:00"
+              from: "08:00",
+              to: "20:00"
             }
           }
         },
