@@ -12,6 +12,27 @@
 import stringFilters from "@/filters/string";
 
 /**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
+
+enum DayOfWeek {
+  // Monday day-of-week
+  Monday = 1,
+  // Tuesday day-of-week
+  Tuesday = 2,
+  // Wednesday day-of-week
+  Wednesday = 3,
+  // Thursday day-of-week
+  Thursday = 4,
+  // Friday day-of-week
+  Friday = 5,
+  // Saturday day-of-week
+  Saturday = 6,
+  // Sunday day-of-week
+  Sunday = 0
+}
+
+/**************************************************************************
  * TYPES
  * ************************************************************************* */
 
@@ -32,10 +53,10 @@ const HOURS_MINUTES_INCREMENTS = 30; // 30 minutes
 
 class UtilitiesDate {
   isWeekend(timestamp: number): boolean {
-    const dayIndex = new Date(timestamp).getDay();
+    const dayIndex = new Date(timestamp).getDay() as DayOfWeek;
 
     // Is it week-end? (Saturday or Sunday)
-    if (dayIndex === 6 || dayIndex === 0) {
+    if (dayIndex === DayOfWeek.Saturday || dayIndex === DayOfWeek.Sunday) {
       return true;
     }
 
