@@ -21,6 +21,7 @@ form-settings-editor(
 
 <script lang="ts">
 // PROJECT: COMPONENTS
+import { Option as FormSelectOption } from "@/components/form/FormSelect.vue";
 import {
   default as FormSettingsEditor,
   Fieldset as FormFieldset,
@@ -32,16 +33,21 @@ import {
 // PROJECT: STORES
 import Store from "@/store";
 
+// PROJECT: UTILITIES
+import UtilitiesDate from "@/utilities/date";
+
+// CONSTANTS
+const WHEN_TIME_START_FROM = "00:00";
+const WHEN_TIME_END_TO = "00:00";
+
 export default {
   name: "AccountSettingsNotifications",
 
   components: { FormSettingsEditor },
 
-  data() {
-    return {
-      // --> DATA <--
-
-      fieldsets: [
+  computed: {
+    fieldsets(): Array<FormFieldset> {
+      return [
         {
           id: "configuration",
           title: "Configuration",
@@ -49,6 +55,9 @@ export default {
           fields: [
             {
               // TODO: implement functionality using this option
+              // TODO: if message is from group and mode is mention then check \
+              //   mentions field of CoreMessage, if should contain a user \
+              //   property with our own JID.
               id: "topics",
               type: FormFieldsetFieldType.Select,
               label: "Notify me about:",
@@ -84,6 +93,8 @@ export default {
 
             {
               // TODO: implement functionality using this option
+              // TODO: do this w/ the replyTo.sender.jid field of CoreMessage \
+              //   is set and not me and from is not me.
               id: "replies",
               type: FormFieldsetFieldType.Checkbox,
 
@@ -103,7 +114,6 @@ export default {
             },
 
             {
-              // TODO: implement functionality using this option
               id: "when-days",
               type: FormFieldsetFieldType.Select,
               label: "Get notified:",
@@ -133,7 +143,6 @@ export default {
             },
 
             {
-              // TODO: implement functionality using this option
               id: "when-time-from",
               type: FormFieldsetFieldType.Select,
               label: "From time:",
@@ -142,18 +151,14 @@ export default {
                 value: {
                   inner:
                     Store.$settings.notifications.configuration.when.time.from,
-                  change:
-                    Store.$settings.setNotificationsConfigurationWhenTimeFrom
+                  change: this.onFieldsetConfigurationWhenTimeFromChange
                 },
 
                 placeholder: "Pick time…",
 
                 options: [
-                  {
-                    // TODO: generate list of suggested times
-                    value: "10:00",
-                    label: "10:00"
-                  }
+                  ...this.listWhenTimeOptions(""),
+                  ...this.listWhenTimeOptions(WHEN_TIME_START_FROM)
                 ],
 
                 position: "bottom"
@@ -161,7 +166,6 @@ export default {
             },
 
             {
-              // TODO: implement functionality using this option
               id: "when-time-to",
               type: FormFieldsetFieldType.Select,
               label: "To time:",
@@ -176,15 +180,17 @@ export default {
 
                 placeholder: "Pick time…",
 
-                options: [
-                  {
-                    // TODO: generate list of suggested times
-                    value: "18:00",
-                    label: "18:00"
-                  }
-                ],
+                options: this.listWhenTimeOptions(
+                  Store.$settings.notifications.configuration.when.time.from,
+                  true
+                ),
 
-                position: "bottom"
+                position: "bottom",
+
+                disabled: !Store.$settings.notifications.configuration.when.time
+                  .from
+                  ? true
+                  : false
               } as FormFieldsetFieldDataSelect
             }
           ]
@@ -196,7 +202,6 @@ export default {
 
           fields: [
             {
-              // TODO: implement functionality using this option
               id: "notify-badge",
               type: FormFieldsetFieldType.Checkbox,
               label: "When notified:",
@@ -226,7 +231,6 @@ export default {
             },
 
             {
-              // TODO: implement functionality using this option
               id: "notify-banner",
               type: FormFieldsetFieldType.Checkbox,
 
@@ -241,8 +245,44 @@ export default {
             }
           ]
         }
-      ] as Array<FormFieldset>
-    };
+      ];
+    }
+  },
+
+  methods: {
+    // --> HELPERS <--
+
+    listWhenTimeOptions(
+      fromValue: string,
+      withOffset = false
+    ): Array<FormSelectOption> {
+      // Generate options? (any from value set)
+      if (fromValue) {
+        return Array.from(
+          UtilitiesDate.hoursMinutesAfter(fromValue, withOffset)
+        ).map(value => {
+          return {
+            value: value,
+            label: value
+          };
+        });
+      }
+
+      // Do not generate any option
+      return [
+        {
+          value: "",
+          label: "All the time"
+        }
+      ];
+    },
+
+    // --> EVENT LISTENERS <--
+
+    onFieldsetConfigurationWhenTimeFromChange(value: string): void {
+      Store.$settings.setNotificationsConfigurationWhenTimeFrom(value);
+      Store.$settings.setNotificationsConfigurationWhenTimeTo(WHEN_TIME_END_TO);
+    }
   }
 };
 </script>

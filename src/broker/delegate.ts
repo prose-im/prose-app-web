@@ -27,6 +27,8 @@ import {
 } from "@/store/tables/inbox";
 
 // PROJECT: UTILITIES
+import UtilitiesContext from "@/utilities/context";
+import UtilitiesDate from "@/utilities/date";
 import { AudioSound, default as UtilitiesAudio } from "@/utilities/audio";
 import UtilitiesRuntime from "@/utilities/runtime";
 import logger from "@/utilities/logger";
@@ -140,6 +142,7 @@ class BrokerDelegate implements ProseClientDelegate {
       } with identifiers: ${messageIDs.join(", ")}`
     );
 
+    // Load messages corresponding to identifiers
     const messages = await room.loadMessagesWithIDs(messageIDs);
 
     // Insert all appended messages (in insert mode since messages got appended)
@@ -155,8 +158,7 @@ class BrokerDelegate implements ProseClientDelegate {
         selfAvailability = Store.$account.getInformationAvailability();
 
       // Check if user can be notified
-      const hasNotifications =
-        (Store.$settings.notifications.pause.until || 0) <= Date.now();
+      const hasNotifications = UtilitiesContext.areNotificationsPermitted();
 
       // Play incoming message sound? (check if sounds are allowed or not)
       // Notice: do not play if user is in DND mode (should mute audible alerts)
