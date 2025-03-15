@@ -114,6 +114,11 @@ class FilterString {
 
     return null;
   }
+
+  padNumber(number: number, padding = 2): string {
+    // Prepend zeroes at the beginning of the number (represented as a string)
+    return `${number}`.padStart(padding, "0");
+  }
 }
 
 /**************************************************************************
