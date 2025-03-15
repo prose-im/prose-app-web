@@ -54,10 +54,6 @@ export default {
 
           fields: [
             {
-              // TODO: implement functionality using this option
-              // TODO: if message is from group and mode is mention then check \
-              //   mentions field of CoreMessage, if should contain a user \
-              //   property with our own JID.
               id: "topics",
               type: FormFieldsetFieldType.Select,
               label: "Notify me about:",
@@ -92,9 +88,6 @@ export default {
             },
 
             {
-              // TODO: implement functionality using this option
-              // TODO: do this w/ the replyTo.sender.jid field of CoreMessage \
-              //   is set and not me and from is not me.
               id: "replies",
               type: FormFieldsetFieldType.Checkbox,
 
@@ -104,7 +97,8 @@ export default {
                   change: Store.$settings.setNotificationsConfigurationReplies
                 },
 
-                label: "Let me know when I receive a message reply"
+                label: "Let me know when I receive a message reply",
+                disabled: this.hasDoNotNotify
               } as FormFieldsetFieldDataCheckbox
             },
 
@@ -138,7 +132,8 @@ export default {
                   }
                 ],
 
-                position: "bottom"
+                position: "bottom",
+                disabled: this.hasDoNotNotify
               } as FormFieldsetFieldDataSelect
             },
 
@@ -161,7 +156,8 @@ export default {
                   ...this.listWhenTimeOptions(WHEN_TIME_START_FROM)
                 ],
 
-                position: "bottom"
+                position: "bottom",
+                disabled: this.hasDoNotNotify
               } as FormFieldsetFieldDataSelect
             },
 
@@ -190,7 +186,7 @@ export default {
                 disabled: !Store.$settings.notifications.configuration.when.time
                   .from
                   ? true
-                  : false
+                  : this.hasDoNotNotify
               } as FormFieldsetFieldDataSelect
             }
           ]
@@ -246,6 +242,10 @@ export default {
           ]
         }
       ];
+    },
+
+    hasDoNotNotify(): boolean {
+      return Store.$settings.notifications.configuration.topics === "nothing";
     }
   },
 
