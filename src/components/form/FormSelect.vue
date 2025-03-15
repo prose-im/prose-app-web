@@ -92,6 +92,9 @@ div(
       )
 
     ul.c-form-select__options(
+      :style=`{
+        maxHeight: optionsMaxHeight
+      }`
       ref="options"
     )
       li(
@@ -235,6 +238,11 @@ export default {
     loading: {
       type: Boolean,
       default: false
+    },
+
+    optionsMaxHeight: {
+      type: String,
+      default: null
     },
 
     search: {
