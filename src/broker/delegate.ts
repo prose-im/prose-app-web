@@ -28,7 +28,6 @@ import {
 
 // PROJECT: UTILITIES
 import UtilitiesContext from "@/utilities/context";
-import UtilitiesDate from "@/utilities/date";
 import { AudioSound, default as UtilitiesAudio } from "@/utilities/audio";
 import UtilitiesRuntime from "@/utilities/runtime";
 import logger from "@/utilities/logger";
@@ -157,8 +156,17 @@ class BrokerDelegate implements ProseClientDelegate {
       const selfJIDString = Store.$account.getSelfJID().toString(),
         selfAvailability = Store.$account.getInformationAvailability();
 
+      // Get first message that's not from self
+      const firstNonSelfMessage = messages.find(message => {
+        return message.from !== selfJIDString;
+      });
+
       // Check if user can be notified
-      const hasNotifications = UtilitiesContext.areNotificationsPermitted();
+      const hasNotifications =
+        UtilitiesContext.areMessageNotificationsPermitted(
+          room,
+          firstNonSelfMessage
+        );
 
       // Play incoming message sound? (check if sounds are allowed or not)
       // Notice: do not play if user is in DND mode (should mute audible alerts)
@@ -167,13 +175,7 @@ class BrokerDelegate implements ProseClientDelegate {
         selfAvailability !== Availability.DoNotDisturb &&
         Store.$settings.notifications.action.notify.sound === true
       ) {
-        const firstNonSelfMessage = messages.find(message => {
-          return message.from !== selfJIDString;
-        });
-
-        if (firstNonSelfMessage) {
-          UtilitiesAudio.play(AudioSound.AlertMessageReceive);
-        }
+        UtilitiesAudio.play(AudioSound.AlertMessageReceive);
       }
 
       // Send incoming message banner? (check if banners are allowed or not)
