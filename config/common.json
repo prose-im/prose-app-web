@@ -2,7 +2,8 @@
   "platform": "web",
 
   "url": {
-    "prose_help": "https://help.prose.org"
+    "prose_help": "https://help.prose.org",
+    "nominatim_geocoder": "https://nominatim.openstreetmap.org"
   },
 
   "context": {
