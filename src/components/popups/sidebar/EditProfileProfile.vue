@@ -43,6 +43,18 @@ import {
 // PROJECT: POPUPS
 import { FormProfile as ProfileFormProfile } from "@/popups/sidebar/EditProfile.vue";
 
+// ENUMERATIONS
+enum GeolocationPermission {
+  // Not yet allowed permission.
+  NotYetAllowed = "not-yet-allowed",
+  // Disallowed permission.
+  Disallowed = "disallowed",
+  // Allowed permission.
+  Allowed = "allowed",
+  // Unknown permission.
+  Unknown = "unknown"
+}
+
 export default {
   name: "EditProfileProfile",
 
@@ -64,7 +76,35 @@ export default {
     return {
       // --> DATA <--
 
-      fieldsets: [
+      locationCountryOptions: countries.map(country => {
+        return {
+          value: country.code,
+          label: country.name
+        };
+      }),
+
+      locationCountryIcon: {
+        component: shallowRef(BaseFlag),
+
+        properties: (value: string) => {
+          return {
+            code: value,
+            width: "20px",
+            height: "15px",
+            shadow: "none"
+          };
+        }
+      },
+
+      // --> STATE <--
+
+      geolocationPermission: GeolocationPermission.Unknown
+    };
+  },
+
+  computed: {
+    fieldsets(): Array<FormFieldset> {
+      return [
         {
           id: "job",
           title: "Job information",
@@ -108,15 +148,12 @@ export default {
 
           fields: [
             {
-              // TODO: implement functionality using this option
               id: "automatic",
               type: FormFieldsetFieldType.Toggle,
               label: "Auto-detect:",
 
               data: {
-                value: {
-                  inner: false
-                }
+                value: this.form.locationAutodetect
               } as FormFieldsetFieldDataToggle
             },
 
@@ -127,7 +164,8 @@ export default {
 
               data: {
                 value: this.form.locationCity,
-                placeholder: "Enter your current city…"
+                placeholder: "Enter your current city…",
+                disabled: this.form.locationAutodetect.inner || false
               } as FormFieldsetFieldDataInput
             },
 
@@ -140,25 +178,9 @@ export default {
                 value: this.form.locationCountry,
                 placeholder: "Pick a country…",
 
-                options: countries.map(country => {
-                  return {
-                    value: country.code,
-                    label: country.name
-                  };
-                }),
-
-                icon: {
-                  component: shallowRef(BaseFlag),
-
-                  properties: (value: string) => {
-                    return {
-                      code: value,
-                      width: "20px",
-                      height: "15px",
-                      shadow: "none"
-                    };
-                  }
-                }
+                options: this.locationCountryOptions,
+                icon: this.locationCountryIcon,
+                disabled: this.form.locationAutodetect.inner || false
               } as FormFieldsetFieldDataSelect
             }
           ],
@@ -167,25 +189,34 @@ export default {
             {
               id: "location-mode",
               label: "Location mode:",
-              value: "Manual", // TODO: need to geocode lat/lon to city/country
-              icon: FormFieldsetControlIconType.LocationInactive
+
+              value: this.form.locationAutodetect.inner
+                ? "Automatic"
+                : "Manual",
+
+              icon: this.form.locationAutodetect.inner
+                ? FormFieldsetControlIconType.LocationActive
+                : FormFieldsetControlIconType.LocationInactive
             },
 
             {
               id: "location-permission",
               label: "Geolocation permission:",
-              value: "Disallowed", // TODO: from configuration
+              value: this.locationPermissionDetails.label,
+              color: this.locationPermissionDetails.color,
+              emphasis: this.locationPermissionDetails.emphasis,
 
-              actions: [
-                {
-                  type: FormFieldsetControlActionType.Button,
+              actions: this.locationPermissionDetails.action
+                ? [
+                    {
+                      type: FormFieldsetControlActionType.Button,
 
-                  data: {
-                    text: "Manage",
-                    disabled: true
-                  } as FormFieldsetControlActionDataButton
-                }
-              ]
+                      data: {
+                        text: "Allow"
+                      } as FormFieldsetControlActionDataButton
+                    }
+                  ]
+                : undefined
             }
           ],
 
@@ -198,8 +229,85 @@ export default {
             aside: FormFieldsetOptionAside.Fixed
           }
         }
-      ] as Array<FormFieldset>
-    };
+      ];
+    },
+
+    locationPermissionDetails(): {
+      label: string;
+      color: string;
+      emphasis?: boolean;
+      action?: boolean;
+    } {
+      switch (this.geolocationPermission) {
+        case GeolocationPermission.NotYetAllowed: {
+          return {
+            label: "Not yet allowed",
+            color: this.form.locationAutodetect.inner ? "orange" : "grey",
+            emphasis: this.form.locationAutodetect.inner || false
+            // action: true -- TODO: add action
+          };
+        }
+
+        case GeolocationPermission.Disallowed: {
+          return {
+            label: "Disallowed",
+            color: "red",
+            emphasis: this.form.locationAutodetect.inner || false
+          };
+        }
+
+        case GeolocationPermission.Allowed: {
+          return {
+            label: "Allowed",
+            color: this.form.locationAutodetect.inner ? "green" : "grey"
+          };
+        }
+
+        default: {
+          return {
+            label: "Unknown",
+            color: "grey"
+          };
+        }
+      }
+    }
+  },
+
+  async mounted() {
+    // Check for geolocation permission
+    this.geolocationPermission = await this.acquireGeolocationPermission();
+  },
+
+  methods: {
+    // --> HELPERS <--
+
+    async acquireGeolocationPermission(): Promise<GeolocationPermission> {
+      try {
+        // Request geolocation permission
+        const permission = await navigator.permissions.query({
+          name: "geolocation"
+        });
+
+        // Handle acquired permission
+        switch (permission.state) {
+          case "granted": {
+            return GeolocationPermission.Allowed;
+          }
+
+          case "denied": {
+            return GeolocationPermission.Disallowed;
+          }
+
+          case "prompt": {
+            return GeolocationPermission.NotYetAllowed;
+          }
+        }
+      } catch (error) {
+        this.$log.error("Failed acquiring geolocation permission", error);
+
+        return GeolocationPermission.Unknown;
+      }
+    }
   }
 };
 </script>

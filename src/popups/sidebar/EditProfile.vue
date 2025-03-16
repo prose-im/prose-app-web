@@ -90,6 +90,7 @@ import { SaveAvatarRequest } from "@/broker/modules/profile";
 
 // TYPES
 type FormValueString = { inner: string };
+type FormValueBoolean = { inner: boolean };
 
 // INTERFACES
 export interface FormIdentity {
@@ -107,6 +108,7 @@ export interface FormAuthentication {
 export interface FormProfile {
   jobOrganization: FormValueString;
   jobTitle: FormValueString;
+  locationAutodetect: FormValueBoolean;
   locationCity: FormValueString;
   locationCountry: FormValueString;
 }
@@ -189,6 +191,7 @@ export default {
             form: {
               jobOrganization: { inner: "" },
               jobTitle: { inner: "" },
+              locationAutodetect: { inner: false },
               locationCity: { inner: "" },
               locationCountry: { inner: "" }
             } as FormProfile
@@ -250,7 +253,7 @@ export default {
         this.fetching = true;
 
         try {
-          await Promise.all([this.syncVCard()]);
+          await Promise.all([this.syncStore(), this.syncVCard()]);
         } catch (error) {
           this.$log.error("Failed loading profile", error);
 
@@ -262,12 +265,25 @@ export default {
       }
     },
 
+    async syncStore(): Promise<void> {
+      // Apply store to form
+      this.storeDataToForms();
+    },
+
     async syncVCard(): Promise<void> {
       // Load profile vCard (force a reload)
       const profile = await Store.$profile.loadUserProfile(this.selfJID, true);
 
       // Apply new profile data to form
       this.vCardDataToForms(profile);
+    },
+
+    storeDataToForms(): void {
+      const formProfile = this.contentSections.profile.properties.form;
+
+      // Populate profile form
+      formProfile.locationAutodetect.inner =
+        Store.$settings.profile.location.autodetect || false;
     },
 
     vCardDataToForms(profile: ProfileEntry): void {
@@ -292,6 +308,13 @@ export default {
 
       formProfile.locationCountry.inner =
         profile.information?.location?.country || "";
+    },
+
+    formsToStoreApply(formProfile: FormProfile): void {
+      // Save profile
+      Store.$settings.setProfileLocationAutodetect(
+        formProfile.locationAutodetect.inner
+      );
     },
 
     formsToUserProfile(
@@ -353,6 +376,9 @@ export default {
     async onSave(): Promise<void> {
       if (this.fetching !== true && this.saving !== true) {
         this.saving = true;
+
+        // Apply forms in store
+        this.formsToStoreApply(this.contentSections.profile.properties.form);
 
         // Generate vCard save data
         const vCardData = this.formsToUserProfile(
