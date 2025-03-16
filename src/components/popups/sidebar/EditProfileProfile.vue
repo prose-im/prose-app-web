@@ -44,44 +44,19 @@ import {
 // PROJECT: POPUPS
 import { FormProfile as ProfileFormProfile } from "@/popups/sidebar/EditProfile.vue";
 
-// PROJECT: COMMONS
-import CONFIG from "@/commons/config";
+// PROJECT: UTILITIES
+import {
+  default as UtilitiesGeolocation,
+  GeolocationPermission
+} from "@/utilities/geolocation";
 
 // ENUMERATIONS
-enum GeolocationPermission {
-  // Not yet allowed permission.
-  NotYetAllowed = "not-yet-allowed",
-  // Disallowed permission.
-  Disallowed = "disallowed",
-  // Allowed permission.
-  Allowed = "allowed",
-  // FailedToObtain permission.
-  FailedToObtain = "failed-to-obtain",
-  // Unknown permission.
-  Unknown = "unknown"
-}
-
-enum GeolocationAction {
+enum LocationPermissionAction {
   // Allow action.
   Allow = "allow",
   // Refresh action.
   Refresh = "refresh"
 }
-
-// INTERFACES
-interface GeolocationPositionCoordinates {
-  latitude: number;
-  longitude: number;
-}
-
-interface GeolocationPositionAddress {
-  cityName: string;
-  countryCode: string;
-}
-
-// CONSTANTS
-const GEOLOCATION_ACQUIRE_STALE_AGE = 3600000; // 1 hour
-const GEOLOCATION_ACQUIRE_TIMEOUT = 10000; // 10 seconds
 
 export default {
   name: "EditProfileProfile",
@@ -242,7 +217,7 @@ export default {
                       type: FormFieldsetControlActionType.Button,
 
                       data: (this.locationPermissionDetails.action ===
-                      GeolocationAction.Refresh
+                      LocationPermissionAction.Refresh
                         ? {
                             text: this.isRefreshingGeolocationPosition
                               ? "Refreshing"
@@ -263,7 +238,7 @@ export default {
 
           notes: [
             "You can opt-in to automatic location detection. It is handy if you travel a lot, and would like to easily update your location in a single click. Your current city and country will be shared, not your exact GPS location.",
-            "Note that geolocation permissions are required for automatic mode."
+            "Note that geolocation permissions are required for the auto-detect mode."
           ],
 
           options: {
@@ -277,7 +252,7 @@ export default {
       label: string;
       color: string;
       emphasis?: boolean;
-      action?: GeolocationAction;
+      action?: LocationPermissionAction;
     } {
       switch (this.geolocationPermission) {
         case GeolocationPermission.NotYetAllowed: {
@@ -285,7 +260,7 @@ export default {
             label: "Not yet allowed",
             color: this.form.locationAutodetect.inner ? "orange" : "grey",
             emphasis: this.form.locationAutodetect.inner || false,
-            action: GeolocationAction.Allow
+            action: LocationPermissionAction.Allow
           };
         }
 
@@ -303,7 +278,7 @@ export default {
             color: this.form.locationAutodetect.inner ? "green" : "grey",
 
             action: this.form.locationAutodetect.inner
-              ? GeolocationAction.Refresh
+              ? LocationPermissionAction.Refresh
               : undefined
           };
         }
@@ -336,25 +311,8 @@ export default {
 
     async acquireGeolocationPermission(): Promise<GeolocationPermission> {
       try {
-        // Request geolocation permission
-        const permission = await navigator.permissions.query({
-          name: "geolocation"
-        });
-
-        // Handle acquired permission
-        switch (permission.state) {
-          case "granted": {
-            return GeolocationPermission.Allowed;
-          }
-
-          case "denied": {
-            return GeolocationPermission.Disallowed;
-          }
-
-          case "prompt": {
-            return GeolocationPermission.NotYetAllowed;
-          }
-        }
+        // Acquire geolocation permission
+        return await UtilitiesGeolocation.permission();
       } catch (error) {
         this.$log.error("Failed acquiring geolocation permission", error);
 
@@ -362,81 +320,17 @@ export default {
       }
     },
 
-    async obtainGeolocationPositionCoordinates(): Promise<GeolocationPositionCoordinates | null> {
-      return new Promise((resolve, reject) => {
-        try {
-          navigator.geolocation.getCurrentPosition(
-            position => {
-              // Resolve with success
-              resolve({
-                latitude: position.coords.latitude,
-                longitude: position.coords.longitude
-              });
-            },
-
-            () => {
-              // Reject with error
-              resolve(null);
-            },
-
-            {
-              timeout: GEOLOCATION_ACQUIRE_TIMEOUT,
-              maximumAge: GEOLOCATION_ACQUIRE_STALE_AGE
-            }
-          );
-        } catch (error) {
-          // Reject with error
-          reject(error);
-        }
-      });
-    },
-
-    async obtainGeolocationPositionAddress(
-      coordinates: GeolocationPositionCoordinates
-    ): Promise<GeolocationPositionAddress> {
-      // Geocode obtained coordinates (to a city and a country)
-      const geocoderQuery = new URLSearchParams();
-
-      geocoderQuery.append("format", "jsonv2");
-      geocoderQuery.append("lat", `${coordinates.latitude}`);
-      geocoderQuery.append("lon", `${coordinates.longitude}`);
-
-      const geocoderResponse = await fetch(
-        `${CONFIG.url.nominatim_geocoder}/reverse?${geocoderQuery}`,
-        {
-          mode: "cors"
-        }
-      );
-
-      if (geocoderResponse.ok !== true) {
-        throw new Error("Geocoding request failed");
-      }
-
-      const geocoding = (await geocoderResponse.json()) || {};
-
-      if (geocoding.address?.city && geocoding.address?.country_code) {
-        return {
-          cityName: geocoding.address.city,
-          countryCode: geocoding.address.country_code.toUpperCase()
-        };
-      }
-
-      throw new Error("Geocoding got no result");
-    },
-
     // --> EVENT LISTENERS <--
 
     async onFieldsetLocationPermissionAllowClick(): Promise<void> {
       try {
-        // Obtain geolocation position (this will request for permission if \
-        //   needed)
-        const coordinates = await this.obtainGeolocationPositionCoordinates();
+        // Obtain consent from user for the geolocation permission
+        const isPermitted = await UtilitiesGeolocation.grant();
 
         // Mark as allowed or disallowed?
-        this.geolocationPermission =
-          coordinates === null
-            ? GeolocationPermission.Disallowed
-            : GeolocationPermission.Allowed;
+        this.geolocationPermission = isPermitted
+          ? GeolocationPermission.Allowed
+          : GeolocationPermission.Disallowed;
       } catch (error) {
         this.$log.error("Failed obtaining geolocation allow permission", error);
 
@@ -454,7 +348,7 @@ export default {
 
         try {
           // Obtain geolocation position
-          const coordinates = await this.obtainGeolocationPositionCoordinates();
+          const coordinates = await UtilitiesGeolocation.coordinates();
 
           // No geolocation position obtained?
           if (coordinates === null) {
@@ -462,21 +356,35 @@ export default {
           }
 
           // Geocode obtained coordinates (to a city and a country)
-          const address = await this.obtainGeolocationPositionAddress(
-            coordinates
-          );
+          const address = await UtilitiesGeolocation.address(coordinates);
+
+          // No address obtained?
+          if (address === null) {
+            throw new Error("Address not found");
+          }
 
           // Update user city and country (in form)
           const form = this.form;
 
-          form.locationCity.inner = address.cityName;
-          form.locationCountry.inner = address.countryCode;
+          if (
+            form.locationCity.inner !== address.cityName ||
+            form.locationCountry.inner !== address.countryCode
+          ) {
+            form.locationCity.inner = address.cityName;
+            form.locationCountry.inner = address.countryCode;
 
-          // Show success alert
-          BaseAlert.success(
-            "Location refreshed",
-            "Please save your profile to confirm"
-          );
+            // Show success alert
+            BaseAlert.success(
+              "Location refreshed",
+              "Please save your profile to confirm"
+            );
+          } else {
+            // Show information alert
+            BaseAlert.info(
+              "Location unchanged",
+              "Your location did not change"
+            );
+          }
         } catch (error) {
           this.$log.error("Failed obtaining geolocation fresh position", error);
 
