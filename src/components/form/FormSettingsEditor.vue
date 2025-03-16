@@ -198,7 +198,12 @@
       form-fieldset-control(
         v-for="control in fieldset.controls"
         :label="control.label"
-        class="c-form-settings-editor__control"
+        :class=`[
+          "c-form-settings-editor__control",
+          {
+            ["c-form-settings-editor__control--" + control.color]: control.color
+          }
+        ]`
       )
         template(
           v-slot:default
@@ -213,7 +218,15 @@
             ]`
           )
 
-          | {{ control.value }}
+          span(
+            :class=`[
+              "c-form-settings-editor__control-text",
+              {
+                "u-medium": control.emphasis
+              }
+            ]`
+          )
+            | {{ control.value }}
 
         template(
           v-if="control.actions && control.actions.length > 0"
@@ -435,6 +448,8 @@ interface FieldsetControl {
   id: string;
   label: string;
   value: string;
+  color?: string;
+  emphasis?: boolean;
   icon?: FieldsetControlIconType;
   actions?: Array<FieldsetControlAction>;
 }
@@ -639,6 +654,30 @@ $c: ".c-form-settings-editor";
 
         &--green {
           fill: rgb(var(--color-base-green-normal));
+        }
+      }
+
+      &--grey {
+        #{$c}__control-text {
+          color: rgb(var(--color-base-grey-normal));
+        }
+      }
+
+      &--green {
+        #{$c}__control-text {
+          color: rgb(var(--color-base-green-normal));
+        }
+      }
+
+      &--orange {
+        #{$c}__control-text {
+          color: rgb(var(--color-base-orange-normal));
+        }
+      }
+
+      &--red {
+        #{$c}__control-text {
+          color: rgb(var(--color-base-red-normal));
         }
       }
     }
