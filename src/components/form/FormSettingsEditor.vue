@@ -237,6 +237,7 @@
           )
             base-button(
               v-if="action.type === 'button'",
+              @click="action.data.click"
               :disabled="action.data.disabled"
               tint="light"
               size="mid-small"
