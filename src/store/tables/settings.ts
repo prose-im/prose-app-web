@@ -97,6 +97,12 @@ const $settings = defineStore("settings", {
 
       network: {
         connection: "auto"
+      },
+
+      profile: {
+        location: {
+          autodetect: false
+        }
       }
     };
   },
@@ -213,6 +219,10 @@ const $settings = defineStore("settings", {
       if (hasChanged === true) {
         Broker.client.refresh();
       }
+    },
+
+    setProfileLocationAutodetect(value: boolean): void {
+      this.setGeneric(this.profile.location, "autodetect", value);
     },
 
     setGeneric<ValueType>(
