@@ -386,12 +386,6 @@ export default {
         },
 
         {
-          type: PopoverItemType.Button,
-          label: "Account settings",
-          click: this.onAvatarPopoverAccountSettingsClick
-        },
-
-        {
           type: PopoverItemType.Divider
         },
 
@@ -431,6 +425,16 @@ export default {
               click: this.onActionsPopoverSwitchTeamClick
             }
           ]
+        },
+
+        {
+          type: PopoverItemType.Divider
+        },
+
+        {
+          type: PopoverItemType.Button,
+          label: "Account settings",
+          click: this.onActionsPopoverAccountSettingsClick
         }
       ];
     },
@@ -544,7 +548,7 @@ export default {
       switch (target) {
         case "settings": {
           // Request to open account settings (alias click event)
-          this.onAvatarPopoverAccountSettingsClick();
+          this.onActionsPopoverAccountSettingsClick();
 
           break;
         }
@@ -653,14 +657,6 @@ export default {
       this.popups.editProfile.visible = true;
     },
 
-    onAvatarPopoverAccountSettingsClick(): void {
-      // Hide avatar popover
-      this.isAvatarPopoverVisible = false;
-
-      // Show account settings popup
-      this.popups.accountSettings.visible = true;
-    },
-
     onAvatarPopoverSignOutClick(): void {
       // Hide avatar popover
       this.isAvatarPopoverVisible = false;
@@ -672,6 +668,14 @@ export default {
     onActionsPopoverSwitchTeamClick(): void {
       // Hide actions popover
       this.isActionsPopoverVisible = false;
+    },
+
+    onActionsPopoverAccountSettingsClick(): void {
+      // Hide actions popover
+      this.isActionsPopoverVisible = false;
+
+      // Show account settings popup
+      this.popups.accountSettings.visible = true;
     },
 
     onCurrentStatusDefineClick(): void {
