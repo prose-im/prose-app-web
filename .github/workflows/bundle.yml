@@ -184,3 +184,28 @@ jobs:
           AWS_EC2_METADATA_DISABLED: true
         run: |
           aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} manifest.json s3://${{ vars.S3_BUCKET }}/updates/latest.json
+
+  update-homebrew-cask:
+    name: Update Homebrew cask
+    needs: [bundle, publish-version]
+    environment: bundle-publish
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.bundle.outputs.tag }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: prose-im/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_ACCESS_TOKEN }}
+
+      # NOTE: Recommended by [the Task documentation](https://taskfile.dev/installation/#github-actions).
+      - name: Install Task
+        uses: arduino/setup-task@v2
+
+      - name: Update the cask
+        run: task update:prose -- "${{ env.VERSION }}" -y --commit
+
+      - name: Update the tap
+        run: git push origin master
