@@ -187,7 +187,7 @@ jobs:
 
   update-homebrew-cask:
     name: Update Homebrew cask
-    needs: [bundle, publish-version]
+    needs: [bundle, publish-manifest]
     environment: bundle-publish
     runs-on: ubuntu-latest
     env:
