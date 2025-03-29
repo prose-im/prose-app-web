@@ -150,7 +150,7 @@ const $account = defineStore("account", {
 
       try {
         jid = new JID(rawJID);
-      } catch (e) {
+      } catch (_) {
         throw new Error("Please provide a valid Jabber ID");
       }
 
