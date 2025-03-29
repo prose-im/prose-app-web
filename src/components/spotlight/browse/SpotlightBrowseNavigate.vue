@@ -142,7 +142,7 @@ $c: ".c-spotlight-browse-navigate";
 
     &--active {
       #{$c}__section-icon {
-        fill: rgb(var(--color-white));
+        fill: rgb(var(--color-accent-text));
       }
     }
   }

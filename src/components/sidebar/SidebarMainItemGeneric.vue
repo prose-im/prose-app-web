@@ -232,7 +232,7 @@ $c: ".c-sidebar-main-item-generic";
   &--active {
     #{$c}__draft,
     #{$c}__error {
-      fill: rgb(var(--color-white));
+      fill: rgb(var(--color-accent-text));
     }
   }
 }

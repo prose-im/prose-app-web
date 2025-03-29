@@ -172,7 +172,7 @@ $availabilities: (
       }
 
       &#{$c}--active {
-        background-color: rgb(var(--color-white));
+        background-color: rgb(var(--color-accent-text));
       }
     }
   }
@@ -180,7 +180,7 @@ $availabilities: (
   // --> BOOLEANS <--
 
   &--active {
-    border-color: rgb(var(--color-white));
+    border-color: rgb(var(--color-accent-text));
   }
 
   &--hide-offline {

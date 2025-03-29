@@ -191,7 +191,7 @@ $composing-dot-size: 3px;
   &--active {
     #{$c}__composing {
       #{$c}__composing-dot {
-        background-color: rgb(var(--color-white));
+        background-color: rgb(var(--color-accent-text));
       }
     }
   }

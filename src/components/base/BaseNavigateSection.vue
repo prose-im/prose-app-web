@@ -110,7 +110,7 @@ $icon-size: 28px;
     border-radius: 6px;
 
     #{$c}__icon-inner {
-      fill: rgb(var(--color-white));
+      fill: rgb(var(--color-accent-text));
     }
   }
 
@@ -137,7 +137,7 @@ $icon-size: 28px;
   }
 
   #{$c}__arrow {
-    fill: rgb(var(--color-white));
+    fill: rgb(var(--color-accent-text));
     margin-inline-start: 8px;
     flex: 0 0 auto;
     visibility: hidden;
@@ -183,11 +183,11 @@ $icon-size: 28px;
 
       #{$c}__text {
         #{$c}__text-title {
-          color: rgb(var(--color-text-reverse));
+          color: rgb(var(--color-accent-text));
         }
 
         #{$c}__text-label {
-          color: rgba(var(--color-text-reverse), 0.7);
+          color: rgba(var(--color-accent-text), 0.7);
         }
       }
 

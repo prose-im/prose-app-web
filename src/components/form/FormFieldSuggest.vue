@@ -329,7 +329,7 @@ $suggest-sizes: (
 
         #{$c}__link-icon {
           &:is(svg) {
-            fill: rgb(var(--color-white));
+            fill: rgb(var(--color-accent-text));
           }
         }
       }
