@@ -20,6 +20,7 @@ div(
 )
   sidebar-header(
     @add-contact="onAddContact"
+    :jid="selfJID"
     :translucent="runtimeTranslucent"
     :class=`[
       "a-app-sidebar__header",

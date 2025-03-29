@@ -27,9 +27,10 @@ div(
     )
       base-server-logo(
         @click="onIdentityLogoClick"
-        class="c-sidebar-header__identity-logo"
-        domain="prose.org"
+        :jid="teamDomainJID"
+        :name="teamName"
         size="30px"
+        class="c-sidebar-header__identity-logo"
       )
 
     base-popover-list(
@@ -62,6 +63,13 @@ div(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@prose-im/prose-sdk-js";
+
+// PROJECT: STORES
+import Store from "@/store";
+
 // PROJECT: COMPONENTS
 import {
   Item as PopoverItem,
@@ -78,6 +86,11 @@ export default {
   name: "SidebarHeader",
 
   props: {
+    jid: {
+      type: Object as PropType<JID>,
+      required: true
+    },
+
     translucent: {
       type: Boolean,
       default: false
@@ -111,17 +124,6 @@ export default {
           type: PopoverItemType.Button,
           label: "Create a channel",
           click: this.onIdentityPopoverCreateChannelClick
-        },
-
-        {
-          type: PopoverItemType.Divider
-        },
-
-        {
-          type: PopoverItemType.Button,
-          label: "Manage server",
-          emphasis: true,
-          disabled: true
         }
       ];
     },
@@ -131,6 +133,14 @@ export default {
         "ctrl+n": this.onHotkeyControlN,
         "command+n": this.onHotkeyControlN
       };
+    },
+
+    teamDomainJID(): JID {
+      return new JID(this.jid.domain);
+    },
+
+    teamName(): string {
+      return Store.$account.getTeamName();
     }
   },
 

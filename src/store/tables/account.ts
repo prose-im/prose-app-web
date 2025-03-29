@@ -43,6 +43,11 @@ interface Account {
     name: string;
     availability: Availability;
   };
+
+  team: {
+    name: string;
+    accent: string;
+  };
 }
 
 /**************************************************************************
@@ -50,7 +55,8 @@ interface Account {
  * ************************************************************************* */
 
 const LOCAL_STATES = {
-  informationLoaded: false
+  informationLoaded: false,
+  teamLoaded: false
 };
 
 const INFORMATION_AVAILABILITY_DEFAULT = Availability.Available;
@@ -78,6 +84,11 @@ const $account = defineStore("account", {
         jid: "",
         name: "",
         availability: INFORMATION_AVAILABILITY_DEFAULT
+      },
+
+      team: {
+        name: "",
+        accent: ""
       }
     };
   },
@@ -113,6 +124,18 @@ const $account = defineStore("account", {
     getInformationAvailability: function () {
       return (): Availability => {
         return this.information.availability;
+      };
+    },
+
+    getTeamName: function () {
+      return (): string => {
+        return this.team.name;
+      };
+    },
+
+    getTeamAccent: function () {
+      return (): string => {
+        return this.team.accent;
       };
     }
   },
@@ -188,6 +211,10 @@ const $account = defineStore("account", {
         state.information.jid = "";
         state.information.name = "";
         state.information.availability = INFORMATION_AVAILABILITY_DEFAULT;
+
+        // Clear team
+        state.team.name = "";
+        state.team.accent = "";
       });
     },
 
@@ -235,6 +262,35 @@ const $account = defineStore("account", {
       }
     },
 
+    async loadTeam(reload = false): Promise<void> {
+      // Load team? (or reload)
+      if (LOCAL_STATES.teamLoaded === false || reload === true) {
+        // Load team information
+        // TODO: load, remove those fixtures!
+        const teamInfo = await Promise.resolve({
+          domain: "prose.org.local",
+          name: "Prose Dev",
+          accent: "#1f1e25",
+          avatar: undefined
+        });
+
+        if (teamInfo) {
+          // Update stored team information
+          this.setTeamName(teamInfo.name);
+          this.setTeamAccent(teamInfo.accent);
+
+          // Update team avatar
+          // Notice: this is a cross-store operation, for convenience.
+          if (teamInfo.avatar !== undefined) {
+            Store.$avatar.refresh(teamInfo.domain, teamInfo.avatar);
+          }
+        }
+
+        // Mark as loaded
+        LOCAL_STATES.teamLoaded = true;
+      }
+    },
+
     setCredentialsPassword(password: string): void {
       this.$patch(() => {
         this.credentials.password = password;
@@ -256,6 +312,18 @@ const $account = defineStore("account", {
     setInformationAvailability(availability: Availability): void {
       this.$patch(() => {
         this.information.availability = availability;
+      });
+    },
+
+    setTeamName(name: string): void {
+      this.$patch(() => {
+        this.team.name = name;
+      });
+    },
+
+    setTeamAccent(accent: string): void {
+      this.$patch(() => {
+        this.team.accent = accent;
       });
     }
   }

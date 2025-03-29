@@ -128,6 +128,18 @@ class BrokerDelegate implements ProseClientDelegate {
     logger.info("Account information changed");
 
     await Store.$account.loadInformation(true);
+
+    // TODO: REMOVE THIS ONE! USED FOR DEBUG ONLY, WE NEED A PROPER DELEGATE \
+    //   EVENT!!
+    this.teamInfoChanged();
+  }
+
+  async teamInfoChanged(): Promise<void> {
+    // TODO: this delegate event does NOT YET exist, it WILL BE implemented.
+
+    logger.info("Team information changed");
+
+    await Store.$account.loadTeam(true);
   }
 
   async messagesAppended(

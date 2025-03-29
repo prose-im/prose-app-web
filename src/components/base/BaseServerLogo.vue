@@ -9,16 +9,13 @@
      ********************************************************************** -->
 
 <template lang="pug">
-div(
-  :class=`[
-    "c-base-server-logo",
-    "c-base-server-logo--shadow-" + shadow
-  ]`
-  :style=`{
-    backgroundImage: backgroundImage,
-    height: size,
-    width: size
-  }`
+base-avatar(
+  :jid="jid"
+  :name="name"
+  :size="size"
+  :shadow="shadow"
+  class="c-base-server-logo"
+  circle
 )
 </template>
 
@@ -27,13 +24,22 @@ div(
      ********************************************************************** -->
 
 <script lang="ts">
+// NPM
+import { PropType } from "vue";
+import { JID } from "@prose-im/prose-sdk-js";
+
 export default {
   name: "BaseServerLogo",
 
   props: {
-    domain: {
+    jid: {
+      type: Object as PropType<JID>,
+      default: null
+    },
+
+    name: {
       type: String,
-      required: true
+      default: null
     },
 
     size: {
@@ -49,46 +55,6 @@ export default {
         return ["none", "normal"].includes(x);
       }
     }
-  },
-
-  computed: {
-    logoImageUrl(): string {
-      // TODO: acquire from cache using provided domain, this is only a \
-      //   temporary fixture
-      const handle = this.domain.replaceAll(".", "-");
-
-      return [
-        "/images/components/base/BaseServerLogo",
-        `logo-${handle}.png`
-      ].join("/");
-    },
-
-    backgroundImage(): string {
-      return `url("${this.logoImageUrl}")`;
-    }
   }
 };
 </script>
-
-<!-- **********************************************************************
-     STYLE
-     ********************************************************************** -->
-
-<style lang="scss">
-$c: ".c-base-server-logo";
-
-#{$c} {
-  background-color: rgb(var(--color-base-grey-light));
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  display: inline-block;
-  border-radius: 100%;
-
-  // --> SHADOWS <--
-
-  &--shadow-normal {
-    box-shadow: 0 2px 4px 0 rgba(var(--color-shadow-primary), 0.08);
-  }
-}
-</style>

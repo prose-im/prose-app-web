@@ -19,7 +19,8 @@
 
   base-server-logo(
     v-else-if="type === 'server'"
-    :domain="address"
+    :jid="addressJID"
+    :name="name"
     size="30px"
     class="c-sidebar-context-account__avatar"
   )

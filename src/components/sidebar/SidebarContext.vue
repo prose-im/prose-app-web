@@ -41,7 +41,7 @@
         )
 
       template(
-        v-if="this.session.connected"
+        v-if="session.connected"
         v-slot:presence
       )
         base-presence(
@@ -409,7 +409,7 @@ export default {
 
           properties: {
             type: "server",
-            name: this.teamName,
+            name: this.teamNameOrDomain,
             address: this.teamDomain
           }
         },
@@ -421,7 +421,7 @@ export default {
           children: [
             {
               type: PopoverItemType.Button,
-              label: this.teamName,
+              label: this.teamNameOrDomain,
               click: this.onActionsPopoverSwitchTeamClick
             }
           ]
@@ -443,8 +443,8 @@ export default {
       return this.jid.domain;
     },
 
-    teamName(): string {
-      return `@${this.teamDomain}`;
+    teamNameOrDomain(): string {
+      return Store.$account.getTeamName() || this.teamDomain;
     },
 
     localAvailability(): ReturnType<
