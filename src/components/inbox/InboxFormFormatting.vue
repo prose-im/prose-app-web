@@ -342,6 +342,7 @@ $group-spacing-edges: 12px;
       }
 
       #{$c}__mode-label {
+        color: rgb(var(--color-text-primary));
         font-size: ($font-size-baseline - 2px);
         line-height: 12px;
       }
