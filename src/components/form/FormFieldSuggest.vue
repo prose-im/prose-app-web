@@ -296,7 +296,7 @@ $suggest-sizes: (
         margin-inline-end: 8px;
 
         &:is(svg) {
-          fill: rgb(var(--color-base-blue-dark));
+          fill: rgb(var(--color-accent-background-dark));
         }
       }
 
@@ -313,10 +313,13 @@ $suggest-sizes: (
 
     &--active {
       #{$c}__link {
-        background-color: rgb(var(--color-base-blue-normal));
+        background-color: rgb(var(--color-accent-background-normal));
 
         &:active {
-          background-color: darken-var(var(--color-base-blue-normal), 4%);
+          background-color: darken-var(
+            var(--color-accent-background-normal),
+            4%
+          );
         }
 
         #{$c}__link-label,

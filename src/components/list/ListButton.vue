@@ -323,24 +323,24 @@ $list-button-colors: (
   }
 
   &--active {
-    background-color: rgb(var(--color-base-blue-normal));
+    background-color: rgb(var(--color-accent-background-normal));
 
     &:hover {
       &,
       &#{$c}--translucent {
-        background-color: darken-var(var(--color-base-blue-normal), 4%);
+        background-color: darken-var(var(--color-accent-background-normal), 4%);
       }
     }
 
     &#{$c}--actionable:active {
       &,
       &#{$c}--translucent {
-        background-color: darken-var(var(--color-base-blue-normal), 6%);
+        background-color: darken-var(var(--color-accent-background-normal), 6%);
       }
     }
 
     #{$c}__label {
-      color: rgb(var(--color-white));
+      color: rgb(var(--color-accent-text));
     }
   }
 

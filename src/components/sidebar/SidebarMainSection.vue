@@ -102,14 +102,14 @@ $c: ".c-sidebar-main-section";
 
 #{$c} {
   #{$c}__icon {
-    fill: rgb(var(--color-base-blue-dark));
+    fill: rgb(var(--color-accent-background-dark));
   }
 
   // --> BOOLEANS <--
 
   &--active {
     #{$c}__icon {
-      fill: rgb(var(--color-white));
+      fill: rgb(var(--color-accent-text));
     }
   }
 }

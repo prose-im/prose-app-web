@@ -168,7 +168,7 @@ $c: ".c-list-browse";
       }
 
       #{$c}__title-icon {
-        fill: rgb(var(--color-base-blue-dark));
+        fill: rgb(var(--color-accent-background-dark));
       }
 
       #{$c}__title-count {

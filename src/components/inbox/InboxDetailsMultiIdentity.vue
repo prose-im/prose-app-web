@@ -67,7 +67,7 @@ $c: ".c-inbox-details-multi-identity";
     justify-content: center;
 
     #{$c}__name-icon {
-      fill: rgb(var(--color-base-blue-dark));
+      fill: rgb(var(--color-accent-background-dark));
       margin-inline-end: 6px;
       flex: 0 0 auto;
     }

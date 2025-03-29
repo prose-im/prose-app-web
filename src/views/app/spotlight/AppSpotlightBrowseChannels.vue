@@ -100,7 +100,7 @@ export default {
                         ),
 
                         size: "12px",
-                        fill: "rgb(var(--color-base-blue-dark)"
+                        fill: "rgb(var(--color-accent-background-dark))"
                       }
                     },
 

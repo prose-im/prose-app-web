@@ -348,11 +348,11 @@ $group-spacing-edges: 12px;
 
       &--preview {
         #{$c}__mode-icon {
-          fill: rgb(var(--color-base-blue-dark));
+          fill: rgb(var(--color-accent-background-dark));
         }
 
         #{$c}__mode-label {
-          color: rgb(var(--color-base-blue-dark));
+          color: rgb(var(--color-accent-background-dark));
         }
       }
     }

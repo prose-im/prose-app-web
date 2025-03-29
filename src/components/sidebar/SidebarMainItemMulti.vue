@@ -134,7 +134,7 @@ $c: ".c-sidebar-main-item-multi";
 
 #{$c} {
   #{$c}__icon {
-    fill: rgb(var(--color-base-blue-dark));
+    fill: rgb(var(--color-accent-background-dark));
     margin-block-start: 2px;
   }
 
@@ -152,7 +152,7 @@ $c: ".c-sidebar-main-item-multi";
 
   &--active {
     #{$c}__icon {
-      fill: rgb(var(--color-white));
+      fill: rgb(var(--color-accent-text));
     }
 
     #{$c}__domain {

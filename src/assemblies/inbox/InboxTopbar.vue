@@ -444,16 +444,16 @@ $c: ".a-inbox-topbar";
       visibility: hidden;
 
       #{$c}__identity-action-icon {
-        fill: rgb(var(--color-base-blue-normal));
+        fill: rgb(var(--color-accent-background-normal));
         display: block;
         cursor: pointer;
 
         &:hover {
-          fill: rgb(var(--color-base-blue-dark));
+          fill: rgb(var(--color-accent-background-dark));
         }
 
         &:active {
-          fill: darken-var(var(--color-base-blue-dark), 5%);
+          fill: darken-var(var(--color-accent-background-dark), 5%);
         }
       }
     }

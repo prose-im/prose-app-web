@@ -48,6 +48,13 @@
   --color-text-tertiary: #{hex-var($color-text-tertiary)};
   --color-text-reverse: #{hex-var($color-text-reverse)};
 
+  // Accents
+  --color-accent-background-normal: #{hex-var($color-accent-background)};
+  --color-accent-background-dark: #{hex-var(
+      darken($color-accent-background, 8%)
+    )};
+  --color-accent-text: #{hex-var($color-accent-text)};
+
   &--dark {
     // Black
     --color-black: #{hex-var(invert($color-black))};
@@ -100,5 +107,14 @@
     --color-text-secondary: #{hex-var(invert($color-text-secondary))};
     --color-text-tertiary: #{hex-var(invert($color-text-tertiary))};
     --color-text-reverse: #{hex-var(invert($color-text-reverse))};
+
+    // Accents
+    --color-accent-background-normal: #{hex-var(
+        lighten($color-accent-background, 4%)
+      )};
+    --color-accent-background-dark: #{hex-var(
+        lighten($color-accent-background, 6%)
+      )};
+    --color-accent-text: #{hex-var(invert($color-accent-text))};
   }
 }

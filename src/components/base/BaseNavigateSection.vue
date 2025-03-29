@@ -67,10 +67,10 @@ export default {
 
     color: {
       type: String,
-      default: "blue",
+      default: "accent",
 
       validator(x: string) {
-        return ["blue"].includes(x);
+        return ["accent"].includes(x);
       }
     },
 
@@ -153,20 +153,20 @@ $icon-size: 28px;
 
   // --> COLORS <--
 
-  &--blue {
+  &--accent {
     #{$c}__icon {
-      background-color: rgb(var(--color-base-blue-dark));
+      background-color: rgb(var(--color-accent-background-dark));
     }
 
     &#{$c}--active {
-      background-color: rgb(var(--color-base-blue-dark));
+      background-color: rgb(var(--color-accent-background-dark));
 
       &:hover {
-        background-color: darken-var(var(--color-base-blue-dark), 2%);
+        background-color: darken-var(var(--color-accent-background-dark), 2%);
       }
 
       &:active {
-        background-color: darken-var(var(--color-base-blue-dark), 3%);
+        background-color: darken-var(var(--color-accent-background-dark), 3%);
       }
     }
   }

@@ -50,10 +50,10 @@ export default {
 
     color: {
       type: String,
-      default: "blue",
+      default: "accent",
 
       validator(x: string) {
-        return ["blue", "red", "white"].includes(x);
+        return ["accent", "blue", "red", "white"].includes(x);
       }
     }
   }
@@ -91,6 +91,15 @@ $count-padding-sides: 5px;
 
     #{$c}__icon {
       fill: rgb(var(--color-white));
+    }
+  }
+
+  &--accent {
+    background-color: rgb(var(--color-accent-background-normal));
+    color: rgb(var(--color-accent-text));
+
+    #{$c}__icon {
+      fill: rgb(var(--color-accent-text));
     }
   }
 

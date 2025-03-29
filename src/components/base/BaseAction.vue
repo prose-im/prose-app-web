@@ -225,7 +225,7 @@ $inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
   &--active {
     > #{$c}__inner {
       #{$c}__icon {
-        fill: darken-var(var(--color-base-blue-normal), 6%);
+        fill: darken-var(var(--color-accent-background-normal), 6%);
       }
     }
 

@@ -154,7 +154,7 @@ $composing-dot-size: 3px;
     justify-content: center;
 
     #{$c}__composing-dot {
-      background-color: rgb(var(--color-base-blue-dark));
+      background-color: rgb(var(--color-accent-background-dark));
       width: $composing-dot-size;
       height: $composing-dot-size;
       flex: 0 0 auto;

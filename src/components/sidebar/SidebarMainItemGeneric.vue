@@ -138,8 +138,8 @@ export default {
   },
 
   computed: {
-    countColor(): string {
-      return this.active === true ? "white" : "blue";
+    countColor(): string | void {
+      return this.active === true ? "white" : undefined;
     },
 
     roomError(): string | null {

@@ -320,7 +320,7 @@ $c: ".p-shared-files";
       #{$c}__target {
         background-color: rgb(var(--color-background-primary));
         border: 1px solid rgb(var(--color-border-primary));
-        outline: 0 solid rgba(var(--color-base-blue-normal), 0.16);
+        outline: 0 solid rgba(var(--color-accent-background-normal), 0.16);
         display: block;
         border-radius: 6px;
         transition: border-color 100ms linear, outline-width 150ms linear;
@@ -331,11 +331,11 @@ $c: ".p-shared-files";
         }
 
         &:hover {
-          border-color: darken-var(var(--color-base-blue-normal), 8%);
+          border-color: darken-var(var(--color-accent-background-normal), 8%);
         }
 
         &:active {
-          border-color: darken-var(var(--color-base-blue-normal), 18%);
+          border-color: darken-var(var(--color-accent-background-normal), 18%);
         }
       }
     }
