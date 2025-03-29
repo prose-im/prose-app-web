@@ -13,6 +13,7 @@
   @contextmenu.prevent
   @dragover.prevent
   @drop.prevent.stop
+  :style="appStyle"
   :class=`[
     "s-app",
     "u-appearance",
@@ -51,6 +52,9 @@ import {
   translucent as runtimeTranslucent
 } from "@/utilities/runtime";
 
+// CONSTANTS
+const COLOR_ACCENT_BACKGROUND_DARKEN_RATIO = 0.08; // 8%
+
 export default {
   name: "App",
 
@@ -68,8 +72,36 @@ export default {
   },
 
   computed: {
+    appStyle(): { [property: string]: string } {
+      // Acquire all accent colors (team-wide or default)
+      const accentBackground =
+          this.account.team.accent.background ||
+          this.$styles.colors.defaultAccentBackground,
+        accentText =
+          this.account.team.accent.text ||
+          this.$styles.colors.defaultAccentText;
+
+      // Generate actual style
+      return {
+        // Accent color (background)
+        "--color-accent-background-normal":
+          this.$filters.color.hexVar(accentBackground),
+        "--color-accent-background-dark": this.$filters.color.darkenVar(
+          accentBackground,
+          COLOR_ACCENT_BACKGROUND_DARKEN_RATIO
+        ),
+
+        // Accent color (text)
+        "--color-accent-text": this.$filters.color.hexVar(accentText)
+      };
+    },
+
     session(): typeof Store.$session {
       return Store.$session;
+    },
+
+    account(): typeof Store.$account {
+      return Store.$account;
     },
 
     settings(): typeof Store.$settings {

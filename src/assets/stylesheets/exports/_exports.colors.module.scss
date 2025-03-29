@@ -1,0 +1,18 @@
+/*
+ * This file is part of prose-app-web
+ *
+ * Copyright 2025, Prose Foundation
+ */
+
+/* *************************************************************************
+ * EXPORTS > COLORS
+ * **************************************************************************/
+
+:export {
+  // Important: only export what is needed here!
+
+  // Defaults
+
+  defaultAccentBackground: $color-default-accent-background;
+  defaultAccentText: $color-default-accent-text;
+}

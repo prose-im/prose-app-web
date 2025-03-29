@@ -42,6 +42,8 @@
     "crisp-countries-languages": "0.8.0",
     "crypto-js": "4.1.1",
     "escape-html": "1.0.3",
+    "hex-rgb": "5.0.0",
+    "mix-css-color": "0.2.0",
     "js-file-downloader": "1.1.25",
     "keycode": "2.2.1",
     "lodash.camelcase": "4.3.0",

@@ -14,6 +14,7 @@ import { App } from "vue";
 // PROJECT: FILTERS
 import dateFilters from "@/filters/date";
 import stringFilters from "@/filters/string";
+import colorFilters from "@/filters/color";
 
 /**************************************************************************
  * INTERFACES
@@ -22,6 +23,7 @@ import stringFilters from "@/filters/string";
 interface Filters {
   date: typeof dateFilters;
   string: typeof stringFilters;
+  color: typeof colorFilters;
 }
 
 /**************************************************************************
@@ -32,7 +34,8 @@ class BootstrapFilters {
   init(app: App): void {
     app.config.globalProperties.$filters = {
       date: dateFilters,
-      string: stringFilters
+      string: stringFilters,
+      color: colorFilters
     } as Filters;
   }
 }

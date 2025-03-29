@@ -9,7 +9,9 @@
  * ************************************************************************* */
 
 // PROJECT: FILTERS
+import { Config } from "@/bootstrap/config";
 import { Filters } from "@/bootstrap/filters";
+import { Styles } from "@/bootstrap/styles";
 
 /**************************************************************************
  * DECLARES
@@ -23,7 +25,9 @@ declare module "*.vue" {
 
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
+    $config: Config;
     $filters: Filters;
+    $styles: Styles;
   }
 }
 

@@ -46,8 +46,13 @@ interface Account {
 
   team: {
     name: string;
-    accent: string;
+    accent: AccountTeamAccent;
   };
+}
+
+interface AccountTeamAccent {
+  background: string;
+  text: string;
 }
 
 /**************************************************************************
@@ -88,7 +93,11 @@ const $account = defineStore("account", {
 
       team: {
         name: "",
-        accent: ""
+
+        accent: {
+          background: "",
+          text: ""
+        }
       }
     };
   },
@@ -134,7 +143,7 @@ const $account = defineStore("account", {
     },
 
     getTeamAccent: function () {
-      return (): string => {
+      return (): AccountTeamAccent => {
         return this.team.accent;
       };
     }
@@ -214,7 +223,8 @@ const $account = defineStore("account", {
 
         // Clear team
         state.team.name = "";
-        state.team.accent = "";
+        state.team.accent.background = "";
+        state.team.accent.text = "";
       });
     },
 
@@ -270,14 +280,19 @@ const $account = defineStore("account", {
         const teamInfo = await Promise.resolve({
           domain: "prose.org.local",
           name: "Prose Dev",
-          accent: "#1f1e25",
+          accentBackground: "#2490f0",
+          accentText: "#ffffff",
           avatar: undefined
         });
 
         if (teamInfo) {
           // Update stored team information
           this.setTeamName(teamInfo.name);
-          this.setTeamAccent(teamInfo.accent);
+
+          this.setTeamAccent({
+            background: teamInfo.accentBackground,
+            text: teamInfo.accentText
+          });
 
           // Update team avatar
           // Notice: this is a cross-store operation, for convenience.
@@ -321,7 +336,7 @@ const $account = defineStore("account", {
       });
     },
 
-    setTeamAccent(accent: string): void {
+    setTeamAccent(accent: AccountTeamAccent): void {
       this.$patch(() => {
         this.team.accent = accent;
       });
@@ -333,4 +348,5 @@ const $account = defineStore("account", {
  * EXPORTS
  * ************************************************************************* */
 
+export type { AccountTeamAccent };
 export default $account;

@@ -1,7 +1,7 @@
 /*
  * This file is part of prose-app-web
  *
- * Copyright 2023, Prose Foundation
+ * Copyright 2025, Prose Foundation
  */
 
 /**************************************************************************
@@ -11,23 +11,27 @@
 // NPM
 import { App } from "vue";
 
-// PROJECT: COMMONS
-import CONFIG from "@/commons/config";
+// PROJECT: STYLES
+import styleExportsColors from "@/assets/stylesheets/exports/_exports.colors.module.scss";
 
 /**************************************************************************
- * TYPES
+ * INTERFACES
  * ************************************************************************* */
 
-type Config = typeof CONFIG;
+interface Styles {
+  colors: typeof styleExportsColors;
+}
 
 /**************************************************************************
  * CONFIG
  * ************************************************************************* */
 
-class BootstrapConfig {
+class BootstrapStyles {
   init(app: App): void {
     // Global configuration
-    app.config.globalProperties.$config = CONFIG as Config;
+    app.config.globalProperties.$styles = {
+      colors: styleExportsColors
+    } as Styles;
   }
 }
 
@@ -35,5 +39,5 @@ class BootstrapConfig {
  * EXPORTS
  * ************************************************************************* */
 
-export type { Config };
-export default new BootstrapConfig();
+export type { Styles };
+export default new BootstrapStyles();
