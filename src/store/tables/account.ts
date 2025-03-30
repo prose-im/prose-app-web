@@ -10,6 +10,7 @@
 
 // NPM
 import { defineStore } from "pinia";
+import mitt from "mitt";
 import { Availability, JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: STORES
@@ -65,6 +66,12 @@ const LOCAL_STATES = {
 };
 
 const INFORMATION_AVAILABILITY_DEFAULT = Availability.Available;
+
+/**************************************************************************
+ * INSTANCES
+ * ************************************************************************* */
+
+const EventBus = mitt();
 
 /**************************************************************************
  * TABLE
@@ -150,6 +157,11 @@ const $account = defineStore("account", {
   },
 
   actions: {
+    events(): ReturnType<typeof mitt> {
+      // Return event bus
+      return EventBus;
+    },
+
     async login(
       rawJID: string,
       password: string,
@@ -337,9 +349,20 @@ const $account = defineStore("account", {
     },
 
     setTeamAccent(accent: AccountTeamAccent): void {
-      this.$patch(() => {
-        this.team.accent = accent;
-      });
+      // Any change in accent colors?
+      if (
+        accent.background !== this.team.accent.background ||
+        accent.text !== this.team.accent.text
+      ) {
+        // Update value
+        this.$patch(() => {
+          this.team.accent.background = accent.background;
+          this.team.accent.text = accent.text;
+        });
+
+        // Broadcast value change
+        EventBus.emit("team:accent", accent);
+      }
     }
   }
 });

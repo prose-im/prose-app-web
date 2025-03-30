@@ -294,6 +294,9 @@ export default {
           this.onStoreSettingsMessagesAny
         ],
 
+        // [$account]
+        "team:accent": [Store.$account, this.onStoreAccountTeamAccent],
+
         // [$inbox]
         "messages:reload": [Store.$inbox, this.onStoreMessagesReload],
         "message:restored": [Store.$inbox, this.onStoreMessageRestored],
@@ -627,6 +630,13 @@ export default {
           break;
         }
       }
+    },
+
+    setupAccent(runtime: MessagingRuntime): void {
+      // Apply style accent color (or none)
+      runtime.MessagingContext.setStyleAccent(
+        this.account.team.accent.background || null
+      );
     },
 
     setupBehavior(runtime: MessagingRuntime): void {
@@ -1255,6 +1265,7 @@ export default {
         this.setupDocument(frameRuntime);
         this.setupContext(frameRuntime);
         this.setupTheme(frameRuntime);
+        this.setupAccent(frameRuntime);
         this.setupBehavior(frameRuntime);
         this.setupEvents(frameRuntime);
         this.setupStore(frameRuntime);
@@ -1601,6 +1612,15 @@ export default {
       if (frameRuntime !== null) {
         // Re-setup behavior
         this.setupBehavior(frameRuntime);
+      }
+    },
+
+    onStoreAccountTeamAccent(): void {
+      const frameRuntime = this.frame();
+
+      if (frameRuntime !== null) {
+        // Re-setup accent
+        this.setupAccent(frameRuntime);
       }
     },
 
