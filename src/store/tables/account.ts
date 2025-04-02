@@ -45,13 +45,13 @@ interface Account {
     availability: Availability;
   };
 
-  team: {
+  workspace: {
     name: string;
-    accent: AccountTeamAccent;
+    accent: AccountWorkspaceAccent;
   };
 }
 
-interface AccountTeamAccent {
+interface AccountWorkspaceAccent {
   background: string;
   text: string;
 }
@@ -62,10 +62,11 @@ interface AccountTeamAccent {
 
 const LOCAL_STATES = {
   informationLoaded: false,
-  teamLoaded: false
+  workspaceLoaded: false
 };
 
 const INFORMATION_AVAILABILITY_DEFAULT = Availability.Available;
+const WORKSPACE_ACCENT_TEXT_FORCE = "#ffffff";
 
 /**************************************************************************
  * INSTANCES
@@ -98,7 +99,7 @@ const $account = defineStore("account", {
         availability: INFORMATION_AVAILABILITY_DEFAULT
       },
 
-      team: {
+      workspace: {
         name: "",
 
         accent: {
@@ -143,15 +144,15 @@ const $account = defineStore("account", {
       };
     },
 
-    getTeamName: function () {
+    getWorkspaceName: function () {
       return (): string => {
-        return this.team.name;
+        return this.workspace.name;
       };
     },
 
-    getTeamAccent: function () {
-      return (): AccountTeamAccent => {
-        return this.team.accent;
+    getWorkspaceAccent: function () {
+      return (): AccountWorkspaceAccent => {
+        return this.workspace.accent;
       };
     }
   },
@@ -233,10 +234,10 @@ const $account = defineStore("account", {
         state.information.name = "";
         state.information.availability = INFORMATION_AVAILABILITY_DEFAULT;
 
-        // Clear team
-        state.team.name = "";
-        state.team.accent.background = "";
-        state.team.accent.text = "";
+        // Clear workspace
+        state.workspace.name = "";
+        state.workspace.accent.background = "";
+        state.workspace.accent.text = "";
       });
     },
 
@@ -284,37 +285,40 @@ const $account = defineStore("account", {
       }
     },
 
-    async loadTeam(reload = false): Promise<void> {
-      // Load team? (or reload)
-      if (LOCAL_STATES.teamLoaded === false || reload === true) {
-        // Load team information
-        // TODO: load, remove those fixtures!
-        const teamInfo = await Promise.resolve({
-          domain: "prose.org.local",
-          name: "Prose Dev",
-          accentBackground: "#2490f0",
-          accentText: "#ffffff",
-          avatar: undefined
-        });
+    async loadWorkspace(reload = false): Promise<void> {
+      // Load workspace? (or reload)
+      if (LOCAL_STATES.workspaceLoaded === false || reload === true) {
+        // Load workspace information
+        const workspaceInfo = await Broker.$account.loadWorkspaceInfo();
 
-        if (teamInfo) {
-          // Update stored team information
-          this.setTeamName(teamInfo.name);
+        if (workspaceInfo) {
+          // Update stored workspace information
+          this.setWorkspaceName(workspaceInfo.name);
 
-          this.setTeamAccent({
-            background: teamInfo.accentBackground,
-            text: teamInfo.accentText
-          });
+          // Update workspace accent color
+          if (workspaceInfo.accentColor !== undefined) {
+            this.setWorkspaceAccent({
+              background: workspaceInfo.accentColor,
+              text: WORKSPACE_ACCENT_TEXT_FORCE
+            });
+          } else {
+            this.setWorkspaceAccent({
+              background: "",
+              text: ""
+            });
+          }
 
-          // Update team avatar
+          // Update workspace avatar
           // Notice: this is a cross-store operation, for convenience.
-          if (teamInfo.avatar !== undefined) {
-            Store.$avatar.refresh(teamInfo.domain, teamInfo.avatar);
+          if (workspaceInfo.icon !== undefined) {
+            const selfJID = this.getSelfJID();
+
+            Store.$avatar.refresh(selfJID.domain, workspaceInfo.icon);
           }
         }
 
         // Mark as loaded
-        LOCAL_STATES.teamLoaded = true;
+        LOCAL_STATES.workspaceLoaded = true;
       }
     },
 
@@ -342,26 +346,26 @@ const $account = defineStore("account", {
       });
     },
 
-    setTeamName(name: string): void {
+    setWorkspaceName(name: string): void {
       this.$patch(() => {
-        this.team.name = name;
+        this.workspace.name = name;
       });
     },
 
-    setTeamAccent(accent: AccountTeamAccent): void {
+    setWorkspaceAccent(accent: AccountWorkspaceAccent): void {
       // Any change in accent colors?
       if (
-        accent.background !== this.team.accent.background ||
-        accent.text !== this.team.accent.text
+        accent.background !== this.workspace.accent.background ||
+        accent.text !== this.workspace.accent.text
       ) {
         // Update value
         this.$patch(() => {
-          this.team.accent.background = accent.background;
-          this.team.accent.text = accent.text;
+          this.workspace.accent.background = accent.background;
+          this.workspace.accent.text = accent.text;
         });
 
         // Broadcast value change
-        EventBus.emit("team:accent", accent);
+        EventBus.emit("workspace:accent", accent);
       }
     }
   }
@@ -371,5 +375,5 @@ const $account = defineStore("account", {
  * EXPORTS
  * ************************************************************************* */
 
-export type { AccountTeamAccent };
+export type { AccountWorkspaceAccent };
 export default $account;

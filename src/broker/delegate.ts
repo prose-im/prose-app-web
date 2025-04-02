@@ -128,18 +128,20 @@ class BrokerDelegate implements ProseClientDelegate {
     logger.info("Account information changed");
 
     await Store.$account.loadInformation(true);
-
-    // TODO: REMOVE THIS ONE! USED FOR DEBUG ONLY, WE NEED A PROPER DELEGATE \
-    //   EVENT!!
-    this.teamInfoChanged();
   }
 
-  async teamInfoChanged(): Promise<void> {
-    // TODO: this delegate event does NOT YET exist, it WILL BE implemented.
+  workspaceIconChanged(): void {
+    logger.info("Workspace icon changed");
 
-    logger.info("Team information changed");
+    // TODO: make it work with the pod server / pod api (nothing pushed yet)
+    // TODO: reload whole workspace here? (is it really needed?)
+  }
 
-    await Store.$account.loadTeam(true);
+  async workspaceInfoChanged(): Promise<void> {
+    logger.info("Workspace information changed");
+
+    // TODO: make it work with the pod server / pod api (nothing pushed yet)
+    await Store.$account.loadWorkspace(true);
   }
 
   async messagesAppended(

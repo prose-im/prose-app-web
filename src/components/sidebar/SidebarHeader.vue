@@ -140,7 +140,7 @@ export default {
     },
 
     teamName(): string {
-      return Store.$account.getTeamName();
+      return Store.$account.getWorkspaceName();
     }
   },
 

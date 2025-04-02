@@ -73,12 +73,12 @@ export default {
 
   computed: {
     appStyle(): { [property: string]: string } {
-      // Acquire all accent colors (team-wide or default)
+      // Acquire all accent colors (workspace-wide or default)
       const accentBackground =
-          this.account.team.accent.background ||
+          this.account.workspace.accent.background ||
           this.$styles.colors.defaultAccentBackground,
         accentText =
-          this.account.team.accent.text ||
+          this.account.workspace.accent.text ||
           this.$styles.colors.defaultAccentText;
 
       // Generate actual style

@@ -295,7 +295,10 @@ export default {
         ],
 
         // [$account]
-        "team:accent": [Store.$account, this.onStoreAccountTeamAccent],
+        "workspace:accent": [
+          Store.$account,
+          this.onStoreAccountWorkspaceAccent
+        ],
 
         // [$inbox]
         "messages:reload": [Store.$inbox, this.onStoreMessagesReload],
@@ -635,7 +638,7 @@ export default {
     setupAccent(runtime: MessagingRuntime): void {
       // Apply style accent color (or none)
       runtime.MessagingContext.setStyleAccent(
-        this.account.team.accent.background || null
+        this.account.workspace.accent.background || null
       );
     },
 
@@ -1615,7 +1618,7 @@ export default {
       }
     },
 
-    onStoreAccountTeamAccent(): void {
+    onStoreAccountWorkspaceAccent(): void {
       const frameRuntime = this.frame();
 
       if (frameRuntime !== null) {

@@ -9,7 +9,7 @@
  * ************************************************************************* */
 
 // NPM
-import { AccountInfo } from "@prose-im/prose-sdk-js";
+import { AccountInfo, WorkspaceInfo } from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -26,6 +26,12 @@ class BrokerModuleAccount extends BrokerModule {
     logger.info("Will load account information (or reload)");
 
     return (await this._client.client?.loadAccountInfo()) || undefined;
+  }
+
+  async loadWorkspaceInfo(): Promise<WorkspaceInfo | void> {
+    logger.info("Will load workspace information (or reload)");
+
+    return (await this._client.client?.loadWorkspaceInfo()) || undefined;
   }
 
   async changePassword(password: string): Promise<void> {

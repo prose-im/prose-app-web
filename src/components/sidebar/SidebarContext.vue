@@ -444,7 +444,7 @@ export default {
     },
 
     teamNameOrDomain(): string {
-      return Store.$account.getTeamName() || this.teamDomain;
+      return Store.$account.getWorkspaceName() || this.teamDomain;
     },
 
     localAvailability(): ReturnType<
