@@ -73,26 +73,28 @@ export default {
 
   computed: {
     appStyle(): { [property: string]: string } {
-      // Acquire all accent colors (workspace-wide or default)
-      const accentBackground =
-          this.account.workspace.accent.background ||
-          this.$styles.colors.defaultAccentBackground,
-        accentText =
-          this.account.workspace.accent.text ||
-          this.$styles.colors.defaultAccentText;
+      const accents = this.account.workspace.accent,
+        defaults = this.$styles.colors;
 
       // Generate actual style
       return {
-        // Accent color (background)
-        "--color-accent-background-normal":
-          this.$filters.color.hexVar(accentBackground),
-        "--color-accent-background-dark": this.$filters.color.darkenVar(
-          accentBackground,
-          COLOR_ACCENT_BACKGROUND_DARKEN_RATIO
+        // Accent color (background, normal)
+        "--color-accent-background-normal": this.$filters.color.hexVar(
+          accents.background || defaults.defaultAccentBackgroundNormal
         ),
 
+        // Accent color (background, dark)
+        "--color-accent-background-dark": accents.background
+          ? this.$filters.color.darkenVar(
+              accents.background,
+              COLOR_ACCENT_BACKGROUND_DARKEN_RATIO
+            )
+          : this.$filters.color.hexVar(defaults.defaultAccentBackgroundDark),
+
         // Accent color (text)
-        "--color-accent-text": this.$filters.color.hexVar(accentText)
+        "--color-accent-text": this.$filters.color.hexVar(
+          accents.text || defaults.defaultAccentText
+        )
       };
     },
 
