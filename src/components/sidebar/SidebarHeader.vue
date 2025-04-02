@@ -28,7 +28,7 @@ div(
       base-server-logo(
         @click="onIdentityLogoClick"
         :jid="teamDomainJID"
-        :name="teamName"
+        :name="teamNameOrDomain"
         size="30px"
         class="c-sidebar-header__identity-logo"
       )
@@ -135,12 +135,16 @@ export default {
       };
     },
 
-    teamDomainJID(): JID {
-      return new JID(this.jid.domain);
+    teamDomain(): string {
+      return this.jid.domain;
     },
 
-    teamName(): string {
-      return Store.$account.getWorkspaceName();
+    teamDomainJID(): JID {
+      return new JID(this.teamDomain);
+    },
+
+    teamNameOrDomain(): string {
+      return Store.$account.getWorkspaceName() || this.teamDomain;
     }
   },
 
