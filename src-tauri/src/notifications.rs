@@ -10,7 +10,7 @@ use notifications::{Notification, NotificationProvider, NotificationResponse};
 use send_wrapper::SendWrapper;
 use serde::Serialize;
 use tauri::plugin::{Builder, TauriPlugin};
-use tauri::{AppHandle, Manager, Runtime, State};
+use tauri::{AppHandle, Manager, Runtime, State, Emitter};
 
 /**************************************************************************
  * STRUCTURES
@@ -61,10 +61,9 @@ fn set_badge_count(count: u32) {
 pub fn provide<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("notifications")
         .invoke_handler(tauri::generate_handler![send_notification, set_badge_count])
-        .setup(|app_handle| {
+        .setup(|app_handle, _| {
             let name = app_handle
                 .config()
-                .package
                 .product_name
                 .as_ref()
                 .map(|value| value.to_string())
@@ -84,7 +83,7 @@ pub fn provide<R: Runtime>() -> TauriPlugin<R> {
                     NotificationResponse::None => "none",
                 };
 
-                app.emit_all(
+                app.emit(
                     "notification:interaction",
                     EventNotificationInteraction {
                         id,

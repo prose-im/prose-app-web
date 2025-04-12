@@ -6,7 +6,7 @@
  * IMPORTS
  * ************************************************************************* */
 
-use tauri::{AboutMetadata, CustomMenuItem, Menu, MenuItem, Submenu};
+use tauri::{AboutMetadata, CustomMenuItem, Menu, MenuItem, Submenu, Emitter};
 
 /**************************************************************************
  * CONSTANTS

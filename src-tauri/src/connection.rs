@@ -15,7 +15,7 @@ use std::collections::HashMap;
 use std::sync::RwLock;
 use std::time::Duration;
 use tauri::plugin::{Builder, TauriPlugin};
-use tauri::{Manager, Runtime, State, Window};
+use tauri::{Manager, Runtime, State, Window, Emitter};
 use thiserror::Error;
 use tokio::sync::mpsc::{self, UnboundedReceiver, UnboundedSender};
 use tokio::task::{self, JoinHandle};
@@ -562,7 +562,7 @@ pub fn send<R: Runtime>(
 pub fn provide<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("connection")
         .invoke_handler(tauri::generate_handler![connect, disconnect, destroy, send])
-        .setup(|app_handle| {
+        .setup(|app_handle, _| {
             app_handle.manage(ConnectionClientState::default());
 
             Ok(())

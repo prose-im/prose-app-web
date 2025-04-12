@@ -11,16 +11,16 @@
 
 mod connection;
 mod download;
-mod logger;
-mod menu;
+//mod logger; -- TODO
+//mod menu; -- TODO
 mod notifications;
 
 /**************************************************************************
  * IMPORTS
  * ************************************************************************* */
 
-use tauri::{Manager, WindowEvent};
-use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
+use tauri::{Manager, WindowEvent, Emitter};
+//use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial}; -- TODO
 
 /**************************************************************************
  * MAIN
@@ -36,19 +36,25 @@ async fn main() {
 
     // Create Prose bundle
     tauri::Builder::default()
-        .menu(menu::create())
-        .on_menu_event(menu::handler)
-        .setup(|app| {
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        //.menu(menu::create()) -- TODO
+        //.on_menu_event(menu::handler) -- TODO
+        // TODO: restore this whole setup hook!
+        /*.setup(|app| {
             let handle = app.handle();
-            let window = app.get_window("main").unwrap();
+
+            // TODO
+            //let window = app.get_webview_window("main").unwrap();
 
             // Apply vibrancy on window (macOS only)
-            #[cfg(target_os = "macos")]
-            apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None).unwrap();
+            // TODO
+            //#[cfg(target_os = "macos")]
+            //apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None).unwrap();
 
             // Register URL opener on XMPP URIs
             tauri_plugin_deep_link::register("xmpp", move |request| {
-                if let Some(window) = handle.get_window("main") {
+                if let Some(window) = handle.get_webview_window("main") {
                     let _ = window.set_focus();
                     let _ = window.emit("url:open", request);
                 }
@@ -57,32 +63,32 @@ async fn main() {
 
             #[cfg(not(target_os = "macos"))]
             if let Some(url) = std::env::args().nth(1) {
-                app.emit_all("url:open", url).unwrap();
+                app.emit("url:open", url).unwrap();
             }
 
             Ok(())
-        })
-        .on_window_event(|event| match event.event() {
+        }) */
+        .on_window_event(|window, event| match event {
             WindowEvent::CloseRequested { api, .. } => {
                 #[cfg(not(target_os = "macos"))]
                 {
-                    event.window().hide().unwrap();
+                    window.hide().unwrap();
                 }
 
                 #[cfg(target_os = "macos")]
                 {
-                    tauri::AppHandle::hide(&event.window().app_handle()).unwrap();
+                    tauri::AppHandle::hide(&window.app_handle()).unwrap();
                 }
 
                 api.prevent_close();
             }
-            WindowEvent::Focused(focused) => event.window().emit("window:focus", focused).unwrap(),
+            WindowEvent::Focused(focused) => window.emit("window:focus", focused).unwrap(),
             _ => {}
         })
         .plugin(connection::provide())
         .plugin(download::provide())
         .plugin(notifications::provide())
-        .plugin(logger::provide())
+        //.plugin(logger::provide()) -- TODO
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

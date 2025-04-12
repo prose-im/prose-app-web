@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use std::cmp::min;
 use std::time::Instant;
 use tauri::plugin::{Builder, TauriPlugin};
-use tauri::{Runtime, Window};
+use tauri::{Runtime, Window, Emitter};
 use thiserror::Error;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;
@@ -261,7 +261,7 @@ pub async fn download_file<R: Runtime>(
 pub fn provide<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("downloader")
         .invoke_handler(tauri::generate_handler![download_file])
-        .setup(|_| Ok(()))
+        .setup(|_, _| Ok(()))
         .build()
 }
 

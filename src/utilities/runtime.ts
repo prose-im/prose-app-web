@@ -9,11 +9,11 @@
  * ************************************************************************* */
 
 // NPM
-import { invoke as tauriInvoke } from "@tauri-apps/api";
+import { invoke as tauriInvoke } from "@tauri-apps/api/core";
 import { emit as tauriEmit, TauriEvent } from "@tauri-apps/api/event";
-import { open as tauriOpen } from "@tauri-apps/api/shell";
+import { open as tauriOpen } from "@tauri-apps/plugin-shell";
 import {
-  appWindow as tauriAppWindow,
+  getCurrentWindow as tauriWindow,
   LogicalSize as tauriLogicalSize
 } from "@tauri-apps/api/window";
 import {
@@ -419,7 +419,7 @@ class UtilitiesRuntime {
 
     if (this.__isApplication === true) {
       // Request to enter full screen mode via Tauri API (application build)
-      await tauriAppWindow.setFullscreen(true);
+      await tauriWindow().setFullscreen(true);
 
       enteredFullScreen = true;
     } else {
@@ -438,7 +438,7 @@ class UtilitiesRuntime {
 
     if (this.__isApplication === true) {
       // Request to leave full screen mode via Tauri API (application build)
-      await tauriAppWindow.setFullscreen(false);
+      await tauriWindow().setFullscreen(false);
 
       leftFullScreen = true;
     } else {
@@ -459,7 +459,7 @@ class UtilitiesRuntime {
   async requestWindowCenter(): Promise<void> {
     if (this.__isApplication === true) {
       // Request to center window via Tauri API (application build)
-      await tauriAppWindow.center();
+      await tauriWindow().center();
     }
   }
 
@@ -467,10 +467,10 @@ class UtilitiesRuntime {
     resizable: boolean
   ): Promise<boolean | void> {
     if (this.__isApplication === true) {
-      const currentResizable = await tauriAppWindow.isResizable();
+      const currentResizable = await tauriWindow().isResizable();
 
       // Request to change resizable flag via Tauri API (application build)
-      await tauriAppWindow.setResizable(resizable);
+      await tauriWindow().setResizable(resizable);
 
       // Return previous resizable flag value
       return currentResizable;
@@ -485,12 +485,12 @@ class UtilitiesRuntime {
   ): Promise<{ width: number; height: number } | void> {
     if (this.__isApplication === true) {
       // Acquire current window size via Tauri API (application build)
-      const currentSize = (await tauriAppWindow.innerSize()).toLogical(
-        await tauriAppWindow.scaleFactor()
+      const currentSize = (await tauriWindow().innerSize()).toLogical(
+        await tauriWindow().scaleFactor()
       );
 
       // Request to update window size via Tauri API (application build)
-      await tauriAppWindow.setSize(new tauriLogicalSize(width, height));
+      await tauriWindow().setSize(new tauriLogicalSize(width, height));
 
       // Return previous window size
       return { width: currentSize.width, height: currentSize.height };
@@ -502,7 +502,8 @@ class UtilitiesRuntime {
   async requestUpdateCheck(): Promise<void> {
     if (this.__isApplication === true) {
       // Request to check for updates via Tauri API (application build)
-      await tauriEmit(TauriEvent.CHECK_UPDATE);
+      // TODO: not working anymore
+      // await tauriEmit(TauriEvent.CHECK_UPDATE);
     } else {
       // Feature not available on other platforms (eg. Web build)
     }
@@ -626,7 +627,7 @@ class UtilitiesRuntime {
       // Register listeners via Tauri API (application build)
       this.__states.focused = true;
 
-      tauriAppWindow.listen<RuntimeDownloadProgressPayload>(
+      tauriWindow().listen<RuntimeDownloadProgressPayload>(
         "download:progress",
 
         ({ payload }) => {
@@ -640,7 +641,7 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<string>(
+      tauriWindow().listen<string>(
         "url:open",
 
         ({ payload }) => {
@@ -661,18 +662,18 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<string>("menu:select", async ({ payload }) => {
+      tauriWindow().listen<string>("menu:select", async ({ payload }) => {
         // Trigger menu handler? (if any)
         if (this.__handlers.global.menu !== null) {
           await this.__handlers.global.menu(payload);
         }
       });
 
-      tauriAppWindow.listen<boolean>("window:focus", ({ payload }) => {
+      tauriWindow().listen<boolean>("window:focus", ({ payload }) => {
         this.__changeFocusState(payload);
       });
 
-      tauriAppWindow.listen<RuntimeNotificationInteractionPayload>(
+      tauriWindow().listen<RuntimeNotificationInteractionPayload>(
         "notification:interaction",
 
         ({ payload }) => {
@@ -702,7 +703,7 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<RuntimeConnectionStatePayload>(
+      tauriWindow().listen<RuntimeConnectionStatePayload>(
         "connection:state",
 
         ({ payload }) => {
@@ -711,7 +712,7 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<RuntimeConnectionReceivePayload>(
+      tauriWindow().listen<RuntimeConnectionReceivePayload>(
         "connection:receive",
 
         ({ payload }) => {
