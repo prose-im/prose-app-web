@@ -31,6 +31,13 @@ async fn main() {
     // Important: start a Tokio reactor from there, which is needed for things \
     //   like connection management.
 
+    // Important: install default TLS provider here, otherwise the Tokio \
+    //   reactor will crash later on when initiating the XMPP over TLS \
+    //   connection.
+    rustls::crypto::ring::default_provider()
+        .install_default()
+        .expect("failed to install crypto provider");
+
     // Prepare Prose for deep-linking
     tauri_plugin_deep_link::prepare("prose");
 
