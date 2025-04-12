@@ -6,15 +6,15 @@ authors = ["Prose Foundation <dev@prose.org>"]
 edition = "2021"
 
 [build-dependencies]
-tauri-build = { version = "2.0.0-rc", features = [] }
+tauri-build = { version = "2.1.1", features = [] }
 
 [dependencies]
-tauri = { version = "2.0.0-rc", features = [
+tauri = { version = "2.4.1", features = [
     "macos-private-api",
 ] }
 tauri-plugin-deep-link = "0.1.2"
-tauri-plugin-shell = "2.0.0-rc"
-tauri-plugin-log = { version = "2.3.1" }
+tauri-plugin-shell = "2.2.1"
+tauri-plugin-log = "2.3.1"
 serde = { version = "1.0.197", features = ["derive"] }
 serde_json = "1.0.115"
 log = "0.4.21"
@@ -49,4 +49,4 @@ lto = true
 strip = true
 
 [target."cfg(not(any(target_os = \"android\", target_os = \"ios\")))".dependencies]
-tauri-plugin-updater = "2.0.0-rc"
+tauri-plugin-updater = "2.7.0"
