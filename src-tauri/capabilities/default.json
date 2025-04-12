@@ -3,6 +3,7 @@
   "description": "Capability for the main window",
   "local": true,
   "windows": ["main"],
+
   "permissions": [
     "core:default",
     "core:window:allow-center",
@@ -10,7 +11,19 @@
     "core:window:allow-set-size",
     "core:window:allow-set-fullscreen",
     "core:window:allow-start-dragging",
+
     "shell:allow-open",
-    "log:default"
+
+    "log:default",
+
+    "connection:allow-connect",
+    "connection:allow-disconnect",
+    "connection:allow-destroy",
+    "connection:allow-send",
+
+    "download:allow-download-file",
+
+    "notification:allow-send-notification",
+    "notification:allow-set-badge-count"
   ]
 }
