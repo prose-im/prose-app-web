@@ -12,7 +12,7 @@ tauri-build = { version = "2.1.1", features = [] }
 tauri = { version = "2.4.1", features = [
     "macos-private-api",
 ] }
-tauri-plugin-deep-link = "0.1.2"
+tauri-plugin-deep-link = "2.2.1"
 tauri-plugin-shell = "2.2.1"
 tauri-plugin-log = "2.3.1"
 serde = { version = "1.0.197", features = ["derive"] }
@@ -26,7 +26,7 @@ rustls = { version = "0.23.26", features = ["ring"] }
 thiserror = "1.0.58"
 percent-encoding = "2.3.1"
 mac-notification-sys = "0.6.1"
-window-vibrancy = "0.4.3"
+window-vibrancy = "0.6.0"
 # next 3 crates to set xattr when downloading (mac only)
 extattr = "1.0.0"
 uuid = { version = "1.8.0", features = ["v4"] }

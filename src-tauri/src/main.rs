@@ -20,7 +20,8 @@ mod notifications;
  * ************************************************************************* */
 
 use tauri::{Emitter, Manager, WindowEvent};
-//use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial}; -- TODO
+use tauri_plugin_deep_link::DeepLinkExt;
+use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 
 /**************************************************************************
  * MAIN
@@ -38,38 +39,39 @@ async fn main() {
         .install_default()
         .expect("failed to install crypto provider");
 
-    // Prepare Prose for deep-linking
-    tauri_plugin_deep_link::prepare("prose");
-
     // Create Prose bundle
     tauri::Builder::default()
         .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         //.menu(menu::create()) -- TODO
         //.on_menu_event(menu::handler) -- TODO
-        // TODO: restore this whole setup hook!
-        /*.setup(|app| {
-            let handle = app.handle();
-            // TODO
-            //let window = app.get_webview_window("main").unwrap();
+        .setup(|app| {
+            let window = app.get_webview_window("main").unwrap();
+
             // Apply vibrancy on window (macOS only)
-            // TODO
-            //#[cfg(target_os = "macos")]
-            //apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None).unwrap();
+            #[cfg(target_os = "macos")]
+            apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None).unwrap();
+
             // Register URL opener on XMPP URIs
-            tauri_plugin_deep_link::register("xmpp", move |request| {
-                if let Some(window) = handle.get_webview_window("main") {
-                    let _ = window.set_focus();
-                    let _ = window.emit("url:open", request);
+            app.deep_link().register("xmpp").ok();
+
+            app.deep_link().on_open_url(move |event| {
+                window.set_focus().ok();
+
+                if let Some(url) = event.urls().first() {
+                    window.emit("url:open", url).ok();
                 }
-            })
-            .unwrap();
+            });
+
+            // Open target URL? (passed as process argument, if any)
             #[cfg(not(target_os = "macos"))]
             if let Some(url) = std::env::args().nth(1) {
                 app.emit("url:open", url).unwrap();
             }
+
             Ok(())
-        }) */
+        })
         .on_window_event(|window, event| match event {
             WindowEvent::CloseRequested { api, .. } => {
                 #[cfg(not(target_os = "macos"))]
