@@ -10,7 +10,7 @@ use notifications::{Notification, NotificationProvider, NotificationResponse};
 use send_wrapper::SendWrapper;
 use serde::Serialize;
 use tauri::plugin::{Builder, TauriPlugin};
-use tauri::{AppHandle, Manager, Runtime, State, Emitter};
+use tauri::{AppHandle, Emitter, Manager, Runtime, State};
 
 /**************************************************************************
  * STRUCTURES

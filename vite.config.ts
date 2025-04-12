@@ -53,7 +53,7 @@ interface Configuration {
  * CONSTANTS
  * ************************************************************************* */
 
-const PLATFORM_APPLICATION_OVERRIDE = process.env.TAURI_PLATFORM || null;
+const PLATFORM_APPLICATION_OVERRIDE = process.env.TAURI_ENV_PLATFORM || null;
 
 const PROSE_CORE_VIEWS_LOCAL_PATH = getInstalledPathSync(
   "@prose-im/prose-core-views",

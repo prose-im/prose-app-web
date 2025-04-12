@@ -11,7 +11,7 @@
 
 mod connection;
 mod download;
-//mod logger; -- TODO
+mod logger;
 //mod menu; -- TODO
 mod notifications;
 
@@ -19,7 +19,7 @@ mod notifications;
  * IMPORTS
  * ************************************************************************* */
 
-use tauri::{Manager, WindowEvent, Emitter};
+use tauri::{Emitter, Manager, WindowEvent};
 //use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial}; -- TODO
 
 /**************************************************************************
@@ -43,15 +43,12 @@ async fn main() {
         // TODO: restore this whole setup hook!
         /*.setup(|app| {
             let handle = app.handle();
-
             // TODO
             //let window = app.get_webview_window("main").unwrap();
-
             // Apply vibrancy on window (macOS only)
             // TODO
             //#[cfg(target_os = "macos")]
             //apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None).unwrap();
-
             // Register URL opener on XMPP URIs
             tauri_plugin_deep_link::register("xmpp", move |request| {
                 if let Some(window) = handle.get_webview_window("main") {
@@ -60,12 +57,10 @@ async fn main() {
                 }
             })
             .unwrap();
-
             #[cfg(not(target_os = "macos"))]
             if let Some(url) = std::env::args().nth(1) {
                 app.emit("url:open", url).unwrap();
             }
-
             Ok(())
         }) */
         .on_window_event(|window, event| match event {
@@ -88,7 +83,7 @@ async fn main() {
         .plugin(connection::provide())
         .plugin(download::provide())
         .plugin(notifications::provide())
-        //.plugin(logger::provide()) -- TODO
+        .plugin(logger::provide())
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }

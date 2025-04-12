@@ -21,7 +21,7 @@ import {
   error as tauriLogError,
   info as tauriLogInfo,
   warn as tauriLogWarn
-} from "tauri-plugin-log-api";
+} from "@tauri-apps/plugin-log";
 import FileDownloader from "js-file-downloader";
 
 // PROJECT: COMMONS

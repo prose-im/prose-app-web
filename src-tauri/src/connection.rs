@@ -15,7 +15,7 @@ use std::collections::HashMap;
 use std::sync::RwLock;
 use std::time::Duration;
 use tauri::plugin::{Builder, TauriPlugin};
-use tauri::{Manager, Runtime, State, Window, Emitter};
+use tauri::{Emitter, Manager, Runtime, State, Window};
 use thiserror::Error;
 use tokio::sync::mpsc::{self, UnboundedReceiver, UnboundedSender};
 use tokio::task::{self, JoinHandle};

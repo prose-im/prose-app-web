@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 use std::cmp::min;
 use std::time::Instant;
 use tauri::plugin::{Builder, TauriPlugin};
-use tauri::{Runtime, Window, Emitter};
+use tauri::{Emitter, Runtime, Window};
 use thiserror::Error;
 use tokio::fs::File;
 use tokio::io::AsyncWriteExt;

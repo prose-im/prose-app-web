@@ -9,7 +9,7 @@
 use log::LevelFilter;
 use tauri::plugin::Plugin;
 use tauri::Runtime;
-use tauri_plugin_log::{LogTarget, RotationStrategy, TimezoneStrategy};
+use tauri_plugin_log::{RotationStrategy, Target, TargetKind, TimezoneStrategy};
 
 /**************************************************************************
  * PROVIDERS
@@ -30,7 +30,10 @@ pub fn provide<R: Runtime>() -> impl Plugin<R> {
 
     tauri_plugin_log::Builder::default()
         .rotation_strategy(RotationStrategy::KeepOne)
-        .targets([LogTarget::LogDir, LogTarget::Stdout])
+        .targets([
+            Target::new(TargetKind::LogDir { file_name: None }),
+            Target::new(TargetKind::Stdout),
+        ])
         .level(log_level)
         .format(move |out, message, record| {
             out.finish(format_args!(
