@@ -3530,6 +3530,7 @@ dependencies = [
  "notifications",
  "percent-encoding",
  "reqwest 0.11.27",
+ "rustls",
  "send_wrapper",
  "serde",
  "serde_json",
