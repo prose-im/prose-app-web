@@ -3,6 +3,8 @@
 // Copyright 2024, Prose Foundation
 
 fn main() {
+    // Important: expose all built-in commands here, otherwise the front-end \
+    //   will not be authorized to call them.
     tauri_build::try_build(
         tauri_build::Attributes::new()
             .plugin(
