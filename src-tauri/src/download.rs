@@ -143,7 +143,7 @@ fn mac_set_quarantine(file: &File, application: &str) -> Result<(), std::io::Err
  * ************************************************************************* */
 
 #[tauri::command]
-pub async fn download_file<R: Runtime>(
+pub async fn file<R: Runtime>(
     window: Window<R>,
     id: u64,
     url: &str,
@@ -259,8 +259,8 @@ pub async fn download_file<R: Runtime>(
  * ************************************************************************* */
 
 pub fn provide<R: Runtime>() -> TauriPlugin<R> {
-    Builder::new("downloader")
-        .invoke_handler(tauri::generate_handler![download_file])
+    Builder::new("download")
+        .invoke_handler(tauri::generate_handler![file])
         .setup(|_, _| Ok(()))
         .build()
 }

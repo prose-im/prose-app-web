@@ -21,7 +21,7 @@
     "connection:allow-destroy",
     "connection:allow-send",
 
-    "download:allow-download-file",
+    "download:allow-file",
 
     "notification:allow-send-notification",
     "notification:allow-set-badge-count"

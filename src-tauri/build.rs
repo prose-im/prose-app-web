@@ -18,7 +18,7 @@ fn main() {
             )
             .plugin(
                 "download",
-                tauri_build::InlinedPlugin::new().commands(&["download_file"]),
+                tauri_build::InlinedPlugin::new().commands(&["file"]),
             )
             .plugin(
                 "notification",

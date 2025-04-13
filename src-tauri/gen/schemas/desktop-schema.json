@@ -2379,10 +2379,22 @@
           "markdownDescription": "Enables the download_file command without any pre-configured scope."
         },
         {
+          "description": "Enables the file command without any pre-configured scope.",
+          "type": "string",
+          "const": "download:allow-file",
+          "markdownDescription": "Enables the file command without any pre-configured scope."
+        },
+        {
           "description": "Denies the download_file command without any pre-configured scope.",
           "type": "string",
           "const": "download:deny-download-file",
           "markdownDescription": "Denies the download_file command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the file command without any pre-configured scope.",
+          "type": "string",
+          "const": "download:deny-file",
+          "markdownDescription": "Denies the file command without any pre-configured scope."
         },
         {
           "description": "Allows the log command\n#### This default permission set includes:\n\n- `allow-log`",

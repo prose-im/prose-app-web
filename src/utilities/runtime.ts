@@ -297,7 +297,7 @@ class UtilitiesRuntime {
         this.__handlers.global.download.set(id, progressHandler);
       }
 
-      await tauriInvoke("plugin:downloader|download_file", {
+      await tauriInvoke("plugin:download|file", {
         id,
         url,
         filename
