@@ -9,11 +9,16 @@
  * ************************************************************************* */
 
 // NPM
-import { invoke as tauriInvoke } from "@tauri-apps/api";
-import { emit as tauriEmit, TauriEvent } from "@tauri-apps/api/event";
-import { open as tauriOpen } from "@tauri-apps/api/shell";
+import { invoke as tauriInvoke } from "@tauri-apps/api/core";
+import { check as tauriUpdateCheck } from "@tauri-apps/plugin-updater";
+import { relaunch as tauriProcessRelaunch } from "@tauri-apps/plugin-process";
+import { open as tauriOpen } from "@tauri-apps/plugin-shell";
 import {
-  appWindow as tauriAppWindow,
+  ask as tauriDialogAsk,
+  message as tauriDialogMessage
+} from "@tauri-apps/plugin-dialog";
+import {
+  getCurrentWindow as tauriWindow,
   LogicalSize as tauriLogicalSize
 } from "@tauri-apps/api/window";
 import {
@@ -21,7 +26,7 @@ import {
   error as tauriLogError,
   info as tauriLogInfo,
   warn as tauriLogWarn
-} from "tauri-plugin-log-api";
+} from "@tauri-apps/plugin-log";
 import FileDownloader from "js-file-downloader";
 
 // PROJECT: COMMONS
@@ -44,6 +49,22 @@ enum RuntimeLogLevel {
   Warn = "warn",
   // Error level.
   Error = "error"
+}
+
+enum RuntimeUpdateCheckMode {
+  // Interactive mode.
+  Interactive = "interactive",
+  // Background mode.
+  Background = "background"
+}
+
+enum RuntimeDialogKind {
+  // Error kind.
+  Error = "error",
+  // Warning kind.
+  Warning = "warning",
+  // Info kind.
+  Info = "info"
 }
 
 enum RuntimeUrlOpenTarget {
@@ -156,6 +177,13 @@ const translucent = platform === "macos";
 const NOTIFICATION_PERMISSIONS = {
   granted: "granted",
   denied: "denied"
+};
+
+const SYSTEM_NAMES: { [platform: string]: string } = {
+  web: "Web",
+  macos: "macOS",
+  windows: "Windows",
+  linux: "Linux"
 };
 
 const LOG_METHODS = {
@@ -290,7 +318,7 @@ class UtilitiesRuntime {
         this.__handlers.global.download.set(id, progressHandler);
       }
 
-      await tauriInvoke("plugin:downloader|download_file", {
+      await tauriInvoke("plugin:download|file", {
         id,
         url,
         filename
@@ -419,7 +447,7 @@ class UtilitiesRuntime {
 
     if (this.__isApplication === true) {
       // Request to enter full screen mode via Tauri API (application build)
-      await tauriAppWindow.setFullscreen(true);
+      await tauriWindow().setFullscreen(true);
 
       enteredFullScreen = true;
     } else {
@@ -438,7 +466,7 @@ class UtilitiesRuntime {
 
     if (this.__isApplication === true) {
       // Request to leave full screen mode via Tauri API (application build)
-      await tauriAppWindow.setFullscreen(false);
+      await tauriWindow().setFullscreen(false);
 
       leftFullScreen = true;
     } else {
@@ -459,7 +487,7 @@ class UtilitiesRuntime {
   async requestWindowCenter(): Promise<void> {
     if (this.__isApplication === true) {
       // Request to center window via Tauri API (application build)
-      await tauriAppWindow.center();
+      await tauriWindow().center();
     }
   }
 
@@ -467,10 +495,10 @@ class UtilitiesRuntime {
     resizable: boolean
   ): Promise<boolean | void> {
     if (this.__isApplication === true) {
-      const currentResizable = await tauriAppWindow.isResizable();
+      const currentResizable = await tauriWindow().isResizable();
 
       // Request to change resizable flag via Tauri API (application build)
-      await tauriAppWindow.setResizable(resizable);
+      await tauriWindow().setResizable(resizable);
 
       // Return previous resizable flag value
       return currentResizable;
@@ -485,12 +513,12 @@ class UtilitiesRuntime {
   ): Promise<{ width: number; height: number } | void> {
     if (this.__isApplication === true) {
       // Acquire current window size via Tauri API (application build)
-      const currentSize = (await tauriAppWindow.innerSize()).toLogical(
-        await tauriAppWindow.scaleFactor()
+      const currentSize = (await tauriWindow().innerSize()).toLogical(
+        await tauriWindow().scaleFactor()
       );
 
       // Request to update window size via Tauri API (application build)
-      await tauriAppWindow.setSize(new tauriLogicalSize(width, height));
+      await tauriWindow().setSize(new tauriLogicalSize(width, height));
 
       // Return previous window size
       return { width: currentSize.width, height: currentSize.height };
@@ -499,12 +527,111 @@ class UtilitiesRuntime {
     return undefined;
   }
 
-  async requestUpdateCheck(): Promise<void> {
+  async requestUpdateCheckAndInstall(
+    mode = RuntimeUpdateCheckMode.Background
+  ): Promise<boolean | void> {
     if (this.__isApplication === true) {
       // Request to check for updates via Tauri API (application build)
-      await tauriEmit(TauriEvent.CHECK_UPDATE);
-    } else {
-      // Feature not available on other platforms (eg. Web build)
+      const isInteractive = mode === RuntimeUpdateCheckMode.Interactive;
+
+      // Check for updates (this calls home)
+      // Notice: the update process is a bit complex and tedious, since Tauri \
+      //   does not handle the nitty gritty details anymore since Tauri \
+      //   version 2. Therefore we have to implement the whole download, \
+      //   install, confirm and restart flow here. This can be considered a \
+      //   good thing, since custom UI and logic can be implemented regarding \
+      //   to how and when eg. restarts are done.
+      let update = null;
+
+      try {
+        update = await tauriUpdateCheck();
+      } catch (error) {
+        logger.error(
+          "Failed checking for updates (considering as no update available)",
+          error
+        );
+      }
+
+      if (update !== null) {
+        try {
+          await update.downloadAndInstall();
+
+          // Interactive mode? Ask user if they want to restart now
+          if (isInteractive === true) {
+            const confirmed = await this.requestDialogConfirm(
+              "Update installed",
+              "Restart Prose now?"
+            );
+
+            if (confirmed === true) {
+              await tauriProcessRelaunch();
+            }
+          }
+
+          // Update available and installed
+          return true;
+        } catch (error) {
+          logger.error(
+            `Failed downloading and installing update: ${update.version}`,
+            error
+          );
+
+          // Interactive mode? Let the user know that the update failed
+          if (isInteractive === true) {
+            await this.requestDialogAlert(
+              "Could not apply update",
+              "An error occurred when downloading and installing the update.",
+              RuntimeDialogKind.Error
+            );
+          }
+
+          // Update available but not installed
+          return undefined;
+        }
+      }
+
+      // Interactive mode? Let us know no update was found
+      if (isInteractive === true) {
+        await this.requestDialogAlert(
+          "No update available",
+          "Prose is already up to date!"
+        );
+      }
+
+      // No update available
+      return false;
+    }
+
+    return undefined;
+  }
+
+  async requestDialogConfirm(
+    title: string,
+    message: string,
+    kind = RuntimeDialogKind.Info
+  ): Promise<boolean | void> {
+    if (this.__isApplication === true) {
+      // Request to show dialog via Tauri API (application build)
+      return await tauriDialogAsk(message, {
+        title,
+        kind
+      });
+    }
+
+    return undefined;
+  }
+
+  async requestDialogAlert(
+    title: string,
+    message: string,
+    kind = RuntimeDialogKind.Info
+  ): Promise<void> {
+    if (this.__isApplication === true) {
+      // Request to show dialog via Tauri API (application build)
+      await tauriDialogMessage(message, {
+        title,
+        kind
+      });
     }
   }
 
@@ -621,12 +748,18 @@ class UtilitiesRuntime {
     return methods;
   }
 
+  acquirePlatformName(): string {
+    // Humanize platform to a platform name (eg. 'macos' becomes 'macOS'), or \
+    //   fallback to raw platform code if no system name is known
+    return SYSTEM_NAMES[platform] || platform;
+  }
+
   private __bindListeners(): void {
     if (this.__isApplication === true) {
       // Register listeners via Tauri API (application build)
       this.__states.focused = true;
 
-      tauriAppWindow.listen<RuntimeDownloadProgressPayload>(
+      tauriWindow().listen<RuntimeDownloadProgressPayload>(
         "download:progress",
 
         ({ payload }) => {
@@ -640,7 +773,7 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<string>(
+      tauriWindow().listen<string>(
         "url:open",
 
         ({ payload }) => {
@@ -661,18 +794,18 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<string>("menu:select", async ({ payload }) => {
+      tauriWindow().listen<string>("menu:select", async ({ payload }) => {
         // Trigger menu handler? (if any)
         if (this.__handlers.global.menu !== null) {
           await this.__handlers.global.menu(payload);
         }
       });
 
-      tauriAppWindow.listen<boolean>("window:focus", ({ payload }) => {
+      tauriWindow().listen<boolean>("window:focus", ({ payload }) => {
         this.__changeFocusState(payload);
       });
 
-      tauriAppWindow.listen<RuntimeNotificationInteractionPayload>(
+      tauriWindow().listen<RuntimeNotificationInteractionPayload>(
         "notification:interaction",
 
         ({ payload }) => {
@@ -702,7 +835,7 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<RuntimeConnectionStatePayload>(
+      tauriWindow().listen<RuntimeConnectionStatePayload>(
         "connection:state",
 
         ({ payload }) => {
@@ -711,7 +844,7 @@ class UtilitiesRuntime {
         }
       );
 
-      tauriAppWindow.listen<RuntimeConnectionReceivePayload>(
+      tauriWindow().listen<RuntimeConnectionReceivePayload>(
         "connection:receive",
 
         ({ payload }) => {
@@ -748,6 +881,8 @@ class UtilitiesRuntime {
 
 export {
   RuntimeLogLevel,
+  RuntimeUpdateCheckMode,
+  RuntimeDialogKind,
   RuntimeUrlOpenTarget,
   RuntimeConnectionState,
   RuntimeConnectionMethod,

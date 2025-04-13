@@ -1,17 +1,21 @@
 {
-  "package": {
-    "productName": "Prose",
-    "version": "../package.json"
-  },
+  "productName": "Prose",
+  "mainBinaryName": "Prose",
+  "identifier": "org.prose.app-web",
+  "version": "../package.json",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
-    "devPath": "http://localhost:3010",
-    "distDir": "../dist"
+    "frontendDist": "../dist",
+    "devUrl": "http://localhost:3010"
   },
-  "tauri": {
-    "pattern": {
-      "use": "brownfield"
+  "app": {
+    "security": {
+      "devCsp": null,
+      "csp": null,
+      "pattern": {
+        "use": "brownfield"
+      }
     },
     "windows": [
       {
@@ -29,53 +33,36 @@
         "focus": true,
         "transparent": true,
         "visible": true,
-        "fileDropEnabled": false,
+        "dragDropEnabled": false,
         "hiddenTitle": true,
         "titleBarStyle": "Overlay"
       }
     ],
-    "bundle": {
-      "active": true,
-      "targets": ["app"],
-      "identifier": "org.prose.app-web",
-      "publisher": "Prose Foundation",
-      "category": "Business",
-      "shortDescription": "Distributed, open-source, and native platform for workplace communication.",
-      "icon": [
-        "icons/32x32.png",
-        "icons/128x128.png",
-        "icons/128x128@2x.png",
-        "icons/icon.icns",
-        "icons/icon.ico"
-      ],
-      "macOS": {
-        "minimumSystemVersion": "12.0",
-        "entitlements": "./entitlements.plist"
-      }
-    },
-    "allowlist": {
-      "all": false,
-      "window": {
-        "center": true,
-        "startDragging": true,
-        "setSize": true,
-        "setResizable": true,
-        "setFullscreen": true
-      },
-      "shell": {
-        "open": "^((mailto:)|(tel:)|(https?://)).+"
-      }
-    },
-    "security": {
-      "csp": null,
-      "devCsp": null
-    },
+    "macOSPrivateApi": true
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app"],
+    "publisher": "Prose Foundation",
+    "category": "Business",
+    "shortDescription": "Distributed, open-source, and native platform for workplace communication.",
+    "createUpdaterArtifacts": "v1Compatible",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "12.0",
+      "entitlements": "./entitlements.plist"
+    }
+  },
+  "plugins": {
     "updater": {
-      "active": true,
-      "dialog": true,
       "endpoints": ["https://files.prose.org/apps/updates/latest.json"],
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE5RDUzQTgxQ0U3NkQ2QgpSV1JyYmVjY3FGT2RDcG5rRG9ZZGxUeTlacFJLS0paNUZ2dkRoVFU0Tjd4UUdCMjFSckx4d1MrUAo="
-    },
-    "macOSPrivateApi": true
+    }
   }
 }

@@ -37,7 +37,10 @@
 import { JID } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPONENTS
-import BaseAlert from "@/components/base/BaseAlert.vue";
+import {
+  default as BaseAlert,
+  Visibility as AlertVisibility
+} from "@/components/base/BaseAlert.vue";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -49,11 +52,14 @@ import Broker from "@/broker";
 // PROJECT: UTILITIES
 import {
   default as UtilitiesRuntime,
-  translucent as runtimeTranslucent
+  translucent as runtimeTranslucent,
+  RuntimeUpdateCheckMode
 } from "@/utilities/runtime";
 
 // CONSTANTS
 const COLOR_ACCENT_BACKGROUND_DARKEN_RATIO = 0.08; // 8%
+
+const INITIAL_UPDATE_CHECK_DELAY = 10000; // 10 seconds
 
 export default {
   name: "App",
@@ -65,6 +71,8 @@ export default {
       runtimeTranslucent,
 
       // --> STATE <--
+
+      initialUpdateCheckTimeout: null as null | ReturnType<typeof setTimeout>,
 
       matchMediaDarkMode: null as MediaQueryList | null,
       hasSystemDarkMode: false
@@ -116,6 +124,13 @@ export default {
     this.initializeSystemDarkMode();
   },
 
+  created() {
+    // Trigger a delayed update check
+    // Notice: this is only done once when the application first starts, ie. \
+    //   when the component is first created.
+    this.scheduleInitialUpdateCheck();
+  },
+
   mounted() {
     // Start watching for runtime events
     this.setupListenersRuntime();
@@ -127,6 +142,11 @@ export default {
     Store.$settings
       .events()
       .on("appearance:theme", this.onSettingsAppearanceTheme);
+  },
+
+  beforeUnmount() {
+    // Clear any scheduled initial update check
+    this.unscheduleInitialUpdateCheck();
   },
 
   unmounted() {
@@ -144,6 +164,50 @@ export default {
 
   methods: {
     // --> HELPERS <--
+
+    scheduleInitialUpdateCheck(): void {
+      // Ensure any previously-set timer has been unscheduled first
+      this.unscheduleInitialUpdateCheck();
+
+      // Request a delayed update check
+      // Notice: delay check, since the download process might consume \
+      //   bandwidth in a spiky way. We do not want it to slow down the \
+      //   initial XMPP connection (especially on slower networks), therefore \
+      //   we check after a small delay.
+      // Important: install in background, and do not prompt user to restart \
+      //   the application when an update has been installed. We want to be \
+      //   as non-intrusive as possible here. Only alert the user with a \
+      //   discrete alert if an update was installed.
+      this.initialUpdateCheckTimeout = setTimeout(async () => {
+        this.initialUpdateCheckTimeout = null;
+
+        try {
+          const wasUpdated =
+            await UtilitiesRuntime.requestUpdateCheckAndInstall(
+              RuntimeUpdateCheckMode.Background
+            );
+
+          // Discretely alert user of the update that was just applied?
+          if (wasUpdated === true) {
+            BaseAlert.info(
+              "Prose has been updated",
+              "Restart the app to use the new version",
+              AlertVisibility.Sticky
+            );
+          }
+        } catch (error) {
+          this.$log.error("Failed checking for app updates (initial)", error);
+        }
+      }, INITIAL_UPDATE_CHECK_DELAY);
+    },
+
+    unscheduleInitialUpdateCheck(): void {
+      if (this.initialUpdateCheckTimeout !== null) {
+        clearTimeout(this.initialUpdateCheckTimeout);
+
+        this.initialUpdateCheckTimeout = null;
+      }
+    },
 
     refreshEffectiveAppearance(): void {
       // Acquire effective appearance
@@ -266,8 +330,10 @@ export default {
         }
 
         case "updates": {
-          // Check for updates
-          await UtilitiesRuntime.requestUpdateCheck();
+          // Check for updates (and install if any is available)
+          await UtilitiesRuntime.requestUpdateCheckAndInstall(
+            RuntimeUpdateCheckMode.Interactive
+          );
 
           break;
         }

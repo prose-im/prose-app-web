@@ -62,6 +62,9 @@ import {
   VERSION_REVISION
 } from "@/broker/context";
 
+// PROJECT: UTILITIES
+import { platform as runtimePlatform } from "@/utilities/runtime";
+
 export default {
   name: "EditProfileEncryptionDeviceCurrent",
 
@@ -70,7 +73,7 @@ export default {
       // --> DATA <--
 
       snapshot: {
-        platform: "web",
+        platform: runtimePlatform,
         system: VERSION_SYSTEM,
         client: `${VERSION_NAME} ${VERSION_REVISION}`,
         security: "OMEMO"

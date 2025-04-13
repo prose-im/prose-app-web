@@ -19,7 +19,8 @@ mod notifications;
  * IMPORTS
  * ************************************************************************* */
 
-use tauri::{Manager, WindowEvent};
+use tauri::{Emitter, Manager, WindowEvent};
+use tauri_plugin_deep_link::DeepLinkExt;
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
 
 /**************************************************************************
@@ -31,52 +32,63 @@ async fn main() {
     // Important: start a Tokio reactor from there, which is needed for things \
     //   like connection management.
 
-    // Prepare Prose for deep-linking
-    tauri_plugin_deep_link::prepare("prose");
+    // Important: install default TLS provider here, otherwise the Tokio \
+    //   reactor will crash later on when initiating the XMPP over TLS \
+    //   connection.
+    rustls::crypto::ring::default_provider()
+        .install_default()
+        .expect("failed to install crypto provider");
 
     // Create Prose bundle
     tauri::Builder::default()
-        .menu(menu::create())
+        .plugin(tauri_plugin_shell::init())
+        .plugin(tauri_plugin_dialog::init())
+        .plugin(tauri_plugin_process::init())
+        .plugin(tauri_plugin_deep_link::init())
+        .plugin(tauri_plugin_updater::Builder::new().build())
+        .menu(menu::create)
         .on_menu_event(menu::handler)
         .setup(|app| {
-            let handle = app.handle();
-            let window = app.get_window("main").unwrap();
+            let window = app.get_webview_window("main").unwrap();
 
             // Apply vibrancy on window (macOS only)
             #[cfg(target_os = "macos")]
             apply_vibrancy(&window, NSVisualEffectMaterial::HudWindow, None, None).unwrap();
 
             // Register URL opener on XMPP URIs
-            tauri_plugin_deep_link::register("xmpp", move |request| {
-                if let Some(window) = handle.get_window("main") {
-                    let _ = window.set_focus();
-                    let _ = window.emit("url:open", request);
-                }
-            })
-            .unwrap();
+            app.deep_link().register("xmpp").ok();
 
+            app.deep_link().on_open_url(move |event| {
+                window.set_focus().ok();
+
+                if let Some(url) = event.urls().first() {
+                    window.emit("url:open", url).ok();
+                }
+            });
+
+            // Open target URL? (passed as process argument, if any)
             #[cfg(not(target_os = "macos"))]
             if let Some(url) = std::env::args().nth(1) {
-                app.emit_all("url:open", url).unwrap();
+                app.emit("url:open", url).unwrap();
             }
 
             Ok(())
         })
-        .on_window_event(|event| match event.event() {
+        .on_window_event(|window, event| match event {
             WindowEvent::CloseRequested { api, .. } => {
                 #[cfg(not(target_os = "macos"))]
                 {
-                    event.window().hide().unwrap();
+                    window.hide().unwrap();
                 }
 
                 #[cfg(target_os = "macos")]
                 {
-                    tauri::AppHandle::hide(&event.window().app_handle()).unwrap();
+                    tauri::AppHandle::hide(&window.app_handle()).unwrap();
                 }
 
                 api.prevent_close();
             }
-            WindowEvent::Focused(focused) => event.window().emit("window:focus", focused).unwrap(),
+            WindowEvent::Focused(focused) => window.emit("window:focus", focused).unwrap(),
             _ => {}
         })
         .plugin(connection::provide())

@@ -6,115 +6,99 @@
  * IMPORTS
  * ************************************************************************* */
 
-use tauri::{AboutMetadata, CustomMenuItem, Menu, MenuItem, Submenu};
+use tauri::menu::{AboutMetadata, Menu, MenuEvent, MenuItem, SubmenuBuilder};
+use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
 const APP_NAME: &'static str = "Prose";
-const APP_WEBSITE: &'static str = "https://prose.org";
 
 /**************************************************************************
  * CREATORS
  * ************************************************************************* */
 
-pub fn create() -> Menu {
-    // Build main menu
-    let mut menu = Menu::new();
+pub fn create<R: Runtime>(app: &AppHandle<R>) -> Result<Menu<R>, tauri::Error> {
+    let menu = Menu::new(app)?;
 
+    // Build 'About' sub-menu (macOS only)
     #[cfg(target_os = "macos")]
     {
-        let about = AboutMetadata::default().website(APP_WEBSITE);
-
-        menu = menu.add_submenu(Submenu::new(
-            APP_NAME,
-            Menu::new()
-                .add_native_item(MenuItem::About(APP_NAME.to_string(), about))
-                .add_item(CustomMenuItem::new("updates", "Check for Updates…"))
-                .add_native_item(MenuItem::Separator)
-                .add_item(CustomMenuItem::new("settings", "Account Settings…").accelerator("Cmd+,"))
-                .add_item(CustomMenuItem::new("profile", "Edit Profile…"))
-                .add_native_item(MenuItem::Separator)
-                .add_native_item(MenuItem::Hide)
-                .add_native_item(MenuItem::HideOthers)
-                .add_native_item(MenuItem::ShowAll)
-                .add_native_item(MenuItem::Separator)
-                .add_native_item(MenuItem::Quit),
-        ));
+        menu.append(
+            &SubmenuBuilder::new(app, APP_NAME)
+                .about(Some(AboutMetadata::default()))
+                .text("updates", "Check for Updates…")
+                .separator()
+                .item(&MenuItem::with_id(
+                    app,
+                    "settings",
+                    "Account Settings…",
+                    true,
+                    Some("Cmd+,"),
+                )?)
+                .text("profile", "Edit Profile…")
+                .separator()
+                .hide()
+                .hide_others()
+                .show_all()
+                .separator()
+                .quit()
+                .build()?,
+        )?;
     }
 
-    // Build file sub-menu
-    let mut file_menu = Menu::new();
-
-    file_menu = file_menu.add_native_item(MenuItem::CloseWindow);
-
-    #[cfg(not(target_os = "macos"))]
+    // Build 'File' sub-menu
     {
-        file_menu = file_menu.add_native_item(MenuItem::Quit);
+        let mut submenu = SubmenuBuilder::new(app, "File");
+
+        submenu = submenu.close_window();
+
+        #[cfg(not(target_os = "macos"))]
+        {
+            submenu = submenu.quit();
+        }
+
+        menu.append(&submenu.build()?)?;
     }
 
-    menu = menu.add_submenu(Submenu::new("File", file_menu));
+    // Build 'Edit' sub-menu
+    menu.append(
+        &SubmenuBuilder::new(app, "Edit")
+            .undo()
+            .redo()
+            .separator()
+            .cut()
+            .copy()
+            .paste()
+            .select_all()
+            .build()?,
+    )?;
 
-    // Build edit sub-menu
-    #[cfg(not(target_os = "linux"))]
-    let mut edit_menu = Menu::new();
-
+    // Build 'View' sub-menu (macOS only)
     #[cfg(target_os = "macos")]
     {
-        edit_menu = edit_menu.add_native_item(MenuItem::Undo);
-        edit_menu = edit_menu.add_native_item(MenuItem::Redo);
-        edit_menu = edit_menu.add_native_item(MenuItem::Separator);
-    }
+        menu.append(&SubmenuBuilder::new(app, "View").fullscreen().build()?)?
+    };
 
-    #[cfg(not(target_os = "linux"))]
-    {
-        edit_menu = edit_menu.add_native_item(MenuItem::Cut);
-        edit_menu = edit_menu.add_native_item(MenuItem::Copy);
-        edit_menu = edit_menu.add_native_item(MenuItem::Paste);
-    }
+    // Build 'Window' sub-menu
+    menu.append(
+        &SubmenuBuilder::new(app, "Window")
+            .minimize()
+            .maximize()
+            .close_window()
+            .build()?,
+    )?;
 
-    #[cfg(target_os = "macos")]
-    {
-        edit_menu = edit_menu.add_native_item(MenuItem::SelectAll);
-    }
-
-    #[cfg(not(target_os = "linux"))]
-    {
-        menu = menu.add_submenu(Submenu::new("Edit", edit_menu));
-    }
-
-    // Build view sub-menu
-    #[cfg(target_os = "macos")]
-    {
-        menu = menu.add_submenu(Submenu::new(
-            "View",
-            Menu::new().add_native_item(MenuItem::EnterFullScreen),
-        ));
-    }
-
-    // Build window sub-menu
-    let mut window_menu = Menu::new();
-
-    window_menu = window_menu.add_native_item(MenuItem::Minimize);
-
-    #[cfg(target_os = "macos")]
-    {
-        window_menu = window_menu.add_native_item(MenuItem::Zoom);
-        window_menu = window_menu.add_native_item(MenuItem::Separator);
-    }
-
-    window_menu = window_menu.add_native_item(MenuItem::CloseWindow);
-
-    menu = menu.add_submenu(Submenu::new("Window", window_menu));
-
-    menu
+    Ok(menu)
 }
 
 /**************************************************************************
  * HANDLERS
  * ************************************************************************* */
 
-pub fn handler(event: tauri::WindowMenuEvent) {
-    let _ = event.window().emit("menu:select", event.menu_item_id());
+pub fn handler<R: Runtime>(app: &AppHandle<R>, event: MenuEvent) {
+    if let Some(window) = app.get_webview_window("main") {
+        window.emit("menu:select", event.id()).ok();
+    }
 }
