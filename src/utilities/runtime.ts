@@ -10,7 +10,8 @@
 
 // NPM
 import { invoke as tauriInvoke } from "@tauri-apps/api/core";
-import { emit as tauriEmit, TauriEvent } from "@tauri-apps/api/event";
+import { check as tauriUpdateCheck } from "@tauri-apps/plugin-updater";
+import { relaunch as tauriProcessRelaunch } from "@tauri-apps/plugin-process";
 import { open as tauriOpen } from "@tauri-apps/plugin-shell";
 import {
   getCurrentWindow as tauriWindow,
@@ -509,8 +510,17 @@ class UtilitiesRuntime {
   async requestUpdateCheck(): Promise<void> {
     if (this.__isApplication === true) {
       // Request to check for updates via Tauri API (application build)
-      // TODO: not working anymore
-      // await tauriEmit(TauriEvent.CHECK_UPDATE);
+      const update = await tauriUpdateCheck();
+
+      if (update !== null) {
+        await update.downloadAndInstall();
+
+        // TODO: show a discrete relaunch banner instead of auto-restarting, \
+        //   unless manually requested and then also show a dialog.
+        // TODO: if no update available, then show an alert to tell so (if \
+        //   update was manually requested)
+        await tauriProcessRelaunch();
+      }
     } else {
       // Feature not available on other platforms (eg. Web build)
     }
