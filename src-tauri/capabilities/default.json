@@ -27,7 +27,7 @@
 
     "download:allow-file",
 
-    "notification:allow-send-notification",
-    "notification:allow-set-badge-count"
+    "notifications:allow-send-notification",
+    "notifications:allow-set-badge-count"
   ]
 }

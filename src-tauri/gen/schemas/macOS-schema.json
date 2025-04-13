@@ -2471,25 +2471,25 @@
         {
           "description": "Enables the send_notification command without any pre-configured scope.",
           "type": "string",
-          "const": "notification:allow-send-notification",
+          "const": "notifications:allow-send-notification",
           "markdownDescription": "Enables the send_notification command without any pre-configured scope."
         },
         {
           "description": "Enables the set_badge_count command without any pre-configured scope.",
           "type": "string",
-          "const": "notification:allow-set-badge-count",
+          "const": "notifications:allow-set-badge-count",
           "markdownDescription": "Enables the set_badge_count command without any pre-configured scope."
         },
         {
           "description": "Denies the send_notification command without any pre-configured scope.",
           "type": "string",
-          "const": "notification:deny-send-notification",
+          "const": "notifications:deny-send-notification",
           "markdownDescription": "Denies the send_notification command without any pre-configured scope."
         },
         {
           "description": "Denies the set_badge_count command without any pre-configured scope.",
           "type": "string",
-          "const": "notification:deny-set-badge-count",
+          "const": "notifications:deny-set-badge-count",
           "markdownDescription": "Denies the set_badge_count command without any pre-configured scope."
         },
         {

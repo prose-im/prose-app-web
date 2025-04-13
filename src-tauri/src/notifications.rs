@@ -6,6 +6,7 @@
  * IMPORTS
  * ************************************************************************* */
 
+use notifications::misc::set_badge;
 use notifications::{Notification, NotificationProvider, NotificationResponse};
 use send_wrapper::SendWrapper;
 use serde::Serialize;
@@ -46,7 +47,6 @@ fn send_notification<R: Runtime>(
 
 #[tauri::command]
 fn set_badge_count(count: u32) {
-    use notifications::misc::set_badge;
     if count > 0 {
         set_badge(Some(&count.to_string()));
     } else {

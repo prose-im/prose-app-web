@@ -21,7 +21,7 @@ fn main() {
                 tauri_build::InlinedPlugin::new().commands(&["file"]),
             )
             .plugin(
-                "notification",
+                "notifications",
                 tauri_build::InlinedPlugin::new()
                     .commands(&["send_notification", "set_badge_count"]),
             ),
