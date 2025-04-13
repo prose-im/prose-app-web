@@ -49,7 +49,8 @@ import Broker from "@/broker";
 // PROJECT: UTILITIES
 import {
   default as UtilitiesRuntime,
-  translucent as runtimeTranslucent
+  translucent as runtimeTranslucent,
+  RuntimeUpdateCheckMode
 } from "@/utilities/runtime";
 
 // CONSTANTS
@@ -266,8 +267,10 @@ export default {
         }
 
         case "updates": {
-          // Check for updates
-          await UtilitiesRuntime.requestUpdateCheck();
+          // Check for updates (and install if any is available)
+          await UtilitiesRuntime.requestUpdateCheckAndInstall(
+            RuntimeUpdateCheckMode.Interactive
+          );
 
           break;
         }

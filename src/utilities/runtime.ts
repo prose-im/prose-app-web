@@ -14,6 +14,10 @@ import { check as tauriUpdateCheck } from "@tauri-apps/plugin-updater";
 import { relaunch as tauriProcessRelaunch } from "@tauri-apps/plugin-process";
 import { open as tauriOpen } from "@tauri-apps/plugin-shell";
 import {
+  ask as tauriDialogAsk,
+  message as tauriDialogMessage
+} from "@tauri-apps/plugin-dialog";
+import {
   getCurrentWindow as tauriWindow,
   LogicalSize as tauriLogicalSize
 } from "@tauri-apps/api/window";
@@ -45,6 +49,22 @@ enum RuntimeLogLevel {
   Warn = "warn",
   // Error level.
   Error = "error"
+}
+
+enum RuntimeUpdateCheckMode {
+  // Interactive mode.
+  Interactive = "interactive",
+  // Background mode.
+  Background = "background"
+}
+
+enum RuntimeDialogKind {
+  // Error kind.
+  Error = "error",
+  // Warning kind.
+  Warning = "warning",
+  // Info kind.
+  Info = "info"
 }
 
 enum RuntimeUrlOpenTarget {
@@ -507,22 +527,111 @@ class UtilitiesRuntime {
     return undefined;
   }
 
-  async requestUpdateCheck(): Promise<void> {
+  async requestUpdateCheckAndInstall(
+    mode = RuntimeUpdateCheckMode.Background
+  ): Promise<boolean | void> {
     if (this.__isApplication === true) {
       // Request to check for updates via Tauri API (application build)
-      const update = await tauriUpdateCheck();
+      const isInteractive = mode === RuntimeUpdateCheckMode.Interactive;
+
+      // Check for updates (this calls home)
+      // Notice: the update process is a bit complex and tedious, since Tauri \
+      //   does not handle the nitty gritty details anymore since Tauri \
+      //   version 2. Therefore we have to implement the whole download, \
+      //   install, confirm and restart flow here. This can be considered a \
+      //   good thing, since custom UI and logic can be implemented regarding \
+      //   to how and when eg. restarts are done.
+      let update = null;
+
+      try {
+        update = await tauriUpdateCheck();
+      } catch (error) {
+        logger.error(
+          "Failed checking for updates (considering as no update available)",
+          error
+        );
+      }
 
       if (update !== null) {
-        await update.downloadAndInstall();
+        try {
+          await update.downloadAndInstall();
 
-        // TODO: show a discrete relaunch banner instead of auto-restarting, \
-        //   unless manually requested and then also show a dialog.
-        // TODO: if no update available, then show an alert to tell so (if \
-        //   update was manually requested)
-        await tauriProcessRelaunch();
+          // Interactive mode? Ask user if they want to restart now
+          if (isInteractive === true) {
+            const confirmed = await this.requestDialogConfirm(
+              "Update installed",
+              "Restart Prose now?"
+            );
+
+            if (confirmed === true) {
+              await tauriProcessRelaunch();
+            }
+          }
+
+          // Update available and installed
+          return true;
+        } catch (error) {
+          logger.error(
+            `Failed downloading and installing update: ${update.version}`,
+            error
+          );
+
+          // Interactive mode? Let the user know that the update failed
+          if (isInteractive === true) {
+            await this.requestDialogAlert(
+              "Could not apply update",
+              "An error occurred when downloading and installing the update.",
+              RuntimeDialogKind.Error
+            );
+          }
+
+          // Update available but not installed
+          return undefined;
+        }
       }
-    } else {
-      // Feature not available on other platforms (eg. Web build)
+
+      // Interactive mode? Let us know no update was found
+      if (isInteractive === true) {
+        await this.requestDialogAlert(
+          "No update available",
+          "Prose is already up to date!"
+        );
+      }
+
+      // No update available
+      return false;
+    }
+
+    return undefined;
+  }
+
+  async requestDialogConfirm(
+    title: string,
+    message: string,
+    kind = RuntimeDialogKind.Info
+  ): Promise<boolean | void> {
+    if (this.__isApplication === true) {
+      // Request to show dialog via Tauri API (application build)
+      return await tauriDialogAsk(message, {
+        title,
+        kind
+      });
+    }
+
+    return undefined;
+  }
+
+  async requestDialogAlert(
+    title: string,
+    message: string,
+    kind = RuntimeDialogKind.Info
+  ): Promise<void> {
+    if (this.__isApplication === true) {
+      // Request to show dialog via Tauri API (application build)
+      await tauriDialogMessage(message, {
+        title,
+        kind
+      });
     }
   }
 
@@ -772,6 +881,8 @@ class UtilitiesRuntime {
 
 export {
   RuntimeLogLevel,
+  RuntimeUpdateCheckMode,
+  RuntimeDialogKind,
   RuntimeUrlOpenTarget,
   RuntimeConnectionState,
   RuntimeConnectionMethod,
