@@ -12,7 +12,7 @@
 mod connection;
 mod download;
 mod logger;
-//mod menu; -- TODO
+mod menu;
 mod notifications;
 
 /**************************************************************************
@@ -44,8 +44,8 @@ async fn main() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
-        //.menu(menu::create()) -- TODO
-        //.on_menu_event(menu::handler) -- TODO
+        .menu(menu::create)
+        .on_menu_event(menu::handler)
         .setup(|app| {
             let window = app.get_webview_window("main").unwrap();
 
