@@ -1,38 +1,13 @@
 {
-  "bundle": {
-    "active": true,
-    "targets": ["app"],
-    "macOS": {
-      "minimumSystemVersion": "12.0",
-      "entitlements": "./entitlements.plist"
-    },
-    "publisher": "Prose Foundation",
-    "category": "Business",
-    "shortDescription": "Distributed, open-source, and native platform for workplace communication.",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ],
-    "createUpdaterArtifacts": "v1Compatible"
-  },
+  "productName": "Prose",
+  "mainBinaryName": "Prose",
+  "identifier": "org.prose.app-web",
+  "version": "../package.json",
   "build": {
     "beforeDevCommand": "npm run dev",
     "beforeBuildCommand": "npm run build",
     "frontendDist": "../dist",
     "devUrl": "http://localhost:3010"
-  },
-  "productName": "Prose",
-  "mainBinaryName": "Prose",
-  "version": "../package.json",
-  "identifier": "org.prose.app-web",
-  "plugins": {
-    "updater": {
-      "endpoints": ["https://files.prose.org/apps/updates/latest.json"],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE5RDUzQTgxQ0U3NkQ2QgpSV1JyYmVjY3FGT2RDcG5rRG9ZZGxUeTlacFJLS0paNUZ2dkRoVFU0Tjd4UUdCMjFSckx4d1MrUAo="
-    }
   },
   "app": {
     "security": {
@@ -64,5 +39,30 @@
       }
     ],
     "macOSPrivateApi": true
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["app"],
+    "publisher": "Prose Foundation",
+    "category": "Business",
+    "shortDescription": "Distributed, open-source, and native platform for workplace communication.",
+    "createUpdaterArtifacts": "v1Compatible",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
+    "macOS": {
+      "minimumSystemVersion": "12.0",
+      "entitlements": "./entitlements.plist"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": ["https://files.prose.org/apps/updates/latest.json"],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEE5RDUzQTgxQ0U3NkQ2QgpSV1JyYmVjY3FGT2RDcG5rRG9ZZGxUeTlacFJLS0paNUZ2dkRoVFU0Tjd4UUdCMjFSckx4d1MrUAo="
+    }
   }
 }
