@@ -15,12 +15,12 @@ jobs:
             system: mac
             architecture: aarch64
             target: aarch64-apple-darwin
-            bundles: dmg,updater
+            bundles: app,dmg
           - runner: macos-13 # (macOS 13 = Intel runner)
             system: mac
             architecture: x86_64
             target: x86_64-apple-darwin
-            bundles: dmg,updater
+            bundles: app,dmg
 
     outputs:
       tag: ${{ steps.current_tag.outputs.tag }}
