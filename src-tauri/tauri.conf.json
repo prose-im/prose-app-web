@@ -20,6 +20,7 @@
     "windows": [
       {
         "title": "Prose",
+        "userAgent": "Prose",
         "width": 1360,
         "height": 940,
         "minWidth": 1080,
