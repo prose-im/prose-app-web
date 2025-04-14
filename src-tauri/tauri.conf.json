@@ -35,7 +35,8 @@
         "visible": true,
         "dragDropEnabled": false,
         "hiddenTitle": true,
-        "titleBarStyle": "Overlay"
+        "titleBarStyle": "Overlay",
+        "backgroundThrottling": "throttle"
       }
     ],
     "macOSPrivateApi": true
