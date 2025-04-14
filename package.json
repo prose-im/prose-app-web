@@ -73,7 +73,7 @@
     "worker-timers": "7.1.7"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.0.0-rc.18",
+    "@tauri-apps/cli": "2.4.x",
     "@types/crypto-js": "4.1.x",
     "@types/escape-html": "1.0.x",
     "@types/get-installed-path": "4.0.x",
