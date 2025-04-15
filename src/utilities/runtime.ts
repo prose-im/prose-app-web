@@ -179,11 +179,16 @@ const NOTIFICATION_PERMISSIONS = {
   denied: "denied"
 };
 
-const SYSTEM_NAMES: { [platform: string]: string } = {
+const PLATFORM_NAMES: { [platform: string]: string } = {
   web: "Web",
   macos: "macOS",
   windows: "Windows",
   linux: "Linux"
+};
+
+const PLATFORM_RENDERERS: { [platform: string]: string } = {
+  macos: "safari",
+  windows: "edge"
 };
 
 const LOG_METHODS = {
@@ -753,7 +758,13 @@ class UtilitiesRuntime {
   acquirePlatformName(): string {
     // Humanize platform to a platform name (eg. 'macos' becomes 'macOS'), or \
     //   fallback to raw platform code if no system name is known
-    return SYSTEM_NAMES[platform] || platform;
+    return PLATFORM_NAMES[platform] || platform;
+  }
+
+  acquirePlatformRenderer(): string | null {
+    // Acquire known platform rendering engine (if any engine is forced as it \
+    //   is known in advance in certain cases)
+    return PLATFORM_RENDERERS[platform] || null;
   }
 
   private __bindListeners(): void {

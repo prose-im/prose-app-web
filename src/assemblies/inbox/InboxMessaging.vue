@@ -613,9 +613,17 @@ export default {
     },
 
     setupContext(runtime: MessagingRuntime): void {
+      // Apply base context
       runtime.MessagingContext.setLanguage("en");
       runtime.MessagingContext.setStylePlatform(MessagingPlatform.Web);
       runtime.MessagingContext.setAccountUserId(this.selfJID.toString());
+
+      // Override style renderer (if needed)
+      const renderer = UtilitiesRuntime.acquirePlatformRenderer();
+
+      if (renderer !== null) {
+        runtime.MessagingContext.setStyleRenderer(renderer);
+      }
     },
 
     setupTheme(runtime: MessagingRuntime): void {
