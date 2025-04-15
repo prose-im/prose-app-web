@@ -130,6 +130,31 @@ To bundle Prose as a development application (with Hot Module Replacement), run:
 npm run bundle dev
 ```
 
+### Bundle cross-compilation
+
+When you run a Prose bundle job, it will produce a binary for your current platform only. That is, if you bundle from macOS then you will get a macOS binary.
+
+Fortunately, it is possible to build binaries for other platforms from macOS and Linux systems: eg. you can build a Windows binary from macOS.
+
+#### 🏹 Bundle for Windows (from macOS)
+
+To bundle Prose for Windows targets from macOS, first, make sure to install the following:
+
+```bash
+# Install Homebrew dependencies
+brew install llvm cmake ninja nasm
+
+# Add Rust compiler target and install Rust dependencies
+rustup target add x86_64-pc-windows-msvc
+cargo install --locked cargo-xwin
+```
+
+Then, build the application bundle:
+
+```bash
+npm run bundle build -- --runner cargo-xwin --target x86_64-pc-windows-msvc
+```
+
 ## Design
 
 ![Prose main view](https://github.com/prose-im/prose-app-web/assets/1451907/624bcf38-7406-4194-9aba-924144b6a675)

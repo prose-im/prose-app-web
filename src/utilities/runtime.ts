@@ -375,7 +375,7 @@ class UtilitiesRuntime {
 
         if (this.__isApplication === true) {
           // Request to show notification via Tauri API (application build)
-          const notificationId: string = await tauriInvoke(
+          const notificationId: string | null = await tauriInvoke(
             "plugin:notifications|send_notification",
 
             {
@@ -385,10 +385,12 @@ class UtilitiesRuntime {
             }
           );
 
-          // Store notification handlers (for later use)
-          this.__handlers.global.notification.set(notificationId, {
-            click: clickHandler
-          });
+          // Store notification handlers? (for later use)
+          if (notificationId !== null) {
+            this.__handlers.global.notification.set(notificationId, {
+              click: clickHandler
+            });
+          }
         } else {
           // Request to show notification via browser APIs (Web build)
           const notification = new Notification(notificationTitle, { body });

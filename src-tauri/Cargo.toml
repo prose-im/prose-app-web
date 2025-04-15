@@ -28,14 +28,16 @@ tokio = { version = "1.44.2", features = ["full"] }
 rustls = { version = "0.23.26", features = ["ring"] }
 thiserror = "1.0.58"
 percent-encoding = "2.3.1"
-window-vibrancy = "0.6.0"
 uuid = { version = "1.8.0", features = ["v4"] }
 libc = "0.2.172"
-notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = "c7788fc" }
 send_wrapper = "0.6.0"
 futures = "0.3"
 jid = { version = "0.11.1", default-features = false }
 tokio-xmpp = "4.0.0"
+
+[target."cfg(target_os = \"macos\")".dependencies]
+notifications = { git = "https://github.com/dscso/mac-notifications.git", rev = "c7788fc" }
+window-vibrancy = "0.6.0"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

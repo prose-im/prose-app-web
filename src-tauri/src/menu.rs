@@ -6,13 +6,16 @@
  * IMPORTS
  * ************************************************************************* */
 
-use tauri::menu::{AboutMetadata, Menu, MenuEvent, MenuItem, SubmenuBuilder};
+#[cfg(target_os = "macos")]
+use tauri::menu::{AboutMetadata, MenuItem};
+use tauri::menu::{Menu, MenuEvent, SubmenuBuilder};
 use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
+#[cfg(target_os = "macos")]
 const APP_NAME: &'static str = "Prose";
 
 /**************************************************************************
