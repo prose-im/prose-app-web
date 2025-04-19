@@ -22,8 +22,7 @@ fn main() {
             )
             .plugin(
                 "notifications",
-                tauri_build::InlinedPlugin::new()
-                    .commands(&["send_notification", "set_badge_count"]),
+                tauri_build::InlinedPlugin::new().commands(&["send_native", "set_badge_count"]),
             ),
     )
     .expect("failed to run tauri-build");

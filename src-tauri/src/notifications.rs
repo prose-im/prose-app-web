@@ -39,7 +39,7 @@ struct EventNotificationInteraction {
 
 #[cfg(target_os = "macos")]
 #[tauri::command]
-fn send_notification<R: Runtime>(
+fn send_native<R: Runtime>(
     _app: AppHandle<R>,
     _state: State<'_, NotificationsState>,
     title: String,
@@ -54,7 +54,7 @@ fn send_notification<R: Runtime>(
 
 #[cfg(not(target_os = "macos"))]
 #[tauri::command]
-fn send_notification<R: Runtime>(
+fn send_native<R: Runtime>(
     _app: AppHandle<R>,
     _state: State<'_, NotificationsState>,
     _title: String,
@@ -91,7 +91,8 @@ fn set_badge_count<R: Runtime>(app: AppHandle<R>, count: u32) {
 #[cfg(target_os = "windows")]
 #[tauri::command]
 fn set_badge_count<R: Runtime>(_app: AppHandle<R>, _count: u32) {
-    // Not implemented
+    // Not implemented (not yet possible to set overlay label from Tauri for \
+    //   Windows platforms — waiting for Tauri to implement this)
 }
 
 /**************************************************************************
@@ -100,7 +101,7 @@ fn set_badge_count<R: Runtime>(_app: AppHandle<R>, _count: u32) {
 
 pub fn provide<R: Runtime>() -> TauriPlugin<R> {
     Builder::new("notifications")
-        .invoke_handler(tauri::generate_handler![send_notification, set_badge_count])
+        .invoke_handler(tauri::generate_handler![send_native, set_badge_count])
         .setup(|app_handle, _| {
             #[cfg(target_os = "macos")]
             let state = {

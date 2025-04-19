@@ -8,6 +8,7 @@
     "core:default",
     "updater:default",
     "dialog:default",
+    "notification:default",
     "log:default",
 
     "core:window:allow-center",
@@ -27,7 +28,7 @@
 
     "download:allow-file",
 
-    "notifications:allow-send-notification",
+    "notifications:allow-send-native",
     "notifications:allow-set-badge-count"
   ]
 }

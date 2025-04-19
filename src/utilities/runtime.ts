@@ -22,6 +22,11 @@ import {
   LogicalSize as tauriLogicalSize
 } from "@tauri-apps/api/window";
 import {
+  isPermissionGranted as tauriNotificationIsPermissionGranted,
+  requestPermission as tauriNotificationRequestPermission,
+  sendNotification as tauriNotificationSendNotification
+} from "@tauri-apps/plugin-notification";
+import {
   debug as tauriLogDebug,
   error as tauriLogError,
   info as tauriLogInfo,
@@ -172,7 +177,9 @@ interface RuntimeConnectionHandlers {
 
 const platform = CONFIG.platform;
 const context = platform === "web" ? "browser" : "application";
+
 const translucent = platform === "macos";
+const nativeNotifications = platform === "macos";
 
 const NOTIFICATION_PERMISSIONS = {
   granted: "granted",
@@ -379,21 +386,37 @@ class UtilitiesRuntime {
         };
 
         if (this.__isApplication === true) {
-          // Request to show notification via Tauri API (application build)
-          const notificationId: string | null = await tauriInvoke(
-            "plugin:notifications|send_notification",
+          // Show notification using the native notification sender, or the \
+          //   generic Tauri-provided one?
+          // Notice: we have implemented better notification integrations on \
+          //   systems where we thought that the Tauri notification \
+          //   integration fell short. For instance, it is currently — as of \
+          //   April 2025 — impossible to bind a click handler on \
+          //   notifications sent from Tauri. However, it is common practice \
+          //   on macOS apps to react to clicks on notification banners. We \
+          //   fixed this by building our own native notifier.
+          if (nativeNotifications === true) {
+            const notificationId: string | null = await tauriInvoke(
+              "plugin:notifications|send_native",
 
-            {
-              title: notificationTitle,
-              body,
-              route
+              {
+                title: notificationTitle,
+                body,
+                route
+              }
+            );
+
+            // Store notification handlers? (for later use)
+            if (notificationId !== null) {
+              this.__handlers.global.notification.set(notificationId, {
+                click: clickHandler
+              });
             }
-          );
-
-          // Store notification handlers? (for later use)
-          if (notificationId !== null) {
-            this.__handlers.global.notification.set(notificationId, {
-              click: clickHandler
+          } else {
+            // Request to show notification via Tauri API (application build)
+            tauriNotificationSendNotification({
+              title: notificationTitle,
+              body
             });
           }
         } else {
@@ -415,12 +438,22 @@ class UtilitiesRuntime {
     let hasPermission = false;
 
     if (this.__isApplication === true) {
-      // Request to show notification via Tauri API (application build)
-      // Notice: permission request is managed at a lower level, therefore \
-      //   always consider we have permission here.
-      hasPermission = true;
+      // Request notification permissions via Tauri API
+      // Notice: for native, permission request is managed at a lower level, \
+      //   therefore always consider we have permission for native senders.
+      if (nativeNotifications === true) {
+        hasPermission = true;
+      } else {
+        hasPermission = await tauriNotificationIsPermissionGranted();
+
+        if (hasPermission === false) {
+          hasPermission =
+            (await tauriNotificationRequestPermission()) ===
+            NOTIFICATION_PERMISSIONS.granted;
+        }
+      }
     } else {
-      // Request to show notification via browser APIs (Web build)
+      // Request notification permissions via browser APIs (Web build)
       hasPermission =
         Notification.permission === NOTIFICATION_PERMISSIONS.granted;
 
