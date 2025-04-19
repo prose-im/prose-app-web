@@ -2,26 +2,31 @@
 //
 // Copyright 2024, Prose Foundation
 
+#![allow(unused_imports)]
+
 /**************************************************************************
  * IMPORTS
  * ************************************************************************* */
 
-#[cfg(target_os = "macos")]
-use tauri::menu::{AboutMetadata, MenuItem};
-use tauri::menu::{Menu, MenuEvent, SubmenuBuilder};
+use tauri::menu::{AboutMetadata, Menu, MenuBuilder, MenuEvent, MenuItem, SubmenuBuilder};
+use tauri::tray::{TrayIcon, TrayIconBuilder};
 use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 /**************************************************************************
  * CONSTANTS
  * ************************************************************************* */
 
-#[cfg(target_os = "macos")]
 const APP_NAME: &'static str = "Prose";
+
+const LABEL_UPDATES: &'static str = "Check for Updates…";
+const LABEL_SETTINGS: &'static str = "Account Settings…";
+const LABEL_PROFILE: &'static str = "Edit Profile…";
 
 /**************************************************************************
  * CREATORS
  * ************************************************************************* */
 
+#[cfg(target_os = "macos")]
 pub fn create<R: Runtime>(app: &AppHandle<R>) -> Result<Menu<R>, tauri::Error> {
     let menu = Menu::new(app)?;
 
@@ -31,16 +36,16 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> Result<Menu<R>, tauri::Error> {
         menu.append(
             &SubmenuBuilder::new(app, APP_NAME)
                 .about(Some(AboutMetadata::default()))
-                .text("updates", "Check for Updates…")
+                .text("updates", LABEL_UPDATES)
                 .separator()
                 .item(&MenuItem::with_id(
                     app,
                     "settings",
-                    "Account Settings…",
+                    LABEL_SETTINGS,
                     true,
                     Some("Cmd+,"),
                 )?)
-                .text("profile", "Edit Profile…")
+                .text("profile", LABEL_PROFILE)
                 .separator()
                 .hide()
                 .hide_others()
@@ -94,6 +99,26 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> Result<Menu<R>, tauri::Error> {
     )?;
 
     Ok(menu)
+}
+
+#[cfg(target_os = "windows")]
+pub fn tray<R: Runtime>(app: &AppHandle<R>) -> Result<TrayIcon<R>, tauri::Error> {
+    // Create menu (for tray)
+    let menu = MenuBuilder::new(app)
+        .text("updates", LABEL_UPDATES)
+        .separator()
+        .text("settings", LABEL_SETTINGS)
+        .text("profile", LABEL_PROFILE)
+        .separator()
+        .quit()
+        .build()?;
+
+    // Build tray icon
+    TrayIconBuilder::new()
+        .icon(app.default_window_icon().unwrap().clone())
+        .tooltip(APP_NAME)
+        .menu(&menu)
+        .build(app)
 }
 
 /**************************************************************************

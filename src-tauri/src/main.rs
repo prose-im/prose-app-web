@@ -12,7 +12,6 @@
 mod connection;
 mod download;
 mod logger;
-#[cfg(target_os = "macos")]
 mod menu;
 mod notifications;
 
@@ -20,6 +19,7 @@ mod notifications;
  * IMPORTS
  * ************************************************************************* */
 
+use tauri::tray::TrayIconEvent;
 use tauri::{Emitter, Manager, WindowEvent};
 use tauri_plugin_deep_link::DeepLinkExt;
 #[cfg(target_os = "macos")]
@@ -62,27 +62,48 @@ async fn main() {
     // Mount menu (for certain platforms only)
     #[cfg(target_os = "macos")]
     {
-        builder = builder.menu(menu::create).on_menu_event(menu::handler);
+        builder = builder.menu(menu::create);
     }
 
     // Bind events
-    builder = builder.on_window_event(|window, event| match event {
-        WindowEvent::CloseRequested { api, .. } => {
-            #[cfg(not(target_os = "macos"))]
-            {
-                window.hide().unwrap();
-            }
+    builder = builder
+        .on_window_event(|window, event| match event {
+            WindowEvent::CloseRequested { api, .. } => {
+                #[cfg(not(target_os = "macos"))]
+                {
+                    let webview = window.get_webview_window("main").unwrap();
 
-            #[cfg(target_os = "macos")]
-            {
-                tauri::AppHandle::hide(&window.app_handle()).unwrap();
-            }
+                    webview.hide().unwrap();
+                }
 
-            api.prevent_close();
-        }
-        WindowEvent::Focused(focused) => window.emit("window:focus", focused).unwrap(),
-        _ => {}
-    });
+                #[cfg(target_os = "macos")]
+                {
+                    tauri::AppHandle::hide(&window.app_handle()).unwrap();
+                }
+
+                api.prevent_close();
+            }
+            WindowEvent::Focused(focused) => window.emit("window:focus", focused).unwrap(),
+            _ => {}
+        })
+        .on_tray_icon_event(|app, event| match event {
+            TrayIconEvent::Click { .. } => {
+                let window = app.get_webview_window("main").unwrap();
+
+                // Show the window? (if hidden)
+                if window.is_visible().unwrap_or(false) == false {
+                    window.show().unwrap();
+                    window.set_focus().unwrap();
+                }
+
+                // Also un-minimize the window? (if minimized)
+                if window.is_minimized().unwrap_or(false) == false {
+                    window.unminimize().unwrap();
+                }
+            }
+            _ => {}
+        })
+        .on_menu_event(menu::handler);
 
     // Setup application
     builder = builder.setup(|app| {
@@ -108,6 +129,10 @@ async fn main() {
         if let Some(url) = std::env::args().nth(1) {
             app.emit("url:open", url).unwrap();
         }
+
+        // Setup system tray menu (Windows only)
+        #[cfg(target_os = "windows")]
+        menu::tray(app.handle()).unwrap();
 
         Ok(())
     });
