@@ -17,29 +17,6 @@
         "use": "brownfield"
       }
     },
-    "windows": [
-      {
-        "title": "Prose",
-        "userAgent": "Prose",
-        "width": 1360,
-        "height": 940,
-        "minWidth": 1080,
-        "minHeight": 680,
-        "resizable": true,
-        "maximizable": true,
-        "minimizable": true,
-        "closable": true,
-        "fullscreen": false,
-        "center": true,
-        "focus": true,
-        "transparent": true,
-        "visible": true,
-        "dragDropEnabled": false,
-        "hiddenTitle": true,
-        "titleBarStyle": "Overlay",
-        "backgroundThrottling": "throttle"
-      }
-    ],
     "macOSPrivateApi": true
   },
   "bundle": {

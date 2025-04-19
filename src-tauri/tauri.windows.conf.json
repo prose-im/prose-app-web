@@ -1,0 +1,24 @@
+{
+  "app": {
+    "windows": [
+      {
+        "title": "Prose",
+        "userAgent": "Prose (Windows)",
+        "width": 1360,
+        "height": 940,
+        "minWidth": 1080,
+        "minHeight": 680,
+        "resizable": true,
+        "maximizable": true,
+        "minimizable": true,
+        "closable": true,
+        "fullscreen": false,
+        "center": true,
+        "focus": true,
+        "visible": true,
+        "decorations": false,
+        "dragDropEnabled": false
+      }
+    ]
+  }
+}
