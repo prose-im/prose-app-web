@@ -64,20 +64,34 @@ fn send_notification<R: Runtime>(
     None
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "linux"))]
 #[tauri::command]
-fn set_badge_count(count: u32) {
-    if count > 0 {
-        macos::misc::set_badge(Some(&count.to_string()));
-    } else {
-        macos::misc::set_badge(None);
+fn set_badge_count<R: Runtime>(app: AppHandle<R>, count: u32) {
+    let window = app.get_webview_window("main").unwrap();
+
+    #[cfg(target_os = "macos")]
+    {
+        window
+            .set_badge_label(if count > 0 {
+                Some(count.to_string())
+            } else {
+                None
+            })
+            .ok();
+    }
+
+    #[cfg(target_os = "linux")]
+    {
+        window
+            .set_badge_count(if count > 0 { Some(count as i64) } else { None })
+            .ok();
     }
 }
 
-#[cfg(not(target_os = "macos"))]
+#[cfg(target_os = "windows")]
 #[tauri::command]
-fn set_badge_count(_count: u32) {
-    // TODO: need to implement badges for eg. Windows
+fn set_badge_count<R: Runtime>(_app: AppHandle<R>, _count: u32) {
+    // Not implemented
 }
 
 /**************************************************************************
