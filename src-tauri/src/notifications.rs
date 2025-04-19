@@ -2,6 +2,8 @@
 //
 // Copyright 2024, Prose Foundation
 
+#![allow(unused_imports)]
+
 /**************************************************************************
  * IMPORTS
  * ************************************************************************* */
@@ -9,12 +11,9 @@
 #[cfg(target_os = "macos")]
 use notifications as macos;
 use send_wrapper::SendWrapper;
-#[cfg(target_os = "macos")]
 use serde::Serialize;
 use tauri::plugin::{Builder, TauriPlugin};
-#[cfg(target_os = "macos")]
-use tauri::Emitter;
-use tauri::{AppHandle, Manager, Runtime, State};
+use tauri::{AppHandle, Emitter, Manager, Runtime, State};
 
 /**************************************************************************
  * STRUCTURES
