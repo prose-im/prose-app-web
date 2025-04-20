@@ -10,12 +10,13 @@ jobs:
       matrix:
         settings:
           - platform: macos
-            path-installer: ./dmg
-            path-updater: ./macos
+            paths:
+              - installer: ./dmg
+                updater: ./macos
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Verify matrix
-        run: echo "platform=${{ matrix.settings.platform }}, pathinstaller=${{ matrix.settings.path-installer }}, pathupdater=${{ matrix.settings.path-updater }}"
+        run: echo "platform=${{ matrix.settings.platform }}, pathinstaller=${{ matrix.settings.paths.installer }}, pathupdater=${{ matrix.settings.paths.updater }}"
