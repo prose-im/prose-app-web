@@ -65,7 +65,7 @@ function generate_url {
   url+="Prose$extension.tar.gz"
 
   # Ensure file exists at URL
-  curl --fail --head $url &>/dev/null
+  curl --fail --location --head $url &>/dev/null
   rc_status=$?
 
   if [ ! $rc_status -eq 0 ]; then
@@ -86,7 +86,7 @@ function fetch_signature {
   signature_url="$archive_url.sig"
 
   # Acquire signature
-  signature=$(curl --fail --get $signature_url 2>/dev/null)
+  signature=$(curl --fail --location --get $signature_url 2>/dev/null)
   rc_status=$?
 
   if [ ! $rc_status -eq 0 ]; then
