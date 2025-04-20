@@ -187,7 +187,7 @@ export default {
 
   resolve: {
     alias: [
-      { find: "@/", replacement: path.join(__dirname, "src/") },
+      { find: "@", replacement: path.resolve(__dirname, "src") },
 
       {
         // Use optional override to use a local 'prose-sdk-js' build
