@@ -13,7 +13,6 @@ jobs:
             system: windows
             architecture: x86_64
             target: x86_64-pc-windows-msvc
-            bundles: msi
 
     outputs:
       tag: ${{ steps.current_tag.outputs.tag }}
@@ -71,16 +70,15 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         with:
           tauriScript: npm run bundle
-          args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
+          args: --target ${{ matrix.settings.target }}
 
-      # TODO: this is not working for windows!
+      - name: Archive output files
+        shell: bash
+        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz -C src-tauri/target/${{ matrix.settings.target }}/release/bundle/ .
 
-      # - name: Archive output files
-      #   run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz -C src-tauri/target/${{ matrix.settings.target }}/release/bundle/ .
-
-      # - name: Upload build artifacts
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ matrix.settings.system }}-${{ matrix.settings.architecture }})
-      #     path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
-      #     retention-days: 1
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ matrix.settings.system }}-${{ matrix.settings.architecture }})
+          path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
+          retention-days: 1

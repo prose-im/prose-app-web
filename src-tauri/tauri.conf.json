@@ -38,8 +38,9 @@
       "entitlements": "./entitlements.plist"
     },
     "windows": {
-      "wix": {
-        "upgradeCode": "53ccf6ce-9d77-5843-9ff1-aa744219eac4"
+      "nsis": {
+        "compression": "lzma",
+        "installMode": "currentUser"
       },
       "webviewInstallMode": {
         "type": "downloadBootstrapper"
