@@ -36,6 +36,15 @@
     "macOS": {
       "minimumSystemVersion": "12.0",
       "entitlements": "./entitlements.plist"
+    },
+    "windows": {
+      "nsis": {
+        "compression": "lzma",
+        "installMode": "currentUser"
+      },
+      "webviewInstallMode": {
+        "type": "downloadBootstrapper"
+      }
     }
   },
   "plugins": {
