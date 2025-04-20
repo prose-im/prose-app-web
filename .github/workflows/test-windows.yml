@@ -72,12 +72,14 @@ jobs:
           tauriScript: npm run bundle
           args: --target ${{ matrix.settings.target }}
 
-      - name: Archive output files
-        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz -C src-tauri/target/${{ matrix.settings.target }}/release/bundle/ .
+      # TODO: this is not working for windows!
 
-      - name: Upload build artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ matrix.settings.system }}-${{ matrix.settings.architecture }})
-          path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
-          retention-days: 1
+      # - name: Archive output files
+      #   run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz -C src-tauri/target/${{ matrix.settings.target }}/release/bundle/ .
+
+      # - name: Upload build artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: ${{ steps.current_tag.outputs.tag }} Bundle (${{ matrix.settings.system }}-${{ matrix.settings.architecture }})
+      #     path: ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz
+      #     retention-days: 1
