@@ -58,11 +58,11 @@ function generate_url {
   # Read arguments
   platform=$2
   architecture=$3
-  extension=$4
+  filename=$4
 
   # Generate version update archive URL
   url="$ENDPOINT_URL/$BUCKET/versions/$VERSION/$platform/$architecture/update/"
-  url+="Prose$extension.tar.gz"
+  url+="$filename"
 
   # Ensure file exists at URL
   curl --fail --location --head $url &>/dev/null
@@ -109,12 +109,12 @@ function make_platform {
   # Read arguments
   platform=$2
   architecture=$3
-  extension=$4
+  filename=$4
   updater_platform="${5:-$platform}"
 
   # Generate archive URL
   archive_url=""
-  generate_url archive_url "$platform" "$architecture" "$extension"
+  generate_url archive_url "$platform" "$architecture" "$filename"
 
   # Fetch signature
   platform_signature=""
@@ -136,8 +136,9 @@ manifest="{"$'\n'
 manifest+="  \"version\": \"$VERSION\","$'\n'
 manifest+="  \"platforms\": {"$'\n'
 
-make_platform manifest "macos" "aarch64" ".app" "darwin" && manifest+=$',\n'
-make_platform manifest "macos" "x86_64" ".app" "darwin" && manifest+=$'\n'
+make_platform manifest "macos" "aarch64" "Prose.app.tar.gz" "darwin" && manifest+=$',\n'
+make_platform manifest "macos" "x86_64" "Prose.app.tar.gz" "darwin" && manifest+=$',\n'
+make_platform manifest "windows" "x86_64" "Prose_${VERSION}_x64_en-US.msi.zip" "windows" && manifest+=$'\n'
 
 manifest+="  }"$'\n'
 manifest+="}"
