@@ -14,12 +14,14 @@ jobs:
       fail-fast: false
       matrix:
         settings:
-          - runner: macos-14 # (macOS 14 = Apple silicon runner)
+          # macOS (Apple Silicon)
+          - runner: macos-14
             system: mac
             architecture: aarch64
             target: aarch64-apple-darwin
             bundles: app,dmg
-          - runner: macos-13 # (macOS 13 = Intel runner)
+          # macOS (Intel)
+          - runner: macos-13
             system: mac
             architecture: x86_64
             target: x86_64-apple-darwin
