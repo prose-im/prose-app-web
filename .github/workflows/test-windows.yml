@@ -13,8 +13,9 @@ jobs:
           - runner: windows-2025
             system: windows
             architecture: x86_64
-            target: x86_64-pc-windows-msvc
-            bundles: msi
+            sub:
+              - target: x86_64-pc-windows-msvc
+                bundles: msi
 
     outputs:
       tag: ${{ steps.current_tag.outputs.tag }}
@@ -33,7 +34,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
-          target: ${{ matrix.settings.target }}
+          target: ${{ matrix.settings.sub.target }}
           override: true
 
       - name: Verify versions
@@ -75,11 +76,11 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           tauriScript: npm run bundle
-          args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
+          args: --target ${{ matrix.settings.sub.target }} --bundles ${{ matrix.settings.sub.bundles }}
 
       - name: Archive output files
         shell: bash
-        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz -C src-tauri/target/${{ matrix.settings.target }}/release/bundle/ .
+        run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz -C src-tauri/target/${{ matrix.settings.sub.target }}/release/bundle/ .
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
