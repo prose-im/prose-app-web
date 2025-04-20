@@ -3,6 +3,7 @@ name: Test on Windows
 
 jobs:
   bundle:
+    environment: bundle-build
     runs-on: ${{ matrix.settings.runner }}
 
     strategy:
