@@ -123,23 +123,20 @@ jobs:
             system: mac
             architecture: aarch64
             format: dmg
-            paths:
-              - installer: ./dmg
-                updater: ./macos
+            path-installer: ./dmg
+            path-updater: ./macos
           - platform: macos
             system: mac
             architecture: x86_64
             format: dmg
-            paths:
-              - installer: ./dmg
-                updater: ./macos
+            path-installer: ./dmg
+            path-updater: ./macos
           - platform: windows
             system: windows
             architecture: x86_64
             format: msi
-            paths:
-              - installer: ./msi
-                updater: ./msi
+            path-installer: ./msi
+            path-updater: ./msi
 
     steps:
       - name: Install AWS CLI
@@ -164,7 +161,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.paths.installer }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/ --recursive --exclude "*" --include "*.${{ matrix.settings.format }}" --exclude ".*"
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.path-installer }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/ --recursive --exclude "*" --include "*.${{ matrix.settings.format }}" --exclude ".*"
 
       - name: Publish update archive
         env:
@@ -172,7 +169,7 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_EC2_METADATA_DISABLED: true
         run: |
-          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.paths.updater }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/update/ --recursive --exclude "*" --include "*.tar.gz" --include "*.tar.gz.sig" --include "*.zip" --include "*.zip.sig"
+          aws s3 cp --endpoint-url ${{ vars.S3_ENDPOINT }} ${{ matrix.settings.path-updater }}/ s3://${{ vars.S3_BUCKET }}/versions/${{ needs.bundle.outputs.tag }}/${{ matrix.settings.platform }}/${{ matrix.settings.architecture }}/update/ --recursive --exclude "*" --include "*.tar.gz" --include "*.tar.gz.sig" --include "*.zip" --include "*.zip.sig"
 
   publish-manifest:
     needs: [bundle, publish-version]
