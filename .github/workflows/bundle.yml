@@ -26,6 +26,12 @@ jobs:
             architecture: x86_64
             target: x86_64-apple-darwin
             bundles: app,dmg
+          # Windows (Intel)
+          - runner: windows-2025
+            system: windows
+            architecture: x86_64
+            target: x86_64-pc-windows-msvc
+            bundles: msi
 
     outputs:
       tag: ${{ steps.current_tag.outputs.tag }}
@@ -95,6 +101,7 @@ jobs:
           args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
 
       - name: Archive output files
+        shell: bash
         run: tar -zcvf ./bundle-${{ steps.current_tag.outputs.tag }}-${{ matrix.settings.system }}.tar.gz -C src-tauri/target/${{ matrix.settings.target }}/release/bundle/ .
 
       - name: Upload build artifacts
@@ -121,6 +128,10 @@ jobs:
             system: mac
             architecture: x86_64
             format: dmg
+          - platform: windows
+            system: windows
+            architecture: x86_64
+            format: msi
 
     steps:
       - name: Install AWS CLI
