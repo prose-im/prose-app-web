@@ -8,7 +8,7 @@ The Prose project was originally announced in a blog post: [Introducing Prose, D
 
 Copyright 2025, Prose Foundation - Released under the [Mozilla Public License 2.0](./LICENSE.md).
 
-_Tested at NodeJS version: `v20.10.0`_
+_Tested at NodeJS version: `v20.18.2`_
 
 ## Quick Setup
 
