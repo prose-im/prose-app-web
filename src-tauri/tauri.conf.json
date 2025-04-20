@@ -39,6 +39,7 @@
     },
     "windows": {
       "wix": {
+        "language": "en-US",
         "upgradeCode": "53ccf6ce-9d77-5843-9ff1-aa744219eac4"
       },
       "webviewInstallMode": {
