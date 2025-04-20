@@ -13,6 +13,7 @@ jobs:
             system: windows
             architecture: x86_64
             target: x86_64-pc-windows-msvc
+            bundles: msi
 
     outputs:
       tag: ${{ steps.current_tag.outputs.tag }}
@@ -68,9 +69,12 @@ jobs:
 
       - name: Run bundle build
         uses: tauri-apps/tauri-action@v0
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_KEY_PASSWORD }}
         with:
           tauriScript: npm run bundle
-          args: --target ${{ matrix.settings.target }}
+          args: --target ${{ matrix.settings.target }} --bundles ${{ matrix.settings.bundles }}
 
       - name: Archive output files
         shell: bash
