@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         settings:
-          - runner: windows-latest
+          - runner: windows-2025
             system: windows
             architecture: x86_64
             target: x86_64-pc-windows-msvc
