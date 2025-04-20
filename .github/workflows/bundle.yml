@@ -73,7 +73,6 @@ jobs:
             ~/.cargo/bin
             ~/.cargo/registry
             ~/.cargo/git
-            src-tauri/target
           key: ${{ runner.os }}-${{ runner.arch }}-cargo
 
       - name: Get current tag
