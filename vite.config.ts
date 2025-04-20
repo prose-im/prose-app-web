@@ -12,6 +12,7 @@ import fs from "fs";
 import path from "path";
 import merge from "lodash.merge";
 import autoprefixer from "autoprefixer";
+import { normalizePath } from "vite";
 import vue from "@vitejs/plugin-vue";
 import viteWasmPlugin from "vite-plugin-wasm";
 import viteHtmlPlugin from "vite-plugin-html-config";
@@ -218,11 +219,16 @@ export default {
     viteStaticCopyPlugin({
       targets: [
         {
-          src: path.join(
-            // Use optional override to use a local 'prose-core-view' build
-            PROSE_CORE_VIEWS_OVERRIDE_PATH || PROSE_CORE_VIEWS_LOCAL_PATH,
-            "dist",
-            "*"
+          // Important: normalize resolved path, since 'fast-glob' is used \
+          //   to expand the glob path here, for which '\' is an escape \
+          //   character. Unfortunately, '\' is also used in Windows paths!
+          src: normalizePath(
+            path.resolve(
+              // Use optional override to use a local 'prose-core-view' build
+              PROSE_CORE_VIEWS_OVERRIDE_PATH || PROSE_CORE_VIEWS_LOCAL_PATH,
+              "dist",
+              "*"
+            )
           ),
 
           dest: "includes/views"
