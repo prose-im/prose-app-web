@@ -16,6 +16,7 @@ import { Availability, JID } from "@prose-im/prose-sdk-js";
 // PROJECT: STORES
 import Store from "@/store";
 import { InboxNameOrigin } from "@/store/tables/inbox";
+import { AvatarSource } from "@/store/tables/avatar";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -257,6 +258,7 @@ const $account = defineStore("account", {
           // Notice: this is a cross-store operation, for convenience.
           if (accountInfo.avatar !== undefined) {
             Store.$avatar.refresh(
+              AvatarSource.Profile,
               accountInfo.jid.toString(),
               accountInfo.avatar
             );
@@ -313,7 +315,11 @@ const $account = defineStore("account", {
           if (workspaceInfo.icon !== undefined) {
             const selfJID = this.getSelfJID();
 
-            Store.$avatar.refresh(selfJID.domain, workspaceInfo.icon);
+            Store.$avatar.refresh(
+              AvatarSource.Workspace,
+              selfJID.domain,
+              workspaceInfo.icon
+            );
           }
         }
 

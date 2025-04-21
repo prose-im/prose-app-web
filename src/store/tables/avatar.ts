@@ -9,12 +9,26 @@
  * ************************************************************************* */
 
 // NPM
-import { Avatar as CoreAvatar } from "@prose-im/prose-sdk-js";
+import {
+  Avatar as CoreProfileAvatar,
+  WorkspaceIcon as CoreWorkspaceIcon
+} from "@prose-im/prose-sdk-js";
 import { defineStore } from "pinia";
 import mitt from "mitt";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
+
+/**************************************************************************
+ * ENUMERATIONS
+ * ************************************************************************* */
+
+enum AvatarSource {
+  // Profile source.
+  Profile = "profile",
+  // Workspace source.
+  Workspace = "workspace"
+}
 
 /**************************************************************************
  * TYPES
@@ -93,29 +107,60 @@ const $avatar = defineStore("avatar", {
       return this.assert(userId).url;
     },
 
-    async refresh(userId: string, avatar: CoreAvatar): Promise<void> {
+    async refresh(
+      source: AvatarSource,
+      userId: string,
+      avatarLike: CoreProfileAvatar | CoreWorkspaceIcon
+    ): Promise<void> {
       const entry = this.assert(userId);
 
       // Avatar changed, and not already refreshing?
-      if (entry.id !== avatar.id && LOCAL_STATES.refreshing[userId] !== true) {
+      if (
+        entry.id !== avatarLike.id &&
+        LOCAL_STATES.refreshing[userId] !== true
+      ) {
         // Mark as refreshing
         LOCAL_STATES.refreshing[userId] = true;
 
         // Immediately set avatar identifier
         this.$patch(() => {
-          entry.id = avatar.id;
+          entry.id = avatarLike.id;
         });
 
-        // Load avatar data
-        const avatarResponse = await Broker.$profile.loadAvatarData(
-          userId,
-          avatar
-        );
+        // Load avatar data (from source)
+        // Notice: typically, avatars come from user profiles, although in \
+        //   some less frequent cases we might want to load avatar-like \
+        //   objects from other sources (eg. workspace icons, that behave \
+        //   like avatars).
+        let avatarData: string | void;
 
-        if (avatarResponse?.dataURL) {
-          // Set avatar data
+        switch (source) {
+          case AvatarSource.Profile: {
+            avatarData = await Broker.$profile.loadAvatarData(
+              userId,
+              avatarLike
+            );
+
+            break;
+          }
+
+          case AvatarSource.Workspace: {
+            avatarData = await Broker.$account.loadWorkspaceIcon(avatarLike);
+
+            break;
+          }
+
+          default: {
+            throw new Error(`Avatar source unsupported: ${source}`);
+          }
+        }
+
+        if (avatarData) {
+          // Set avatar data URL
+          const avatarDataUrl: string = avatarData;
+
           this.$patch(() => {
-            entry.url = avatarResponse.dataURL;
+            entry.url = avatarDataUrl;
           });
 
           // Emit IPC changed event
@@ -144,5 +189,6 @@ const $avatar = defineStore("avatar", {
  * EXPORTS
  * ************************************************************************* */
 
+export { AvatarSource };
 export type { EventAvatarGeneric };
 export default $avatar;

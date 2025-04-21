@@ -25,6 +25,7 @@ import UtilitiesRuntime from "@/utilities/runtime";
 
 // PROJECT: STORES
 import Store from "@/store";
+import { AvatarSource } from "@/store/tables/avatar";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -267,7 +268,11 @@ const $room = defineStore("room", {
               ? participant.jid.toString()
               : participant.id.toString();
 
-          Store.$avatar.refresh(participantUserId, participant.avatar);
+          Store.$avatar.refresh(
+            AvatarSource.Profile,
+            participantUserId,
+            participant.avatar
+          );
         }
       });
     },

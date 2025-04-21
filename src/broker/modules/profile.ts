@@ -26,10 +26,6 @@ import logger from "@/utilities/logger";
  * INTERFACES
  * ************************************************************************* */
 
-interface LoadAvatarDataResponse {
-  dataURL: string;
-}
-
 interface SaveAvatarRequest {
   data: SaveAvatarRequestData;
   metadata: SaveAvatarRequestMetadata;
@@ -72,18 +68,14 @@ class BrokerModuleProfile extends BrokerModule {
   async loadAvatarData(
     userId: string,
     avatar: CoreAvatar
-  ): Promise<LoadAvatarDataResponse | void> {
+  ): Promise<string | void> {
     // XEP-0084: User Avatar
     // https://xmpp.org/extensions/xep-0084.html
 
     logger.info(`Will load avatar for: '${userId}' (ID ${avatar.id})`);
 
     try {
-      const dataURL = await this._client.client?.loadAvatarDataURL(avatar);
-
-      if (dataURL) {
-        return { dataURL };
-      }
+      return await this._client.client?.loadAvatarDataURL(avatar);
     } catch (error) {
       logger.warn(
         `Failed to load avatar for: '${userId}' (ID ${avatar.id})`,
@@ -120,5 +112,5 @@ class BrokerModuleProfile extends BrokerModule {
  * EXPORTS
  * ************************************************************************* */
 
-export type { LoadAvatarDataResponse, SaveAvatarRequest };
+export type { SaveAvatarRequest };
 export default BrokerModuleProfile;

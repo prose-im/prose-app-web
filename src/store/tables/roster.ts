@@ -19,6 +19,7 @@ import mitt from "mitt";
 
 // PROJECT: STORES
 import Store from "@/store";
+import { AvatarSource } from "@/store/tables/avatar";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -205,7 +206,11 @@ const $roster = defineStore("roster", {
           // Refresh avatar for contact
           // Notice: this is a cross-store operation, for convenience.
           if (contact.avatar !== undefined) {
-            Store.$avatar.refresh(contact.jid.toString(), contact.avatar);
+            Store.$avatar.refresh(
+              AvatarSource.Profile,
+              contact.jid.toString(),
+              contact.avatar
+            );
           }
         });
 
@@ -249,6 +254,7 @@ const $roster = defineStore("roster", {
           // Notice: this is a cross-store operation, for convenience.
           if (blockListItem.avatar !== undefined) {
             Store.$avatar.refresh(
+              AvatarSource.Profile,
               blockListItem.jid.toString(),
               blockListItem.avatar
             );

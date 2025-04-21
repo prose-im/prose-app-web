@@ -130,17 +130,15 @@ class BrokerDelegate implements ProseClientDelegate {
     await Store.$account.loadInformation(true);
   }
 
-  workspaceIconChanged(): void {
+  async workspaceIconChanged(): Promise<void> {
     logger.info("Workspace icon changed");
 
-    // TODO: make it work with the pod server / pod api (nothing pushed yet)
-    // TODO: reload whole workspace here? (is it really needed?)
+    await Store.$account.loadWorkspace(true);
   }
 
   async workspaceInfoChanged(): Promise<void> {
     logger.info("Workspace information changed");
 
-    // TODO: make it work with the pod server / pod api (nothing pushed yet)
     await Store.$account.loadWorkspace(true);
   }
 

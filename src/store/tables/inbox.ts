@@ -22,6 +22,7 @@ import {
 
 // PROJECT: STORES
 import Store from "@/store";
+import { AvatarSource } from "@/store/tables/avatar";
 
 // PROJECT: UTILITIES
 import logger from "@/utilities/logger";
@@ -451,7 +452,11 @@ const $inbox = defineStore("inbox", {
       // Update sender avatar (contained into message)
       // Notice: this is a cross-store operation, for convenience.
       if (message.user.avatar !== undefined) {
-        Store.$avatar.refresh(message.user.jid.toString(), message.user.avatar);
+        Store.$avatar.refresh(
+          AvatarSource.Profile,
+          message.user.jid.toString(),
+          message.user.avatar
+        );
       }
 
       // Insert actual message

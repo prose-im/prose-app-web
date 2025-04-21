@@ -9,7 +9,11 @@
  * ************************************************************************* */
 
 // NPM
-import { AccountInfo, WorkspaceInfo } from "@prose-im/prose-sdk-js";
+import {
+  AccountInfo,
+  WorkspaceInfo,
+  WorkspaceIcon
+} from "@prose-im/prose-sdk-js";
 
 // PROJECT: BROKER
 import BrokerModule from "@/broker/modules";
@@ -32,6 +36,15 @@ class BrokerModuleAccount extends BrokerModule {
     logger.info("Will load workspace information (or reload)");
 
     return (await this._client.client?.loadWorkspaceInfo()) || undefined;
+  }
+
+  async loadWorkspaceIcon(icon: WorkspaceIcon): Promise<string | void> {
+    // XEP-0084: User Avatar
+    // https://xmpp.org/extensions/xep-0084.html
+
+    logger.info(`Will load workspace icon (ID ${icon.id})`);
+
+    return (await this._client.client?.loadWorkspaceIcon(icon)) || undefined;
   }
 
   async changePassword(password: string): Promise<void> {
