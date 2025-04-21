@@ -36,7 +36,7 @@
   "dependencies": {
     "@privacyresearch/libsignal-protocol-typescript": "0.0.16",
     "@prose-im/prose-core-views": "0.53.0",
-    "@prose-im/prose-sdk-js": "0.1.105",
+    "@prose-im/prose-sdk-js": "0.1.106",
     "@tauri-apps/api": "2.4.1",
     "@tauri-apps/plugin-shell": "2.2.1",
     "@tauri-apps/plugin-dialog": "2.2.1",
