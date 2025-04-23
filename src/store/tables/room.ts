@@ -166,6 +166,10 @@ const $room = defineStore("room", {
         // Initialize total unread count
         let totalUnreadCount = 0;
 
+        // Acquire user notification preference
+        // Notice: this is a cross-store operation, for convenience.
+        const notifyTopics = Store.$settings.notifications.configuration.topics;
+
         // Load rooms
         const sidebarItems = await Broker.$room.sidebarItems();
 
@@ -198,8 +202,19 @@ const $room = defineStore("room", {
           itemsByRoomId.set(item.room.id, item);
           roomsById.set(item.room.id, item.room);
 
-          // Increment unread count
-          totalUnreadCount += item.unreadCount;
+          // Increment unread count? (based on user preference)
+          if (notifyTopics !== "nothing") {
+            if (
+              notifyTopics === "mention" &&
+              item.section === SidebarSection.Channel
+            ) {
+              // Only notify about messages targeted to self
+              totalUnreadCount += item.mentionsCount;
+            } else {
+              // Notify about all messages
+              totalUnreadCount += item.unreadCount;
+            }
+          }
         });
 
         // Append all rooms
