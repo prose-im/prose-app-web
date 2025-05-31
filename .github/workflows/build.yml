@@ -137,4 +137,4 @@ jobs:
           NOMAD_TOKEN: ${{ secrets.NOMAD_TOKEN }}
           NOMAD_HTTP_AUTH: ${{ secrets.NOMAD_HTTP_AUTH }}
         run: |
-          nomad var put -force nomad/jobs/prose-app-web IMAGE_TAG=${{ needs.build.outputs.tag }}
+          nomad var get nomad/jobs/prose-app-web | nomad var put - IMAGE_TAG=${{ needs.build.outputs.revision }}
