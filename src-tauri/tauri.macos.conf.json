@@ -20,7 +20,7 @@
         "dragDropEnabled": false,
         "hiddenTitle": true,
         "titleBarStyle": "Overlay",
-        "backgroundThrottling": "suspend"
+        "backgroundThrottling": "throttle"
       }
     ]
   }
