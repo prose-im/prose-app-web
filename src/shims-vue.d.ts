@@ -8,7 +8,10 @@
  * IMPORTS
  * ************************************************************************* */
 
-// PROJECT: FILTERS
+// NPM
+import { Router, MatcherLocation as RouterRoute } from "vue-router";
+
+// PROJECT: BOOTSTRAP
 import { Config } from "@/bootstrap/config";
 import { Filters } from "@/bootstrap/filters";
 import { Styles } from "@/bootstrap/styles";
@@ -25,9 +28,14 @@ declare module "*.vue" {
 
 declare module "@vue/runtime-core" {
   interface ComponentCustomProperties {
+    // Bootstrappers
     $config: Config;
     $filters: Filters;
     $styles: Styles;
+
+    // Vue Router
+    $router: Router;
+    $route: RouterRoute;
   }
 }
 
