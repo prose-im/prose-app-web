@@ -85,7 +85,7 @@ $c: ".c-layout-toolbar";
 
   #{$c}__left,
   #{$c}__right {
-    flex: 0 0 auto;
+    flex: 0 1 auto;
   }
 
   #{$c}__left {

@@ -11,11 +11,17 @@
 <template lang="pug">
 .c-inbox-form-formatting
   .c-inbox-form-formatting__groups
-    .c-inbox-form-formatting__group(
+    div(
       v-for="group in groups"
+      :class=`[
+        "c-inbox-form-formatting__group",
+        {
+          "c-inbox-form-formatting__group--reducible": group.reducible
+        }
+      ]`
     )
       base-tooltip(
-        v-for="action in group"
+        v-for="action in group.actions"
         :tooltip="action.title"
       )
         base-action(
@@ -139,84 +145,96 @@ export default {
       formattingModeOptions: FormattingMode,
 
       groups: [
-        [
-          {
-            title: "Bold",
-            icon: "bold",
-            action: FormattingAction.Bold,
+        {
+          actions: [
+            {
+              title: "Bold",
+              icon: "bold",
+              action: FormattingAction.Bold,
 
-            syntax: {
-              code: `**${TAG_TEXT}**`
+              syntax: {
+                code: `**${TAG_TEXT}**`
+              }
+            },
+
+            {
+              title: "Italic",
+              icon: "italic",
+              action: FormattingAction.Italic,
+
+              syntax: {
+                code: `_${TAG_TEXT}_`
+              }
+            },
+
+            {
+              title: "Strikethrough",
+              icon: "strikethrough",
+              action: FormattingAction.Strikethrough,
+
+              syntax: {
+                code: `~~${TAG_TEXT}~~`
+              }
             }
-          },
+          ]
+        },
 
-          {
-            title: "Italic",
-            icon: "italic",
-            action: FormattingAction.Italic,
+        {
+          actions: [
+            {
+              title: "Link",
+              icon: "link",
+              action: FormattingAction.Link,
 
-            syntax: {
-              code: `_${TAG_TEXT}_`
+              syntax: {
+                code: `[${TAG_TEXT}](${TAG_TEXT})`
+              }
             }
-          },
+          ],
 
-          {
-            title: "Strikethrough",
-            icon: "strikethrough",
-            action: FormattingAction.Strikethrough,
+          reducible: true
+        },
 
-            syntax: {
-              code: `~~${TAG_TEXT}~~`
+        {
+          actions: [
+            {
+              title: "List (Bullets)",
+              icon: "list.bullet",
+              action: FormattingAction.ListBullets,
+
+              syntax: {
+                code: `* ${TAG_TEXT}`
+              }
+            },
+
+            {
+              title: "List (Numbers)",
+              icon: "list.number",
+              action: FormattingAction.ListNumbers,
+
+              syntax: {
+                code: `${TAG_INDEX}. ${TAG_TEXT}`
+              }
             }
-          }
-        ],
+          ],
 
-        [
-          {
-            title: "Link",
-            icon: "link",
-            action: FormattingAction.Link,
+          reducible: true
+        },
 
-            syntax: {
-              code: `[${TAG_TEXT}](${TAG_TEXT})`
+        {
+          actions: [
+            {
+              title: "Code (Block)",
+              icon: "chevron.left.forwardslash.chevron.right",
+              action: FormattingAction.CodeBlock,
+
+              syntax: {
+                code: `\`\`\`\n${TAG_TEXT}\n\`\`\``,
+                contiguous: true
+              }
             }
-          }
-        ],
-
-        [
-          {
-            title: "List (Bullets)",
-            icon: "list.bullet",
-            action: FormattingAction.ListBullets,
-
-            syntax: {
-              code: `* ${TAG_TEXT}`
-            }
-          },
-
-          {
-            title: "List (Numbers)",
-            icon: "list.number",
-            action: FormattingAction.ListNumbers,
-
-            syntax: {
-              code: `${TAG_INDEX}. ${TAG_TEXT}`
-            }
-          }
-        ],
-
-        [
-          {
-            title: "Code (Block)",
-            icon: "chevron.left.forwardslash.chevron.right",
-            action: FormattingAction.CodeBlock,
-
-            syntax: {
-              code: `\`\`\`\n${TAG_TEXT}\n\`\`\``,
-              contiguous: true
-            }
-          }
-        ]
+          ]
+        }
       ]
     };
   },
@@ -355,6 +373,18 @@ $group-spacing-edges: 12px;
         #{$c}__mode-label {
           color: rgb(var(--color-accent-background-dark));
         }
+      }
+    }
+  }
+}
+
+// --> MEDIA-QUERIES <--
+
+@media (max-width: $size-screen-reduced-width-breakpoint) {
+  #{$c} {
+    #{$c}__group {
+      &--reducible {
+        display: none;
       }
     }
   }

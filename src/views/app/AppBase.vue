@@ -58,6 +58,7 @@ $c: ".v-app-base";
 
   #{$c}__content {
     background-color: rgb(var(--color-background-primary));
+    overflow: hidden;
     flex: 1;
   }
 }
