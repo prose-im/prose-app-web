@@ -73,8 +73,13 @@ export interface Update {
 }
 
 // CONSTANTS
-const AVATAR_MIME_TYPES = ["image/jpeg", "image/png", "image/gif"];
-const AVATAR_EXTENSIONS = ["JPG", "PNG", "GIF"];
+const AVATAR_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp"
+];
+const AVATAR_EXTENSIONS = ["JPG", "PNG", "GIF", "WEBP"];
 
 const AVATAR_CONVERT_MIME = "image/jpeg";
 const AVATAR_COMPRESS_QUALITY = 0.94;
