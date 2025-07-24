@@ -136,7 +136,7 @@ interface IdentityBadge {
 }
 
 // CONSTANTS
-const JID_TRUNCATE_LENGTH = 15;
+const JID_TRUNCATE_LENGTH = 40;
 
 export default {
   name: "InboxTopbar",
