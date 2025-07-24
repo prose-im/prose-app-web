@@ -57,7 +57,7 @@ layout-toolbar(
   )
     base-tooltip(
       :tooltip="originalJID"
-      :bypassed="truncatedJID === originalJID"
+      :bypassed="displayJID === originalJID"
       align="right"
       direction="bottom"
     )
@@ -66,7 +66,7 @@ layout-toolbar(
           "a-inbox-topbar__identity",
           "a-inbox-topbar__identity--jid",
           {
-            "a-inbox-topbar__identity--has-jid": truncatedJID
+            "a-inbox-topbar__identity--has-jid": displayJID
           }
         ]`
       )
@@ -79,10 +79,10 @@ layout-toolbar(
         )
 
         span(
-          v-if="truncatedJID"
+          v-if="displayJID"
           class="a-inbox-topbar__identity-value u-regular"
         )
-          | {{ truncatedJID }}
+          | {{ displayJID }}
 
     base-separator
 
@@ -136,7 +136,7 @@ interface IdentityBadge {
 }
 
 // CONSTANTS
-const JID_TRUNCATE_LENGTH = 40;
+const JID_DISPLAY_TRUNCATE_LENGTH = 40;
 
 export default {
   name: "InboxTopbar",
@@ -180,6 +180,10 @@ export default {
       return Store.$presence.getAvailability(this.jid);
     },
 
+    account(): typeof Store.$account {
+      return Store.$account;
+    },
+
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
     },
@@ -188,19 +192,28 @@ export default {
       return this.room ? Store.$room.getRoomItem(this.room.id) : undefined;
     },
 
+    selfJID(): JID {
+      return this.account.getSelfJID();
+    },
+
     originalJID(): string {
       return this.jid.toString();
     },
 
-    truncatedJID(): string | null {
-      if (this.isDirectMessage === true) {
+    displayJID(): string | null {
+      // Non-local user? Generate a display JID, visible next to the \
+      //   verification badge, to guard against eg. phishing
+      if (
+        this.isDirectMessage === true &&
+        this.jid.domain !== this.selfJID.domain
+      ) {
         let jid = this.originalJID;
 
-        if (jid.length < JID_TRUNCATE_LENGTH) {
+        if (jid.length < JID_DISPLAY_TRUNCATE_LENGTH) {
           return jid;
         }
 
-        return jid.slice(0, JID_TRUNCATE_LENGTH - 1) + "…";
+        return jid.slice(0, JID_DISPLAY_TRUNCATE_LENGTH - 1) + "…";
       }
 
       return null;
