@@ -37,9 +37,9 @@
     "@privacyresearch/libsignal-protocol-typescript": "0.0.16",
     "@prose-im/prose-core-views": "0.54.0",
     "@prose-im/prose-sdk-js": "0.1.106",
-    "@tauri-apps/api": "2.6.0",
+    "@tauri-apps/api": "2.7.0",
     "@tauri-apps/plugin-shell": "2.3.0",
-    "@tauri-apps/plugin-dialog": "2.3.0",
+    "@tauri-apps/plugin-dialog": "2.3.2",
     "@tauri-apps/plugin-process": "2.3.0",
     "@tauri-apps/plugin-updater": "2.9.0",
     "@tauri-apps/plugin-notification": "2.3.0",
@@ -74,7 +74,7 @@
     "worker-timers": "8.0.22"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "2.6.x",
+    "@tauri-apps/cli": "2.7.x",
     "@types/crypto-js": "4.2.x",
     "@types/escape-html": "1.0.x",
     "@types/get-installed-path": "4.0.x",

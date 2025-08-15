@@ -6,15 +6,15 @@ authors = ["Prose Foundation <dev@prose.org>"]
 edition = "2021"
 
 [build-dependencies]
-tauri-build = { version = "2.3.0", features = [] }
+tauri-build = { version = "2.3.1", features = [] }
 
 [dependencies]
-tauri = { version = "2.6.1", features = [ "tray-icon", "macos-private-api"] }
-tauri-plugin-deep-link = "2.4.0"
+tauri = { version = "2.7.0", features = [ "tray-icon", "macos-private-api"] }
+tauri-plugin-deep-link = "2.4.1"
 tauri-plugin-updater = "2.9.0"
 tauri-plugin-process = "2.3.0"
 tauri-plugin-shell = "2.3.0"
-tauri-plugin-dialog = "2.3.0"
+tauri-plugin-dialog = "2.3.2"
 tauri-plugin-notification = "2.3.0"
 tauri-plugin-log = "2.6.0"
 serde = { version = "1.0.219", features = ["derive"] }
