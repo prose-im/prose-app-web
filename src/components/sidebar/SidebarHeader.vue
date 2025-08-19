@@ -80,7 +80,10 @@ import {
 import { AddContactMode as SidebarAddContactMode } from "@/assemblies/app/AppSidebar.vue";
 
 // PROJECT: UTILITIES
-import { platform as runtimePlatform } from "@/utilities/runtime";
+import {
+  default as UtilitiesRuntime,
+  platform as runtimePlatform
+} from "@/utilities/runtime";
 
 export default {
   name: "SidebarHeader",
@@ -124,6 +127,17 @@ export default {
           type: PopoverItemType.Button,
           label: "Create a channel",
           click: this.onIdentityPopoverCreateChannelClick
+        },
+
+        {
+          type: PopoverItemType.Divider
+        },
+
+        {
+          type: PopoverItemType.Button,
+          label: "Manage server",
+          emphasis: true,
+          click: this.onIdentityPopoverManageServerClick
         }
       ];
     },
@@ -169,6 +183,19 @@ export default {
     onIdentityPopoverCreateChannelClick(): void {
       // Request to show add contact modal (in channel mode)
       this.$emit("addContact", SidebarAddContactMode.Channel);
+    },
+
+    async onIdentityPopoverManageServerClick(): Promise<void> {
+      const manageServerUrl = `https://admin.prose.${this.teamDomain}/`;
+
+      try {
+        await UtilitiesRuntime.requestOpenUrl(manageServerUrl);
+      } catch (error) {
+        this.$log.error(
+          `Failed opening manage server URL: ${manageServerUrl}`,
+          error
+        );
+      }
     },
 
     onActionMessageClick(): void {
