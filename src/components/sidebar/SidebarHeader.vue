@@ -176,16 +176,26 @@ export default {
     },
 
     onIdentityPopoverInvitePeopleClick(): void {
+      // Hide identity popover
+      this.isIdentityPopoverVisible = false;
+
       // Request to show add contact modal (in member mode)
       this.$emit("addContact", SidebarAddContactMode.Member);
     },
 
     onIdentityPopoverCreateChannelClick(): void {
+      // Hide identity popover
+      this.isIdentityPopoverVisible = false;
+
       // Request to show add contact modal (in channel mode)
       this.$emit("addContact", SidebarAddContactMode.Channel);
     },
 
     async onIdentityPopoverManageWorkspaceClick(): Promise<void> {
+      // Hide identity popover
+      this.isIdentityPopoverVisible = false;
+
+      // Open server administration dashboard
       const manageWorkspaceUrl = `https://admin.prose.${this.teamDomain}/`;
 
       try {
