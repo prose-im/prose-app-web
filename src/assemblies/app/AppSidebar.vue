@@ -475,6 +475,7 @@ $sidebar-alert-edge-offset: 16px;
     background-color: rgba(var(--color-background-secondary), 0.9);
     position: absolute;
     inset-inline: 0;
+    z-index: 2;
   }
 
   #{$c}__context:before,
@@ -490,7 +491,6 @@ $sidebar-alert-edge-offset: 16px;
     border-block-end: $sidebar-header-border-width solid transparent;
     height: $sidebar-header-height;
     inset-block-start: 0;
-    z-index: 1;
     transition: all 100ms linear;
     transition-property: background-color, border-color;
 
@@ -543,7 +543,6 @@ $sidebar-alert-edge-offset: 16px;
       rgb(var(--color-border-secondary));
     height: $sidebar-context-height;
     inset-block-end: 0;
-    z-index: 3;
 
     &:before {
       background-image: linear-gradient(
@@ -561,7 +560,7 @@ $sidebar-alert-edge-offset: 16px;
     max-width: calc(100% - (2 * #{$sidebar-items-padding-sides}));
     position: absolute;
     inset-inline-start: 50%;
-    z-index: 2;
+    z-index: 1;
     transform: translateX(-50%);
 
     &--bottom {
