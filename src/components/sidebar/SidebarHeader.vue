@@ -135,9 +135,9 @@ export default {
 
         {
           type: PopoverItemType.Button,
-          label: "Manage server",
+          label: "Manage workspace",
           emphasis: true,
-          click: this.onIdentityPopoverManageServerClick
+          click: this.onIdentityPopoverManageWorkspaceClick
         }
       ];
     },
@@ -185,14 +185,14 @@ export default {
       this.$emit("addContact", SidebarAddContactMode.Channel);
     },
 
-    async onIdentityPopoverManageServerClick(): Promise<void> {
-      const manageServerUrl = `https://admin.prose.${this.teamDomain}/`;
+    async onIdentityPopoverManageWorkspaceClick(): Promise<void> {
+      const manageWorkspaceUrl = `https://admin.prose.${this.teamDomain}/`;
 
       try {
-        await UtilitiesRuntime.requestOpenUrl(manageServerUrl);
+        await UtilitiesRuntime.requestOpenUrl(manageWorkspaceUrl);
       } catch (error) {
         this.$log.error(
-          `Failed opening manage server URL: ${manageServerUrl}`,
+          `Failed opening manage workspace URL: ${manageWorkspaceUrl}`,
           error
         );
       }
