@@ -35,6 +35,9 @@ import { JID, Room } from "@prose-im/prose-sdk-js";
 // PROJECT: COMPONENTS
 import { Detail as BadgeDetail } from "@/components/base/BaseBadgeDetails.vue";
 
+// PROJECT: COMMONS
+import CONFIG from "@/commons/config";
+
 // PROJECT: STORES
 import Store from "@/store";
 import { ProfileEntrySecurityEncryption } from "@/store/tables/profile";
@@ -81,7 +84,7 @@ export default {
           label:
             "Security of sent messages cannot be guaranteed at the moment, as you are not connected to your server."
         });
-      } else if (!encryption.secureProtocol) {
+      } else if (CONFIG.overrides?.allowInsecure === true) {
         details.push({
           icon: "key.fill",
           color: "red",
