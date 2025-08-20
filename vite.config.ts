@@ -41,6 +41,8 @@ interface Configuration {
   };
 
   overrides?: {
+    allowInsecure?: boolean;
+
     hostMeta?: {
       [domain: string]: {
         xrd?: string;

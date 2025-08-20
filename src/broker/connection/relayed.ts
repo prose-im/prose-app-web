@@ -51,6 +51,8 @@ interface RelayHost {
  * CONSTANTS
  * ************************************************************************* */
 
+const RELAY_HOST_URL_SECURE_PROTOCOLS = ["wss:", "https:"];
+
 const RELAY_HOST_METADATA_PARSE = [
   {
     xmlns: "urn:xmpp:alt-connections:websocket",
@@ -265,6 +267,18 @@ class BrokerConnectionRelayedStrophe
     }
 
     const relayHost = await this.__acquireRelayHost(domain);
+
+    // Ensure acquired relay host is secure
+    // Notice: unless insecure mode is allowed in overrides.
+    const relayHostUrl = new URL(relayHost.url);
+
+    if (
+      RELAY_HOST_URL_SECURE_PROTOCOLS.includes(relayHostUrl.protocol) ===
+        false &&
+      CONFIG.overrides?.allowInsecure !== true
+    ) {
+      throw new Error("Refusing to connect to insecure relay host");
+    }
 
     // Create connection
     const connection = new Strophe.Connection(relayHost.url, {

@@ -12,6 +12,9 @@
 import { JID, UserProfile, UserMetadata } from "@prose-im/prose-sdk-js";
 import { defineStore } from "pinia";
 
+// PROJECT: COMMONS
+import CONFIG from "@/commons/config";
+
 // PROJECT: STORES
 import Store from "@/store";
 
@@ -332,7 +335,12 @@ const $profile = defineStore("profile", {
           profile.security.encryption = {
             // Prose does not allow insecure protocols, therefore we can mark \
             //   the connection as secure here.
-            secureProtocol: true
+            // Important: UNLESS the 'allow insecure' override is NOT toggled \
+            //   on, we mark all connections as non-secure by default. If this \
+            //   override is not set, then all connections are GUARANTEED to \
+            //   be secure.
+            secureProtocol:
+              CONFIG.overrides?.allowInsecure === true ? false : true
           };
 
           if (metadata.encryption) {

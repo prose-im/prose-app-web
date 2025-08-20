@@ -2,6 +2,8 @@
   "environment": "development",
 
   "overrides": {
+    "allowInsecure": true,
+
     "hostMeta": {
       "prose.org.local": {
         "xrd": "<?xml version='1.0' encoding='utf-8'?>\n<XRD xmlns='http://docs.oasis-open.org/ns/xri/xrd-1.0'>\n  <Link rel='urn:xmpp:alt-connections:websocket' href='ws://localhost:5280/xmpp-websocket/' />\n</XRD>",
