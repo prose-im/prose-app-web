@@ -121,7 +121,7 @@ export default {
     // --> EVENT LISTENERS <--
 
     async onOptionHelpClick(): Promise<void> {
-      const helpUrl = CONFIG.url.prose_help;
+      const helpUrl = CONFIG.url.proseHelp;
 
       try {
         await UtilitiesRuntime.requestOpenUrl(helpUrl);

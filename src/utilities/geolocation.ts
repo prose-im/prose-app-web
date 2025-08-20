@@ -126,7 +126,7 @@ class UtilitiesGeolocation {
     geocoderQuery.append("lon", `${coordinates.longitude}`);
 
     const geocoderResponse = await fetch(
-      `${CONFIG.url.nominatim_geocoder}/reverse?${geocoderQuery}`,
+      `${CONFIG.url.nominatimGeocoder}/reverse?${geocoderQuery}`,
       {
         mode: "cors"
       }
