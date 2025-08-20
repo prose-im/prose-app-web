@@ -142,22 +142,27 @@ export default {
     entries(): Array<Entry> {
       const entries = [];
 
-      if (this.profile.security) {
-        if (this.profile.security.verification) {
-          entries.push({
-            id: "identity",
-            kind: "verified",
-            title: "Identity verified",
-            icon: "checkmark.seal.fill"
-          });
-        } else {
-          entries.push({
-            id: "identity",
-            kind: "unknown",
-            title: "Identity unverified",
-            icon: "xmark.seal.fill"
-          });
-        }
+      if (this.profile.security?.verification) {
+        entries.push({
+          id: "identity",
+          kind: "verified",
+          title: "Identity verified",
+          icon: "checkmark.seal.fill"
+        });
+      } else if (this.jid.domain === this.selfJID.domain) {
+        entries.push({
+          id: "identity",
+          kind: "trusted",
+          title: "Identity trusted",
+          icon: "checkmark.seal.fill"
+        });
+      } else {
+        entries.push({
+          id: "identity",
+          kind: "unknown",
+          title: "Identity unverified",
+          icon: "xmark.seal.fill"
+        });
       }
 
       if (
@@ -205,8 +210,16 @@ export default {
       return entries;
     },
 
+    selfJID(): JID {
+      return this.account.getSelfJID();
+    },
+
     profile(): ReturnType<typeof Store.$profile.getProfile> {
       return Store.$profile.getProfile(this.jid);
+    },
+
+    account(): typeof Store.$account {
+      return Store.$account;
     }
   },
 
@@ -263,6 +276,10 @@ $c: ".c-inbox-details-user-security";
   #{$c}__icon {
     &--identity-verified {
       fill: rgb(var(--color-base-green-normal));
+    }
+
+    &--identity-trusted {
+      fill: rgb(var(--color-base-blue-normal));
     }
 
     &--identity-unknown {

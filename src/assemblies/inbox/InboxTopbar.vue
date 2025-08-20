@@ -220,18 +220,35 @@ export default {
     },
 
     identityBadgeVerification(): IdentityBadge {
-      // Identity verified?
-      if (this.profile.security?.verification) {
+      // Acquire profile identity? (for DM user)
+      if (this.isDirectMessage === true) {
+        // Identity verified? (device is verified)
+        if (this.profile.security?.verification) {
+          return {
+            status: "verified",
+            icon: "checkmark.seal.fill"
+          };
+        }
+
+        // Identity trusted? (if local user)
+        if (this.jid.domain === this.selfJID.domain) {
+          return {
+            status: "trusted",
+            icon: "checkmark.seal.fill"
+          };
+        }
+
+        // Identity unverified
         return {
-          status: "verified",
-          icon: "checkmark.seal.fill"
+          status: "unknown",
+          icon: "xmark.seal.fill"
         };
       }
 
-      // Identity unverified
+      // Mark identity as group (no direct verification here)
       return {
-        status: "unknown",
-        icon: "xmark.seal.fill"
+        status: "none",
+        icon: "key.viewfinder"
       };
     },
 
@@ -415,8 +432,16 @@ $c: ".a-inbox-topbar";
             fill: rgb(var(--color-base-green-normal));
           }
 
+          &--trusted {
+            fill: rgb(var(--color-base-blue-normal));
+          }
+
           &--unknown {
             fill: rgb(var(--color-base-grey-normal));
+          }
+
+          &--none {
+            fill: rgb(var(--color-base-grey-dark));
           }
         }
       }

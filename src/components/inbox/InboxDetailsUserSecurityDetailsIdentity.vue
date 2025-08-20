@@ -89,6 +89,15 @@ export default {
           title: `Looks like this is the real ${this.userName}`,
           label: `${QUICKIE_DESCRIPTION_PREFIX} It could verify this user.`
         };
+      } else if (this.isTrusted === true) {
+        detail = {
+          icon: "checkmark.seal.fill",
+          color: "blue",
+          title: `${this.userName} is a member of your workspace`,
+          label:
+            `${QUICKIE_DESCRIPTION_PREFIX} ` +
+            `This user can be trusted, but is not verified.`
+        };
       } else {
         detail = {
           icon: "xmark.seal.fill",
@@ -107,6 +116,10 @@ export default {
         : false;
     },
 
+    isTrusted(): boolean {
+      return this.jid.domain === this.selfJID.domain ? true : false;
+    },
+
     userName(): string {
       // Prefer profile-based full name (ie. name from official identity)
       if (this.profile.name?.full) {
@@ -114,6 +127,14 @@ export default {
       }
 
       return this.jid.toString();
+    },
+
+    selfJID(): JID {
+      return this.account.getSelfJID();
+    },
+
+    account(): typeof Store.$account {
+      return Store.$account;
     },
 
     profile(): ReturnType<typeof Store.$profile.getProfile> {
