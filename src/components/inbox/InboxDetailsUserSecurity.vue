@@ -168,7 +168,7 @@ export default {
       if (
         !this.profile.security ||
         !this.profile.security.encryption ||
-        !this.profile.security.encryption.connectionProtocol
+        this.session.connected !== true
       ) {
         // No connection available (might be insecure?)
         entries.push({
@@ -220,6 +220,10 @@ export default {
 
     account(): typeof Store.$account {
       return Store.$account;
+    },
+
+    session(): typeof Store.$session {
+      return Store.$session;
     }
   },
 

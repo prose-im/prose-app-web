@@ -77,7 +77,6 @@ type ProfileEntrySecurityVerification = {
 
 type ProfileEntrySecurityEncryption = {
   secureProtocol?: boolean;
-  connectionProtocol?: string;
   messageEndToEndMethod?: string;
 };
 
@@ -330,14 +329,15 @@ const $profile = defineStore("profile", {
             delete profile.security.verification;
           }
 
+          profile.security.encryption = {
+            // Prose does not allow insecure protocols, therefore we can mark \
+            //   the connection as secure here.
+            secureProtocol: true
+          };
+
           if (metadata.encryption) {
-            profile.security.encryption = {
-              secureProtocol: metadata.encryption.secureProtocol,
-              connectionProtocol: metadata.encryption.connectionProtocol,
-              messageEndToEndMethod: metadata.encryption.messageEndToEndMethod
-            };
-          } else {
-            delete profile.security.encryption;
+            profile.security.encryption.messageEndToEndMethod =
+              metadata.encryption.messageEndToEndMethod;
           }
         });
       }
