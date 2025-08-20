@@ -119,12 +119,6 @@ export default {
       return [
         {
           type: PopoverItemType.Button,
-          label: "Invite people",
-          click: this.onIdentityPopoverInvitePeopleClick
-        },
-
-        {
-          type: PopoverItemType.Button,
           label: "Create a channel",
           click: this.onIdentityPopoverCreateChannelClick
         },
@@ -135,9 +129,16 @@ export default {
 
         {
           type: PopoverItemType.Button,
-          label: "Manage workspace",
+          label: "Invite more people",
           emphasis: true,
-          click: this.onIdentityPopoverManageWorkspaceClick
+          click: this.onIdentityPopoverInvitePeopleClick
+        },
+
+        {
+          type: PopoverItemType.Button,
+          label: "Workspace settings",
+          emphasis: true,
+          click: this.onIdentityPopoverWorkspaceSettingsClick
         }
       ];
     },
@@ -163,6 +164,26 @@ export default {
   },
 
   methods: {
+    // --> HELPERS <--
+
+    async openWorkspaceAdmin(targetPath = "/"): Promise<void> {
+      // Hide identity popover
+      this.isIdentityPopoverVisible = false;
+
+      // Open server administration dashboard
+      const manageWorkspaceUrlBase = `https://admin.prose.${this.teamDomain}`,
+        manageWorkspaceUrlFull = `${manageWorkspaceUrlBase}${targetPath}`;
+
+      try {
+        await UtilitiesRuntime.requestOpenUrl(manageWorkspaceUrlFull);
+      } catch (error) {
+        this.$log.error(
+          `Failed opening manage workspace URL: ${manageWorkspaceUrlFull}`,
+          error
+        );
+      }
+    },
+
     // --> EVENT LISTENERS <--
 
     onIdentityLogoClick(): void {
@@ -175,14 +196,6 @@ export default {
       this.isIdentityPopoverVisible = false;
     },
 
-    onIdentityPopoverInvitePeopleClick(): void {
-      // Hide identity popover
-      this.isIdentityPopoverVisible = false;
-
-      // Request to show add contact modal (in member mode)
-      this.$emit("addContact", SidebarAddContactMode.Member);
-    },
-
     onIdentityPopoverCreateChannelClick(): void {
       // Hide identity popover
       this.isIdentityPopoverVisible = false;
@@ -191,21 +204,20 @@ export default {
       this.$emit("addContact", SidebarAddContactMode.Channel);
     },
 
-    async onIdentityPopoverManageWorkspaceClick(): Promise<void> {
+    async onIdentityPopoverInvitePeopleClick(): Promise<void> {
       // Hide identity popover
       this.isIdentityPopoverVisible = false;
 
-      // Open server administration dashboard
-      const manageWorkspaceUrl = `https://admin.prose.${this.teamDomain}/`;
+      // Open server administration dashboard (at team members)
+      await this.openWorkspaceAdmin("/team/members");
+    },
 
-      try {
-        await UtilitiesRuntime.requestOpenUrl(manageWorkspaceUrl);
-      } catch (error) {
-        this.$log.error(
-          `Failed opening manage workspace URL: ${manageWorkspaceUrl}`,
-          error
-        );
-      }
+    async onIdentityPopoverWorkspaceSettingsClick(): Promise<void> {
+      // Hide identity popover
+      this.isIdentityPopoverVisible = false;
+
+      // Open server administration dashboard (at workspace customization)
+      await this.openWorkspaceAdmin("/customization/workspace");
     },
 
     onActionMessageClick(): void {
