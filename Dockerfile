@@ -1,4 +1,4 @@
-FROM nginx:1.27-alpine-slim AS web
+FROM nginx:1.29-alpine-slim AS web
 
 RUN rm -rf /etc/nginx/ /var/www/
 
