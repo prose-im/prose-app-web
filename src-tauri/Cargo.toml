@@ -6,29 +6,29 @@ authors = ["Prose Foundation <dev@prose.org>"]
 edition = "2021"
 
 [build-dependencies]
-tauri-build = { version = "2.3.1", features = [] }
+tauri-build = { version = "2.4.1", features = [] }
 
 [dependencies]
-tauri = { version = "2.7.0", features = [ "tray-icon", "macos-private-api"] }
-tauri-plugin-deep-link = "2.4.1"
+tauri = { version = "2.8.5", features = [ "tray-icon", "macos-private-api"] }
+tauri-plugin-deep-link = "2.4.3"
 tauri-plugin-updater = "2.9.0"
 tauri-plugin-process = "2.3.0"
-tauri-plugin-shell = "2.3.0"
-tauri-plugin-dialog = "2.3.2"
-tauri-plugin-notification = "2.3.0"
-tauri-plugin-log = "2.6.0"
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.140"
-log = "0.4.27"
-time = { version = "0.3.41", features = ["formatting", "local-offset"] }
+tauri-plugin-shell = "2.3.1"
+tauri-plugin-dialog = "2.4.0"
+tauri-plugin-notification = "2.3.1"
+tauri-plugin-log = "2.7.0"
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+log = "0.4.28"
+time = { version = "0.3.44", features = ["formatting", "local-offset"] }
 directories = "6.0.0"
-reqwest = "0.12.20"
-tokio = { version = "1.45.1", features = ["full"] }
-rustls = { version = "0.23.28", features = ["ring"] }
-thiserror = "2.0.12"
-percent-encoding = "2.3.1"
-uuid = { version = "1.17.0", features = ["v4"] }
-libc = "0.2.174"
+reqwest = "0.12.23"
+tokio = { version = "1.47.1", features = ["full"] }
+rustls = { version = "0.23.32", features = ["ring"] }
+thiserror = "2.0.17"
+percent-encoding = "2.3.2"
+uuid = { version = "1.18.1", features = ["v4"] }
+libc = "0.2.176"
 send_wrapper = "0.6.0"
 futures = "0.3.31"
 jid = { version = "0.11.1", default-features = false }
