@@ -122,18 +122,18 @@ To bundle Prose as a final production application, run:
 npm run bundle build
 ```
 
+You can also build a final production-like application that contains debugging tools (Web Inspector) with:
+
+```bash
+npm run bundle build -- --debug
+```
+
 ### Development bundle
 
 To bundle Prose as a development application (with Hot Module Replacement), run:
 
 ```bash
 npm run bundle dev
-```
-
-You can also build a final production-like application that contains development tools (Web Inspector) with:
-
-```bash
-npm run bundle build -- --debug
 ```
 
 ### Bundle cross-compilation
