@@ -34,7 +34,7 @@ const enabled =
 //   Tauri application builds, since there is a log level filter in the Tauri \
 //   Rust code as well. Browser builds only use this log level, therefore \
 //   adjusting it here only suffices.
-const level = CONFIG.environment === "production" ? "error" : "debug";
+const level = CONFIG.environment === "production" ? "warn" : "debug";
 
 /**************************************************************************
  * HOOKS
