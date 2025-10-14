@@ -130,6 +130,12 @@ To bundle Prose as a development application (with Hot Module Replacement), run:
 npm run bundle dev
 ```
 
+You can also build a final production-like application that contains development tools (Web Inspector) with:
+
+```bash
+npm run bundle build -- --debug
+```
+
 ### Bundle cross-compilation
 
 When you run a Prose bundle job, it will produce a binary for your current platform only. That is, if you bundle from macOS then you will get a macOS binary.
