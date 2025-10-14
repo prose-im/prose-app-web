@@ -255,6 +255,18 @@ class BrokerClient {
     // Check if network is online or not (before connecting)
     const isNetworkOnline = navigator.onLine || false;
 
+    // Network is offline, and connection is delayed? Do not even attempt to \
+    //   connect, since we can be sure it will result in a failure.
+    // Notice: this only affects automatic reconnection attempts, since they \
+    //   are delayed in time. User-initiated connections are not delayed. This \
+    //   helps avoiding triggering a connection attempt when Prose is running \
+    //   in the background and the computer periodically wakes from sleep.
+    if (isNetworkOnline === false && delayedBy > 0) {
+      logger.info("Could not connect: network offline and not user-initiated");
+
+      throw new Error("Network is offline");
+    }
+
     // Mark as connecting
     Store.$session.setConnecting(true);
 
