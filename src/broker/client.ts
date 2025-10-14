@@ -255,18 +255,6 @@ class BrokerClient {
     // Check if network is online or not (before connecting)
     const isNetworkOnline = navigator.onLine || false;
 
-    // Network is offline, and connection is delayed? Do not even attempt to \
-    //   connect, since we can be sure it will result in a failure.
-    // Notice: this only affects automatic reconnection attempts, since they \
-    //   are delayed in time. User-initiated connections are not delayed. This \
-    //   helps avoiding triggering a connection attempt when Prose is running \
-    //   in the background and the computer periodically wakes from sleep.
-    if (isNetworkOnline === false && delayedBy > 0) {
-      logger.info("Could not connect: network offline and not user-initiated");
-
-      throw new Error("Network is offline");
-    }
-
     // Mark as connecting
     Store.$session.setConnecting(true);
 
@@ -281,6 +269,28 @@ class BrokerClient {
       );
     }
 
+    // Network is offline, and connection is delayed? Do not even attempt to \
+    //   connect, since we can be sure it will result in a failure.
+    // Notice: this only affects automatic reconnection attempts, since they \
+    //   are delayed in time. User-initiated connections are not delayed. This \
+    //   helps avoiding triggering a connection attempt when Prose is running \
+    //   in the background and the computer periodically wakes from sleep.
+    if (isNetworkOnline === false && delayedBy > 0) {
+      logger.info(
+        "Could not connect: network offline and connect was not user-initiated"
+      );
+
+      // Important: manually fire the disconnected event (to continue the \
+      //   reconnect attempt delay loop).
+      this.__onClientDisconnected();
+
+      throw new Error("Network is offline");
+    }
+
+    // Attempt to connect
+    //  - Case #1: network is online and connection is delayed (auto-reconnect)
+    //  - Case #2: connect is user-initiated (force attempt w/o checking for \
+    //      network state)
     try {
       // Connect client
       await this.client.connect(jid, password);
