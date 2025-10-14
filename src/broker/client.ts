@@ -48,7 +48,7 @@ import BrokerLogger from "@/broker/logger";
  * ************************************************************************* */
 
 const RECONNECT_INTERVAL = 2000; // 2 seconds
-const RECONNECT_ATTEMPTS_COUNT_CAP = 15;
+const RECONNECT_ATTEMPTS_COUNT_CAP = 5;
 
 const LOGGING_ENABLED = loggerEnabled;
 const LOGGING_LEVEL = loggerLevel;
