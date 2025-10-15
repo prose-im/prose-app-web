@@ -285,6 +285,15 @@ class BrokerConnectionRelayedStrophe
       protocol: relayHost.protocol || undefined
     });
 
+    // Hack: monkey patch the idle handler, so that it stops spamming the \
+    //   event loop every 100ms with microtasks. We do not use \
+    //   Strophe.js-provided 'connection.addTimedHandler()', therefore this \
+    //   is overhead we can safely get rid of. Unfortunately, this is not \
+    //   configurable in a clean way, therefore we have to bypass it that way.
+    connection._onIdle = function () {
+      connection._proto._onIdle();
+    };
+
     // Configure connection
     connection.maxRetries = 0;
 
