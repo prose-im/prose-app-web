@@ -52,6 +52,7 @@ interface RelayHost {
  * ************************************************************************* */
 
 const RELAY_HOST_URL_SECURE_PROTOCOLS = ["wss:", "https:"];
+const RELAY_HOST_RAW_IO_PROTOCOLS = ["wss"];
 
 const RELAY_HOST_METADATA_PARSE = [
   {
@@ -257,7 +258,7 @@ class BrokerConnectionRelayedStrophe
   }
 
   protected _protocol(fallback = "bosh"): string {
-    return `XMPP/${this.__relayHost?.protocol?.toUpperCase() || fallback}`;
+    return `XMPP/${(this.__relayHost?.protocol || fallback).toUpperCase()}`;
   }
 
   private async __createConnection(domain: string): Promise<StropheConnection> {
@@ -298,8 +299,23 @@ class BrokerConnectionRelayedStrophe
     connection.maxRetries = 0;
 
     // Bind handlers
-    connection.rawInput = this._onInput.bind(this);
-    connection.rawOutput = this._onOutput.bind(this);
+    // Notice: the WebSocket protocol I/O is already raw XML (as exchanged \
+    //   over XMPP, therefore skip the expensive parsing step), while BOSH \
+    //   connections need some unwrapping to extract child stanzas.
+    if (
+      relayHost.protocol !== undefined &&
+      RELAY_HOST_RAW_IO_PROTOCOLS.includes(relayHost.protocol) === true
+    ) {
+      logger.debug("Broker will use fast raw I/O for connection");
+
+      connection.rawInput = this._onInput.bind(this);
+      connection.rawOutput = this._onOutput.bind(this);
+    } else {
+      logger.warn("Broker will use slower wrapped XML I/O for connection");
+
+      connection.xmlInput = this.__onXmlWrappedInput.bind(this);
+      connection.xmlOutput = this.__onXmlWrappedOutput.bind(this);
+    }
 
     this.__bindDummyHandler(connection);
 
@@ -489,6 +505,18 @@ class BrokerConnectionRelayedStrophe
       //   received stanza.
       return true;
     });
+  }
+
+  private __onXmlWrappedInput(stanzas: Element): void {
+    for (const stanza of stanzas.children) {
+      this._onInput(stanza.outerHTML);
+    }
+  }
+
+  private __onXmlWrappedOutput(stanzas: Element): void {
+    for (const stanza of stanzas.children) {
+      this._onOutput(stanza.outerHTML);
+    }
   }
 }
 
