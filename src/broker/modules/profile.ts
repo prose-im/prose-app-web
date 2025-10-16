@@ -68,14 +68,26 @@ class BrokerModuleProfile extends BrokerModule {
   async loadAvatarData(
     userId: string,
     avatar: CoreAvatar
-  ): Promise<string | void> {
+  ): Promise<Blob | void> {
     // XEP-0084: User Avatar
     // https://xmpp.org/extensions/xep-0084.html
 
     logger.info(`Will load avatar for: '${userId}' (ID ${avatar.id})`);
 
     try {
-      return await this._client.client?.loadAvatarDataURL(avatar);
+      // Acquire avatar as a data URL
+      const avatarDataUrl = await this._client.client?.loadAvatarDataURL(
+        avatar
+      );
+
+      // Transform avatar data URL into a Binary Large OBject? (if any)
+      // Notice: fetching the data URL is the most efficient method available, \
+      //   since we rely on the browser native Base64 parser implementation, \
+      //   which is faster and results in less memory copies than any other \
+      //   JS-powered alternatives.
+      if (avatarDataUrl !== undefined) {
+        return (await fetch(avatarDataUrl)).blob();
+      }
     } catch (error) {
       logger.warn(
         `Failed to load avatar for: '${userId}' (ID ${avatar.id})`,

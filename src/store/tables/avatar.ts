@@ -19,6 +19,9 @@ import mitt from "mitt";
 // PROJECT: BROKER
 import Broker from "@/broker";
 
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * ENUMERATIONS
  * ************************************************************************* */
@@ -122,6 +125,11 @@ const $avatar = defineStore("avatar", {
         // Mark as refreshing
         LOCAL_STATES.refreshing[userId] = true;
 
+        // Retain any previously-stored avatar URL
+        // Notice: this URL will be de-allocated when we are done replacing \
+        //   it with the newly-loaded avatar.
+        const staleAvatarUrl: string | undefined = entry.url;
+
         // Immediately set avatar identifier
         this.$patch(() => {
           entry.id = avatarLike.id;
@@ -132,11 +140,11 @@ const $avatar = defineStore("avatar", {
         //   some less frequent cases we might want to load avatar-like \
         //   objects from other sources (eg. workspace icons, that behave \
         //   like avatars).
-        let avatarData: string | void;
+        let avatarBlob: Blob | void;
 
         switch (source) {
           case AvatarSource.Profile: {
-            avatarData = await Broker.$profile.loadAvatarData(
+            avatarBlob = await Broker.$profile.loadAvatarData(
               userId,
               avatarLike
             );
@@ -145,7 +153,7 @@ const $avatar = defineStore("avatar", {
           }
 
           case AvatarSource.Workspace: {
-            avatarData = await Broker.$account.loadWorkspaceIcon(avatarLike);
+            avatarBlob = await Broker.$account.loadWorkspaceIcon(avatarLike);
 
             break;
           }
@@ -155,12 +163,21 @@ const $avatar = defineStore("avatar", {
           }
         }
 
-        if (avatarData) {
-          // Set avatar data URL
-          const avatarDataUrl: string = avatarData;
+        // Load avatar into store (as an URL)
+        if (avatarBlob) {
+          // Allocate avatar file as a local URL
+          // Notice: instead of storing avatars as Base64 strings, create \
+          //   re-usable URLs, which is the lightest way avatars can be \
+          //   included across the application.
+          const avatarLocalUrl = URL.createObjectURL(avatarBlob);
+
+          logger.debug(
+            `Allocated avatar URL for: ${userId} to: ${avatarLocalUrl} ` +
+              `(${avatarBlob.size} bytes)`
+          );
 
           this.$patch(() => {
-            entry.url = avatarDataUrl;
+            entry.url = avatarLocalUrl;
           });
 
           // Emit IPC changed event
@@ -176,6 +193,15 @@ const $avatar = defineStore("avatar", {
           EventBus.emit("avatar:flushed", {
             userId
           } as EventAvatarGeneric);
+        }
+
+        // De-allocate previous avatar URL? (now stale)
+        if (staleAvatarUrl !== undefined) {
+          URL.revokeObjectURL(staleAvatarUrl);
+
+          logger.info(
+            `Revoked stale avatar URL for: ${userId} from: ${staleAvatarUrl}`
+          );
         }
 
         // Remove refreshing marker
