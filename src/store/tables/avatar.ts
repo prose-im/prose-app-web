@@ -33,6 +33,13 @@ enum AvatarSource {
   Workspace = "workspace"
 }
 
+enum AvatarOriginTrust {
+  // Reference origin.
+  Reference = "reference",
+  // Best effort origin.
+  BestEffort = "best-effort"
+}
+
 /**************************************************************************
  * TYPES
  * ************************************************************************* */
@@ -113,9 +120,24 @@ const $avatar = defineStore("avatar", {
     async refresh(
       source: AvatarSource,
       userId: string,
-      avatarLike: CoreProfileAvatar | CoreWorkspaceIcon
+      avatarLike: CoreProfileAvatar | CoreWorkspaceIcon,
+      originTrust = AvatarOriginTrust.Reference
     ): Promise<void> {
       const entry = this.assert(userId);
+
+      // Guard against refreshing if avatar already exists in store, and trust \
+      //   in origin is weak (best-effort loading)
+      // Notice: this is useful to prevent 'christmas tree' loading and \
+      //   unloading of avatar for user, if the avatar comes from a public \
+      //   source such as public MUCs, and the user is also in our roster \
+      //   (where we trust the avatar source as a reference).
+      if (
+        originTrust === AvatarOriginTrust.BestEffort &&
+        entry.id !== undefined
+      ) {
+        // Abort immediately (do nothing).
+        return;
+      }
 
       // Avatar changed, and not already refreshing?
       if (
@@ -215,6 +237,6 @@ const $avatar = defineStore("avatar", {
  * EXPORTS
  * ************************************************************************* */
 
-export { AvatarSource };
+export { AvatarSource, AvatarOriginTrust };
 export type { EventAvatarGeneric };
 export default $avatar;

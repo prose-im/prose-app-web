@@ -25,7 +25,7 @@ import UtilitiesRuntime from "@/utilities/runtime";
 
 // PROJECT: STORES
 import Store from "@/store";
-import { AvatarSource } from "@/store/tables/avatar";
+import { AvatarSource, AvatarOriginTrust } from "@/store/tables/avatar";
 
 // PROJECT: BROKER
 import Broker from "@/broker";
@@ -283,10 +283,13 @@ const $room = defineStore("room", {
               ? participant.jid.toString()
               : participant.id.toString();
 
+          // Important: refresh avatar as best-effort (do not refresh if it \
+          //   already exists)
           Store.$avatar.refresh(
             AvatarSource.Profile,
             participantUserId,
-            participant.avatar
+            participant.avatar,
+            AvatarOriginTrust.BestEffort
           );
         }
       });
