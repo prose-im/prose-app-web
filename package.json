@@ -58,7 +58,7 @@
     "mix-css-color": "0.2.0",
     "nanoid": "5.1.5",
     "pinia": "3.0.3",
-    "pinia-plugin-persistedstate": "4.3.0",
+    "pinia-plugin-persistedstate": "4.5.0",
     "smile2emoji": "3.17.3",
     "strophe.js": "2.0.0",
     "thenby": "1.3.4",

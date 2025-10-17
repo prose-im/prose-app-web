@@ -233,6 +233,7 @@ export default {
       description?: string;
       visibility?: Visibility;
     }): void {
+      // Guard against invalid alerts
       if (!level || !title) {
         throw new Error("No alert level or title provided");
       }
@@ -243,19 +244,28 @@ export default {
       // Hide previous alert?
       this.hide();
 
-      // Open alert
-      this.timers.show = setTimeout(() => {
-        this.timers.show = null;
+      // Open alert?
+      // Notice: only if the app is visible, there is no need to show alerts \
+      //   when the app is invisible. We want to avoid mutating the DOM and \
+      //   triggering CSS animations if the app is invisible.
+      if (this.session.visible === true) {
+        this.timers.show = setTimeout(() => {
+          this.timers.show = null;
 
-        // Assign alert data
-        this.level = level;
-        this.title = title;
-        this.description = description;
-        this.visibility = visibility;
+          // Assign alert data
+          this.level = level;
+          this.title = title;
+          this.description = description;
+          this.visibility = visibility;
 
-        // Schedule later alert hide (as needed)
-        this.scheduleHide();
-      }, ALERT_SHOW_AFTER_DELAY);
+          // Schedule later alert hide (as needed)
+          this.scheduleHide();
+        }, ALERT_SHOW_AFTER_DELAY);
+      } else {
+        this.$log.info(
+          `Skipped showing alert because app is not visible (title: '${title}')`
+        );
+      }
     },
 
     hide(): void {

@@ -11,15 +11,27 @@
 // NPM
 import { Ref, ref, onMounted, onBeforeUnmount } from "vue";
 
+// PROJECT: STORES
+import Store from "@/store";
+
+// PROJECT: UTILITIES
+import logger from "@/utilities/logger";
+
 /**************************************************************************
  * COMPOSABLE
  * ************************************************************************* */
 
-function useTimerMinutes(): {
+function useLazyTimerMinutes(): {
   date: Ref<Date>;
 } {
   // --> INTERNALS <--
 
+  // Notice: this is an identifier that allows tracing of this timer instance.
+  const id = Math.round(Date.now() * Math.random())
+    .toString(36)
+    .toUpperCase();
+
+  let mounted = false;
   let timer = null as null | ReturnType<typeof setTimeout>;
 
   // --> DATA <--
@@ -29,7 +41,10 @@ function useTimerMinutes(): {
   // --> METHODS <--
 
   const scheduleNextTick = async function () {
-    if (timer === null) {
+    // Important: do not schedule next tick if we are not mounted anymore. \
+    //   This protects against late 'whenVisible()' handler firing after we \
+    //   got unmounted.
+    if (timer === null && mounted === true) {
       // Acquire current timestamp
       const nowTime = Date.now();
 
@@ -50,27 +65,53 @@ function useTimerMinutes(): {
       timer = setTimeout(() => {
         timer = null;
 
-        // Update date
-        // Important: do not assign 'nextMinuteDate' here, since the \
-        //   JavaScript VM might have throttled this timer and thus the date \
-        //   might have became stale relative to now. Always create a new date \
-        //   object for this reason.
-        date.value = new Date();
+        // Fire only when the app is visible
+        // Notice: this helps avoiding DOM mutations and firing timers when \
+        //   the app spends its time idling in the background in invisible \
+        //   mode, which for most users, should be most of the time.
+        Store.$session.whenVisible(() => {
+          // Update date
+          // Important: do not assign 'nextMinuteDate' here, since the \
+          //   JavaScript VM might have throttled this timer and thus the date \
+          //   might have became stale relative to now. Always create a new \
+          //   date object for this reason.
+          date.value = new Date();
 
-        // Schedule next timer tick
-        scheduleNextTick();
+          logger.info(
+            `Fired minute timer, and updated date value for current minute ` +
+              `[#${id}]`
+          );
+
+          // Schedule next timer tick
+          scheduleNextTick();
+        });
       }, timeToNextMinute);
+
+      logger.debug(
+        `Scheduled next minute timer tick in ${timeToNextMinute}ms [#${id}]`
+      );
+    } else {
+      logger.warn(
+        `Ignored scheduling of minute timer ` +
+          `(not mounted anymore, or timer already scheduled) [#${id}]`
+      );
     }
   };
 
   // --> LIFECYCLE <--
 
   onMounted(() => {
+    // Mark as mounted
+    mounted = true;
+
     // Schedule first timer tick
     scheduleNextTick();
   });
 
   onBeforeUnmount(() => {
+    // Mark as unmounted
+    mounted = false;
+
     // Unschedule timer? (if any)
     if (timer !== null) {
       clearTimeout(timer);
@@ -86,4 +127,4 @@ function useTimerMinutes(): {
  * EXPORTS
  * ************************************************************************* */
 
-export { useTimerMinutes };
+export { useLazyTimerMinutes };

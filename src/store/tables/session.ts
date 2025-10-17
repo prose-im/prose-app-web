@@ -70,6 +70,14 @@ const $session = defineStore("session", {
 
       onboarding: {
         welcome: false
+      },
+
+      handlers: {
+        // Notice: store stacked handlers in the state, as we want them to go \
+        //   away when the store gets reset, since they are tied to watched \
+        //   values from the state at the time when those handlers get added.
+
+        whenVisible: [] as Array<() => void>
       }
     };
   },
@@ -98,6 +106,16 @@ const $session = defineStore("session", {
 
     setVisible(visible: boolean): void {
       this.setGeneric("visible", this.visible, visible);
+
+      // Trigger all stacked visible handlers? (if any)
+      // Important: this is FIFO, not LIFO.
+      if (visible === true) {
+        let nextVisibleHandler;
+
+        while ((nextVisibleHandler = this.handlers.whenVisible.shift())) {
+          nextVisibleHandler();
+        }
+      }
     },
 
     setProtocol(protocol = ""): void {
@@ -154,6 +172,15 @@ const $session = defineStore("session", {
 
         // Broadcast state change
         EventBus.emit(key, nextValue);
+      }
+    },
+
+    whenVisible(handler: () => void): void {
+      // Visible? Fire immediately, or else stack for later.
+      if (this.visible === true) {
+        handler();
+      } else {
+        this.handlers.whenVisible.push(handler);
       }
     },
 

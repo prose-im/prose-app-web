@@ -45,7 +45,7 @@ import { JID, Room } from "@prose-im/prose-sdk-js";
 
 // PROJECT: COMPOSABLES
 import { useEvents } from "@/composables/events";
-import { useTimerMinutes } from "@/composables/timer";
+import { useLazyTimerMinutes } from "@/composables/timer";
 
 // PROJECT: STORES
 import Store from "@/store";
@@ -97,7 +97,7 @@ export default {
     // Notice: this is required, since a Vue computed on a Date instance will \
     //   only return once, and be treated as a static value afterwards. \
     //   Meaning the date value would not progress as time passes.
-    const { date } = useTimerMinutes();
+    const { date } = useLazyTimerMinutes();
 
     return {
       localDateMinutes: date

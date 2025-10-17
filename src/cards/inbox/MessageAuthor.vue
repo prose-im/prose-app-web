@@ -96,7 +96,7 @@ import Store from "@/store";
 import { InboxEntryMessage } from "@/store/tables/inbox";
 
 // PROJECT: COMPOSABLES
-import { useTimerMinutes } from "@/composables/timer";
+import { useLazyTimerMinutes } from "@/composables/timer";
 
 export default {
   name: "MessageAuthor",
@@ -129,7 +129,7 @@ export default {
   },
 
   setup() {
-    const { date } = useTimerMinutes();
+    const { date } = useLazyTimerMinutes();
 
     return {
       localDateMinutes: date
