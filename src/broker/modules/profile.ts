@@ -75,19 +75,8 @@ class BrokerModuleProfile extends BrokerModule {
     logger.info(`Will load avatar for: '${userId}' (ID ${avatar.id})`);
 
     try {
-      // Acquire avatar as a data URL
-      const avatarDataUrl = await this._client.client?.loadAvatarDataURL(
-        avatar
-      );
-
-      // Transform avatar data URL into a Binary Large OBject? (if any)
-      // Notice: fetching the data URL is the most efficient method available, \
-      //   since we rely on the browser native Base64 parser implementation, \
-      //   which is faster and results in less memory copies than any other \
-      //   JS-powered alternatives.
-      if (avatarDataUrl !== undefined) {
-        return (await fetch(avatarDataUrl)).blob();
-      }
+      // Acquire avatar as a Binary Large OBject
+      return await this._client.client?.loadAvatarBlob(avatar);
     } catch (error) {
       logger.warn(
         `Failed to load avatar for: '${userId}' (ID ${avatar.id})`,

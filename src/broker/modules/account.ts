@@ -45,17 +45,8 @@ class BrokerModuleAccount extends BrokerModule {
     logger.info(`Will load workspace icon (ID ${icon.id})`);
 
     try {
-      // Acquire icon as a data URL
-      const iconDataUrl = await this._client.client?.loadWorkspaceIcon(icon);
-
-      // Transform icon data URL into a Binary Large OBject? (if any)
-      // Notice: fetching the data URL is the most efficient method available, \
-      //   since we rely on the browser native Base64 parser implementation, \
-      //   which is faster and results in less memory copies than any other \
-      //   JS-powered alternatives.
-      if (iconDataUrl !== undefined) {
-        return (await fetch(iconDataUrl)).blob();
-      }
+      // Acquire icon as a Binary Large OBject
+      return await this._client.client?.loadWorkspaceIconBlob(icon);
     } catch (error) {
       logger.warn(`Failed to load workspace icon (ID ${icon.id})`, error);
     }
