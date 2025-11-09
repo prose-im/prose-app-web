@@ -65,9 +65,7 @@
     --color-base-blue-dark: #{hex-var(lighten($color-base-blue-dark, 6%))};
     --color-base-blue-link: #{hex-var(lighten($color-base-blue-link, 4%))};
     --color-base-green-normal: #{hex-var(lighten($color-base-green-normal, 18%))};
-    --color-base-grey-dark: #{hex-var(
-        lighten(invert($color-base-grey-dark), 80%)
-      )};
+    --color-base-grey-dark: #{hex-var(lighten($color-base-grey-dark, 50%))};
     --color-base-grey-light: #{hex-var(
         lighten(invert($color-base-grey-light), 2.5%)
       )};
