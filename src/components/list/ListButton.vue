@@ -153,7 +153,7 @@ $list-button-colors: (
 
     "color": (
       "default": rgb(var(--color-base-blue-normal)),
-      "hover": rgb(var(--color-white))
+      "hover": rgb(var(--color-white-fixed))
     )
   ),
 
@@ -165,7 +165,7 @@ $list-button-colors: (
 
     "color": (
       "default": rgb(var(--color-base-red-normal)),
-      "hover": rgb(var(--color-white))
+      "hover": rgb(var(--color-white-fixed))
     )
   ),
 

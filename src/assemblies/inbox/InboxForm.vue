@@ -1136,7 +1136,7 @@ $form-compose-send-button-size: (
       }
 
       #{$c}__compose-send-icon {
-        fill: rgb(var(--color-white));
+        fill: rgb(var(--color-white-fixed));
         margin-inline-start: -2px;
       }
     }

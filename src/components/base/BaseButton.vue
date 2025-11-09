@@ -275,14 +275,14 @@ $size-ultra-large-padding-sides: 44px;
   &--red {
     #{$c}__inner {
       box-shadow: 0 2px 3px 0 rgba($color-button-dark-normal, 0.04),
-        inset 0 1px 0 0 rgba(var(--color-white), 0.15);
+        inset 0 1px 0 0 rgba(var(--color-shadow-reverse), 0.1);
 
       #{$c}__icon {
-        fill: rgb(var(--color-white));
+        fill: rgb(var(--color-white-fixed));
       }
 
       #{$c}__label {
-        color: rgb(var(--color-white));
+        color: rgb(var(--color-white-fixed));
       }
 
       &:active {

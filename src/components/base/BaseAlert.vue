@@ -375,7 +375,7 @@ $alert-padding-sides: 12px;
     display: flex;
     align-items: center;
     box-shadow: 0 4px 10px 0 rgba(var(--color-shadow-primary), 0.07),
-      inset 0 1px 0 0 rgba(var(--color-white), 0.2);
+      inset 0 1px 0 0 rgba(var(--color-shadow-reverse), 0.2);
     border-radius: 14px;
 
     #{$c}__badge {

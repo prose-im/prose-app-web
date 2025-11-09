@@ -324,7 +324,7 @@ $suggest-sizes: (
 
         #{$c}__link-label,
         #{$c}__link-value {
-          color: rgb(var(--color-text-reverse));
+          color: rgb(var(--color-accent-text));
         }
 
         #{$c}__link-icon {

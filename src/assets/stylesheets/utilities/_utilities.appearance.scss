@@ -9,11 +9,15 @@
  * **************************************************************************/
 
 .u-appearance {
+  // Notice: fixed colors are stable between Light Mode and Dark Mode.
+
   // Black
   --color-black: #{hex-var($color-black)};
+  --color-black-fixed: #{hex-var($color-black)};
 
   // White
   --color-white: #{hex-var($color-white)};
+  --color-white-fixed: #{hex-var($color-white)};
 
   // Bases
   --color-base-blue-normal: #{hex-var($color-base-blue-normal)};
@@ -41,6 +45,7 @@
 
   // Shadows
   --color-shadow-primary: #{hex-var($color-shadow-primary)};
+  --color-shadow-reverse: #{hex-var($color-shadow-reverse)};
 
   // Texts
   --color-text-primary: #{hex-var($color-text-primary)};
@@ -61,14 +66,12 @@
     --color-base-blue-link: #{hex-var(lighten($color-base-blue-link, 4%))};
     --color-base-green-normal: #{hex-var(lighten($color-base-green-normal, 18%))};
     --color-base-grey-dark: #{hex-var(
-        lighten(invert($color-base-grey-dark), 2%)
+        lighten(invert($color-base-grey-dark), 80%)
       )};
     --color-base-grey-light: #{hex-var(
-        lighten(invert($color-base-grey-light), 2%)
+        lighten(invert($color-base-grey-light), 2.5%)
       )};
-    --color-base-grey-normal: #{hex-var(
-        lighten(invert($color-base-grey-normal), 4%)
-      )};
+    --color-base-grey-normal: #{hex-var(lighten($color-base-grey-normal, 10%))};
     --color-base-orange-light: #{hex-var(lighten($color-base-orange-light, 6%))};
     --color-base-orange-normal: #{hex-var(
         lighten($color-base-orange-normal, 3%)
@@ -78,7 +81,7 @@
     --color-base-purple-normal: #{hex-var(
         lighten($color-base-purple-normal, 20%)
       )};
-    --color-base-red-normal: #{hex-var(lighten($color-base-red-normal, 3%))};
+    --color-base-red-normal: #{hex-var(lighten($color-base-red-normal, 5%))};
 
     // Borders
     --color-border-primary: #{hex-var(
@@ -97,8 +100,10 @@
 
     // Texts
     --color-text-primary: #{hex-var(invert($color-text-primary))};
-    --color-text-secondary: #{hex-var(invert($color-text-secondary))};
-    --color-text-tertiary: #{hex-var(invert($color-text-tertiary))};
+    --color-text-secondary: #{hex-var(
+        lighten(invert($color-text-secondary), 18%)
+      )};
+    --color-text-tertiary: #{hex-var(lighten(invert($color-text-tertiary), 14%))};
     --color-text-reverse: #{hex-var(invert($color-text-reverse))};
   }
 }
