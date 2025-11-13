@@ -40,7 +40,8 @@ import {
 } from "@/broker/context";
 import BrokerConnectionProvider from "@/broker/connection/provider";
 import BrokerDelegate from "@/broker/delegate";
-import BrokerEncryption from "@/broker/encryption";
+// TODO: re-instate the BrokerEncryption service when OMEMO is fully functional
+//import BrokerEncryption from "@/broker/encryption";
 import BrokerLogger from "@/broker/logger";
 
 /**************************************************************************
@@ -260,10 +261,12 @@ class BrokerClient {
 
     // Initialize client? (or re-use existing client)
     if (this.client === undefined) {
+      // TODO: re-instate the BrokerEncryption service when OMEMO is fully \
+      //   functional
       this.client = await ProseClient.init(
         this.__connector,
         this.__delegate,
-        new BrokerEncryption(),
+        null,
         new BrokerLogger(),
         this.__configuration()
       );
