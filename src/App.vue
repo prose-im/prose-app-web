@@ -326,6 +326,9 @@ export default {
             target: menu
           });
 
+          // Make sure the application is visible
+          await UtilitiesRuntime.requestWindowRestore();
+
           break;
         }
 
@@ -339,6 +342,7 @@ export default {
         }
 
         case "open": {
+          // Restore the application window (if not visible)
           await UtilitiesRuntime.requestWindowRestore();
 
           break;

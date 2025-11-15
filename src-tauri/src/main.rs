@@ -151,6 +151,7 @@ async fn main() {
         .expect("error while running tauri application");
 
     app.run(|app, event| match event {
+        #[cfg(target_os = "macos")]
         RunEvent::Reopen { .. } => restore_window(app),
         _ => {}
     });
