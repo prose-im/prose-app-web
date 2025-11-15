@@ -337,6 +337,12 @@ export default {
 
           break;
         }
+
+        case "open": {
+          await UtilitiesRuntime.requestWindowRestore();
+
+          break;
+        }
       }
     },
 

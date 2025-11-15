@@ -531,6 +531,14 @@ class UtilitiesRuntime {
     }
   }
 
+  async requestWindowRestore(): Promise<void> {
+    if (this.__isApplication === true) {
+      // Request to restore the window via Tauri API (application build)
+      await tauriWindow().show();
+      await tauriWindow().setFocus();
+    }
+  }
+
   async requestWindowResizableChange(
     resizable: boolean
   ): Promise<boolean | void> {

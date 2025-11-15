@@ -18,6 +18,7 @@ use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 const APP_NAME: &'static str = "Prose";
 
+const LABEL_OPEN: &'static str = "Open Prose";
 const LABEL_UPDATES: &'static str = "Check for Updates…";
 const LABEL_SETTINGS: &'static str = "Account Settings…";
 const LABEL_PROFILE: &'static str = "Edit Profile…";
@@ -105,6 +106,8 @@ pub fn create<R: Runtime>(app: &AppHandle<R>) -> Result<Menu<R>, tauri::Error> {
 pub fn tray<R: Runtime>(app: &AppHandle<R>) -> Result<TrayIcon<R>, tauri::Error> {
     // Create menu (for tray)
     let menu = MenuBuilder::new(app)
+        .text("open", LABEL_OPEN)
+        .separator()
         .text("updates", LABEL_UPDATES)
         .separator()
         .text("settings", LABEL_SETTINGS)

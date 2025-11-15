@@ -20,10 +20,29 @@ mod notifications;
  * ************************************************************************* */
 
 use tauri::tray::TrayIconEvent;
-use tauri::{Emitter, Manager, WindowEvent};
+use tauri::{AppHandle, Emitter, Manager, RunEvent, WindowEvent};
 use tauri_plugin_deep_link::DeepLinkExt;
 #[cfg(target_os = "macos")]
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
+
+/**************************************************************************
+ * HELPERS
+ * ************************************************************************* */
+
+fn restore_window(app: &AppHandle) {
+    let window = app.get_webview_window("main").unwrap();
+
+    // Show the window? (if hidden)
+    if window.is_visible().unwrap_or(false) == false {
+        window.show().unwrap();
+        window.set_focus().unwrap();
+    }
+
+    // Also un-minimize the window? (if minimized)
+    if window.is_minimized().unwrap_or(false) == false {
+        window.unminimize().unwrap();
+    }
+}
 
 /**************************************************************************
  * MAIN
@@ -70,38 +89,26 @@ async fn main() {
     builder = builder
         .on_window_event(|window, event| match event {
             WindowEvent::CloseRequested { api, .. } => {
-                #[cfg(not(target_os = "macos"))]
-                {
-                    let webview = window.get_webview_window("main").unwrap();
-
-                    webview.hide().unwrap();
+                // Leave full-screen for the window? (before it can be hidden)
+                // Notice: this is needed, to avoid the screen becoming \
+                //   all-black if the window is hidden whilst still in full \
+                //   screen.
+                if window.is_fullscreen().unwrap_or(false) == true {
+                    window.set_fullscreen(false).unwrap();
+                } else {
+                    // Hide the window
+                    window.hide().unwrap();
                 }
 
-                #[cfg(target_os = "macos")]
-                {
-                    tauri::AppHandle::hide(&window.app_handle()).unwrap();
-                }
-
+                // Make sure the application does not close (default behavior \
+                //   on close request)
                 api.prevent_close();
             }
             WindowEvent::Focused(focused) => window.emit("window:focus", focused).unwrap(),
             _ => {}
         })
         .on_tray_icon_event(|app, event| match event {
-            TrayIconEvent::Click { .. } => {
-                let window = app.get_webview_window("main").unwrap();
-
-                // Show the window? (if hidden)
-                if window.is_visible().unwrap_or(false) == false {
-                    window.show().unwrap();
-                    window.set_focus().unwrap();
-                }
-
-                // Also un-minimize the window? (if minimized)
-                if window.is_minimized().unwrap_or(false) == false {
-                    window.unminimize().unwrap();
-                }
-            }
+            TrayIconEvent::DoubleClick { .. } => restore_window(app),
             _ => {}
         })
         .on_menu_event(menu::handler);
@@ -139,7 +146,12 @@ async fn main() {
     });
 
     // Run application
-    builder
-        .run(tauri::generate_context!())
+    let app = builder
+        .build(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    app.run(|app, event| match event {
+        RunEvent::Reopen { .. } => restore_window(app),
+        _ => {}
+    });
 }
