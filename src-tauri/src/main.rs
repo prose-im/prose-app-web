@@ -20,7 +20,9 @@ mod notifications;
  * ************************************************************************* */
 
 use tauri::tray::TrayIconEvent;
-use tauri::{AppHandle, Emitter, Manager, RunEvent, WindowEvent};
+#[cfg(target_os = "macos")]
+use tauri::RunEvent;
+use tauri::{AppHandle, Emitter, Manager, WebviewWindow, WindowEvent};
 use tauri_plugin_deep_link::DeepLinkExt;
 #[cfg(target_os = "macos")]
 use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
@@ -29,19 +31,25 @@ use window_vibrancy::{apply_vibrancy, NSVisualEffectMaterial};
  * HELPERS
  * ************************************************************************* */
 
-fn restore_window(app: &AppHandle) {
-    let window = app.get_webview_window("main").unwrap();
-
+fn restore_window_target(window: &WebviewWindow) {
     // Show the window? (if hidden)
     if window.is_visible().unwrap_or(false) == false {
         window.show().unwrap();
-        window.set_focus().unwrap();
     }
 
     // Also un-minimize the window? (if minimized)
     if window.is_minimized().unwrap_or(false) == false {
         window.unminimize().unwrap();
     }
+
+    // Set the focus on the window
+    window.set_focus().unwrap();
+}
+
+fn restore_window(app: &AppHandle) {
+    let window = app.get_webview_window("main").unwrap();
+
+    restore_window_target(&window);
 }
 
 /**************************************************************************
@@ -125,9 +133,11 @@ async fn main() {
         app.deep_link().register("xmpp").ok();
 
         app.deep_link().on_open_url(move |event| {
-            window.set_focus().ok();
-
+            // Open XMPP URI? (if any)
             if let Some(url) = event.urls().first() {
+                // Make sure window is visible before opening XMPP URI
+                restore_window_target(&window);
+
                 window.emit("url:open", url).ok();
             }
         });
@@ -150,9 +160,9 @@ async fn main() {
         .build(tauri::generate_context!())
         .expect("error while running tauri application");
 
-    app.run(|app, event| match event {
+    app.run(|_app, event| match event {
         #[cfg(target_os = "macos")]
-        RunEvent::Reopen { .. } => restore_window(app),
+        RunEvent::Reopen { .. } => restore_window(_app),
         _ => {}
     });
 }
