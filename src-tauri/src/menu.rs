@@ -18,6 +18,7 @@ use tauri::{AppHandle, Emitter, Manager, Runtime};
 
 const APP_NAME: &'static str = "Prose";
 
+#[cfg(target_os = "windows")]
 const LABEL_OPEN: &'static str = "Open Prose";
 const LABEL_UPDATES: &'static str = "Check for Updates…";
 const LABEL_SETTINGS: &'static str = "Account Settings…";
