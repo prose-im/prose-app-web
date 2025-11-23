@@ -82,14 +82,14 @@ export default {
 $c: ".c-inbox-form-chatstate";
 
 #{$c} {
-  background: rgba(var(--color-white), 0.875);
+  background: rgba(var(--color-background-primary), 0.875);
   color: lighten-var(var(--color-base-grey-dark), 15%);
   border: 1px solid rgba(var(--color-border-primary), 0.8);
   font-size: ($font-size-baseline - 1.5px);
   line-height: 24px;
   padding-inline: 12px;
   padding-block-end: 1px;
-  border-radius: $size-common-outer-border-radius;
+  border-radius: $size-common-inner-border-radius;
   box-shadow: 0 1px 3px 0 rgba(var(--color-shadow-primary), 0.02);
   backdrop-filter: blur(6px);
 }
