@@ -9,7 +9,7 @@
      ********************************************************************** -->
 
 <template lang="pug">
-.c-inbox-preview.u-select(
+.c-form-inbox-preview.u-select(
   v-html="messageHtml"
 )
 </template>
@@ -45,7 +45,7 @@ export default {
      ********************************************************************** -->
 
 <style lang="scss">
-$c: ".c-inbox-preview";
+$c: ".c-form-inbox-preview";
 
 #{$c} {
   border: 1px solid rgba(var(--color-black), 0.04);
@@ -122,7 +122,7 @@ $c: ".c-inbox-preview";
     font-size: 0.8em;
     padding: 0 3px;
     display: inline-block;
-    border-radius: 4px;
+    border-radius: $size-common-inner-border-radius;
   }
 
   pre {
@@ -132,8 +132,8 @@ $c: ".c-inbox-preview";
   }
 
   pre code {
-    color: rgb(var(--color-text-reverse));
-    background-color: rgba(var(--color-black), 0.85);
+    color: rgb(var(--color-white-fixed));
+    background-color: rgba(var(--color-black-fixed), 0.85);
     border: 0 none;
     line-height: 1.6em;
     padding: 8px 14px;
