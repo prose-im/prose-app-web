@@ -87,10 +87,10 @@ $count-padding-sides: 5px;
 
   &--blue,
   &--red {
-    color: rgb(var(--color-white));
+    color: rgb(var(--color-white-fixed));
 
     #{$c}__icon {
-      fill: rgb(var(--color-white));
+      fill: rgb(var(--color-white-fixed));
     }
   }
 
