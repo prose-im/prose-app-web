@@ -97,7 +97,11 @@ $icon-size: 28px;
   padding: 5px 10px;
   display: flex;
   align-items: center;
-  border-radius: 6px;
+
+  &,
+  #{$c}__icon {
+    border-radius: $size-common-inner-border-radius;
+  }
 
   #{$c}__icon {
     width: $icon-size;
@@ -107,7 +111,6 @@ $icon-size: 28px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 6px;
 
     #{$c}__icon-inner {
       fill: rgb(var(--color-accent-text));

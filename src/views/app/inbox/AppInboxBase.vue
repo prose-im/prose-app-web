@@ -295,8 +295,8 @@ $c: ".v-app-inbox-base";
       &:before {
         background-image: linear-gradient(
           0deg,
-          rgba(var(--color-black), 0) 0%,
-          rgba(var(--color-black), 0.015) 100%
+          rgba(var(--color-shadow-primary), 0) 0%,
+          rgba(var(--color-shadow-primary), 0.015) 100%
         );
         inset-block-start: 0;
       }
@@ -304,8 +304,8 @@ $c: ".v-app-inbox-base";
       &:after {
         background-image: linear-gradient(
           180deg,
-          rgba(var(--color-black), 0) 0%,
-          rgba(var(--color-black), 0.01) 100%
+          rgba(var(--color-shadow-primary), 0) 0%,
+          rgba(var(--color-shadow-primary), 0.01) 100%
         );
         inset-block-end: 0;
       }

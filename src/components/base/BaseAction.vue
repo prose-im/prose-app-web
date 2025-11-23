@@ -200,7 +200,7 @@ $inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
     position: relative;
     cursor: pointer;
     box-sizing: border-box;
-    border-radius: 5px;
+    border-radius: $size-common-inner-border-radius;
     transition: all 100ms linear;
     transition-property: background-color, box-shadow, transform;
 
@@ -289,9 +289,9 @@ $inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
     &#{$c}--transparent,
     &#{$c}--white {
       > #{$c}__inner {
-        outline-color: rgb(var(--color-border-tertiary));
+        outline-color: rgba(var(--color-black), 0.035);
         box-shadow: $inner-bordered-box-shadow-sizes
-          rgb(var(--color-border-secondary));
+          rgba(var(--color-black), 0.075);
       }
     }
 
@@ -403,11 +403,11 @@ $inner-bordered-box-shadow-sizes: inset 0 -1px 0px 0;
 
     > #{$c}__inner {
       &:hover {
-        background-color: rgba(var(--color-black), 0.08);
+        background-color: rgba(var(--color-black-fixed), 0.08);
       }
 
       &:active {
-        background-color: rgba(var(--color-black), 0.12);
+        background-color: rgba(var(--color-black-fixed), 0.12);
       }
     }
   }

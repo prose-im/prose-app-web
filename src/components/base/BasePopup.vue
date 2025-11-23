@@ -82,8 +82,8 @@ $c: ".c-base-popup";
 
 #{$c} {
   #{$c}__popup {
-    background-color: rgb(var(--color-white));
-    border-radius: 7px;
+    background-color: rgb(var(--color-background-primary));
+    border-radius: $size-common-outer-border-radius;
     box-shadow: 0 4px 14px 0 rgba(var(--color-shadow-primary), 0.075);
   }
 }

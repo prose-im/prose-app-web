@@ -45,7 +45,7 @@ export default {
 $c: ".c-base-overlay";
 
 #{$c} {
-  background-color: rgba(var(--color-white), 0.65);
+  background-color: rgba(var(--color-background-primary), 0.65);
   backdrop-filter: blur(6px);
   display: flex;
   align-items: center;

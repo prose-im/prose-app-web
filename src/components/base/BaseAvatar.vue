@@ -319,7 +319,7 @@ export default {
 $c: ".c-base-avatar";
 
 #{$c} {
-  color: rgb(var(--color-text-reverse));
+  color: rgb(var(--color-white-fixed));
   background-color: rgb(var(--color-base-grey-light));
   background-position: center;
   background-size: cover;

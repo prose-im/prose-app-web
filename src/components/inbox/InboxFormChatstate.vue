@@ -89,7 +89,7 @@ $c: ".c-inbox-form-chatstate";
   line-height: 24px;
   padding-inline: 12px;
   padding-block-end: 1px;
-  border-radius: 8px;
+  border-radius: $size-common-outer-border-radius;
   box-shadow: 0 1px 3px 0 rgba(var(--color-shadow-primary), 0.02);
   backdrop-filter: blur(6px);
 }

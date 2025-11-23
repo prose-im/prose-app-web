@@ -411,14 +411,11 @@ export default {
 <style lang="scss">
 $c: ".c-inbox-file-preview";
 
-// VARIABLES
-$file-preview-border-radius: 9px;
-
 #{$c} {
   padding: 40px 60px;
 
   #{$c}__inner {
-    background-color: rgba(var(--color-white), 0.9);
+    background-color: rgba(var(--color-background-primary), 0.9);
     border: 1px solid rgb(var(--color-border-tertiary));
     backdrop-filter: blur(8px);
     width: 100%;
@@ -426,7 +423,7 @@ $file-preview-border-radius: 9px;
     padding: 7px;
     display: flex;
     flex-direction: column;
-    border-radius: $file-preview-border-radius;
+    border-radius: $size-common-outer-border-radius;
     box-shadow: 0 4px 24px 0 rgba(var(--color-shadow-primary), 0.075);
   }
 
@@ -450,7 +447,7 @@ $file-preview-border-radius: 9px;
     flex: 1;
     overflow: hidden;
     position: relative;
-    border-radius: ($file-preview-border-radius - 2px);
+    border-radius: $size-common-inner-border-radius;
 
     #{$c}__overlay {
       position: absolute;

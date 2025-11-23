@@ -132,6 +132,7 @@ $toggle-field-height: ($toggle-height - (2 * $toggle-handle-offset));
       background-color: rgb(var(--color-base-purple-normal));
 
       &:after {
+        background-color: rgb(var(--color-white-fixed));
         margin-inline-start: ($toggle-field-width - $toggle-handle-size);
       }
 
@@ -157,7 +158,7 @@ $toggle-field-height: ($toggle-height - (2 * $toggle-handle-offset));
 
     &:after {
       content: "";
-      background-color: rgb(var(--color-white));
+      background-color: rgb(var(--color-background-quaternary));
       width: $toggle-handle-size;
       height: $toggle-handle-size;
       border-radius: $toggle-height;

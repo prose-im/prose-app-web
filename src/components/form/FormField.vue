@@ -580,7 +580,7 @@ $c: ".c-form-field";
   position: relative;
 
   #{$c}__inner {
-    background-color: rgb(var(--color-white));
+    background-color: rgb(var(--color-background-quaternary));
     border: 1px solid rgba(var(--color-black), 0.1);
     outline: 0 solid rgba(var(--color-base-purple-normal), 0);
     color: rgb(var(--color-text-primary));
@@ -593,7 +593,7 @@ $c: ".c-form-field";
     border-radius: $size-form-field-border-radius;
     box-sizing: border-box;
     box-shadow: 0 3px 4px 0 rgba(var(--color-shadow-primary), 0.01),
-      inset 0 1px 2px 0 rgba(var(--color-black), 0.04);
+      inset 0 1px 2px 0 rgba(var(--color-shadow-primary), 0.04);
 
     &--textarea {
       height: 100%;
@@ -614,7 +614,7 @@ $c: ".c-form-field";
     &:focus {
       border-color: rgb(var(--color-base-purple-normal));
       box-shadow: 0 3px 4px 0 rgba(var(--color-shadow-primary), 0.1),
-        inset 0 1px 2px 0 rgba(var(--color-black), 0.04);
+        inset 0 1px 2px 0 rgba(var(--color-shadow-primary), 0.04);
     }
   }
 

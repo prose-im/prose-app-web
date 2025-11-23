@@ -576,7 +576,7 @@ $sizes: (
 
   #{$c}__field,
   #{$c}__dropdown {
-    background-color: rgb(var(--color-white));
+    background-color: rgb(var(--color-background-quaternary));
     border: $size-form-select-border-width solid rgba(var(--color-black), 0.1);
     box-shadow: 0 2px 3px 0 rgba(var(--color-shadow-primary), 0.01);
   }
@@ -640,7 +640,7 @@ $sizes: (
   }
 
   #{$c}__search {
-    background-color: rgba(var(--color-background-primary), 0.94);
+    background-color: rgba(var(--color-background-quaternary), 0.94);
     position: absolute;
     inset-block-start: 0;
     inset-inline: 0;
@@ -662,7 +662,7 @@ $sizes: (
     input {
       background-color: transparent;
       border: 0 none;
-      border-block-end: 1px solid rgb(var(--color-border-tertiary));
+      border-block-end: 1px solid rgba(var(--color-black), 0.05);
       color: rgb(var(--color-text-primary));
       outline: 0 none;
       font-size: ($font-size-baseline - 3px);
@@ -703,7 +703,7 @@ $sizes: (
           &,
           &:active {
             #{$c}__value {
-              color: rgb(var(--color-text-reverse));
+              color: rgb(var(--color-white-fixed));
             }
           }
 

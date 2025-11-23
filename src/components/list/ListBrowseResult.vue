@@ -117,7 +117,7 @@ export default {
 $c: ".c-list-browse-result";
 
 #{$c} {
-  background-color: rgb(var(--color-white));
+  background-color: rgb(var(--color-background-primary));
   border: 1px solid rgb(var(--color-border-primary));
   padding-inline: 18px;
   padding-block: 10px;
@@ -125,7 +125,7 @@ $c: ".c-list-browse-result";
   align-items: center;
   justify-content: center;
   overflow: hidden;
-  border-radius: 3px;
+  border-radius: $size-common-inner-border-radius;
   box-shadow: 0 2px 6px 0 rgba(var(--color-shadow-primary), 0.02);
 
   #{$c}__loader {

@@ -95,7 +95,7 @@ $name-logos: ("web", "macos", "ios", "windows", "android", "linux");
 
 #{$c} {
   background-color: rgb(var(--color-white));
-  border: 0.5px solid rgb(var(--color-black));
+  border: 0.5px solid rgb(var(--color-black-fixed));
   width: 46px;
   height: 54px;
   border-radius: 4px;

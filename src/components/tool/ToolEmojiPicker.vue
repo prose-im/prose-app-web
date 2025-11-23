@@ -141,7 +141,7 @@ $c: ".c-tool-emoji-picker";
         /* Style inspired from FormField, since it cannot be injected there */
 
         input {
-          background-color: rgb(var(--color-white));
+          background-color: rgb(var(--color-background-quaternary));
           border: 1px solid rgba(var(--color-black), 0.1);
           outline: 0 solid rgba(var(--color-base-purple-normal), 0.2);
           color: rgb(var(--color-text-primary));
@@ -153,7 +153,7 @@ $c: ".c-tool-emoji-picker";
           transition-property: border-color, outline-width;
           border-radius: $size-form-field-border-radius;
           box-sizing: border-box;
-          box-shadow: inset 0 1px 2px 0 rgba(var(--color-black), 0.03);
+          box-shadow: inset 0 1px 2px 0 rgba(var(--color-shadow-primary), 0.03);
 
           &:hover {
             border-color: rgba(var(--color-base-purple-normal), 0.5);
@@ -162,7 +162,8 @@ $c: ".c-tool-emoji-picker";
           &:focus {
             border-color: rgb(var(--color-base-purple-normal));
             outline-width: $size-form-field-outline-width;
-            box-shadow: inset 0 1px 2px 0 rgba(var(--color-black), 0.03);
+            box-shadow: inset 0 1px 2px 0
+              rgba(var(--color-shadow-primary), 0.03);
           }
         }
       }
@@ -177,7 +178,7 @@ $c: ".c-tool-emoji-picker";
 
         .v3-group {
           h5 {
-            background: rgba(var(--color-white), 0.925);
+            background: rgba(var(--color-background-primary), 0.925);
             font-size: ($font-size-baseline - 1px);
             font-weight: $font-weight-medium;
             padding-block-start: 7px;
@@ -187,7 +188,7 @@ $c: ".c-tool-emoji-picker";
 
           .v3-emojis {
             button {
-              border-radius: 7px;
+              border-radius: $size-common-inner-border-radius;
 
               &:hover {
                 background-color: rgb(var(--color-base-grey-light));

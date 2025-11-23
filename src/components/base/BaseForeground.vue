@@ -54,7 +54,7 @@ export default {
 $c: ".c-base-foreground";
 
 #{$c} {
-  background-color: rgba(var(--color-base-grey-dark), 0.35);
+  background-color: rgba(var(--color-base-grey-dark-fixed), 0.35);
   user-select: none;
   display: flex;
   align-items: center;

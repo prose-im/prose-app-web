@@ -497,8 +497,8 @@ $sidebar-alert-edge-offset: 16px;
     &:after {
       background-image: linear-gradient(
         0deg,
-        rgba(var(--color-black), 0) 0%,
-        rgba(var(--color-black), 0.015) 100%
+        rgba(var(--color-shadow-primary), 0) 0%,
+        rgba(var(--color-shadow-primary), 0.015) 100%
       );
       inset-block-start: calc(100% + 1px);
       display: none;
@@ -547,8 +547,8 @@ $sidebar-alert-edge-offset: 16px;
     &:before {
       background-image: linear-gradient(
         180deg,
-        rgba(var(--color-black), 0) 0%,
-        rgba(var(--color-black), 0.01) 100%
+        rgba(var(--color-shadow-primary), 0) 0%,
+        rgba(var(--color-shadow-primary), 0.01) 100%
       );
       inset-block-end: calc(100% + 1px);
     }

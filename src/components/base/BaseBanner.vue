@@ -94,7 +94,7 @@ $c: ".c-base-banner";
   overflow: hidden;
   display: flex;
   align-items: center;
-  border-radius: 6px;
+  border-radius: $size-common-inner-border-radius;
 
   #{$c}__icon,
   #{$c}__title,

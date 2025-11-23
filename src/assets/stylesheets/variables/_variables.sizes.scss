@@ -11,6 +11,8 @@
 // --> COMMON <--
 
 $size-common-gradient-height: 6px;
+$size-common-outer-border-radius: 10px;
+$size-common-inner-border-radius: ($size-common-outer-border-radius - 3px);
 
 // --> SIDEBAR <--
 
@@ -31,7 +33,7 @@ $size-spotlight-browse-padding-block-end: 50px;
 
 // --> BASE BUTTON <--
 
-$size-base-button-border-radius: 10px;
+$size-base-button-border-radius: $size-common-outer-border-radius;
 
 // --> BASE ACTION <--
 
@@ -68,7 +70,7 @@ $size-list-item-details-margin-inline-start: 6px;
 
 $size-form-field-padding-block: 1px;
 $size-form-field-outline-width: 2px;
-$size-form-field-border-radius: 10px;
+$size-form-field-border-radius: $size-common-outer-border-radius;
 $size-form-field-suggest-block-origin-offset: 5px;
 
 $size-form-field-medium-padding-sides: 10px;
@@ -99,7 +101,7 @@ $size-form-field-ultra-large-textarea-padding-block: 13px;
 
 $size-form-select-padding-block: $size-form-field-padding-block;
 $size-form-select-border-width: 1px;
-$size-form-select-border-radius: ($size-form-field-border-radius - 3px);
+$size-form-select-border-radius: $size-common-inner-border-radius;
 $size-form-select-search-height: 32px;
 $size-form-select-search-icon-offset: 21px;
 $size-form-select-options-padding-block: 5px;

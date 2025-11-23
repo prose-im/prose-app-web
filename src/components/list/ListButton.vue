@@ -319,7 +319,7 @@ $list-button-colors: (
 
   &--rounded {
     margin-inline: $size-list-button-rounded-margin-inline;
-    border-radius: 7px;
+    border-radius: $size-common-inner-border-radius;
   }
 
   &--active {

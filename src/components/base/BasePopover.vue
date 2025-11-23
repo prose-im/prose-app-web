@@ -183,13 +183,13 @@ export default {
 $c: ".c-base-popover";
 
 #{$c} {
-  background-color: rgb(var(--color-white));
+  background-color: rgb(var(--color-background-primary));
   border: $size-base-popover-border-width solid
     rgb(var(--color-border-secondary));
   min-width: 180px;
   max-width: 360px;
   padding-block: 7px;
-  border-radius: 5px;
+  border-radius: $size-common-outer-border-radius;
   box-shadow: 0 2px 6px 0 rgba(var(--color-shadow-primary), 0.025);
 
   &:focus {

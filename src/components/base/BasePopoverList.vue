@@ -275,7 +275,7 @@ $entry-button-popover-edges-offset: (
       &:active {
         #{$c}__button-icon {
           #{$c}__button-icon-inner {
-            fill: rgb(var(--color-white));
+            fill: rgb(var(--color-white-fixed));
           }
         }
       }

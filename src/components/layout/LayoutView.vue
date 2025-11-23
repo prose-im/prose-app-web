@@ -77,7 +77,7 @@ $c: ".c-layout-view";
   flex-direction: column;
 
   #{$c}__topbar {
-    background-color: rgb(var(--color-base-grey-light));
+    background-color: rgb(var(--color-background-tertiary));
     border-block-end: 1px solid rgb(var(--color-border-secondary));
     height: $size-layout-view-topbar-height;
     padding: 0 $size-layout-view-content-padding-sides;

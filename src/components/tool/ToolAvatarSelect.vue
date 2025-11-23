@@ -282,8 +282,8 @@ $c: ".c-tool-avatar-select";
     #{$c}__edit-inner {
       background-image: linear-gradient(
         180deg,
-        rgba(var(--color-black), 0) 0%,
-        rgba(var(--color-black), 0.6) 100%
+        rgba(var(--color-shadow-primary), 0) 0%,
+        rgba(var(--color-shadow-primary), 0.6) 100%
       );
       padding-block-start: 14px;
       padding-block-end: 10px;
@@ -295,7 +295,7 @@ $c: ".c-tool-avatar-select";
       transition: opacity 100ms linear;
 
       #{$c}__edit-text {
-        color: rgb(var(--color-text-reverse));
+        color: rgb(var(--color-white-fixed));
         font-size: ($font-size-baseline - 1.5px);
         line-height: 14px;
         text-transform: lowercase;

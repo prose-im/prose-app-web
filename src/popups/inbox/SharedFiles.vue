@@ -322,7 +322,7 @@ $c: ".p-shared-files";
         border: 1px solid rgb(var(--color-border-primary));
         outline: 0 solid rgba(var(--color-accent-background-normal), 0.16);
         display: block;
-        border-radius: 6px;
+        border-radius: $size-common-inner-border-radius;
         transition: border-color 100ms linear, outline-width 150ms linear;
 
         &:hover,

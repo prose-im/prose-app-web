@@ -186,7 +186,7 @@ $c: ".c-base-card";
   position: absolute;
   z-index: $index-foreground-quaternary;
   transform: translateY(-100%);
-  border-radius: 6px;
+  border-radius: $size-common-outer-border-radius;
   box-shadow: 0 4px 14px 0 rgba(var(--color-shadow-primary), 0.05);
 }
 </style>

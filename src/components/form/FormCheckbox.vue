@@ -151,7 +151,7 @@ $c: ".c-form-checkbox";
 
     &:before {
       content: "";
-      background-color: rgb(var(--color-white));
+      background-color: rgb(var(--color-background-quaternary));
       border: 1px solid rgb(var(--color-border-primary));
       outline: 2px solid transparent;
       position: absolute;

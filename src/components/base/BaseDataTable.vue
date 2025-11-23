@@ -498,7 +498,7 @@ $controls-button-height: 22px;
 
       &--dark {
         #{$c}__control-icon {
-          fill: rgb(var(--color-white));
+          fill: rgb(var(--color-white-fixed));
         }
       }
 

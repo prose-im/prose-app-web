@@ -77,7 +77,7 @@ $count-padding-sides: 5px;
   line-height: $count-size-base;
   padding-inline: $count-padding-sides;
   min-width: ($count-size-base - (2 * $count-padding-sides));
-  border-radius: 4px;
+  border-radius: 5px;
 
   #{$c}__icon {
     margin-block-end: -1.5px;
