@@ -8,6 +8,8 @@
  * VARIABLES > COLORS
  * **************************************************************************/
 
+// --> LIGHT MODE <--
+
 // Black
 
 $color-black: #000000;
@@ -57,7 +59,53 @@ $color-text-secondary: #828993;
 $color-text-tertiary: #999fa7;
 $color-text-reverse: #ffffff;
 
-// Defaults
+// --> DARK MODE <--
+
+// Black
+
+$color-dark-black: invert($color-black);
+
+// White
+
+$color-dark-white: invert($color-white);
+
+// Bases
+
+$color-dark-blue-normal: lighten($color-base-blue-normal, 4%);
+$color-dark-blue-dark: lighten($color-base-blue-dark, 6%);
+$color-dark-blue-link: lighten($color-base-blue-link, 4%);
+$color-dark-green-normal: lighten($color-base-green-normal, 4%);
+$color-dark-grey-dark: #ffffff;
+$color-dark-grey-light: #1e1e1e;
+$color-dark-grey-normal: #dbdbdb;
+$color-dark-orange-light: lighten($color-base-orange-light, 6%);
+$color-dark-orange-normal: lighten($color-base-orange-normal, 3%);
+$color-dark-orange-dark: lighten($color-base-orange-dark, 2%);
+$color-dark-purple-light: lighten($color-base-purple-light, 2%);
+$color-dark-purple-normal: lighten($color-base-purple-normal, 20%);
+$color-dark-red-normal: lighten($color-base-red-normal, 4%);
+
+// Borders
+
+$color-dark-border-primary: lighten(invert($color-border-primary), 8%);
+$color-dark-border-secondary: lighten(invert($color-border-secondary), 6%);
+$color-dark-border-tertiary: lighten(invert($color-border-tertiary), 7%);
+
+// Backgrounds
+
+$color-dark-background-primary: #111111;
+$color-dark-background-secondary: #151515;
+$color-dark-background-tertiary: #171717;
+$color-dark-background-quaternary: #1e1e1e;
+
+// Texts
+
+$color-dark-text-primary: invert($color-text-primary);
+$color-dark-text-secondary: #a1a6ae;
+$color-dark-text-tertiary: #7f868f;
+$color-dark-text-reverse: invert($color-text-reverse);
+
+// --> DEFAULTS <--
 
 $color-default-accent-background-normal: $color-base-blue-normal;
 $color-default-accent-background-dark: $color-base-blue-dark;
