@@ -63,6 +63,9 @@ import { readAndCompressImage } from "browser-image-resizer";
 // PROJECT: COMPONENTS
 import BaseAlert from "@/components/base/BaseAlert.vue";
 
+// PROJECT: STORES
+import { AVATAR_MIME_TYPES } from "@/store/tables/avatar";
+
 // INTERFACES
 export interface Update {
   binary: string;
@@ -73,13 +76,7 @@ export interface Update {
 }
 
 // CONSTANTS
-const AVATAR_MIME_TYPES = [
-  "image/jpeg",
-  "image/png",
-  "image/gif",
-  "image/webp"
-];
-const AVATAR_EXTENSIONS = ["JPG", "PNG", "GIF", "WEBP"];
+const AVATAR_EXTENSIONS = ["JPG", "PNG", "WEBP"];
 
 const AVATAR_CONVERT_MIME = "image/jpeg";
 const AVATAR_COMPRESS_QUALITY = 0.94;

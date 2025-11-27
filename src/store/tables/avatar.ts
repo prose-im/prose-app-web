@@ -80,6 +80,8 @@ const LOCAL_STATES = {
   refreshing: {} as { [userId: string]: boolean }
 };
 
+const AVATAR_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
+
 /**************************************************************************
  * TABLE
  * ************************************************************************* */
@@ -186,7 +188,12 @@ const $avatar = defineStore("avatar", {
         }
 
         // Load avatar into store (as an URL)
-        if (avatarBlob) {
+        // Notice: only if avatar MIME type is supported, we do not want to \
+        //   eg. show animated avatar GIFs in the UI.
+        if (
+          avatarBlob &&
+          AVATAR_MIME_TYPES.includes(avatarBlob.type) === true
+        ) {
           // Allocate avatar file as a local URL
           // Notice: instead of storing avatars as Base64 strings, create \
           //   re-usable URLs, which is the lightest way avatars can be \
@@ -237,6 +244,6 @@ const $avatar = defineStore("avatar", {
  * EXPORTS
  * ************************************************************************* */
 
-export { AvatarSource, AvatarOriginTrust };
+export { AvatarSource, AvatarOriginTrust, AVATAR_MIME_TYPES };
 export type { EventAvatarGeneric };
 export default $avatar;
