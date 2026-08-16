@@ -16,9 +16,10 @@ use tauri_plugin_log::{RotationStrategy, Target, TargetKind, TimezoneStrategy};
  * ************************************************************************* */
 
 pub fn provide<R: Runtime>() -> impl Plugin<R> {
-    let time_format =
-        time::format_description::parse("[[[year]-[month]-[day]][[[hour]:[minute]:[second]]")
-            .unwrap();
+    let time_format = time::format_description::parse_borrowed::<1>(
+        "[[[year]-[month]-[day]][[[hour]:[minute]:[second]]",
+    )
+    .unwrap();
 
     // Notice: filter which logs ultimately get ingested there (based on the \
     //   environment)
