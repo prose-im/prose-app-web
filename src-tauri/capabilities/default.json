@@ -30,6 +30,10 @@
 
     "download:allow-file",
 
+    "geolocation:allow-check-permissions",
+    "geolocation:allow-request-permissions",
+    "geolocation:allow-get-current-position",
+
     "notifications:allow-send-native",
     "notifications:allow-set-badge-count"
   ]

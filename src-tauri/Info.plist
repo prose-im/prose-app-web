@@ -4,6 +4,8 @@
 <dict>
   <key>NSMicrophoneUsageDescription</key>
   <string>Application requests access to the device's microphone.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Application requests access to the device's location</string>
   <key>CFBundleURLTypes</key>
   <array>
     <dict>

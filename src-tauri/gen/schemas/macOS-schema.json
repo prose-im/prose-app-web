@@ -2583,6 +2583,78 @@
           "markdownDescription": "Denies the file command without any pre-configured scope."
         },
         {
+          "description": "Enables the check_permissions command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:allow-check-permissions",
+          "markdownDescription": "Enables the check_permissions command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the clear_permissions command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:allow-clear-permissions",
+          "markdownDescription": "Enables the clear_permissions command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the clear_watch command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:allow-clear-watch",
+          "markdownDescription": "Enables the clear_watch command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the get_current_position command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:allow-get-current-position",
+          "markdownDescription": "Enables the get_current_position command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the request_permissions command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:allow-request-permissions",
+          "markdownDescription": "Enables the request_permissions command without any pre-configured scope."
+        },
+        {
+          "description": "Enables the watch_position command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:allow-watch-position",
+          "markdownDescription": "Enables the watch_position command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the check_permissions command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:deny-check-permissions",
+          "markdownDescription": "Denies the check_permissions command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the clear_permissions command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:deny-clear-permissions",
+          "markdownDescription": "Denies the clear_permissions command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the clear_watch command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:deny-clear-watch",
+          "markdownDescription": "Denies the clear_watch command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the get_current_position command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:deny-get-current-position",
+          "markdownDescription": "Denies the get_current_position command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the request_permissions command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:deny-request-permissions",
+          "markdownDescription": "Denies the request_permissions command without any pre-configured scope."
+        },
+        {
+          "description": "Denies the watch_position command without any pre-configured scope.",
+          "type": "string",
+          "const": "geolocation:deny-watch-position",
+          "markdownDescription": "Denies the watch_position command without any pre-configured scope."
+        },
+        {
           "description": "Allows the log command\n#### This default permission set includes:\n\n- `allow-log`",
           "type": "string",
           "const": "log:default",
