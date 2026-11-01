@@ -81,7 +81,7 @@
     "@types/lodash.camelcase": "4.3.x",
     "@types/lodash.merge": "4.6.x",
     "@types/lodash.upperfirst": "4.3.x",
-    "@types/node": "24.0.x",
+    "@types/node": "26.0.x",
     "@typescript-eslint/eslint-plugin": "5.48.x",
     "@typescript-eslint/parser": "5.48.x",
     "@vitejs/plugin-vue": "4.2.x",
